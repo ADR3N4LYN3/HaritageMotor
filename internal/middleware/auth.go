@@ -107,17 +107,12 @@ func isTokenBlacklisted(ctx context.Context, pool *pgxpool.Pool, jti string, use
 	return exists, nil
 }
 
-// InvalidateBlacklistCache removes cached entries for a specific jti or user.
+// InvalidateBlacklistCache removes the cached entry for a specific jti+user pair.
 // Call after logout or user deletion to ensure immediate revocation.
+// Uses direct key lookup (O(1)) instead of iterating the entire cache.
 func InvalidateBlacklistCache(jti string, userID uuid.UUID) {
-	blacklistCache.Range(func(key, _ any) bool {
-		k := key.(string)
-		uid := userID.String()
-		if strings.Contains(k, jti) || strings.Contains(k, uid) {
-			blacklistCache.Delete(key)
-		}
-		return true
-	})
+	cacheKey := jti + ":" + userID.String()
+	blacklistCache.Delete(cacheKey)
 }
 
 func UserIDFromCtx(c *fiber.Ctx) uuid.UUID {

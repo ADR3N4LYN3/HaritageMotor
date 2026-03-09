@@ -52,6 +52,12 @@ func lookupTenantActive(ownerPool *pgxpool.Pool, c *fiber.Ctx, tenantID uuid.UUI
 	return active, nil
 }
 
+// InvalidateTenantCache removes a tenant from the cache.
+// Call after tenant update/suspend to ensure immediate effect.
+func InvalidateTenantCache(tenantID uuid.UUID) {
+	tenantCache.Delete(tenantID.String())
+}
+
 // TenantMiddleware validates the tenant and wraps each request in a transaction
 // with SET LOCAL app.current_tenant_id, so PostgreSQL RLS policies filter rows
 // automatically.

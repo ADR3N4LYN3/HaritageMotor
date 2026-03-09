@@ -1,67 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 48" fill="none">
-  <!-- ═══ CREST WITH CROWN ═══ -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 52" fill="none">
   <g transform="translate(0,0)">
-    <!-- Royal Crown -->
-    <path d="M10 8L14 3l3 4 3-6 3 6 3-4 4 5" stroke="#b8955a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- ═══ ROYAL CROWN ═══ -->
     <!-- Crown base band -->
-    <path d="M10 8h20" stroke="#b8955a" stroke-width="1.2" stroke-linecap="round"/>
-    <!-- Crown jewels -->
-    <circle cx="20" cy="2.5" r="1" fill="#b8955a"/>
-    <circle cx="14" cy="4.5" r="0.7" fill="#b8955a"/>
-    <circle cx="26" cy="4.5" r="0.7" fill="#b8955a"/>
+    <rect x="8" y="8" width="24" height="3" rx="0.5" fill="#b8955a"/>
+    <!-- Crown velvet (filled arch) -->
+    <path d="M8 8c0-3 4-6 12-6s12 3 12 6" fill="#b8955a" opacity="0.15"/>
+    <!-- Crown rim with arches -->
+    <path d="M8 8c0-3 4-6 12-6s12 3 12 6" stroke="#b8955a" stroke-width="1" fill="none"/>
+    <!-- Crown fleur-de-lis / points -->
+    <circle cx="20" cy="1" r="1.5" fill="#b8955a"/>
+    <circle cx="12" cy="4.5" r="1" fill="#b8955a"/>
+    <circle cx="28" cy="4.5" r="1" fill="#b8955a"/>
+    <!-- Cross pattée on top -->
+    <line x1="20" y1="-1" x2="20" y2="2.5" stroke="#b8955a" stroke-width="0.8"/>
+    <line x1="18.5" y1="0.5" x2="21.5" y2="0.5" stroke="#b8955a" stroke-width="0.8"/>
 
-    <!-- Shield body -->
-    <path d="M3 10h34v15c0 8-7.5 13.5-17 17C10.5 38.5 3 33 3 25V10z" stroke="#b8955a" stroke-width="1.2" fill="none"/>
-    <!-- Inner shield -->
-    <path d="M6 12.5h28v12.5c0 6.5-6 11-14 14-8-3-14-7.5-14-14V12.5z" stroke="#b8955a" stroke-width="0.5" fill="none" opacity="0.4"/>
+    <!-- ═══ SHIELD ═══ -->
+    <path d="M2 13h36v14c0 9-8 15-18 19C10 42 2 36 2 27V13z" stroke="#b8955a" stroke-width="1.4" fill="none"/>
+    <!-- Inner shield line -->
+    <path d="M5.5 15.5h29v11.5c0 7.5-6.5 12.5-14.5 15.5-8-3-14.5-8-14.5-15.5V15.5z" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.35"/>
 
-    <!-- H — refined with serifs -->
-    <g stroke="#b8955a" stroke-linecap="round">
-      <path d="M11 16v16" stroke-width="1.5"/>
-      <path d="M11 24h6" stroke-width="1.1"/>
-      <path d="M17 16v16" stroke-width="1.5"/>
-      <!-- H serifs -->
-      <path d="M9.2 16.2h3.6M9.2 31.8h3.6M15.2 16.2h3.6M15.2 31.8h3.6" stroke-width="0.6"/>
+    <!-- ═══ HM MONOGRAM ═══ -->
+    <g fill="#b8955a">
+      <!-- H -->
+      <rect x="9" y="18" width="1.8" height="16" rx="0.3"/>
+      <rect x="9" y="25" width="7.2" height="1.5" rx="0.2"/>
+      <rect x="16.2" y="18" width="1.8" height="16" rx="0.3"/>
+
+      <!-- M -->
+      <rect x="21" y="18" width="1.8" height="16" rx="0.3"/>
+      <polygon points="21.9,18 25.5,27 26,27 26,18 27.5,18 27.5,27 28,27 31.1,18 31.1,20 28.5,28 27.5,28 27.5,27.5 26,27.5 26,28 24.5,28 21.9,20"/>
+      <rect x="30.2" y="18" width="1.8" height="16" rx="0.3"/>
     </g>
 
-    <!-- M — refined with serifs -->
-    <g stroke="#b8955a" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 32V16l4.5 11L30 16v16" stroke-width="1.5"/>
-      <!-- M serifs -->
-      <path d="M19.2 31.8h3.6M28.2 31.8h3.6" stroke-width="0.6"/>
+    <!-- ═══ LAUREL BRANCHES ═══ -->
+    <!-- Left -->
+    <g fill="#b8955a" opacity="0.4">
+      <ellipse cx="-0.5" cy="25" rx="1.8" ry="3.5" transform="rotate(20 -0.5 25)"/>
+      <ellipse cx="0" cy="31" rx="1.8" ry="3.5" transform="rotate(10 0 31)"/>
+      <ellipse cx="1" cy="37" rx="1.5" ry="3" transform="rotate(-5 1 37)"/>
     </g>
-
-    <!-- Laurel branches framing the shield -->
-    <!-- Left laurel -->
-    <g stroke="#b8955a" stroke-width="0.5" fill="none" opacity="0.55">
-      <path d="M1 30c-2-4 0-8 1-10"/>
-      <path d="M-0.5 24c1.5-0.5 2-2.5 1.5-4"/>
-      <path d="M-0.5 28c1.5-0.5 2-2.5 1.5-4"/>
-      <path d="M0 32c1.5-0.5 2-2.5 1-4"/>
+    <!-- Right -->
+    <g fill="#b8955a" opacity="0.4">
+      <ellipse cx="40.5" cy="25" rx="1.8" ry="3.5" transform="rotate(-20 40.5 25)"/>
+      <ellipse cx="40" cy="31" rx="1.8" ry="3.5" transform="rotate(-10 40 31)"/>
+      <ellipse cx="39" cy="37" rx="1.5" ry="3" transform="rotate(5 39 37)"/>
     </g>
-    <!-- Right laurel -->
-    <g stroke="#b8955a" stroke-width="0.5" fill="none" opacity="0.55">
-      <path d="M39 30c2-4 0-8-1-10"/>
-      <path d="M40.5 24c-1.5-0.5-2-2.5-1.5-4"/>
-      <path d="M40.5 28c-1.5-0.5-2-2.5-1.5-4"/>
-      <path d="M40 32c-1.5-0.5-2-2.5-1-4"/>
-    </g>
-
-    <!-- Bottom ribbon flourish -->
-    <path d="M10 40q10 5 20 0" stroke="#b8955a" stroke-width="0.7" fill="none" stroke-linecap="round"/>
-    <path d="M14 41q6 3 12 0" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.5"/>
   </g>
 
   <!-- ═══ SEPARATOR ═══ -->
-  <g transform="translate(52,8)">
-    <line x1="0" y1="2" x2="0" y2="30" stroke="#b8955a" stroke-width="0.5" opacity="0.3"/>
-    <path d="M-2 2l2-2 2 2" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.4"/>
-    <path d="M-2 30l2 2 2-2" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.4"/>
-  </g>
+  <line x1="54" y1="10" x2="54" y2="42" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/>
 
   <!-- ═══ BRAND TEXT ═══ -->
-  <text x="64" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text>
-  <text x="64" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text>
-  <!-- Gold accent line under text -->
-  <line x1="64" y1="40.5" x2="140" y2="40.5" stroke="#b8955a" stroke-width="0.5" opacity="0.35"/>
+  <text x="66" y="22" font-family="'Cormorant Garamond','Georgia',serif" font-size="15" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text>
+  <text x="66" y="40" font-family="'Cormorant Garamond','Georgia',serif" font-size="13.5" font-weight="400" letter-spacing="7.8" fill="currentColor">MOTOR</text>
 </svg>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { VehicleCard } from "@/components/ui/VehicleCard";
@@ -32,6 +32,11 @@ export default function DashboardPage() {
   );
 
   const vehicles = data?.data || [];
+
+  const handleVehicleClick = useCallback(
+    (id: string) => router.push(`/vehicle/${id}`),
+    [router]
+  );
 
   const statuses = ["", "stored", "out", "maintenance", "transit"];
 
@@ -87,7 +92,7 @@ export default function DashboardPage() {
               <VehicleCard
                 key={vehicle.id}
                 vehicle={vehicle}
-                onClick={() => router.push(`/vehicle/${vehicle.id}`)}
+                onClick={() => handleVehicleClick(vehicle.id)}
               />
             ))}
           </div>

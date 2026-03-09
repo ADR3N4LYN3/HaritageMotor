@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Vehicle } from "@/lib/types";
 
 interface VehicleCardProps {
@@ -14,7 +15,7 @@ const statusColors: Record<string, string> = {
   sold: "bg-black/10 text-black/40",
 };
 
-export function VehicleCard({ vehicle, bayName, onClick }: VehicleCardProps) {
+export const VehicleCard = memo(function VehicleCard({ vehicle, bayName, onClick }: VehicleCardProps) {
   return (
     <button
       onClick={onClick}
@@ -50,4 +51,4 @@ export function VehicleCard({ vehicle, bayName, onClick }: VehicleCardProps) {
       </div>
     </button>
   );
-}
+});

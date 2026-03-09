@@ -22,22 +22,34 @@ type uploadEntry struct {
 // UploadLimiter restricts cumulative upload bandwidth per user over a time window.
 // Uses Content-Length header for efficiency (no body buffering).
 func UploadLimiter(cfg UploadLimiterConfig) fiber.Handler {
-	var mu sync.Mutex
+	var mu sync.RWMutex
 	entries := make(map[uuid.UUID]*uploadEntry)
 
-	// Periodic cleanup of expired entries to prevent memory leak.
+	// Periodic cleanup of expired entries to prevent unbounded memory growth.
 	go func() {
 		ticker := time.NewTicker(cfg.Window)
 		defer ticker.Stop()
 		for range ticker.C {
 			now := time.Now()
-			mu.Lock()
+			mu.RLock()
+			expired := make([]uuid.UUID, 0)
 			for k, e := range entries {
 				if now.After(e.windowEnd) {
-					delete(entries, k)
+					expired = append(expired, k)
 				}
 			}
-			mu.Unlock()
+			mu.RUnlock()
+
+			if len(expired) > 0 {
+				mu.Lock()
+				for _, k := range expired {
+					// Re-check under write lock (entry may have been refreshed).
+					if e, ok := entries[k]; ok && now.After(e.windowEnd) {
+						delete(entries, k)
+					}
+				}
+				mu.Unlock()
+			}
 		}
 	}()
 

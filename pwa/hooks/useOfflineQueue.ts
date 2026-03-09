@@ -42,20 +42,22 @@ export function useOfflineQueue() {
     pendingCountRef.current = pendingCount;
   }, [pendingCount]);
 
-  // Listen for online events
+  // Initial count load (runs once).
   useEffect(() => {
     refreshCount();
+  }, [refreshCount]);
 
+  // Listen for online events and poll only when there are pending actions.
+  useEffect(() => {
     const handleOnline = () => {
       syncAll();
     };
 
     window.addEventListener("online", handleOnline);
 
-    // Periodic sync every 30 seconds if online and there are pending actions
-    const interval = setInterval(async () => {
+    const interval = setInterval(() => {
       if (navigator.onLine && pendingCountRef.current > 0) {
-        await syncAll();
+        syncAll();
       }
     }, 30000);
 
@@ -63,7 +65,7 @@ export function useOfflineQueue() {
       window.removeEventListener("online", handleOnline);
       clearInterval(interval);
     };
-  }, [syncAll, refreshCount]);
+  }, [syncAll]);
 
   return { syncAll, refreshCount };
 }

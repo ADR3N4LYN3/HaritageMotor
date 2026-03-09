@@ -10,6 +10,7 @@ import (
 
 	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/chriis/heritage-motor/internal/domain"
+	"github.com/chriis/heritage-motor/internal/middleware"
 	"github.com/chriis/heritage-motor/internal/service/mailer"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -109,15 +110,19 @@ func (s *Service) ListTenants(ctx context.Context, page, perPage int) ([]TenantW
 }
 
 // GetTenant returns a single tenant with stats.
+// Uses LEFT JOIN (same pattern as ListTenants) instead of correlated subqueries.
 func (s *Service) GetTenant(ctx context.Context, tenantID uuid.UUID) (*TenantWithStats, error) {
 	var t TenantWithStats
 	err := s.pool.QueryRow(ctx,
 		`SELECT t.id, t.name, t.slug, t.country, t.timezone, t.plan, t.active, t.status,
 		        t.created_at, t.updated_at, t.deleted_at,
-		        (SELECT COUNT(*) FROM users WHERE tenant_id = t.id AND deleted_at IS NULL) AS user_count,
-		        (SELECT COUNT(*) FROM vehicles WHERE tenant_id = t.id AND deleted_at IS NULL) AS vehicle_count,
-		        (SELECT COUNT(*) FROM bays WHERE tenant_id = t.id) AS bay_count
+		        COALESCE(uc.cnt, 0) AS user_count,
+		        COALESCE(vc.cnt, 0) AS vehicle_count,
+		        COALESCE(bc.cnt, 0) AS bay_count
 		 FROM tenants t
+		 LEFT JOIN (SELECT tenant_id, COUNT(*) AS cnt FROM users WHERE deleted_at IS NULL GROUP BY tenant_id) uc ON uc.tenant_id = t.id
+		 LEFT JOIN (SELECT tenant_id, COUNT(*) AS cnt FROM vehicles WHERE deleted_at IS NULL GROUP BY tenant_id) vc ON vc.tenant_id = t.id
+		 LEFT JOIN (SELECT tenant_id, COUNT(*) AS cnt FROM bays GROUP BY tenant_id) bc ON bc.tenant_id = t.id
 		 WHERE t.id = $1 AND t.deleted_at IS NULL`,
 		tenantID,
 	).Scan(
@@ -224,6 +229,9 @@ func (s *Service) UpdateTenant(ctx context.Context, tenantID uuid.UUID, req Upda
 		return nil, fmt.Errorf("update tenant: %w", err)
 	}
 
+	// Invalidate tenant cache so suspended/updated tenants take effect immediately.
+	middleware.InvalidateTenantCache(tenantID)
+
 	log.Info().Str("tenant_id", t.ID.String()).Msg("tenant updated")
 	return &t, nil
 }
@@ -241,6 +249,8 @@ func (s *Service) DeleteTenant(ctx context.Context, tenantID uuid.UUID) error {
 	if tag.RowsAffected() == 0 {
 		return &domain.ErrNotFound{Resource: "tenant", ID: tenantID}
 	}
+
+	middleware.InvalidateTenantCache(tenantID)
 
 	log.Info().Str("tenant_id", tenantID.String()).Msg("tenant soft-deleted")
 	return nil

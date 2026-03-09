@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 interface CapturedPhoto {
   file: File;
@@ -7,6 +7,8 @@ interface CapturedPhoto {
 
 export function useCamera() {
   const [photos, setPhotos] = useState<CapturedPhoto[]>([]);
+  const photosRef = useRef(photos);
+  photosRef.current = photos;
 
   const addPhoto = useCallback((file: File, preview: string) => {
     setPhotos((prev) => [...prev, { file, preview }]);
@@ -19,6 +21,13 @@ export function useCamera() {
       updated.splice(index, 1);
       return updated;
     });
+  }, []);
+
+  // Revoke all object URLs on unmount to prevent memory leaks.
+  useEffect(() => {
+    return () => {
+      photosRef.current.forEach((p) => URL.revokeObjectURL(p.preview));
+    };
   }, []);
 
   return { photos, addPhoto, removePhoto };
