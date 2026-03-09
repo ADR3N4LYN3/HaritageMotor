@@ -50,9 +50,10 @@ func (s *Service) Submit(ctx context.Context, req Request) error {
 		return fmt.Errorf("insert contact request: %w", err)
 	}
 
-	// Send email notification (best-effort, don't fail the request)
+	// Send emails (best-effort, don't fail the request)
 	if s.resendAPIKey != "" {
 		go s.sendNotification(req)
+		go s.sendConfirmation(req)
 	}
 
 	return nil
@@ -109,5 +110,7 @@ func (s *Service) sendNotification(req Request) {
 
 	if resp.StatusCode >= 400 {
 		log.Error().Int("status", resp.StatusCode).Msg("resend API returned error for contact notification")
+	} else {
+		log.Info().Str("to", s.emailTo).Str("from_contact", req.Email).Msg("contact notification email sent")
 	}
 }

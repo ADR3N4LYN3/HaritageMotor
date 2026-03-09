@@ -13,7 +13,18 @@ dev:
 	go run ./cmd/api
 
 test:
-	go test -v ./...
+	go test -v -race -timeout 60s ./...
+
+test-integration:
+	go test -v -race -timeout 120s ./internal/...
+
+test-rls:
+	go test -v -run TestRLS ./internal/db/...
+
+test-coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report: coverage.html"
 
 migrate-up:
 	migrate -path $(MIGRATIONS_DIR) -database "$(DATABASE_URL)" up
