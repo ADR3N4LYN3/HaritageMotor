@@ -21,6 +21,7 @@ WORKDIR /app
 
 COPY --from=builder /api .
 COPY --from=builder /app/internal/db/migrations ./migrations
+COPY --from=builder /app/web ./web
 
 EXPOSE 8080
 
