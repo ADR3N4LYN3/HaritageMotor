@@ -70,19 +70,107 @@ func (s *Service) send(to, subject, html string) error {
 
 // SendWelcome sends a welcome email with temporary credentials.
 func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword string) error {
-	subject := fmt.Sprintf("Bienvenue sur Heritage Motor — %s", tenantName)
-	html := fmt.Sprintf(`
-<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
-  <h2>Bienvenue %s !</h2>
-  <p>Votre compte a été créé sur la plateforme Heritage Motor pour <strong>%s</strong>.</p>
-  <p>Voici vos identifiants temporaires :</p>
-  <table style="border-collapse:collapse;margin:16px 0;">
-    <tr><td style="padding:4px 12px;font-weight:bold;">Email</td><td style="padding:4px 12px;">%s</td></tr>
-    <tr><td style="padding:4px 12px;font-weight:bold;">Mot de passe</td><td style="padding:4px 12px;font-family:monospace;background:#f5f5f5;border-radius:4px;">%s</td></tr>
-  </table>
-  <p><a href="%s/login" style="display:inline-block;padding:12px 24px;background:#1a1a2e;color:white;text-decoration:none;border-radius:6px;">Se connecter</a></p>
-  <p style="color:#666;font-size:0.9em;">Vous devrez changer votre mot de passe lors de votre première connexion.</p>
-</div>`,
+	subject := fmt.Sprintf("Heritage Motor — Bienvenue chez %s", tenantName)
+	html := fmt.Sprintf(`<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0a0908;">
+<table width="100%%" cellpadding="0" cellspacing="0" style="background:#0a0908;padding:0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#0a0908;">
+
+  <!-- Top spacer -->
+  <tr><td style="height:48px;"></td></tr>
+
+  <!-- Logo -->
+  <tr><td align="center" style="padding:0 0 14px;">
+    <img src="https://heritagemotor.app/logo-email.png" alt="HM" width="72" height="88" style="display:block;width:72px;height:88px;" />
+  </td></tr>
+
+  <!-- Brand name -->
+  <tr><td align="center" style="padding:0 0 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
+  </td></tr>
+
+  <!-- Gold accent line -->
+  <tr><td align="center" style="padding:24px 0 0;">
+    <table cellpadding="0" cellspacing="0"><tr>
+      <td style="width:40px;height:1px;background:linear-gradient(to right, transparent, #b8955a40);font-size:0;">&nbsp;</td>
+      <td style="width:6px;height:6px;font-size:0;padding:0 8px;"><table cellpadding="0" cellspacing="0"><tr><td style="width:6px;height:6px;background:#b8955a;transform:rotate(45deg);font-size:0;opacity:0.4;">&nbsp;</td></tr></table></td>
+      <td style="width:40px;height:1px;background:linear-gradient(to left, transparent, #b8955a40);font-size:0;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Greeting -->
+  <tr><td style="padding:36px 56px 0;">
+    <p style="margin:0 0 24px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">Bienvenue %s,</p>
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#8a867e;line-height:1.8;">Votre compte a été créé sur la plateforme Heritage Motor pour <span style="color:#e8e6e1;">%s</span>. Vous trouverez ci-dessous vos identifiants de connexion.</p>
+  </td></tr>
+
+  <!-- Spacer -->
+  <tr><td style="height:28px;"></td></tr>
+
+  <!-- Credentials card -->
+  <tr><td style="padding:0 40px;">
+    <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#12110e;border:1px solid #b8955a18;border-radius:4px;">
+      <!-- Card header -->
+      <tr><td style="padding:20px 28px 16px;border-bottom:1px solid #b8955a12;">
+        <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">Vos identifiants</p>
+      </td></tr>
+      <!-- Email -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Email</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Password -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Mot de passe</td>
+          <td style="padding:16px 0 15px;font-family:'Courier New',Courier,monospace;font-size:15px;color:#b8955a;letter-spacing:1px;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Card bottom padding -->
+      <tr><td style="height:4px;"></td></tr>
+    </table>
+  </td></tr>
+
+  <!-- CTA Button -->
+  <tr><td align="center" style="padding:32px 40px 0;">
+    <table cellpadding="0" cellspacing="0"><tr>
+      <td style="background:#b8955a;border-radius:4px;padding:14px 36px;">
+        <a href="%s/login" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#0a0908;text-decoration:none;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">Se connecter</a>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Note -->
+  <tr><td style="padding:28px 56px 0;">
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5a564e;line-height:1.6;font-style:italic;">Vous devrez changer votre mot de passe lors de votre première connexion.</p>
+  </td></tr>
+
+  <!-- Bottom spacer -->
+  <tr><td style="height:48px;"></td></tr>
+
+  <!-- Footer divider -->
+  <tr><td style="padding:0 56px;">
+    <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+      <td style="border-bottom:1px solid #b8955a10;font-size:0;height:1px;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td align="center" style="padding:24px 56px 48px;">
+    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">Heritage Motor — Plateforme de Garde de Véhicules</p>
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`,
 		firstName, tenantName, to, tempPassword, s.baseURL)
 
 	return s.send(to, subject, html)

@@ -152,6 +152,7 @@ function TenantsSection() {
     "/admin/tenants"
   );
   const [showCreate, setShowCreate] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   return (
     <section className="space-y-6">
@@ -181,42 +182,187 @@ function TenantsSection() {
           </div>
         )}
         {data?.data?.map((t) => (
-          <div
+          <TenantRow
             key={t.id}
-            className="bg-[#0c0b08] p-5 flex items-center justify-between group hover:bg-[#0e0d0a] transition-colors duration-300"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-gold/[0.08] border border-gold/[0.12] flex items-center justify-center shrink-0">
-                <span className="text-gold/60 font-display text-sm font-semibold">
-                  {t.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p className="font-medium text-sm text-white/80 group-hover:text-white/95 transition-colors">
-                  {t.name}
-                </p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-white/25 text-xs font-mono">{t.slug}</span>
-                  <span className="text-white/10">|</span>
-                  <span className="text-white/30 text-xs capitalize">{t.plan}</span>
-                  <span className="text-white/10">|</span>
-                  <span className={`text-xs ${
-                    t.status === "active" ? "text-emerald-400/70" : "text-amber-400/70"
-                  }`}>
-                    {t.status}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-6">
-              <StatPill value={t.user_count} label="users" />
-              <StatPill value={t.vehicle_count} label="vehicles" />
-              <StatPill value={t.bay_count} label="bays" />
-            </div>
-          </div>
+            tenant={t}
+            isEditing={editingId === t.id}
+            onToggleEdit={() => setEditingId(editingId === t.id ? null : t.id)}
+          />
         ))}
       </div>
     </section>
+  );
+}
+
+function TenantRow({
+  tenant: t,
+  isEditing,
+  onToggleEdit,
+}: {
+  tenant: TenantWithStats;
+  isEditing: boolean;
+  onToggleEdit: () => void;
+}) {
+  const [name, setName] = useState(t.name);
+  const [plan, setPlan] = useState(t.plan);
+  const [status, setStatus] = useState(t.status);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      const body: Record<string, string> = {};
+      if (name !== t.name) body.name = name;
+      if (plan !== t.plan) body.plan = plan;
+      if (status !== t.status) body.status = status;
+      if (Object.keys(body).length === 0) { onToggleEdit(); return; }
+      await api.patch(`/admin/tenants/${t.id}`, body);
+      mutate("/admin/tenants");
+      mutate("/admin/dashboard");
+      onToggleEdit();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to update");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    setError(null);
+    try {
+      await api.delete(`/admin/tenants/${t.id}`);
+      mutate("/admin/tenants");
+      mutate("/admin/dashboard");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to delete");
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <div className="bg-[#0c0b08] group hover:bg-[#0e0d0a] transition-colors duration-300">
+      <div
+        className="p-5 flex items-center justify-between cursor-pointer"
+        onClick={onToggleEdit}
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-lg bg-gold/[0.08] border border-gold/[0.12] flex items-center justify-center shrink-0">
+            <span className="text-gold/60 font-display text-sm font-semibold">
+              {t.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div>
+            <p className="font-medium text-sm text-white/80 group-hover:text-white/95 transition-colors">
+              {t.name}
+            </p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-white/25 text-xs font-mono">{t.slug}</span>
+              <span className="text-white/10">|</span>
+              <span className="text-white/30 text-xs capitalize">{t.plan}</span>
+              <span className="text-white/10">|</span>
+              <span className={`text-xs ${
+                t.status === "active" ? "text-emerald-400/70" : "text-amber-400/70"
+              }`}>
+                {t.status}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-6">
+          <StatPill value={t.user_count} label="users" />
+          <StatPill value={t.vehicle_count} label="vehicles" />
+          <StatPill value={t.bay_count} label="bays" />
+          <svg
+            className={`w-4 h-4 text-white/20 transition-transform duration-200 ${isEditing ? "rotate-180" : ""}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+
+      {isEditing && (
+        <div className="px-5 pb-5 pt-1 border-t border-white/[0.04]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div>
+              <label className={labelClass}>Name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Plan</label>
+              <select value={plan} onChange={(e) => setPlan(e.target.value)} className={inputClass}>
+                <option value="starter">Starter</option>
+                <option value="pro">Pro</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Status</label>
+              <select value={status} onChange={(e) => setStatus(e.target.value)} className={inputClass}>
+                <option value="active">Active</option>
+                <option value="trial">Trial</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+          </div>
+
+          {error && <p className="text-red-400/80 text-xs mt-3">{error}</p>}
+
+          <div className="flex items-center justify-between mt-5">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-5 py-2 rounded-lg bg-gold text-[#080704] text-xs font-semibold tracking-wider uppercase hover:bg-gold/90 disabled:opacity-40 transition-all duration-300"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+              <button
+                onClick={onToggleEdit}
+                className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {!confirmDelete ? (
+              <button
+                onClick={(e) => { e.stopPropagation(); setConfirmDelete(true); }}
+                className="text-red-400/40 text-xs tracking-wider uppercase hover:text-red-400/70 transition-colors"
+              >
+                Delete
+              </button>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="text-red-400/60 text-xs">Confirm?</span>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-semibold tracking-wider uppercase border border-red-500/20 hover:bg-red-500/30 disabled:opacity-40 transition-all"
+                >
+                  {deleting ? "Deleting..." : "Yes, delete"}
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
+                >
+                  No
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
