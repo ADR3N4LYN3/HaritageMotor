@@ -20,6 +20,8 @@
 | Config | godotenv + os.Getenv |
 | Conteneurisation | Docker + Docker Compose |
 | Reverse proxy | Caddy |
+| Analytics | Plausible CE v2.1.4 (self-hosted) |
+| Linter | golangci-lint (govet, errcheck, misspell) |
 | Module Go | `github.com/chriis/heritage-motor` |
 
 ## Architecture des dossiers
@@ -216,6 +218,14 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - Business services : `db.Conn(ctx, s.pool)` pour récupérer le tx ou fallback sur le pool
 - Superadmin/contact/plan services : ownerPool direct (pas de RLS, pas de tenant)
 
+### golangci-lint
+- Variable shadowing : utiliser `var x; x, err = ...` au lieu de `:=` quand `err` est déjà déclaré
+- `defer tx.Rollback(ctx)` : ajouter `//nolint:errcheck // rollback is no-op after commit`
+- Texte français/British English : ajouter `//nolint:misspell // French text` ou `// British English`
+- `_ = godotenv.Load()` : gérer le retour de fonction même optionnel
+- `make` est un builtin Go : ne pas l'utiliser comme nom de paramètre (utiliser `vmake`)
+- Tests d'intégration : toujours `defer resp.Body.Close()` après `DoRequest()`
+
 ### Superadmin & Plans
 - Superadmin = `user_role='superadmin'`, `tenant_id IS NULL` (pas attaché à un tenant)
 - `plan_limits` table : plan → resource → max_count (starter/pro/enterprise)
@@ -305,6 +315,7 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **Navigation** : `IntersectionObserver` au lieu de `scroll` event listener (1 callback/intersection vs ~60/sec)
 - **Google Fonts** : 6 variantes au lieu de 11 (removed unused weights)
 - **SEO** : `og:image`, `twitter:image`, `preconnect` vers `fonts.gstatic.com`
+- **Smooth scroll** : cubic-bezier luxury easing (1200ms) pour les ancres `#contact`, clean URL via `replaceState`
 
 ## Contraintes UX (non-négociables)
 
@@ -409,6 +420,18 @@ Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVide
 - **Cause** : Google Fonts render-blocking (750ms) + poster hero 550KB
 - **Fix** : `rel="preload" as="style"` avec `onload` swap (non-blocking) + poster réduit `w=1280&q=70`
 - **Fichier** : `web/static/index.html`
+
+### Plausible CE hang (v2.1 → v2.1.4)
+- **Symptôme** : `stats.heritagemotor.app` retourne 503, Plausible bloqué à "Starting repos..."
+- **Cause** : Bug connu du driver ClickHouse dans v2.1 — le process BEAM se bloque à la connexion
+- **Fix** : Upgrade vers `v2.1.4` dans `compose.yaml`
+- **Fichier** : `compose.yaml` ligne 95
+
+### Admin page blanche au refresh
+- **Symptôme** : F5 sur `/admin` → page blanche pendant hydratation
+- **Cause** : `if (!authorized) return null` rendait un DOM vide pendant qu'AuthBootstrap restaure la session
+- **Fix** : Remplacé `return null` par un spinner gold cohérent
+- **Fichier** : `pwa/app/admin/page.tsx`
 
 ### Anti-patterns à éviter
 - **Email pas unique globalement** : email est unique par tenant (`UNIQUE(tenant_id, email)`), pas cross-tenant. Les queries par email doivent joindre le tenant.

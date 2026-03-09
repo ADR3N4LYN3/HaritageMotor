@@ -57,6 +57,7 @@ pwa/
       logout/route.ts             BFF : revoque token + supprime cookie
       clear-token/route.ts        Suppression cookie (fallback)
   components/
+    AuthBootstrap.tsx             Restaure session au mount (cookie → Zustand)
     layout/
       AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
       TopBar.tsx                  Header fixe (logo, SyncBadge, user)
@@ -102,8 +103,11 @@ Les routes Next.js `/api/auth/*` servent de proxy vers le backend Go.
 Login -> backend retourne access + refresh token
       -> access token en memoire (Zustand)
       -> refresh token en cookie httpOnly (via /api/auth/set-token)
-      -> 401 sur requete -> auto-refresh via /api/auth/refresh
+      -> 401 sur requete -> auto-refresh via /api/auth/refresh (sans condition sur token)
+      -> F5/refresh -> AuthBootstrap restaure depuis cookie -> Zustand hydrate
 ```
+
+**Important** : Le handler 401 dans `api.ts` ne doit JAMAIS conditionner le refresh sur `token` en memoire (Zustand est in-memory, `token = null` apres refresh). Il tente toujours le refresh via le cookie httpOnly.
 
 ### Offline Queue
 
@@ -143,6 +147,7 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
 | `Select` | `admin/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
 | `TenantRow` | `admin/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
+| `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via cookie httpOnly → `/api/auth/refresh` → Zustand. Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
 
 ## Docker
 

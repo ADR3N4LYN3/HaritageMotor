@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/chriis/heritage-motor/internal/testutil"
 )
 
 // ---------- Audit log creation ----------
@@ -53,8 +54,8 @@ func TestAuditLog_NotCreatedOnGET(t *testing.T) {
 
 	// GET request — should NOT be audited
 	resp := env.DoRequest(t, http.MethodGet, "/vehicles", token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
-	resp.Body.Close()
 
 	time.Sleep(500 * time.Millisecond)
 
@@ -80,12 +81,12 @@ func TestAuditLog_ContainsRequestID(t *testing.T) {
 		"code": "AUD-01",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/bays", token, payload)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Check that response has X-Request-ID header
 	requestID := resp.Header.Get("X-Request-ID")
 	assert.NotEmpty(t, requestID, "response should contain X-Request-ID header")
-	resp.Body.Close()
 
 	time.Sleep(500 * time.Millisecond)
 
@@ -128,6 +129,7 @@ func TestAuditLog_AppendOnly_NoUpdate(t *testing.T) {
 	_, err = env.OwnerPool.Exec(ctx,
 		`UPDATE audit_log SET action = 'tampered' WHERE id = $1`, logID,
 	)
+	require.NoError(t, err)
 	// Even if the update succeeds at DB level, verify it's present
 	var action string
 	err = env.OwnerPool.QueryRow(ctx,
