@@ -76,10 +76,10 @@ func Load() (*Config, error) {
 			"DATABASE_URL":     cfg.DatabaseURL,
 			"DATABASE_APP_URL": cfg.DatabaseAppURL,
 			"S3_ENDPOINT":      cfg.S3Endpoint,
-			"S3_ACCESS_KEY":  cfg.S3AccessKey,
-			"S3_SECRET_KEY":  cfg.S3SecretKey,
-			"S3_BUCKET":      cfg.S3Bucket,
-			"RESEND_API_KEY": cfg.ResendAPIKey,
+			"S3_ACCESS_KEY":    cfg.S3AccessKey,
+			"S3_SECRET_KEY":    cfg.S3SecretKey,
+			"S3_BUCKET":        cfg.S3Bucket,
+			"RESEND_API_KEY":   cfg.ResendAPIKey,
 		}
 		for name, val := range required {
 			if val == "" {

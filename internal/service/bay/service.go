@@ -169,7 +169,7 @@ func (s *Service) Update(ctx context.Context, tenantID, bayID uuid.UUID, req Upd
 	// If code is being changed, check uniqueness
 	if req.Code != nil && *req.Code != existing.Code {
 		var exists bool
-		err := db.Conn(ctx, s.pool).QueryRow(ctx,
+		err = db.Conn(ctx, s.pool).QueryRow(ctx,
 			`SELECT EXISTS(SELECT 1 FROM bays WHERE tenant_id = $1 AND code = $2 AND id != $3)`,
 			tenantID, *req.Code, bayID).Scan(&exists)
 		if err != nil {

@@ -35,9 +35,9 @@ type CreateTenantRequest struct {
 }
 
 type UpdateTenantRequest struct {
-	Name     *string `json:"name"`
-	Plan     *string `json:"plan" validate:"omitempty,oneof=starter pro enterprise"`
-	Status   *string `json:"status" validate:"omitempty,oneof=active suspended trial"`
+	Name   *string `json:"name"`
+	Plan   *string `json:"plan" validate:"omitempty,oneof=starter pro enterprise"`
+	Status *string `json:"status" validate:"omitempty,oneof=active suspended trial"`
 }
 
 type InviteUserRequest struct {
@@ -312,7 +312,7 @@ func (s *Service) InviteUser(ctx context.Context, invitedBy uuid.UUID, req Invit
 	if err != nil {
 		return nil, fmt.Errorf("begin tx: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	_, err = tx.Exec(ctx,
 		`INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, role, totp_enabled, password_change_required, created_at, updated_at)

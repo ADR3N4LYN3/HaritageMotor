@@ -131,7 +131,7 @@ func (s *Service) Create(ctx context.Context, tenantID, vehicleID, userID uuid.U
 		log.Error().Err(err).Msg("failed to begin transaction")
 		return nil, fmt.Errorf("begin tx: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	// Insert document record
 	_, err = tx.Exec(ctx,

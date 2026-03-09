@@ -27,6 +27,7 @@ func TestLogin_Success(t *testing.T) {
 		"email":    "login-ok@test.com",
 		"password": testPassword,
 	})
+	defer resp.Body.Close()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -52,6 +53,7 @@ func TestLogin_WrongPassword(t *testing.T) {
 		"email":    "login-badpw@test.com",
 		"password": "WrongPassword!1",
 	})
+	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
@@ -63,6 +65,7 @@ func TestLogin_UnknownEmail(t *testing.T) {
 		"email":    "nobody@test.com",
 		"password": testPassword,
 	})
+	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
@@ -80,6 +83,7 @@ func TestRefresh_ValidToken(t *testing.T) {
 		"email":    "refresh-ok@test.com",
 		"password": testPassword,
 	})
+	defer loginResp.Body.Close()
 	require.Equal(t, http.StatusOK, loginResp.StatusCode)
 
 	var loginBody map[string]interface{}
@@ -92,6 +96,7 @@ func TestRefresh_ValidToken(t *testing.T) {
 	refreshResp := env.DoRequest(t, http.MethodPost, "/auth/refresh", "", map[string]string{
 		"refresh_token": refreshToken,
 	})
+	defer refreshResp.Body.Close()
 	require.Equal(t, http.StatusOK, refreshResp.StatusCode)
 
 	var refreshBody map[string]interface{}
@@ -114,6 +119,7 @@ func TestLogout_BlacklistsJTI(t *testing.T) {
 		"email":    "logout-bl@test.com",
 		"password": testPassword,
 	})
+	defer loginResp.Body.Close()
 	require.Equal(t, http.StatusOK, loginResp.StatusCode)
 
 	var loginBody map[string]interface{}
@@ -125,6 +131,7 @@ func TestLogout_BlacklistsJTI(t *testing.T) {
 	logoutResp := env.DoRequest(t, http.MethodPost, "/auth/logout", accessToken, map[string]string{
 		"refresh_token": refreshToken,
 	})
+	defer logoutResp.Body.Close()
 	require.Equal(t, http.StatusOK, logoutResp.StatusCode)
 
 	// Allow time for blacklist cache to be populated.
@@ -132,6 +139,7 @@ func TestLogout_BlacklistsJTI(t *testing.T) {
 
 	// Attempt to use the blacklisted access token on /auth/me.
 	meResp := env.DoRequest(t, http.MethodGet, "/auth/me", accessToken, nil)
+	defer meResp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, meResp.StatusCode)
 }
 
@@ -150,6 +158,7 @@ func TestChangePassword_Success(t *testing.T) {
 		"current_password": testPassword,
 		"new_password":     newPassword,
 	})
+	defer resp.Body.Close()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -162,6 +171,7 @@ func TestChangePassword_Success(t *testing.T) {
 		"email":    "chpw-ok@test.com",
 		"password": newPassword,
 	})
+	defer loginResp.Body.Close()
 	assert.Equal(t, http.StatusOK, loginResp.StatusCode)
 }
 
@@ -177,6 +187,7 @@ func TestChangePassword_WeakPassword(t *testing.T) {
 		"current_password": testPassword,
 		"new_password":     weakPassword,
 	})
+	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 }
@@ -192,6 +203,7 @@ func TestMe_ReturnsCurrentUser(t *testing.T) {
 	token := env.AuthToken(t, userID, tenantID, "operator")
 
 	resp := env.DoRequest(t, http.MethodGet, "/auth/me", token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var body map[string]interface{}

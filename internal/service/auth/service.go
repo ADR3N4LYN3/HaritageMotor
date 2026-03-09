@@ -116,7 +116,8 @@ func (s *Service) Login(ctx context.Context, email, password string) (*LoginResu
 
 	// If TOTP is enabled, return an MFA pending token.
 	if user.TOTPEnabled {
-		mfaToken, err := s.jwt.GenerateMFAPendingToken(user.ID, tenantIDOrNil(user.TenantID))
+		var mfaToken string
+		mfaToken, err = s.jwt.GenerateMFAPendingToken(user.ID, tenantIDOrNil(user.TenantID))
 		if err != nil {
 			return nil, nil, fmt.Errorf("generate mfa token: %w", err)
 		}
@@ -276,7 +277,7 @@ func (s *Service) ChangePassword(ctx context.Context, userID uuid.UUID, currentP
 		return &domain.ErrUnauthorized{Message: "invalid current password"}
 	}
 
-	if err := domain.ValidatePasswordStrength(newPassword); err != nil {
+	if err = domain.ValidatePasswordStrength(newPassword); err != nil {
 		return err
 	}
 

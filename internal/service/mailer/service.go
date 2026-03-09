@@ -83,11 +83,11 @@ var welcomeTranslations = map[string]welcomeStrings{
 	"fr": {
 		Subject:    "Heritage Motor — Bienvenue chez %s",
 		Greeting:   "Bienvenue %s,",
-		Body:       "Votre compte a été créé sur la plateforme Heritage Motor pour <span style=\"color:#b8955a;\">%s</span>. Vous trouverez ci-dessous vos identifiants de connexion.",
+		Body:       "Votre compte a été créé sur la plateforme Heritage Motor pour <span style=\"color:#b8955a;\">%s</span>. Vous trouverez ci-dessous vos identifiants de connexion.", //nolint:misspell // French text
 		CardHeader: "Vos identifiants",
 		Password:   "Mot de passe",
 		Button:     "Se connecter",
-		Note:       "Vous devrez changer votre mot de passe lors de votre première connexion.",
+		Note:       "Vous devrez changer votre mot de passe lors de votre première connexion.", //nolint:misspell // French text
 		Footer:     "Heritage Motor — Plateforme de Garde de Véhicules",
 	},
 	"en": {

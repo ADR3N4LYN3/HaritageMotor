@@ -99,7 +99,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 	}
 
 	var req bayservice.UpdateBayRequest
-	if err := c.BodyParser(&req); err != nil {
+	if err = c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 

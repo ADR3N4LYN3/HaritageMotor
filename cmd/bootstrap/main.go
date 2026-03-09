@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// Load .env if present (local dev)
-	godotenv.Load()
+	_ = godotenv.Load() // optional, ignore error if no .env file
 
 	email := mustEnv("SUPERADMIN_EMAIL")
 	password := mustEnv("SUPERADMIN_PASSWORD")

@@ -73,6 +73,7 @@ func TestListDocuments_Empty(t *testing.T) {
 	vehicleID := env.CreateVehicle(t, tenantID, "Ferrari", "488", "Owner Doc")
 
 	resp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s/documents", vehicleID), token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var body docListResp
@@ -93,6 +94,7 @@ func TestCreateDocument_Success(t *testing.T) {
 
 	fileContent := []byte("%PDF-1.4 fake pdf content for testing")
 	resp := doMultipart(t, env, vehicleID, token, "insurance", "policy.pdf", "application/pdf", fileContent)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var doc docResp
@@ -114,6 +116,7 @@ func TestCreateDocument_ViewerForbidden(t *testing.T) {
 	vehicleID := env.CreateVehicle(t, tenantID, "BMW", "M3", "Owner")
 
 	resp := doMultipart(t, env, vehicleID, token, "insurance", "policy.pdf", "application/pdf", []byte("fake"))
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 }
 
@@ -126,6 +129,7 @@ func TestCreateDocument_InvalidDocType(t *testing.T) {
 	vehicleID := env.CreateVehicle(t, tenantID, "Audi", "R8", "Owner")
 
 	resp := doMultipart(t, env, vehicleID, token, "nonexistent_type", "file.pdf", "application/pdf", []byte("fake"))
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 }
 
@@ -143,6 +147,7 @@ func TestDeleteDocument_AdminOnly(t *testing.T) {
 
 	// Create a document as technician
 	createResp := doMultipart(t, env, vehicleID, techToken, "storage_contract", "contract.pdf", "application/pdf", []byte("fake"))
+	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
 	var doc docResp
@@ -150,10 +155,12 @@ func TestDeleteDocument_AdminOnly(t *testing.T) {
 
 	// Technician cannot delete
 	resp := env.DoRequest(t, http.MethodDelete, fmt.Sprintf("/vehicles/%s/documents/%s", vehicleID, doc.ID), techToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 
 	// Admin can delete
 	resp = env.DoRequest(t, http.MethodDelete, fmt.Sprintf("/vehicles/%s/documents/%s", vehicleID, doc.ID), adminToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 }
 
@@ -173,10 +180,12 @@ func TestListDocuments_CrossTenant_Empty(t *testing.T) {
 
 	// Create doc in tenant A
 	createResp := doMultipart(t, env, vehicleA, tokenA, "insurance", "policy.pdf", "application/pdf", []byte("secret"))
+	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
 	// Tenant B tries to list docs for tenant A's vehicle — should get 0 results (RLS)
 	resp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s/documents", vehicleA), tokenB, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var body docListResp

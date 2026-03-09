@@ -39,12 +39,12 @@ func RunMigrations(pool *pgxpool.Pool, migrationsDir string) error {
 	applied := make(map[string]bool)
 	for rows.Next() {
 		var v string
-		if err := rows.Scan(&v); err != nil {
+		if err := rows.Scan(&v); err != nil { //nolint:govet // shadow in limited if-scope is intentional
 			return fmt.Errorf("scan migration version: %w", err)
 		}
 		applied[v] = true
 	}
-	if err := rows.Err(); err != nil {
+	if err := rows.Err(); err != nil { //nolint:govet // shadow in limited if-scope is intentional
 		return fmt.Errorf("iterate migrations: %w", err)
 	}
 

@@ -61,7 +61,8 @@ func main() {
 
 	// Handle "migrate" subcommand (always uses owner role)
 	if len(os.Args) > 1 && os.Args[1] == "migrate" {
-		pool, err := db.NewPool(cfg.DatabaseURL)
+		var pool *pgxpool.Pool
+		pool, err = db.NewPool(cfg.DatabaseURL)
 		if err != nil {
 			log.Fatal().Err(err).Msg("failed to connect to database for migration")
 		}

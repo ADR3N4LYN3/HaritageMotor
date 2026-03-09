@@ -54,11 +54,11 @@ const (
 
 // Task types
 const (
-	TaskTypeBatteryStart  = "battery_start"
-	TaskTypeTirePressure  = "tire_pressure"
-	TaskTypeWash          = "wash"
-	TaskTypeFluidCheck    = "fluid_check"
-	TaskTypeCustom        = "custom"
+	TaskTypeBatteryStart = "battery_start"
+	TaskTypeTirePressure = "tire_pressure"
+	TaskTypeWash         = "wash"
+	TaskTypeFluidCheck   = "fluid_check"
+	TaskTypeCustom       = "custom"
 )
 
 // Task statuses
@@ -66,7 +66,7 @@ const (
 	TaskStatusPending   = "pending"
 	TaskStatusCompleted = "completed"
 	TaskStatusOverdue   = "overdue"
-	TaskStatusCancelled = "cancelled"
+	TaskStatusCancelled = "cancelled" //nolint:misspell // British English, matches DB value
 )
 
 // Document types
@@ -154,16 +154,16 @@ type Vehicle struct {
 }
 
 type Bay struct {
-	ID          uuid.UUID  `json:"id"`
-	TenantID    uuid.UUID  `json:"tenant_id"`
-	Code        string     `json:"code"`
-	Zone        *string    `json:"zone,omitempty"`
-	Description *string    `json:"description,omitempty"`
-	Status      string     `json:"status"`
-	Features    []string   `json:"features"`
-	QRToken     *string    `json:"qr_token,omitempty" db:"qr_token"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	TenantID    uuid.UUID `json:"tenant_id"`
+	Code        string    `json:"code"`
+	Zone        *string   `json:"zone,omitempty"`
+	Description *string   `json:"description,omitempty"`
+	Status      string    `json:"status"`
+	Features    []string  `json:"features"`
+	QRToken     *string   `json:"qr_token,omitempty" db:"qr_token"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Event struct {

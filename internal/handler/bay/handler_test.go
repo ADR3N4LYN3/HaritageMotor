@@ -57,6 +57,7 @@ func TestListBays_ReturnsOnlyTenantBays(t *testing.T) {
 
 	// Tenant A should see only its own bays
 	resp := env.DoRequest(t, http.MethodGet, "/bays", tokenA, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var listA listBaysResponse
@@ -66,6 +67,7 @@ func TestListBays_ReturnsOnlyTenantBays(t *testing.T) {
 
 	// Tenant B should see only its own bay
 	resp = env.DoRequest(t, http.MethodGet, "/bays", tokenB, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var listB listBaysResponse
@@ -88,6 +90,7 @@ func TestCreateBay_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPost, "/bays", token, body)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var created createBayResponse
@@ -111,10 +114,12 @@ func TestCreateBay_DuplicateCode_409(t *testing.T) {
 
 	// First creation should succeed
 	resp := env.DoRequest(t, http.MethodPost, "/bays", token, body)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Second creation with same code should fail with 409
 	resp = env.DoRequest(t, http.MethodPost, "/bays", token, body)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusConflict, resp.StatusCode)
 
 	var errResp map[string]interface{}
@@ -136,6 +141,7 @@ func TestUpdateBay_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPatch, "/bays/"+bayID.String(), token, body)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var updated updateBayResponse
@@ -155,9 +161,11 @@ func TestDeleteBay_Success(t *testing.T) {
 	bayID := env.CreateBay(t, tenantID, "C-01")
 
 	resp := env.DoRequest(t, http.MethodDelete, "/bays/"+bayID.String(), token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 	// Verify the bay is gone
 	resp = env.DoRequest(t, http.MethodGet, "/bays/"+bayID.String(), token, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 }

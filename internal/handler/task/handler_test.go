@@ -52,6 +52,7 @@ func TestListTasks_FilterByVehicle(t *testing.T) {
 		"title":      "Start battery A",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/tasks", token, bodyA)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Create a task for vehicle B
@@ -61,10 +62,12 @@ func TestListTasks_FilterByVehicle(t *testing.T) {
 		"title":      "Check tires B",
 	}
 	resp = env.DoRequest(t, http.MethodPost, "/tasks", token, bodyB)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Filter by vehicle A — should return only 1 task
 	resp = env.DoRequest(t, http.MethodGet, "/tasks?vehicle_id="+vehicleA.String(), token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var list listTasksResponse
@@ -91,6 +94,7 @@ func TestCreateTask_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPost, "/tasks", token, body)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var created createTaskResponse
@@ -118,6 +122,7 @@ func TestCompleteTask_Success(t *testing.T) {
 		"title":      "Start battery",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/tasks", token, createBody)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var created createTaskResponse
@@ -125,6 +130,7 @@ func TestCompleteTask_Success(t *testing.T) {
 
 	// Complete the task
 	resp = env.DoRequest(t, http.MethodPost, "/tasks/"+created.ID.String()+"/complete", token, map[string]interface{}{})
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var completeResp map[string]interface{}
@@ -154,6 +160,7 @@ func TestCompleteTask_ViewerForbidden(t *testing.T) {
 		"title":      "Wash car",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/tasks", techToken, createBody)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var created createTaskResponse
@@ -161,6 +168,7 @@ func TestCompleteTask_ViewerForbidden(t *testing.T) {
 
 	// Viewer tries to complete → 403
 	resp = env.DoRequest(t, http.MethodPost, "/tasks/"+created.ID.String()+"/complete", viewerToken, map[string]interface{}{})
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 }
 
@@ -184,6 +192,7 @@ func TestDeleteTask_AdminOnly(t *testing.T) {
 		"title":      "Check fluids",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/tasks", adminToken, createBody)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var created createTaskResponse
@@ -191,13 +200,16 @@ func TestDeleteTask_AdminOnly(t *testing.T) {
 
 	// Operator tries to delete → 403 (DELETE /tasks/:id requires admin)
 	resp = env.DoRequest(t, http.MethodDelete, "/tasks/"+created.ID.String(), operatorToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 
 	// Admin deletes → 204 (soft delete)
 	resp = env.DoRequest(t, http.MethodDelete, "/tasks/"+created.ID.String(), adminToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 	// Verify the task is no longer accessible
 	resp = env.DoRequest(t, http.MethodGet, "/tasks/"+created.ID.String(), adminToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 }

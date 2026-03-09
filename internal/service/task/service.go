@@ -261,7 +261,7 @@ func (s *Service) Complete(ctx context.Context, tenantID, userID, taskID uuid.UU
 		log.Error().Err(err).Msg("failed to begin transaction")
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	// Get the task
 	query := fmt.Sprintf(`SELECT %s FROM tasks WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL FOR UPDATE`, taskColumns)

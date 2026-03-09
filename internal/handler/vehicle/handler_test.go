@@ -71,6 +71,7 @@ func TestListVehicles_ReturnsOnlyTenantVehicles(t *testing.T) {
 	env.CreateVehicle(t, tenantB, "McLaren", "720S", "Owner B1")
 
 	resp := env.DoRequest(t, http.MethodGet, "/vehicles", tokenA, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var body listResp
@@ -94,6 +95,7 @@ func TestListVehicles_Search(t *testing.T) {
 	env.CreateVehicle(t, tenantID, "Porsche", "911", "Owner 3")
 
 	resp := env.DoRequest(t, http.MethodGet, "/vehicles?search=Ferrari", token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var body listResp
@@ -120,6 +122,7 @@ func TestCreateVehicle_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPost, "/vehicles", token, payload)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var v vehicleResp
@@ -147,6 +150,7 @@ func TestCreateVehicle_TechnicianForbidden(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPost, "/vehicles", token, payload)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 }
 
@@ -159,6 +163,7 @@ func TestGetVehicle_Success(t *testing.T) {
 	vehicleID := env.CreateVehicle(t, tenantID, "Porsche", "Carrera GT", "Hans Muller")
 
 	resp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s", vehicleID), token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var v vehicleResp
@@ -184,6 +189,7 @@ func TestGetVehicle_CrossTenant_404(t *testing.T) {
 	tokenB := env.AuthToken(t, userB, tenantB, "admin")
 
 	resp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s", vehicleID), tokenB, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode, "cross-tenant access must return 404, not 403")
 }
 
@@ -200,6 +206,7 @@ func TestUpdateVehicle_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPatch, fmt.Sprintf("/vehicles/%s", vehicleID), token, payload)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var v vehicleResp
@@ -225,14 +232,17 @@ func TestDeleteVehicle_AdminOnly(t *testing.T) {
 
 	// Operator cannot delete
 	resp := env.DoRequest(t, http.MethodDelete, fmt.Sprintf("/vehicles/%s", vehicleID), operatorToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode, "operator should not be able to delete")
 
 	// Admin can delete
 	resp = env.DoRequest(t, http.MethodDelete, fmt.Sprintf("/vehicles/%s", vehicleID), adminToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode, "admin should be able to delete")
 
 	// Vehicle is gone (soft-deleted)
 	resp = env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s", vehicleID), adminToken, nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode, "deleted vehicle should not be found")
 }
 
@@ -250,6 +260,7 @@ func TestMoveVehicle_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPost, fmt.Sprintf("/vehicles/%s/move", vehicleID), token, payload)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var sr statusResp
@@ -258,6 +269,7 @@ func TestMoveVehicle_Success(t *testing.T) {
 
 	// Verify the vehicle's current_bay_id was updated.
 	getResp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s", vehicleID), token, nil)
+	defer getResp.Body.Close()
 	require.Equal(t, http.StatusOK, getResp.StatusCode)
 
 	var v vehicleResp
@@ -280,6 +292,7 @@ func TestExitVehicle_Success(t *testing.T) {
 		"bay_id": bayID.String(),
 	}
 	moveResp := env.DoRequest(t, http.MethodPost, fmt.Sprintf("/vehicles/%s/move", vehicleID), token, movePayload)
+	defer moveResp.Body.Close()
 	require.Equal(t, http.StatusOK, moveResp.StatusCode)
 
 	// Now exit the vehicle.
@@ -287,6 +300,7 @@ func TestExitVehicle_Success(t *testing.T) {
 		"notes": "picked up by owner",
 	}
 	resp := env.DoRequest(t, http.MethodPost, fmt.Sprintf("/vehicles/%s/exit", vehicleID), token, exitPayload)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var sr statusResp
@@ -295,6 +309,7 @@ func TestExitVehicle_Success(t *testing.T) {
 
 	// Verify the vehicle status is now "out".
 	getResp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s", vehicleID), token, nil)
+	defer getResp.Body.Close()
 	require.Equal(t, http.StatusOK, getResp.StatusCode)
 
 	var v vehicleResp
@@ -317,6 +332,7 @@ func TestGetTimeline_ReturnsEvents(t *testing.T) {
 		"owner_name": "Timeline Owner",
 	}
 	createResp := env.DoRequest(t, http.MethodPost, "/vehicles", token, createPayload)
+	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
 	var created vehicleResp
@@ -330,10 +346,12 @@ func TestGetTimeline_ReturnsEvents(t *testing.T) {
 		"bay_id": bayID.String(),
 	}
 	moveResp := env.DoRequest(t, http.MethodPost, fmt.Sprintf("/vehicles/%s/move", vehicleID), token, movePayload)
+	defer moveResp.Body.Close()
 	require.Equal(t, http.StatusOK, moveResp.StatusCode)
 
 	// Fetch the timeline.
 	resp := env.DoRequest(t, http.MethodGet, fmt.Sprintf("/vehicles/%s/timeline", vehicleID), token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var body timelineResp

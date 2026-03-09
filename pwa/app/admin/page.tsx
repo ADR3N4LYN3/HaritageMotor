@@ -26,7 +26,13 @@ export default function AdminPage() {
     }
   }, [user, router]);
 
-  if (!authorized) return null;
+  if (!authorized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#080704]">
+        <div className="w-8 h-8 border-2 border-[#b8955a]/30 border-t-[#b8955a] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#080704]">

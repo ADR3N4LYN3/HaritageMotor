@@ -53,6 +53,7 @@ func TestListEvents_FilterByVehicle(t *testing.T) {
 		"notes":      "Note for A",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/events", token, bodyA)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Create an event for vehicle B
@@ -62,10 +63,12 @@ func TestListEvents_FilterByVehicle(t *testing.T) {
 		"notes":      "Note for B",
 	}
 	resp = env.DoRequest(t, http.MethodPost, "/events", token, bodyB)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Filter by vehicle A — should return only 1 event
 	resp = env.DoRequest(t, http.MethodGet, "/events?vehicle_id="+vehicleA.String(), token, nil)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var list listEventsResponse
@@ -91,6 +94,7 @@ func TestCreateEvent_Success(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, http.MethodPost, "/events", token, body)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var created createEventResponse

@@ -93,7 +93,7 @@ func initEnv() (*Env, error) {
 	}
 
 	// Run migrations
-	if err := db.RunMigrations(ownerPool, "../../internal/db/migrations"); err != nil {
+	if err = db.RunMigrations(ownerPool, "../../internal/db/migrations"); err != nil {
 		return nil, fmt.Errorf("migrations: %w", err)
 	}
 
@@ -324,14 +324,14 @@ func (e *Env) CreateSuperAdmin(t *testing.T, email, password string) uuid.UUID {
 }
 
 // CreateVehicle inserts a vehicle. Returns vehicle ID.
-func (e *Env) CreateVehicle(t *testing.T, tenantID uuid.UUID, make, model, ownerName string) uuid.UUID {
+func (e *Env) CreateVehicle(t *testing.T, tenantID uuid.UUID, vmake, model, ownerName string) uuid.UUID {
 	t.Helper()
 	var id uuid.UUID
 	err := e.OwnerPool.QueryRow(context.Background(),
 		`INSERT INTO vehicles (tenant_id, make, model, owner_name, status)
 		 VALUES ($1, $2, $3, $4, 'stored')
 		 RETURNING id`,
-		tenantID, make, model, ownerName,
+		tenantID, vmake, model, ownerName,
 	).Scan(&id)
 	if err != nil {
 		t.Fatalf("CreateVehicle: %v", err)

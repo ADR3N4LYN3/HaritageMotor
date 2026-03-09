@@ -27,8 +27,8 @@ func TestAuditLog_CreatedOnPOST(t *testing.T) {
 		"owner_name": "Audit Owner",
 	}
 	resp := env.DoRequest(t, http.MethodPost, "/vehicles", token, payload)
+	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
-	resp.Body.Close()
 
 	// Give the async audit goroutine time to complete
 	time.Sleep(500 * time.Millisecond)

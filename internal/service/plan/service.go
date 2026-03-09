@@ -13,8 +13,8 @@ import (
 )
 
 type cachedLimits struct {
-	limits    map[string]map[string]int // plan -> resource -> max_count
-	loadedAt  time.Time
+	limits   map[string]map[string]int // plan -> resource -> max_count
+	loadedAt time.Time
 }
 
 // Service provides plan limit checking with an in-memory cache.

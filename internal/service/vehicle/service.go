@@ -171,7 +171,7 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 	if err != nil {
 		return nil, fmt.Errorf("beginning transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	vehicleID := uuid.New()
 	now := time.Now().UTC()
@@ -360,7 +360,7 @@ func (s *Service) Move(ctx context.Context, tenantID, userID, vehicleID, toBayID
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	now := time.Now().UTC()
 
@@ -435,7 +435,7 @@ func (s *Service) Exit(ctx context.Context, tenantID, userID, vehicleID uuid.UUI
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	now := time.Now().UTC()
 
@@ -543,7 +543,7 @@ func (s *Service) insertEvent(ctx context.Context, tx pgx.Tx, tenantID, vehicleI
 
 	metadataJSON, err := json.Marshal(metadata)
 	if err != nil {
-		return fmt.Errorf("marshalling event metadata: %w", err)
+		return fmt.Errorf("marshaling event metadata: %w", err)
 	}
 
 	if photoKeys == nil {
