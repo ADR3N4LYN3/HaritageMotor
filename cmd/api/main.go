@@ -15,6 +15,7 @@ import (
 	bayhandler "github.com/chriis/heritage-motor/internal/handler/bay"
 	dochandler "github.com/chriis/heritage-motor/internal/handler/document"
 	eventhandler "github.com/chriis/heritage-motor/internal/handler/event"
+	contacthandler "github.com/chriis/heritage-motor/internal/handler/contact"
 	scanhandler "github.com/chriis/heritage-motor/internal/handler/scan"
 	taskhandler "github.com/chriis/heritage-motor/internal/handler/task"
 	userhandler "github.com/chriis/heritage-motor/internal/handler/user"
@@ -22,6 +23,7 @@ import (
 	auditloghandler "github.com/chriis/heritage-motor/internal/handler/audit"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	authsvc "github.com/chriis/heritage-motor/internal/service/auth"
+	contactsvc "github.com/chriis/heritage-motor/internal/service/contact"
 	baysvc "github.com/chriis/heritage-motor/internal/service/bay"
 	docsvc "github.com/chriis/heritage-motor/internal/service/document"
 	eventsvc "github.com/chriis/heritage-motor/internal/service/event"
@@ -164,6 +166,9 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendFile("./web/static/index.html")
 	})
+	app.Get("/contact", func(c *fiber.Ctx) error {
+		return c.SendFile("./web/static/contact.html")
+	})
 
 	// API routes require database
 	if ownerPool != nil {
@@ -189,6 +194,10 @@ func main() {
 		auditHandler := auditloghandler.NewHandler(appPool)
 		scanHandler := scanhandler.NewHandler(appPool)
 
+		// Contact service (public, uses ownerPool — no RLS needed)
+		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo)
+		contactHandler := contacthandler.NewHandler(contactService)
+
 		// Rate limiter for auth endpoints: 5 req per 15 min per IP
 		authLimiter := limiter.New(limiter.Config{
 			Max:        5,
@@ -203,6 +212,19 @@ func main() {
 
 		// API v1 routes
 		api := app.Group("/api/v1")
+
+		// Contact form (public, rate limited: 3 per 15 min per IP)
+		contactLimiter := limiter.New(limiter.Config{
+			Max:        3,
+			Expiration: 15 * time.Minute,
+			KeyGenerator: func(c *fiber.Ctx) string {
+				return c.IP() + ":contact"
+			},
+			LimitReached: func(c *fiber.Ctx) error {
+				return c.Status(429).JSON(fiber.Map{"error": "too many requests, try again later"})
+			},
+		})
+		api.Post("/contact", contactLimiter, contactHandler.Submit)
 
 		// Auth routes (no auth middleware, rate limited)
 		authGroup := api.Group("/auth")

@@ -26,8 +26,9 @@ type Config struct {
 	S3SecretKey string
 	S3Region    string
 
-	ResendAPIKey string
-	EmailFrom    string
+	ResendAPIKey   string
+	EmailFrom      string
+	ContactEmailTo string
 
 	LogLevel string
 }
@@ -51,8 +52,9 @@ func Load() (*Config, error) {
 		S3SecretKey: getEnv("S3_SECRET_KEY", ""),
 		S3Region:    getEnv("S3_REGION", "eu-central"),
 
-		ResendAPIKey: getEnv("RESEND_API_KEY", ""),
-		EmailFrom:    getEnv("EMAIL_FROM", "noreply@heritagemotor.app"),
+		ResendAPIKey:   getEnv("RESEND_API_KEY", ""),
+		EmailFrom:      getEnv("EMAIL_FROM", "noreply@heritagemotor.app"),
+		ContactEmailTo: getEnv("CONTACT_EMAIL_TO", "hello@heritagemotor.app"),
 
 		LogLevel: getEnv("LOG_LEVEL", "info"),
 	}

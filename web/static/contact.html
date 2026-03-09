@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Heritage Motor</title>
+<meta name="description" content="Get in touch with Heritage Motor. Request a demo, ask a question, or learn how our platform can streamline your vehicle storage operations.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://heritagemotor.app/contact">
+<meta property="og:title" content="Contact — Heritage Motor">
+<meta property="og:description" content="Request a demo or get in touch with Heritage Motor.">
+<link rel="canonical" href="https://heritagemotor.app/contact">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'%3E%3Crect width='64' height='64' rx='8' fill='%230e0d0b'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Georgia,serif' font-size='28' font-weight='400' fill='%23b8955a'%3EHM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.outbound-links.js"></script>
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:   #0e0d0b;
+  --dark:    #1a1916;
+  --mid:     #3d3c38;
+  --muted:   #8a8880;
+  --border:  #e2dfd8;
+  --bg:      #faf9f7;
+  --white:   #ffffff;
+  --gold:    #b8955a;
+  --gold-lt: #d4b07a;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--black); font-family: var(--sans); font-size: 15px; line-height: 1.6; overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ─── NAV ────────────────────────────────────────────────────────── */
+nav { background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 3.5rem; }
+.nav-logo { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; letter-spacing: 0.06em; text-decoration: none; color: var(--black); }
+.nav-right { display: flex; align-items: center; gap: 2.5rem; }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--black); transition: opacity 0.25s; opacity: 0.75; }
+.nav-links a:hover { opacity: 1; }
+.nav-cta { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 0.6rem 1.6rem; border-radius: 1px; font-weight: 500; transition: all 0.25s; background: var(--black); color: #fff; border: 1px solid var(--black); }
+.nav-cta:hover { background: var(--gold); border-color: var(--gold); }
+
+/* ─── MAIN ───────────────────────────────────────────────────────── */
+main { flex: 1; padding: 5rem 3.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; max-width: 1280px; margin: 0 auto; width: 100%; align-items: start; }
+
+/* ─── LEFT: INFO ─────────────────────────────────────────────────── */
+.contact-info { padding-top: 1rem; }
+.section-tag { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+.section-tag::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+.contact-info h1 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 300; color: var(--black); line-height: 1.08; margin-bottom: 1.5rem; }
+.contact-info h1 em { font-style: italic; color: var(--muted); }
+.contact-intro { font-size: 0.92rem; color: var(--muted); line-height: 1.85; font-weight: 300; max-width: 420px; margin-bottom: 3.5rem; }
+
+.contact-details { display: flex; flex-direction: column; gap: 2rem; }
+.contact-item { display: flex; gap: 1.25rem; align-items: flex-start; }
+.contact-icon { width: 40px; height: 40px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.contact-icon svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.contact-item-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
+.contact-item-value { font-size: 0.88rem; color: var(--mid); font-weight: 300; line-height: 1.6; }
+.contact-item-value a { color: var(--mid); text-decoration: none; transition: color 0.2s; }
+.contact-item-value a:hover { color: var(--gold); }
+
+/* ─── RIGHT: FORM ────────────────────────────────────────────────── */
+.contact-form-wrap { background: var(--white); border: 1px solid var(--border); padding: 3rem; }
+.form-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; color: var(--black); margin-bottom: 0.5rem; }
+.form-subtitle { font-size: 0.82rem; color: var(--muted); font-weight: 300; margin-bottom: 2rem; }
+
+.contact-form { display: flex; flex-direction: column; gap: 1.25rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-group label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); font-weight: 500; }
+.contact-form input, .contact-form select, .contact-form textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--black);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 300;
+  padding: 0.85rem 1rem;
+  border-radius: 1px;
+  outline: none;
+  transition: border-color 0.25s;
+  width: 100%;
+}
+.contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted); }
+.contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--gold); }
+.contact-form select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%238a8880' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+.contact-form textarea { resize: vertical; min-height: 100px; }
+
+.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--black); color: #fff; padding: 1rem 2.2rem; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 1px; border: none; cursor: pointer; transition: background 0.25s; align-self: flex-start; font-family: var(--sans); }
+.form-submit:hover { background: var(--gold); }
+.form-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.form-success { color: var(--gold); font-family: var(--serif); font-size: 1.4rem; font-weight: 300; line-height: 1.4; padding: 2rem 0; }
+
+/* ─── FOOTER ─────────────────────────────────────────────────────── */
+footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2rem; margin-top: auto; }
+.footer-logo { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); text-decoration: none; }
+.footer-links { display: flex; gap: 2.5rem; list-style: none; justify-content: center; }
+.footer-links a { font-size: 0.7rem; color: rgba(255,255,255,0.3); text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.25); letter-spacing: 0.06em; text-align: right; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  main { padding: 3rem 1.5rem; grid-template-columns: 1fr; gap: 3rem; }
+  .contact-form-wrap { padding: 2rem 1.5rem; }
+  .form-row { grid-template-columns: 1fr; }
+  footer { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+  .footer-copy { text-align: center; }
+}
+
+</style>
+</head>
+<body>
+
+<nav role="navigation" aria-label="Main navigation">
+  <a href="/" class="nav-logo">Heritage Motor</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="/#platform">Platform</a></li>
+      <li><a href="/#timeline">Timeline</a></li>
+      <li><a href="/#pricing">Pricing</a></li>
+    </ul>
+    <a href="/contact" class="nav-cta">Contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="contact-info">
+    <div class="section-tag"><span>Contact</span></div>
+    <h1>Let's talk about<br> <em>your facility.</em></h1>
+    <p class="contact-intro">20-minute demo, no commitment. Tell us about your operations and we'll show you how Heritage Motor fits your workflow.</p>
+
+    <div class="contact-details">
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+        </div>
+        <div>
+          <div class="contact-item-label">Email</div>
+          <div class="contact-item-value"><a href="mailto:hello@heritagemotor.app">hello@heritagemotor.app</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <div class="contact-item-label">Based in</div>
+          <div class="contact-item-value">France & Switzerland</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div>
+          <div class="contact-item-label">Response time</div>
+          <div class="contact-item-value">Within 24 hours</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-form-wrap">
+    <div class="form-title">Request a Demo</div>
+    <div class="form-subtitle">Fill out the form and we'll be in touch shortly.</div>
+    <form class="contact-form" id="contact-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" placeholder="you@company.com" required autocomplete="email">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="company">Company</label>
+          <input type="text" id="company" name="company" placeholder="Company / Facility name" autocomplete="organization">
+        </div>
+        <div class="form-group">
+          <label for="vehicles">Fleet size</label>
+          <select id="vehicles" name="vehicles">
+            <option value="" selected>Select range</option>
+            <option value="1-25">1 – 25 vehicles</option>
+            <option value="26-50">26 – 50 vehicles</option>
+            <option value="51-100">51 – 100 vehicles</option>
+            <option value="101-200">101 – 200 vehicles</option>
+            <option value="200+">200+ vehicles</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell us about your facility, current workflow, and what you're looking for..." rows="4"></textarea>
+      </div>
+      <button type="submit" class="form-submit">
+        Send Message
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+  </div>
+</main>
+
+<footer role="contentinfo">
+  <a href="/" class="footer-logo">Heritage Motor</a>
+  <ul class="footer-links">
+    <li><a href="/#platform">Platform</a></li>
+    <li><a href="/#timeline">Timeline</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+  <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
+</footer>
+
+<script>
+  document.getElementById('contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = e.target;
+    var btn = form.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    var data = {
+      name: form.name.value,
+      email: form.email.value,
+      company: form.company.value,
+      vehicles: form.vehicles.value,
+      message: form.message.value
+    };
+
+    fetch('/api/v1/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function(res) {
+      if (!res.ok) {
+        return res.json().then(function(body) { throw new Error(body.error || 'error'); });
+      }
+      while (form.firstChild) { form.removeChild(form.firstChild); }
+      var msg = document.createElement('p');
+      msg.className = 'form-success';
+      msg.textContent = 'Thank you! We\u2019ll get back to you within 24 hours.';
+      form.appendChild(msg);
+    }).catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+      if (err.message === 'too many requests, try again later') {
+        alert('Too many requests. Please try again in a few minutes.');
+      } else {
+        alert('Something went wrong. Please try again or email us at hello@heritagemotor.app');
+      }
+    });
+  });
+</script>
+</body>
+</html>

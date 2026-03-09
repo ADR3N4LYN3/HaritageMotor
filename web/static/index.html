@@ -277,7 +277,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       <li><a href="#timeline">Timeline</a></li>
       <li><a href="#pricing">Pricing</a></li>
     </ul>
-    <a href="#contact" class="nav-cta">Request a Demo</a>
+    <a href="/contact" class="nav-cta">Request a Demo</a>
   </div>
 </nav>
 
@@ -295,7 +295,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
         <span class="hero-tag-text">Vehicle Chain of Custody</span>
       </div>
       <h1>The operating<br> system for<br> <em>premium storage.</em></h1>
-      <a href="#contact" class="hero-cta">
+      <a href="/contact" class="hero-cta">
         Request a Demo
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
@@ -466,7 +466,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
         <li class="off">Owner Portal</li>
         <li class="off">Climate monitoring</li>
       </ul>
-      <a href="#contact" class="price-btn">Request a Demo</a>
+      <a href="/contact" class="price-btn">Request a Demo</a>
     </div>
     <div class="price-card featured">
       <div class="price-badge">Most popular</div>
@@ -486,7 +486,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       <ul class="price-list" style="margin-top:0.75rem;">
         <li>Climate monitoring — +€350/mo</li>
       </ul>
-      <a href="#contact" class="price-btn">Request a Demo</a>
+      <a href="/contact" class="price-btn">Request a Demo</a>
     </div>
     <div class="price-card">
       <div class="price-tier">Enterprise</div>
@@ -501,31 +501,23 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
         <li>Climate monitoring included</li>
         <li>Auction house integrations (roadmap)</li>
       </ul>
-      <a href="#contact" class="price-btn">Contact Us</a>
+      <a href="/contact" class="price-btn">Contact Us</a>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="final-cta" id="contact" aria-label="Request a Demo">
+<!-- CTA BANNER -->
+<section class="final-cta" aria-label="Get Started">
   <img class="final-photo" loading="lazy" src="https://images.unsplash.com/photo-1504215680853-026ed2a45def?w=1920&q=80&auto=format&fit=crop&crop=center" alt="Premium collection storage">
   <div class="final-overlay"></div>
   <div class="final-content reveal">
     <div class="section-tag">Get Started</div>
     <h2>Your facility deserves<br> an <em>operating system.</em></h2>
     <p>20-minute demo, no commitment. Just a conversation about how your facility operates — and whether Heritage Motor is the right fit.</p>
-    <form class="contact-form" id="contact-form">
-      <div class="form-row">
-        <input type="text" name="name" placeholder="Your name" required autocomplete="name">
-        <input type="email" name="email" placeholder="Email address" required autocomplete="email">
-      </div>
-      <input type="text" name="company" placeholder="Company / Facility name" autocomplete="organization">
-      <textarea name="message" placeholder="Tell us about your facility..." rows="3"></textarea>
-      <button type="submit" class="btn-white">
-        Request a Demo
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </form>
+    <a href="/contact" class="btn-white">
+      Request a Demo
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </div>
 </section>
 
@@ -536,7 +528,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     <li><a href="#platform">Platform</a></li>
     <li><a href="#timeline">Timeline</a></li>
     <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="/contact">Contact</a></li>
   </ul>
   <div class="footer-copy">© 2026 heritagemotor.app</div>
 </footer>
@@ -564,38 +556,6 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     });
   }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
   document.querySelectorAll('.reveal').forEach(function(el) { io.observe(el); });
-
-  // Contact form
-  document.getElementById('contact-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var form = e.target;
-    var btn = form.querySelector('button');
-    var fd = new FormData(form);
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-
-    // Replace YOUR_FORM_ID: go to formspree.io → New Form → copy the ID
-    fetch('https://formspree.io/f/YOUR_FORM_ID', {
-      method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
-    }).then(function(res) {
-      if (!res.ok) throw new Error('Network error');
-      while (form.firstChild) { form.removeChild(form.firstChild); }
-      var msg = document.createElement('p');
-      msg.className = 'form-success';
-      msg.textContent = 'Thank you! We\u2019ll get back to you within 24 hours.';
-      form.appendChild(msg);
-    }).catch(function() {
-      var name = fd.get('name');
-      var email = fd.get('email');
-      var company = fd.get('company');
-      var message = fd.get('message');
-      var subject = encodeURIComponent('Demo Request \u2014 ' + name + (company ? ' (' + company + ')' : ''));
-      var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nCompany: ' + (company || 'N/A') + '\n\n' + (message || ''));
-      window.open('mailto:hello@heritagemotor.app?subject=' + subject + '&body=' + body, '_self');
-      btn.disabled = false;
-      btn.textContent = 'Request a Demo';
-    });
-  });
 </script>
 </body>
 </html>
