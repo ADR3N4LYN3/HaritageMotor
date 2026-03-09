@@ -92,7 +92,7 @@ git clone <repo-url>
 cd heritage-motor
 
 # Environment
-cp .env.prod.example .env
+cp .env.example .env
 # Edit .env with your local PostgreSQL credentials
 
 # Run migrations
@@ -115,8 +115,8 @@ npm run dev
 ### Docker (Production)
 
 ```bash
-cp .env.prod.example .env.prod
-# Edit .env.prod with production values
+cp .env.example .env.prod
+# Edit .env.prod with production values (see inline comments)
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 

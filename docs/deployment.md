@@ -156,7 +156,7 @@ git clone <repo-url>
 cd HaritageMotor
 
 # Create environment file
-cp .env.prod.example .env.prod
+cp .env.example .env.prod
 nano .env.prod  # Fill in all values
 
 # Setup SSL certificates
