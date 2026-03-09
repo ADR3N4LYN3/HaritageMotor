@@ -24,8 +24,8 @@ export const BrandWatermark: React.FC = () => {
     <AbsoluteFill
       style={{
         justifyContent: "center",
-        alignItems: "flex-start",
-        padding: "0 0 0 52px",
+        alignItems: "flex-end",
+        padding: "0 52px 0 0",
         opacity,
         transform: `translateY(${translateY}px)`,
         pointerEvents: "none",
