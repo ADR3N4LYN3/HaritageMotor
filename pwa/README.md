@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Heritage Motor PWA
 
-## Getting Started
+Application mobile-first (Progressive Web App) pour les opérateurs de facilities de stockage de vehicules de collection.
 
-First, run the development server:
+## Stack
+
+| Technologie | Rôle |
+|---|---|
+| Next.js 14 (App Router) | Framework React, SSR, routing |
+| TypeScript | Typage statique |
+| Tailwind CSS | Styling utilitaire |
+| Zustand | State management (auth, offline count) |
+| SWR | Data fetching (stale-while-revalidate) |
+| next-pwa | Service worker, mode offline |
+| idb | IndexedDB wrapper (offline queue) |
+| @zxing/browser | Scan QR code via camera |
+| react-hook-form | Gestion formulaires |
+
+## Lancement
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd pwa
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # Production build (standalone)
+npm run lint    # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Variable d'environnement requise :
+```
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+pwa/
+  app/
+    layout.tsx                    Root layout (fonts, providers, metadata)
+    page.tsx                      Redirect -> /scan
+    globals.css                   Animations, touch targets, safe areas
+    login/page.tsx                Login (email/password + MFA)
+    change-password/page.tsx      Changement de mot de passe (premier login)
+    dashboard/page.tsx            Liste vehicules (recherche, filtres)
+    scan/page.tsx                 Scanner QR -> detail vehicule/bay
+    admin/page.tsx                Dashboard superadmin (tenants, invitations)
+    vehicle/[id]/
+      page.tsx                    Detail vehicule + timeline
+      move/page.tsx               Deplacement vers un bay
+      exit/page.tsx               Sortie vehicule (photos + checklist)
+      task/page.tsx               Completion de tache
+      photo/page.tsx              Upload photos
+    bay/[id]/page.tsx             Detail bay + vehicules
+    api/auth/
+      refresh/route.ts            BFF : cookie -> backend -> access token
+      set-token/route.ts          BFF : stocke refresh token en cookie httpOnly
+      logout/route.ts             BFF : revoque token + supprime cookie
+      clear-token/route.ts        Suppression cookie (fallback)
+  components/
+    layout/
+      AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
+      TopBar.tsx                  Header fixe (logo, SyncBadge, user)
+      BottomNav.tsx               Navigation mobile (Scan, Vehicules)
+    ui/
+      ActionButton.tsx            Bouton CTA (primary/danger/secondary)
+      VehicleCard.tsx             Carte vehicule (memo)
+      EventItem.tsx               Evenement timeline
+      BaySelector.tsx             Selection de bay (recherche + liste)
+      SuccessScreen.tsx           Ecran de confirmation
+      SyncBadge.tsx               Badge actions offline en attente
+      Skeleton.tsx                Placeholder chargement
+    camera/
+      CameraCapture.tsx           Capture photo (getUserMedia, 1920x1080 JPEG)
+      PhotoGrid.tsx               Grille photos (3 colonnes)
+    scanner/
+      QRScanner.tsx               Lecteur QR code (@zxing, camera arriere)
+    providers/
+      SWRProvider.tsx              Config SWR (fetcher, retry, dedup)
+  hooks/
+    useVehicle.ts                 SWR : GET /vehicles/:id
+    useBay.ts                     SWR : GET /bays, GET /bays/:id
+    useCamera.ts                  State photos + cleanup URLs
+    useOfflineQueue.ts            Sync IndexedDB (online event + poll 30s)
+  lib/
+    api.ts                        Client HTTP (auto-refresh 401, FormData)
+    auth.ts                       Login, MFA verify, logout
+    types.ts                      Interfaces TypeScript
+    offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)
+  store/
+    app.store.ts                  Zustand (accessToken, pendingCount, logout)
+  middleware.ts                   Guard auth (redirect /login si pas de cookie)
+```
 
-## Learn More
+## Patterns cles
 
-To learn more about Next.js, take a look at the following resources:
+### Auth (BFF)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Le refresh token est stocke dans un cookie `httpOnly` (inaccessible au JS).
+Les routes Next.js `/api/auth/*` servent de proxy vers le backend Go.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+Login -> backend retourne access + refresh token
+      -> access token en memoire (Zustand)
+      -> refresh token en cookie httpOnly (via /api/auth/set-token)
+      -> 401 sur requete -> auto-refresh via /api/auth/refresh
+```
 
-## Deploy on Vercel
+### Offline Queue
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Les actions move/task/exit peuvent fonctionner hors ligne :
+1. Tentative en ligne via `api.post()`
+2. Si erreur reseau (pas `ApiError`) -> `pushAction()` en IndexedDB
+3. `useOfflineQueue()` ecoute `online` event + poll 30s
+4. Sync avec retry exponentiel (max 6 tentatives, 30s max delay)
+5. Photos non serialisables en IndexedDB -> upload uniquement en ligne
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Data Fetching
+
+- **SWR** pour les lectures (GET) avec refresh 30s
+- **api.ts** pour les mutations (POST/PATCH/DELETE)
+- `SWRProvider` configure le fetcher global (`api.get`)
+
+### Design System
+
+| Token | Valeur |
+|---|---|
+| black | `#0e0d0b` (charbon) |
+| gold | `#b8955a` (accent luxe) |
+| white | `#faf9f7` (creme) |
+| success | `#22c55e` |
+| warning | `#f59e0b` |
+| danger | `#ef4444` |
+| Font display | Cormorant Garamond (serif) |
+| Font body | DM Sans (sans-serif) |
+
+Touch targets : min 44x44px. Safe areas iOS/Android gerees.
+
+## Docker
+
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+Output `standalone` configure dans `next.config.js`.

@@ -25,25 +25,48 @@
 ## Architecture des dossiers
 
 ```
-cmd/api/main.go              — Point d'entrée, toutes les routes
-internal/config/             — Config depuis env vars
-internal/auth/               — JWT, bcrypt, TOTP
-internal/middleware/          — Auth, Tenant (RLS), RBAC, Audit, UploadLimiter
-internal/domain/             — Types, erreurs typées, password validation
-internal/service/            — Logique métier :
-  auth/                      —   Login, logout, refresh, MFA, change-password
-  admin/                     —   Superadmin : tenants CRUD, invitations, dashboard
-  contact/                   —   Formulaire contact public (landing)
-  mailer/                    —   Envoi d'emails via Resend API
-  plan/                      —   Limites par plan (starter/pro/enterprise)
-  user/, vehicle/, bay/, event/, task/, document/
-internal/handler/{domaine}/  — Handlers HTTP Fiber
-internal/storage/            — Client S3 (aws-sdk-go-v2)
-internal/db/                 — Pool pgxpool, DBTX, migrations (001-018)
-internal/db/dbtx.go          — Interface DBTX, WithTx/TxFromCtx/Conn
-web/static/                  — Landing page + page contact
-pwa/                         — Frontend Next.js PWA
-pwa/middleware.ts            — Auth middleware Next.js (cookie refresh_token)
+cmd/
+  api/main.go                    — Point d'entrée Fiber, toutes les routes + middleware chains
+  bootstrap/main.go              — CLI création compte superadmin
+internal/
+  config/config.go               — Chargement env vars (godotenv + os.Getenv)
+  auth/
+    jwt.go                       — JWTManager : generate/validate access + MFA pending tokens
+    password.go                  — HashPassword (bcrypt 12), CheckPassword
+    totp.go                      — GenerateTOTPSecret, ValidateTOTPCode
+  db/
+    db.go                        — NewPool (owner), NewAppPool (heritage_app RLS)
+    dbtx.go                      — Interface DBTX, WithTx/TxFromCtx/Conn
+    migrate.go                   — RunMigrations (transactionnel, idempotent)
+    migrations/                  — 001-018 (.up.sql + .down.sql)
+  domain/
+    types.go                     — Structs (User, Vehicle, Bay, Event, Task, Document, Tenant...)
+    errors.go                    — ErrNotFound, ErrForbidden, ErrValidation, ErrConflict...
+    password.go                  — ValidatePasswordStrength
+  middleware/
+    auth.go                      — JWT validation + blacklist cache (30s TTL)
+    tenant.go                    — RLS tx injection (SET LOCAL app.current_tenant_id)
+    rbac.go                      — RequireRole, RequireAdmin, RequireSuperAdmin...
+    audit.go                     — Audit log async (POST/PATCH/DELETE)
+    upload_limiter.go            — Rate limit uploads (200MB/10min/user)
+  handler/
+    response.go                  — HandleServiceError, PaginationParams, PaginatedResponse
+    admin/ auth/ bay/ contact/ document/ event/ scan/ task/ user/ vehicle/
+  service/
+    admin/                       — Superadmin : tenants CRUD, invitations, dashboard
+    auth/                        — Login, logout, refresh, MFA, change-password
+    bay/ event/ task/ document/ user/ vehicle/   — CRUD + logique métier
+    contact/                     — Formulaire contact public
+    mailer/                      — Envoi emails via Resend API
+    plan/                        — Limites par plan (starter/pro/enterprise)
+  storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
+web/static/
+  index.html                     — Landing page (SEO, hero video, CTA)
+  contact.html                   — Page contact (formulaire POST /api/v1/contact)
+  hero-bg.mp4                    — Vidéo hero (Remotion v2)
+  logo.svg                       — Logo Heritage Motor
+video/                           — Projet Remotion 4 (génération hero-bg.mp4)
+pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 ```
 
 ## Règles de sécurité impératives
@@ -295,6 +318,8 @@ Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVide
 
 ## Références détaillées
 
-Pour les spécifications complètes, consulter les fichiers mémoire :
-- `memory/spec-backend.md` — Schéma SQL, patterns de code, variables d'env, Docker, tests
-- `memory/spec-business.md` — Vision produit, MVP scope, pricing, roadmap, KPIs
+| Document | Contenu |
+|---|---|
+| `memory/spec-backend.md` | Schéma SQL complet, services Go, variables d'env, déploiement, tests |
+| `memory/spec-business.md` | Vision produit, MVP scope, pricing, roadmap, KPIs |
+| `pwa/README.md` | Architecture PWA, patterns frontend, design system, composants |
