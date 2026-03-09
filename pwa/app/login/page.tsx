@@ -74,13 +74,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0d0b] flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
       {/* Logo */}
       <div className="mb-12 text-center">
-        <h1 className="text-3xl font-display font-bold text-[#b8955a] tracking-wide">
+        <h1 className="text-3xl font-display font-bold text-gold tracking-wide">
           Heritage Motor
         </h1>
-        <p className="text-[#faf9f7]/40 text-sm mt-2">Vehicle Custody Platform</p>
+        <p className="text-white/40 text-sm mt-2">Vehicle Custody Platform</p>
       </div>
 
       {step === "login" ? (
@@ -92,7 +92,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               required
-              className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-[#faf9f7] placeholder:text-[#faf9f7]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
               autoComplete="email"
             />
           </div>
@@ -104,13 +104,13 @@ export default function LoginPage() {
               placeholder="Password"
               required
               minLength={8}
-              className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-[#faf9f7] placeholder:text-[#faf9f7]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
               autoComplete="current-password"
             />
           </div>
 
           {error && (
-            <p className="text-[#ef4444] text-sm text-center">{error}</p>
+            <p className="text-danger text-sm text-center">{error}</p>
           )}
 
           <ActionButton type="submit" loading={loading}>
@@ -120,7 +120,7 @@ export default function LoginPage() {
       ) : (
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
-            <p className="text-[#faf9f7]/60 text-sm">Enter the 6-digit code from your authenticator app</p>
+            <p className="text-white/60 text-sm">Enter the 6-digit code from your authenticator app</p>
           </div>
           <input
             ref={mfaInputRef}
@@ -131,23 +131,23 @@ export default function LoginPage() {
             value={mfaCode}
             onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
             placeholder="000000"
-            className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-[#faf9f7] text-center text-2xl tracking-[0.5em] font-mono placeholder:text-[#faf9f7]/20 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50"
+            className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-center text-2xl tracking-[0.5em] font-mono placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-gold/50"
             autoFocus
           />
 
           {error && (
-            <p className="text-[#ef4444] text-sm text-center">{error}</p>
+            <p className="text-danger text-sm text-center">{error}</p>
           )}
 
           {loading && (
             <div className="flex justify-center">
-              <div className="w-8 h-8 border-2 border-[#b8955a]/30 border-t-[#b8955a] rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
             </div>
           )}
 
           <button
             onClick={() => { setStep("login"); setError(null); setMfaCode(""); }}
-            className="w-full text-[#faf9f7]/40 text-sm underline"
+            className="w-full text-white/40 text-sm underline"
           >
             Back to login
           </button>

@@ -1,0 +1,182 @@
+# Heritage Motor — Instructions Claude Code
+
+> Ce fichier est chargé automatiquement par Claude Code. Il définit les règles **non-négociables** du projet.
+
+## Identité du projet
+
+**Heritage Motor** (`heritagemotor.app`) — Plateforme SaaS multi-tenant B2B pour la gestion opérationnelle de facilities de stockage de véhicules de collection et de prestige (Ferrari, Porsche, McLaren, Bugatti...).
+
+**Ce n'est pas un CRM ni un ERP.** C'est un registre opérationnel de confiance pour des actifs à 200k–5M€. La valeur centrale est la **traçabilité complète** ("Vehicle Chain of Custody").
+
+## Stack technique
+
+| Composant | Choix |
+|---|---|
+| Backend | Go 1.22+ / Fiber v2 |
+| Base de données | PostgreSQL 16 (RLS multi-tenant) |
+| Frontend | Next.js + TypeScript (PWA dans `pwa/`) |
+| Stockage fichiers | Hetzner Object Storage (S3-compatible) |
+| Auth | Maison — JWT HS256 + bcrypt (cost 12) + TOTP |
+| Config | godotenv + os.Getenv |
+| Conteneurisation | Docker + Docker Compose |
+| Reverse proxy | Caddy |
+| Module Go | `github.com/chriis/heritage-motor` |
+
+## Architecture des dossiers
+
+```
+cmd/api/main.go              — Point d'entrée, toutes les routes
+internal/config/             — Config depuis env vars
+internal/auth/               — JWT, bcrypt, TOTP
+internal/middleware/          — Auth, Tenant (RLS), RBAC, Audit
+internal/domain/             — Types et erreurs typées
+internal/service/{domaine}/  — Logique métier
+internal/handler/{domaine}/  — Handlers HTTP Fiber
+internal/storage/            — Client S3 (aws-sdk-go-v2)
+internal/db/                 — Pool pgxpool, DBTX, migrations (001-014)
+internal/db/dbtx.go          — Interface DBTX, WithTx/TxFromCtx/Conn
+web/static/                  — Landing page
+pwa/                         — Frontend Next.js PWA
+```
+
+## Règles de sécurité impératives
+
+### RLS (Row Level Security)
+- **Dual pools** : `ownerPool` (migrations, auth login, audit) bypass RLS ; `appPool` (business) enforce RLS
+- **Rôle dédié** : `heritage_app` — ne bypass JAMAIS le RLS
+- **Flux middleware** : TenantMiddleware → begin tx sur appPool → `SET LOCAL app.current_tenant_id` → inject tx via `db.WithTx(ctx)`
+- **DBTX** : `db.Conn(ctx, fallback)` retourne le tx du middleware si présent, sinon le fallback pool
+- **FORCE RLS** activé sur toutes les tables business (migration 014)
+- **Policies** : utilisent `current_setting('app.current_tenant_id', true)::UUID` (missing_ok = true)
+- **tenant_id** vient TOUJOURS du JWT, JAMAIS du body ou d'un paramètre URL
+- Ne JAMAIS faire de SELECT sans filtre `tenant_id` dans les services (RLS = filet de sécurité, pas mécanisme principal)
+
+### Tables append-only
+- `events` : JAMAIS d'UPDATE ni DELETE (règles PostgreSQL empêchent)
+- `audit_log` : JAMAIS d'UPDATE ni DELETE
+
+### Auth & secrets
+- Mots de passe : bcrypt cost 12 minimum
+- Access token JWT : 15 min, HS256
+- Refresh token : 7 jours, stocké en DB (SHA-256 hash), révocable
+- MFA TOTP obligatoire (Google Authenticator)
+- Secrets (JWT_SECRET, clés S3) TOUJOURS dans les variables d'env, JAMAIS dans le code
+- Rate limiting : 5 req/15min/IP sur les endpoints auth
+- Password strength : min 8 chars, upper+lower+digit+special
+
+### Stockage S3
+- Stocker UNIQUEMENT les clés S3 en DB, JAMAIS les URLs signées
+- URLs signées générées à la volée : 15 min (photos), 60 min (documents)
+- Clés S3 : `{tenant_id}/{resource_type}/{resource_id}/{timestamp}_{filename}`
+- S3 errors sanitized — pas de credentials dans les logs
+
+## RBAC — Matrice des permissions
+
+| Action | admin | operator | technician | viewer |
+|---|---|---|---|---|
+| Lire véhicules | ✓ | ✓ | ✓ | ✓ |
+| Créer/modifier véhicule | ✓ | ✓ | ✗ | ✗ |
+| Supprimer véhicule (soft) | ✓ | ✗ | ✗ | ✗ |
+| Logger un événement | ✓ | ✓ | ✓ | ✗ |
+| Uploader photos/docs | ✓ | ✓ | ✓ | ✗ |
+| Gérer/compléter tâches | ✓ | ✓ | ✓ | ✗ |
+| Voir audit log | ✓ | ✗ | ✗ | ✗ |
+| Gérer utilisateurs | ✓ | ✗ | ✗ | ✗ |
+| Gérer bays | ✓ | ✓ | ✗ | ✗ |
+| Générer rapport PDF | ✓ | ✓ | ✗ | ✗ |
+
+## Routes API
+
+Préfixe : `/api/v1`. Toutes sauf `/auth/*` requièrent JWT. `tenant_id` toujours du JWT.
+
+```
+# Auth
+POST   /auth/login              POST   /auth/mfa/verify
+POST   /auth/refresh            POST   /auth/logout
+GET    /auth/me                 POST   /auth/mfa/setup
+POST   /auth/mfa/enable         DELETE /auth/mfa
+
+# Vehicles
+GET    /vehicles                POST   /vehicles
+GET    /vehicles/:id            PATCH  /vehicles/:id
+DELETE /vehicles/:id            GET    /vehicles/:id/timeline
+POST   /vehicles/:id/move       POST   /vehicles/:id/exit
+GET    /vehicles/:id/report
+
+# Events
+GET    /events                  POST   /events
+GET    /events/:id
+
+# Bays
+GET    /bays                    POST   /bays
+GET    /bays/:id                PATCH  /bays/:id
+DELETE /bays/:id
+
+# Tasks
+GET    /tasks                   POST   /tasks
+GET    /tasks/:id               PATCH  /tasks/:id
+POST   /tasks/:id/complete      DELETE /tasks/:id
+
+# Documents
+GET    /vehicles/:id/documents           POST   /vehicles/:id/documents
+GET    /vehicles/:id/documents/:docId    DELETE /vehicles/:id/documents/:docId
+
+# Photos
+POST   /events/:id/photos       GET    /photos/:key/signed-url
+
+# Users (admin only)
+GET    /users                   POST   /users
+PATCH  /users/:id               DELETE /users/:id
+
+# Audit (admin only)
+GET    /audit
+```
+
+## Conventions de code Go
+
+### Nommage
+- Services : `svc.NewService()` — Handlers : `handler.NewHandler()`
+- Erreurs métier typées : `ErrNotFound`, `ErrForbidden`, `ErrValidation`, `ErrConflict`
+- Handlers utilisent `c.UserContext()` (pas `c.Context()`) pour propager le tx Fiber
+
+### Pattern events (Vehicle Timeline)
+Chaque action modifiant l'état d'un véhicule **doit** créer un event. Le service s'en charge, pas le handler.
+
+### Pattern handler
+```
+BodyParser → Validate → Service call → HandleServiceError → JSON response
+```
+
+### Requêtes list
+- Utiliser `COUNT(*) OVER()` (single query, pas de COUNT séparé)
+- Soft delete : filtrer `deleted_at IS NULL`
+
+### Transactions
+- Auth service : ownerPool comme fallback ; routes authentifiées utilisent appPool tx du middleware
+- Business services : `db.Conn(ctx, s.pool)` pour récupérer le tx ou fallback sur le pool
+
+## Contraintes UX (non-négociables)
+
+| Action | Cible |
+|---|---|
+| Logger un mouvement véhicule | < 30 secondes, 3 clics max |
+| Valider une tâche récurrente | < 10 secondes, 1 clic + confirmation |
+| Retrouver fiche véhicule | < 5 secondes depuis l'accueil |
+| Générer rapport de sortie | < 10 secondes, 1 clic |
+| Onboarding nouveau véhicule | < 5 minutes fiche complète |
+
+## Ce qui N'EST PAS dans le MVP v1
+
+- Portail propriétaire (v2)
+- Alertes capteurs température/humidité (v2)
+- Marketplace prestataires (v3)
+- Application mobile native (v2)
+- IA / suggestions automatiques (v3)
+- Facturation et paiements intégrés (v2)
+- Gestion multi-sites (v2)
+
+## Références détaillées
+
+Pour les spécifications complètes, consulter les fichiers mémoire :
+- `memory/spec-backend.md` — Schéma SQL, patterns de code, variables d'env, Docker, tests
+- `memory/spec-business.md` — Vision produit, MVP scope, pricing, roadmap, KPIs

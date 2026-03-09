@@ -67,11 +67,11 @@ export default function PhotoPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5">
-          <h2 className="font-display text-xl font-semibold text-[#0e0d0b]">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
+          <h2 className="font-display text-xl font-semibold text-black">
             {vehicle ? `${vehicle.make} ${vehicle.model}` : "..."}
           </h2>
-          <p className="text-sm text-[#0e0d0b]/50 mt-1">Add Photos</p>
+          <p className="text-sm text-black/50 mt-1">Add Photos</p>
         </div>
 
         <CameraCapture onCapture={addPhoto} multiple label="Take photo" />
@@ -81,7 +81,7 @@ export default function PhotoPage() {
         )}
 
         {error && (
-          <p className="text-[#ef4444] text-sm text-center">{error}</p>
+          <p className="text-danger text-sm text-center">{error}</p>
         )}
 
         <ActionButton

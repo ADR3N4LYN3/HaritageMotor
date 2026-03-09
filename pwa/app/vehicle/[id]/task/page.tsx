@@ -80,7 +80,7 @@ export default function TaskPage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-[#0e0d0b]/50 py-12">Vehicle not found</p>
+        <p className="text-center text-black/50 py-12">Vehicle not found</p>
       </AppShell>
     );
   }
@@ -89,18 +89,18 @@ export default function TaskPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Vehicle Info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5">
-          <h2 className="font-display text-xl font-semibold text-[#0e0d0b]">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
+          <h2 className="font-display text-xl font-semibold text-black">
             {vehicle.make} {vehicle.model}
           </h2>
-          <p className="text-sm text-[#0e0d0b]/50 mt-0.5">
+          <p className="text-sm text-black/50 mt-0.5">
             {vehicle.color}{vehicle.year ? ` · ${vehicle.year}` : ""}
           </p>
         </div>
 
         {/* Task List */}
         <div>
-          <h3 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Pending Tasks
           </h3>
           {tasksLoading ? (
@@ -110,12 +110,12 @@ export default function TaskPage() {
               ))}
             </div>
           ) : tasksError ? (
-            <div className="text-center py-8 text-[#ef4444] text-sm">
+            <div className="text-center py-8 text-danger text-sm">
               Failed to load tasks
             </div>
           ) : tasks.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-[#0e0d0b]/40 text-sm">No pending tasks</p>
+              <p className="text-black/40 text-sm">No pending tasks</p>
               <ActionButton
                 variant="secondary"
                 onClick={() => router.push(`/vehicle/${id}`)}
@@ -133,10 +133,11 @@ export default function TaskPage() {
                 return (
                   <div
                     key={task.id}
-                    className="bg-white rounded-2xl shadow-sm border border-[#0e0d0b]/5 overflow-hidden"
+                    className="bg-white rounded-2xl shadow-sm border border-black/5 overflow-hidden"
                   >
                     <button
                       onClick={() => setCompleting(isExpanded ? null : task.id)}
+                      aria-expanded={isExpanded}
                       className="w-full text-left p-4 flex items-center gap-3 touch-target"
                     >
                       <span className="text-xl">
@@ -144,23 +145,24 @@ export default function TaskPage() {
                       </span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-[#0e0d0b] text-sm truncate">
+                          <span className="font-medium text-black text-sm truncate">
                             {task.title}
                           </span>
                           {isOverdue && (
-                            <span className="text-xs bg-[#ef4444]/10 text-[#ef4444] px-1.5 py-0.5 rounded-full font-medium">
+                            <span className="text-xs bg-danger/10 text-danger px-1.5 py-0.5 rounded-full font-medium">
                               Overdue
                             </span>
                           )}
                         </div>
                         {task.due_date && (
-                          <p className="text-xs text-[#0e0d0b]/40 mt-0.5">
+                          <p className="text-xs text-black/40 mt-0.5">
                             Due: {new Date(task.due_date).toLocaleDateString()}
                           </p>
                         )}
                       </div>
                       <svg
-                        className={`w-5 h-5 text-[#0e0d0b]/30 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                        aria-hidden="true"
+                        className={`w-5 h-5 text-black/30 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -171,16 +173,16 @@ export default function TaskPage() {
                     </button>
 
                     {isExpanded && (
-                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-[#0e0d0b]/5">
+                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-black/5">
                         <textarea
                           value={notes}
                           onChange={(e) => setNotes(e.target.value)}
                           placeholder="Notes (optional)"
                           rows={2}
-                          className="w-full px-3 py-2 rounded-lg border border-[#0e0d0b]/10 text-sm placeholder:text-[#0e0d0b]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 resize-none"
+                          className="w-full px-3 py-2 rounded-lg border border-black/10 text-sm placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
                         />
                         {error && (
-                          <p className="text-[#ef4444] text-xs">{error}</p>
+                          <p className="text-danger text-xs">{error}</p>
                         )}
                         <ActionButton
                           onClick={() => handleComplete(task)}

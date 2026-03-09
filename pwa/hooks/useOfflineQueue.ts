@@ -68,40 +68,45 @@ export function useOfflineQueue() {
   return { syncAll, refreshCount };
 }
 
-async function syncAction(action: PendingAction, retryCount = 0): Promise<void> {
-  try {
-    await updateActionStatus(action.id, "syncing");
-
-    switch (action.type) {
-      case "move":
-        await api.post(`/vehicles/${action.vehicle_id}/move`, action.payload);
-        break;
-      case "task": {
-        const taskId = (action.payload as Record<string, unknown>).task_id;
-        await api.post(`/tasks/${taskId}/complete`, action.payload);
-        break;
-      }
-      case "exit":
-        await api.post(`/vehicles/${action.vehicle_id}/exit`, action.payload);
-        break;
-      case "photo":
-        // Photos are handled as FormData - skip in offline sync for now
-        break;
-    }
-
+async function syncAction(action: PendingAction): Promise<void> {
+  // Photos are FormData and cannot be serialized to IndexedDB — discard stale entries.
+  if (action.type === "photo") {
     await removeAction(action.id);
-  } catch (err: unknown) {
-    const apiErr = err as { status?: number };
-    if (apiErr?.status && apiErr.status >= 400 && apiErr.status < 500) {
-      // Client error - mark as failed, don't retry
-      await updateActionStatus(action.id, "failed");
-    } else {
-      // Network error - retry with exponential backoff
+    return;
+  }
+
+  for (let attempt = 0; attempt <= 5; attempt++) {
+    try {
+      await updateActionStatus(action.id, "syncing");
+
+      switch (action.type) {
+        case "move":
+          await api.post(`/vehicles/${action.vehicle_id}/move`, action.payload);
+          break;
+        case "task": {
+          const taskId = (action.payload as Record<string, unknown>).task_id;
+          await api.post(`/tasks/${taskId}/complete`, action.payload);
+          break;
+        }
+        case "exit":
+          await api.post(`/vehicles/${action.vehicle_id}/exit`, action.payload);
+          break;
+      }
+
+      await removeAction(action.id);
+      return;
+    } catch (err: unknown) {
+      const status = err instanceof Error && "status" in err ? (err as { status: number }).status : 0;
+      if (status >= 400 && status < 500) {
+        // Client error — mark as failed, don't retry
+        await updateActionStatus(action.id, "failed");
+        return;
+      }
+      // Network error — retry with exponential backoff
       await updateActionStatus(action.id, "pending");
-      if (retryCount < 5) {
-        const delay = Math.min(1000 * Math.pow(2, retryCount), MAX_RETRY_DELAY);
+      if (attempt < 5) {
+        const delay = Math.min(1000 * Math.pow(2, attempt), MAX_RETRY_DELAY);
         await new Promise((resolve) => setTimeout(resolve, delay));
-        await syncAction(action, retryCount + 1);
       }
     }
   }

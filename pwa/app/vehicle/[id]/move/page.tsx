@@ -94,7 +94,7 @@ export default function MoveVehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-[#0e0d0b]/50 py-12">Vehicle not found</p>
+        <p className="text-center text-black/50 py-12">Vehicle not found</p>
       </AppShell>
     );
   }
@@ -103,11 +103,11 @@ export default function MoveVehiclePage() {
     <AppShell>
       <div className="space-y-6">
         {/* Vehicle Info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5">
-          <h2 className="font-display text-xl font-semibold text-[#0e0d0b]">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
+          <h2 className="font-display text-xl font-semibold text-black">
             {vehicle.make} {vehicle.model}
           </h2>
-          <p className="text-sm text-[#0e0d0b]/50 mt-0.5">
+          <p className="text-sm text-black/50 mt-0.5">
             {vehicle.color}
             {vehicle.year ? ` · ${vehicle.year}` : ""}
           </p>
@@ -115,7 +115,7 @@ export default function MoveVehiclePage() {
 
         {/* Bay Selection */}
         <div>
-          <h3 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Select Destination Bay
           </h3>
           <BaySelector
@@ -128,7 +128,7 @@ export default function MoveVehiclePage() {
 
         {/* Photo (optional) */}
         <div>
-          <h3 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Photo (optional)
           </h3>
           <CameraCapture
@@ -145,6 +145,7 @@ export default function MoveVehiclePage() {
                     <img src={photo.preview} alt="" className="w-full h-full object-cover" />
                     <button
                       onClick={() => removePhoto(i)}
+                      aria-label="Supprimer la photo"
                       className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs"
                     >
                       ✕
@@ -163,12 +164,12 @@ export default function MoveVehiclePage() {
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes (optional)"
             rows={2}
-            className="w-full px-4 py-3 rounded-xl border border-[#0e0d0b]/10 bg-white text-[#0e0d0b] placeholder:text-[#0e0d0b]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm resize-none"
+            className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm resize-none"
           />
         </div>
 
         {error && (
-          <p className="text-[#ef4444] text-sm text-center">{error}</p>
+          <p className="text-danger text-sm text-center">{error}</p>
         )}
 
         {/* Confirm */}

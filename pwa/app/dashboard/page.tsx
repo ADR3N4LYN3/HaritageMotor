@@ -38,7 +38,7 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        <h1 className="font-display text-2xl font-bold text-[#0e0d0b]">Vehicles</h1>
+        <h1 className="font-display text-2xl font-bold text-black">Vehicles</h1>
 
         {/* Search */}
         <input
@@ -46,7 +46,7 @@ export default function DashboardPage() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search vehicles..."
-          className="w-full px-4 py-3 rounded-xl border border-[#0e0d0b]/10 bg-white text-[#0e0d0b] placeholder:text-[#0e0d0b]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm"
+          className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
         />
 
         {/* Status filter pills */}
@@ -57,8 +57,8 @@ export default function DashboardPage() {
               onClick={() => setStatusFilter(s)}
               className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 statusFilter === s
-                  ? "bg-[#b8955a] text-[#faf9f7]"
-                  : "bg-[#0e0d0b]/5 text-[#0e0d0b]/60"
+                  ? "bg-gold text-white"
+                  : "bg-black/5 text-black/60"
               }`}
             >
               {s || "All"}
@@ -74,11 +74,11 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-[#ef4444] text-sm">
+          <div className="text-center py-12 text-danger text-sm">
             Failed to load vehicles
           </div>
         ) : vehicles.length === 0 ? (
-          <div className="text-center py-12 text-[#0e0d0b]/40 text-sm">
+          <div className="text-center py-12 text-black/40 text-sm">
             No vehicles found
           </div>
         ) : (

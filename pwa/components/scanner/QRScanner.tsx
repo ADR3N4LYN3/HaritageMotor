@@ -85,12 +85,12 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-64 h-64">
           {/* Corner brackets */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#b8955a]" />
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#b8955a]" />
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#b8955a]" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#b8955a]" />
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold" />
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-gold" />
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-gold" />
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-gold" />
           {/* Scan line animation */}
-          <div className="absolute left-2 right-2 h-0.5 bg-[#b8955a]/60 animate-scan" />
+          <div className="absolute left-2 right-2 h-0.5 bg-gold/60 animate-scan" />
         </div>
       </div>
       {/* Dim outside scan area */}
@@ -100,7 +100,7 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
       }} />
       {/* Instructions */}
       <div className="absolute bottom-24 left-0 right-0 text-center">
-        <p className="text-[#faf9f7]/80 text-sm font-medium">
+        <p className="text-white/80 text-sm font-medium">
           Point camera at QR code
         </p>
       </div>

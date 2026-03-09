@@ -104,7 +104,7 @@ export default function ExitVehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-[#0e0d0b]/50 py-12">Vehicle not found</p>
+        <p className="text-center text-black/50 py-12">Vehicle not found</p>
       </AppShell>
     );
   }
@@ -114,24 +114,24 @@ export default function ExitVehiclePage() {
     return (
       <AppShell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
-          <div className="w-16 h-16 rounded-full bg-[#ef4444]/10 flex items-center justify-center">
-            <svg className="w-8 h-8 text-[#ef4444]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+          <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center">
+            <svg className="w-8 h-8 text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div className="text-center">
-            <h2 className="font-display text-2xl font-bold text-[#0e0d0b]">
+            <h2 className="font-display text-2xl font-bold text-black">
               Vehicle Exit
             </h2>
-            <p className="text-[#0e0d0b]/50 mt-2 text-sm">
+            <p className="text-black/50 mt-2 text-sm">
               This action is irreversible. The vehicle will be marked as exited.
             </p>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5 w-full">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5 w-full">
             <h3 className="font-display text-lg font-semibold">
               {vehicle.make} {vehicle.model}
             </h3>
-            <p className="text-sm text-[#0e0d0b]/50 mt-0.5">
+            <p className="text-sm text-black/50 mt-0.5">
               {vehicle.color}{vehicle.year ? ` · ${vehicle.year}` : ""}
             </p>
           </div>
@@ -152,16 +152,16 @@ export default function ExitVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5">
-          <h2 className="font-display text-xl font-semibold text-[#0e0d0b]">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
+          <h2 className="font-display text-xl font-semibold text-black">
             {vehicle.make} {vehicle.model}
           </h2>
-          <p className="text-sm text-[#ef4444] font-medium mt-1">Exit Procedure</p>
+          <p className="text-sm text-danger font-medium mt-1">Exit Procedure</p>
         </div>
 
         {/* Exit Photos */}
         <div>
-          <h3 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Exit Photos
           </h3>
           <CameraCapture onCapture={addPhoto} multiple label="Take exit photo" />
@@ -174,7 +174,7 @@ export default function ExitVehiclePage() {
 
         {/* Checklist */}
         <div>
-          <h3 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Checklist
           </h3>
           <div className="space-y-2">
@@ -182,12 +182,12 @@ export default function ExitVehiclePage() {
               <button
                 key={item.id}
                 onClick={() => setChecklist((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-[#0e0d0b]/5 touch-target"
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-black/5 touch-target"
               >
                 <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
                   checklist[item.id]
-                    ? "bg-[#22c55e] border-[#22c55e]"
-                    : "border-[#0e0d0b]/20"
+                    ? "bg-success border-success"
+                    : "border-black/20"
                 }`}>
                   {checklist[item.id] && (
                     <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
@@ -195,7 +195,7 @@ export default function ExitVehiclePage() {
                     </svg>
                   )}
                 </div>
-                <span className="text-sm text-[#0e0d0b]">{item.label}</span>
+                <span className="text-sm text-black">{item.label}</span>
               </button>
             ))}
           </div>
@@ -203,7 +203,7 @@ export default function ExitVehiclePage() {
 
         {/* Recipient */}
         <div>
-          <h3 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Recipient
           </h3>
           <input
@@ -211,7 +211,7 @@ export default function ExitVehiclePage() {
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
             placeholder="Transporter / owner name"
-            className="w-full px-4 py-3 rounded-xl border border-[#0e0d0b]/10 bg-white text-[#0e0d0b] placeholder:text-[#0e0d0b]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
           />
         </div>
 
@@ -221,11 +221,11 @@ export default function ExitVehiclePage() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Notes (optional)"
           rows={2}
-          className="w-full px-4 py-3 rounded-xl border border-[#0e0d0b]/10 bg-white text-[#0e0d0b] placeholder:text-[#0e0d0b]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm resize-none"
         />
 
         {error && (
-          <p className="text-[#ef4444] text-sm text-center">{error}</p>
+          <p className="text-danger text-sm text-center">{error}</p>
         )}
 
         {/* Confirm */}
@@ -239,7 +239,7 @@ export default function ExitVehiclePage() {
             Confirm Exit
           </ActionButton>
           {!canConfirm && (
-            <p className="text-xs text-[#0e0d0b]/40 text-center mt-2">
+            <p className="text-xs text-black/40 text-center mt-2">
               {photos.length < REQUIRED_PHOTOS && `${REQUIRED_PHOTOS - photos.length} more photo${REQUIRED_PHOTOS - photos.length > 1 ? "s" : ""} needed · `}
               {!allChecked && "Complete checklist · "}
               {!recipient.trim() && "Enter recipient"}

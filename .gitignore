@@ -20,7 +20,9 @@ pwa/public/workbox-*.js
 pwa/public/workbox-*.js.map
 
 # Remotion video project
-video/
+video/node_modules/
+video/out/
+video/dist/
 
 # Claude Code
 .claude/

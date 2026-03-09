@@ -62,23 +62,6 @@ func scanTask(row pgx.Row) (*domain.Task, error) {
 	return &t, err
 }
 
-func scanTasks(rows pgx.Rows) ([]domain.Task, error) {
-	tasks := make([]domain.Task, 0)
-	for rows.Next() {
-		var t domain.Task
-		if err := rows.Scan(&t.ID, &t.TenantID, &t.VehicleID, &t.AssignedTo, &t.TaskType,
-			&t.Title, &t.Description, &t.Status, &t.DueDate, &t.CompletedAt, &t.CompletedBy,
-			&t.RecurrenceDays, &t.NextDueDate, &t.CreatedAt, &t.UpdatedAt, &t.DeletedAt); err != nil {
-			return nil, fmt.Errorf("scanning task: %w", err)
-		}
-		tasks = append(tasks, t)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("iterate tasks: %w", err)
-	}
-	return tasks, nil
-}
-
 func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters TaskFilters) ([]domain.Task, int, error) {
 	// Normalize pagination as safety net
 	if filters.Page < 1 {

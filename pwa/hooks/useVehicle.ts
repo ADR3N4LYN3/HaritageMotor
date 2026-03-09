@@ -3,14 +3,16 @@ import type { Vehicle, Event } from "@/lib/types";
 
 export function useVehicle(id: string) {
   const { data, error, isLoading, mutate } = useSWR<Vehicle>(
-    id ? `/vehicles/${id}` : null
+    id ? `/vehicles/${id}` : null,
+    { refreshInterval: 30000 }
   );
   return { vehicle: data, error, isLoading, mutate };
 }
 
 export function useVehicleTimeline(id: string) {
   const { data, error, isLoading } = useSWR<{ data: Event[]; total_count: number }>(
-    id ? `/vehicles/${id}/timeline` : null
+    id ? `/vehicles/${id}/timeline` : null,
+    { refreshInterval: 30000 }
   );
   return { events: data?.data || [], total: data?.total_count || 0, error, isLoading };
 }

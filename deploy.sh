@@ -28,7 +28,7 @@ echo "=== Heritage Motor — Deploy ==="
 
 # Build images
 echo "-> Building images..."
-docker compose build --no-cache
+docker compose build
 
 # Start PostgreSQL first and wait for healthy
 echo "-> Starting PostgreSQL..."
@@ -40,6 +40,24 @@ for i in $(seq 1 30); do
     fi
     sleep 1
 done
+
+# Create/update heritage_app role with the production password.
+# Password is validated hex-only to prevent SQL injection (setup.sh generates via openssl rand -hex).
+if [ -n "$APP_DB_PASSWORD" ]; then
+    if ! echo "$APP_DB_PASSWORD" | grep -qE '^[0-9a-fA-F]+$'; then
+        echo "ERROR: APP_DB_PASSWORD contains invalid characters. Regenerate with: openssl rand -hex 32"
+        exit 1
+    fi
+    echo "-> Configuring heritage_app role..."
+    docker compose exec -T postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
+        "DO \$\$ BEGIN
+           IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'heritage_app') THEN
+             CREATE ROLE heritage_app LOGIN PASSWORD '${APP_DB_PASSWORD}';
+           ELSE
+             ALTER ROLE heritage_app PASSWORD '${APP_DB_PASSWORD}';
+           END IF;
+         END \$\$;"
+fi
 
 # Run migrations
 echo "-> Running migrations..."

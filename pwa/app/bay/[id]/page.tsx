@@ -33,28 +33,28 @@ export default function BayPage() {
   if (!bay) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-[#0e0d0b]/50">Bay not found</div>
+        <div className="text-center py-12 text-black/50">Bay not found</div>
       </AppShell>
     );
   }
 
   const statusColors: Record<string, string> = {
-    free: "bg-[#22c55e]/10 text-[#22c55e]",
-    occupied: "bg-[#f59e0b]/10 text-[#f59e0b]",
+    free: "bg-success/10 text-success",
+    occupied: "bg-warning/10 text-warning",
     reserved: "bg-[#3b82f6]/10 text-[#3b82f6]",
-    maintenance: "bg-[#ef4444]/10 text-[#ef4444]",
+    maintenance: "bg-danger/10 text-danger",
   };
 
   return (
     <AppShell>
       <div className="space-y-6">
         {/* Bay Header */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#0e0d0b]/5">
-          <h1 className="font-display text-2xl font-bold text-[#0e0d0b]">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-black/5">
+          <h1 className="font-display text-2xl font-bold text-black">
             {bay.code}
           </h1>
           {bay.zone && (
-            <p className="text-[#0e0d0b]/50 mt-1">Zone: {bay.zone}</p>
+            <p className="text-black/50 mt-1">Zone: {bay.zone}</p>
           )}
           <div className="mt-3">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[bay.status] || statusColors.free}`}>
@@ -66,7 +66,7 @@ export default function BayPage() {
               {bay.features.map((feature) => (
                 <span
                   key={feature}
-                  className="text-xs bg-[#0e0d0b]/5 text-[#0e0d0b]/60 px-2 py-0.5 rounded"
+                  className="text-xs bg-black/5 text-black/60 px-2 py-0.5 rounded"
                 >
                   {feature}
                 </span>
@@ -77,25 +77,25 @@ export default function BayPage() {
 
         {/* Vehicle in this bay */}
         {vehiclesError && (
-          <div className="text-center py-8 text-[#ef4444] text-sm">
+          <div className="text-center py-8 text-danger text-sm">
             Failed to load vehicles
           </div>
         )}
         {!vehiclesError && vehicles.length > 0 && (
           <div>
-            <h2 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+            <h2 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
               Vehicle in Bay
             </h2>
             {vehicles.map((v) => (
               <button
                 key={v.id}
                 onClick={() => router.push(`/vehicle/${v.id}`)}
-                className="w-full text-left bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5 active:scale-[0.99] transition-transform"
+                className="w-full text-left bg-white rounded-2xl p-4 shadow-sm border border-black/5 active:scale-[0.99] transition-transform"
               >
                 <h3 className="font-display text-lg font-semibold">
                   {v.make} {v.model}
                 </h3>
-                <p className="text-sm text-[#0e0d0b]/50 mt-0.5">
+                <p className="text-sm text-black/50 mt-0.5">
                   {v.color} · {v.owner_name}
                 </p>
               </button>
@@ -104,7 +104,7 @@ export default function BayPage() {
         )}
 
         {bay.status === "free" && (
-          <div className="text-center py-8 text-[#0e0d0b]/30 text-sm">
+          <div className="text-center py-8 text-black/30 text-sm">
             This bay is available
           </div>
         )}

@@ -36,7 +36,7 @@ export default function VehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-[#0e0d0b]/50">
+        <div className="text-center py-12 text-black/50">
           Vehicle not found
         </div>
       </AppShell>
@@ -50,29 +50,29 @@ export default function VehiclePage() {
     <AppShell>
       <div className="space-y-6">
         {/* Vehicle Header */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#0e0d0b]/5">
-          <h1 className="font-display text-2xl font-bold text-[#0e0d0b]">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-black/5">
+          <h1 className="font-display text-2xl font-bold text-black">
             {displayName}
           </h1>
           {subtitle && (
-            <p className="text-[#0e0d0b]/50 mt-1">{subtitle}</p>
+            <p className="text-black/50 mt-1">{subtitle}</p>
           )}
           <div className="flex items-center gap-3 mt-3">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
               vehicle.status === "stored"
-                ? "bg-[#22c55e]/10 text-[#22c55e]"
+                ? "bg-success/10 text-success"
                 : vehicle.status === "maintenance"
-                ? "bg-[#f59e0b]/10 text-[#f59e0b]"
-                : "bg-[#0e0d0b]/10 text-[#0e0d0b]/60"
+                ? "bg-warning/10 text-warning"
+                : "bg-black/10 text-black/60"
             }`}>
               {vehicle.status}
             </span>
-            <span className="text-sm text-[#0e0d0b]/50">
+            <span className="text-sm text-black/50">
               {vehicle.owner_name}
             </span>
           </div>
           {vehicle.license_plate && (
-            <div className="mt-3 inline-block bg-[#0e0d0b]/5 px-3 py-1 rounded-lg text-sm font-mono text-[#0e0d0b]/70">
+            <div className="mt-3 inline-block bg-black/5 px-3 py-1 rounded-lg text-sm font-mono text-black/70">
               {vehicle.license_plate}
             </div>
           )}
@@ -115,7 +115,7 @@ export default function VehiclePage() {
 
         {/* Timeline */}
         <div>
-          <h2 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
             Timeline
           </h2>
           {eventsLoading ? (
@@ -125,9 +125,9 @@ export default function VehiclePage() {
               ))}
             </div>
           ) : events.length === 0 ? (
-            <p className="text-center text-sm text-[#0e0d0b]/40 py-4">No events yet</p>
+            <p className="text-center text-sm text-black/40 py-4">No events yet</p>
           ) : (
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#0e0d0b]/5">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
               {events.map((event) => (
                 <EventItem key={event.id} event={event} />
               ))}

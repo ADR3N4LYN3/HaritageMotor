@@ -11,6 +11,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// auditSem limits concurrent audit goroutines to prevent DB pool exhaustion under load.
+var auditSem = make(chan struct{}, 10)
+
 // auditEntry holds all values captured from the request context
 // BEFORE launching the goroutine — Fiber reuses *fiber.Ctx after handler return.
 type auditEntry struct {
@@ -60,7 +63,11 @@ func AuditMiddleware(pool *pgxpool.Pool) fiber.Handler {
 			requestID: requestID,
 		}
 
-		go logAudit(pool, entry)
+		go func() {
+			auditSem <- struct{}{} // acquire (blocks if 10 goroutines running)
+			defer func() { <-auditSem }()
+			logAudit(pool, entry)
+		}()
 
 		return err
 	}

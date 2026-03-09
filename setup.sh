@@ -70,6 +70,7 @@ setup_env() {
     info "Generating .env..."
 
     PG_PASS=$(openssl rand -hex 32)
+    APP_DB_PASS=$(openssl rand -hex 32)
     JWT=$(openssl rand -hex 32)
     PLAUSIBLE_DB_PASS=$(openssl rand -hex 32)
     PLAUSIBLE_SECRET=$(openssl rand -base64 48 | tr -d '\n')
@@ -86,6 +87,8 @@ POSTGRES_DB=heritage_motor
 POSTGRES_USER=heritage_motor
 POSTGRES_PASSWORD=$PG_PASS
 DATABASE_URL=postgresql://heritage_motor:${PG_PASS}@postgres:5432/heritage_motor?sslmode=disable
+APP_DB_PASSWORD=$APP_DB_PASS
+DATABASE_APP_URL=postgresql://heritage_app:${APP_DB_PASS}@postgres:5432/heritage_motor?sslmode=disable
 
 # ── Auth ─────────────────────────────────────────────────────
 JWT_SECRET=$JWT
@@ -102,6 +105,9 @@ S3_REGION=eu-central
 # ── Email (Resend) ──────────────────────────────────────────
 RESEND_API_KEY=
 EMAIL_FROM=noreply@heritagemotor.app
+
+# ── CORS ──────────────────────────────────────────────────────
+CORS_ORIGINS=https://app.heritagemotor.app,https://heritagemotor.app
 
 # ── Logging ──────────────────────────────────────────────────
 LOG_LEVEL=info

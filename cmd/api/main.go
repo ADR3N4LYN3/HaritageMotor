@@ -167,7 +167,8 @@ func main() {
 	// API routes require database
 	if ownerPool != nil {
 		// Services — business services use appPool (RLS enforced via middleware tx).
-		// Auth service uses ownerPool (login/refresh bypass RLS).
+		// Auth service uses ownerPool as fallback; authenticated auth routes
+		// (logout, me, mfa) use the appPool tx injected by TenantMiddleware.
 		authService := authsvc.NewService(ownerPool, jwtManager)
 		vehicleService := vehiclesvc.NewService(appPool)
 		bayService := baysvc.NewService(appPool)

@@ -21,9 +21,9 @@ export function ActionButton({
   const height = "min-h-[64px] px-6 text-base";
 
   const variants = {
-    primary: "bg-[#b8955a] text-[#faf9f7] hover:bg-[#a07d48] disabled:bg-[#b8955a]/40",
-    danger: "bg-[#ef4444] text-[#faf9f7] hover:bg-[#dc2626] disabled:bg-[#ef4444]/40",
-    secondary: "bg-[#0e0d0b]/10 text-[#0e0d0b] hover:bg-[#0e0d0b]/20 disabled:bg-[#0e0d0b]/5 disabled:text-[#0e0d0b]/30",
+    primary: "bg-gold text-white hover:bg-[#a07d48] disabled:bg-gold/40",
+    danger: "bg-danger text-white hover:bg-[#dc2626] disabled:bg-danger/40",
+    secondary: "bg-black/10 text-black hover:bg-black/20 disabled:bg-black/5 disabled:text-black/30",
   };
 
   return (

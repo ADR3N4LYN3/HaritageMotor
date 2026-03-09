@@ -3,7 +3,8 @@ import type { Bay } from "@/lib/types";
 
 export function useBay(id: string) {
   const { data, error, isLoading, mutate } = useSWR<Bay>(
-    id ? `/bays/${id}` : null
+    id ? `/bays/${id}` : null,
+    { refreshInterval: 30000 }
   );
   return { bay: data, error, isLoading, mutate };
 }
