@@ -175,6 +175,33 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - Facturation et paiements intégrés (v2)
 - Gestion multi-sites (v2)
 
+## Hero Video (Remotion 4)
+
+Le dossier `video/` contient un projet Remotion 4 qui génère la vidéo de fond du hero de la landing page.
+
+```
+video/
+  src/
+    index.ts           — registerRoot
+    Root.tsx            — Composition 1920×1080 30fps
+    HeroVideo.tsx       — 6 scènes + transitions + watermark
+    CarScene.tsx        — Scène individuelle (Ken Burns + vignette)
+    BrandWatermark.tsx  — "Heritage Motor" semi-transparent (12% opacity)
+  package.json          — dépendances Remotion
+  remotion.config.ts    — Config (overwrite output)
+```
+
+**Commandes** :
+```bash
+cd video
+npm install
+npm run dev      # Ouvre Remotion Studio (preview)
+npm run render   # Génère ../web/static/hero-bg.mp4
+```
+
+**Clips** : tous issus de Pexels (licence commerciale gratuite, pas d'attribution requise).
+Pour changer un clip, modifier l'URL dans le tableau `CLIPS` de `HeroVideo.tsx` et re-render.
+
 ## Références détaillées
 
 Pour les spécifications complètes, consulter les fichiers mémoire :
