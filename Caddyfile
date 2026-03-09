@@ -29,6 +29,12 @@ heritagemotor.app {
 		root * /srv/landing
 		file_server
 	}
+
+	handle_errors {
+		rewrite * /404.html
+		root * /srv/landing
+		file_server
+	}
 }
 
 # Go API

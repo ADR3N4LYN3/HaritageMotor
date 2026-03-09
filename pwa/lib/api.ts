@@ -48,8 +48,8 @@ async function request<T>(
     headers,
   });
 
-  // Auto-refresh on 401
-  if (res.status === 401 && token) {
+  // Auto-refresh on 401 (token may be null after page refresh)
+  if (res.status === 401) {
     const newToken = await refreshAccessToken();
     if (newToken) {
       store.setAccessToken(newToken);

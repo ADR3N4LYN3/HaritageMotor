@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Heritage Motor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0e0d0b; --gold: #b8955a; --white: #f5f0e8; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .code {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(5rem, 15vw, 10rem);
+    font-weight: 600;
+    color: var(--gold);
+    opacity: 0.25;
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--white);
+    margin-top: 1rem;
+    letter-spacing: 0.08em;
+  }
+  p {
+    color: rgba(245, 240, 232, 0.4);
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+    max-width: 28rem;
+  }
+  a {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.75rem 2rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--black);
+    background: var(--gold);
+    border-radius: 0.5rem;
+    transition: opacity 0.2s;
+  }
+  a:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+  <div class="code">404</div>
+  <h1>Page not found</h1>
+  <p>The page you are looking for does not exist or has been moved.</p>
+  <a href="/">Back to Heritage Motor</a>
+</body>
+</html>
