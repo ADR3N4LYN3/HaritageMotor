@@ -1,8 +1,6 @@
 # Landing page
 heritagemotor.app {
 	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
-	root * /srv/landing
-	file_server
 	encode gzip
 
 	header {
@@ -12,6 +10,24 @@ heritagemotor.app {
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
 		-Server
+	}
+
+	# Contact form API → Go backend
+	handle /api/v1/* {
+		reverse_proxy api:8080
+	}
+
+	# Contact page
+	handle /contact {
+		rewrite * /contact.html
+		root * /srv/landing
+		file_server
+	}
+
+	# Static landing files
+	handle {
+		root * /srv/landing
+		file_server
 	}
 }
 
@@ -24,6 +40,8 @@ api.heritagemotor.app {
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
 		-Server
 	}
 }
@@ -53,6 +71,8 @@ app.heritagemotor.app {
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
 		# PWA: allow camera for QR scanning
 		Permissions-Policy "camera=(self), microphone=()"
 		-Server
