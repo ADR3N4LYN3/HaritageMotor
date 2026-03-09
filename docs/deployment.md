@@ -247,7 +247,7 @@ Registration is set to `invite_only`. After first deploy, visit `https://stats.h
 The Plausible tracking script is included in the landing page `<head>`:
 
 ```html
-<script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.js"></script>
+<script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.outbound-links.js"></script>
 ```
 
 ### DNS
