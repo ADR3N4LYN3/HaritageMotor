@@ -56,15 +56,18 @@ internal/
     admin/                       — Superadmin : tenants CRUD, invitations, dashboard
     auth/                        — Login, logout, refresh, MFA, change-password
     bay/ event/ task/ document/ user/ vehicle/   — CRUD + logique métier
-    contact/                     — Formulaire contact public
+    contact/                     — Formulaire contact public + email confirmation i18n (EN/FR/DE)
     mailer/                      — Envoi emails via Resend API
     plan/                        — Limites par plan (starter/pro/enterprise)
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
+  testutil/setup.go              — Infrastructure tests intégration (Env, Setup, helpers)
 web/static/
   index.html                     — Landing page (SEO, hero video, CTA)
-  contact.html                   — Page contact (formulaire POST /api/v1/contact)
+  contact.html                   — Page contact (formulaire POST /api/v1/contact, lang auto)
   hero-bg.mp4                    — Vidéo hero (Remotion v2)
   logo.svg                       — Logo Heritage Motor
+  logo-crest.svg                 — Shield crest logo (watermark vidéo + emails)
+  logo-email.png / .svg          — Logo optimisé pour emails HTML
 video/                           — Projet Remotion 4 (génération hero-bg.mp4)
 pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 ```
@@ -138,7 +141,7 @@ Préfixe : `/api/v1`. Toutes sauf `/auth/*` et `/contact` requièrent JWT. `tena
 
 ```
 # Public (pas de JWT)
-POST   /contact                 — Formulaire contact (3 req/15min/IP)
+POST   /contact                 — Formulaire contact (3 req/15min/IP, lang=en|fr|de)
 
 # Auth
 POST   /auth/login              POST   /auth/mfa/verify
@@ -220,6 +223,29 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - Invitation flow : crée user avec temp password → email Resend → `password_change_required=true`
 - Mailer service : Resend API, no-op si `RESEND_API_KEY` vide (dev mode)
 
+## Tests d'intégration
+
+### Infrastructure (`internal/testutil/`)
+- `Setup(t)` : initialise un `Env` partagé (`sync.Once`) avec Fiber app, dual pools (owner + app), JWT manager
+- Helpers : `CreateTenant`, `CreateUser`, `CreateVehicle`, `CreateBay`, `AuthToken`, `AuthTokenPCR`, `CreateSuperAdmin`
+- `DoRequest(t, method, path, token, body)` : requête JSON via `app.Test()` (Fiber in-process)
+- `ReadJSON(t, resp, &dest)` : decode réponse JSON
+- `BgCtx()` : raccourci `context.Background()`
+- Requiert PostgreSQL local avec `.env.test` (gitignored)
+
+### Couverture (12 fichiers de tests)
+- **RLS** : isolation cross-tenant, dual pool, SET LOCAL vérifié (`db/rls_test.go`)
+- **Auth** : login, logout, refresh, MFA setup/verify/disable, change-password (`handler/auth/`)
+- **Middleware** : JWT validation, blacklist after logout, RBAC matrix 5 rôles, PCR, superadmin (`middleware/auth_test.go`)
+- **Audit** : log async POST, skip GET, request ID, append-only (`middleware/audit_test.go`)
+- **CRUD handlers** : vehicle, bay, event, task, user, document, admin (`handler/*/handler_test.go`)
+- **Plan limits** : starter/pro/enterprise, HTTP 402 blocking (`service/plan/plan_test.go`)
+
+### Contact i18n
+- Champ `lang` (en|fr|de) envoyé depuis `localStorage('hm-lang')` du frontend
+- Email de confirmation traduit (sujet + corps) avec template HTML dark luxury
+- Logo shield crest embarqué, accents dorés (#b8955a)
+
 ## Architecture PWA (pwa/)
 
 ### Auth — BFF pattern (Backend-For-Frontend)
@@ -297,7 +323,7 @@ video/
     HeroVideo.tsx       — v1 : 6 scènes (19s, 570 frames)
     HeroVideoV2.tsx     — v2 : 8 scènes dont 2 garage indoor (25s, 750 frames) ← ACTIF
     CarScene.tsx        — Scène individuelle (Ken Burns + vignette)
-    BrandWatermark.tsx  — "Heritage Motor" semi-transparent (12% opacity)
+    BrandWatermark.tsx  — Shield crest watermark semi-transparent (12% opacity)
   package.json          — dépendances Remotion
   remotion.config.ts    — Config (overwrite output)
 ```
