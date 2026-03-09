@@ -385,6 +385,25 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   .feat-icon { display: none; }
 }
 
+/* =================================================================
+   COOKIE BANNER
+   ================================================================= */
+.cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 500; background: var(--dark); border-top: 1px solid rgba(184,149,90,0.15); padding: 1.2rem 4rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; transform: translateY(100%); transition: transform 0.6s var(--ease-lux); }
+.cookie-banner.visible { transform: translateY(0); }
+.cookie-text { font-size: 0.82rem; color: rgba(255,255,255,0.55); font-weight: 300; line-height: 1.6; max-width: 720px; }
+.cookie-text a { color: var(--gold); text-decoration: none; }
+.cookie-text a:hover { text-decoration: underline; }
+.cookie-actions { display: flex; gap: 1rem; flex-shrink: 0; }
+.cookie-accept { background: var(--gold); color: var(--black); border: none; padding: 0.6rem 1.6rem; font-family: var(--sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: opacity 0.3s; }
+.cookie-accept:hover { opacity: 0.85; }
+.cookie-decline { background: none; color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 1.6rem; font-family: var(--sans); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+.cookie-decline:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); }
+
+@media (max-width: 960px) {
+  .cookie-banner { flex-direction: column; padding: 1.2rem 1.5rem; gap: 1rem; text-align: center; }
+  .cookie-actions { width: 100%; justify-content: center; }
+}
+
 </style>
 </head>
 <body>
@@ -725,6 +744,8 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <li><a href="#timeline" data-i18n="nav.timeline">Timeline</a></li>
     <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
     <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+    <li><a href="/privacy" data-i18n="nav.privacy">Privacy</a></li>
+    <li><a href="/legal" data-i18n="nav.legal">Legal</a></li>
   </ul>
   <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
 </footer>
@@ -847,7 +868,12 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'price3.period': 'multi-site \u00b7 v\u00e9hicules illimit\u00e9s',
       'cta.tag': 'Commencer',
       'cta.title': 'Votre site m\u00e9rite<br> un <em>syst\u00e8me d\'exploitation.</em>',
-      'cta.text': '20 minutes de d\u00e9mo, sans engagement. Juste une conversation sur le fonctionnement de votre site \u2014 et si Heritage Motor est le bon choix.'
+      'cta.text': '20 minutes de d\u00e9mo, sans engagement. Juste une conversation sur le fonctionnement de votre site \u2014 et si Heritage Motor est le bon choix.',
+      'nav.privacy': 'Confidentialit\u00e9',
+      'nav.legal': 'Mentions l\u00e9gales',
+      'cookie.text': 'Ce site utilise des <a href="/privacy">analyses respectueuses de la vie priv\u00e9e</a> (Plausible, sans cookies) et enregistre votre pr\u00e9f\u00e9rence de langue localement. Aucun traceur publicitaire.',
+      'cookie.accept': 'Compris',
+      'cookie.decline': 'Refuser'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.timeline': 'Zeitleiste', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
@@ -919,7 +945,12 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'price3.period': 'Multi-Standort \u00b7 unbegrenzte Fahrzeuge',
       'cta.tag': 'Loslegen',
       'cta.title': 'Ihr Standort verdient<br> ein <em>Betriebssystem.</em>',
-      'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespr\u00e4ch dar\u00fcber, wie Ihr Standort arbeitet \u2014 und ob Heritage Motor die richtige L\u00f6sung ist.'
+      'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespr\u00e4ch dar\u00fcber, wie Ihr Standort arbeitet \u2014 und ob Heritage Motor die richtige L\u00f6sung ist.',
+      'nav.privacy': 'Datenschutz',
+      'nav.legal': 'Impressum',
+      'cookie.text': 'Diese Website verwendet <a href="/privacy">datenschutzfreundliche Analysen</a> (Plausible, ohne Cookies) und speichert Ihre Spracheinstellung lokal. Keine Werbe-Tracker.',
+      'cookie.accept': 'Verstanden',
+      'cookie.decline': 'Ablehnen'
     }
   };
 
@@ -991,6 +1022,37 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+
+  /* --- Cookie Banner --------------------------------------------------- */
+  var cb = document.getElementById('cookieBanner');
+  if (cb) {
+    try {
+      var consent = localStorage.getItem('hm-cookie-consent');
+      if (!consent) {
+        setTimeout(function() { cb.classList.add('visible'); }, 1500);
+      }
+    } catch(e) {
+      cb.classList.add('visible');
+    }
+    cb.querySelector('.cookie-accept').addEventListener('click', function() {
+      try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
+      cb.classList.remove('visible');
+    });
+    cb.querySelector('.cookie-decline').addEventListener('click', function() {
+      try { localStorage.setItem('hm-cookie-consent', 'declined'); } catch(e) {}
+      cb.classList.remove('visible');
+    });
+  }
 </script>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Cookie consent">
+  <p class="cookie-text" data-i18n="cookie.text">This site uses <a href="/privacy">privacy-friendly analytics</a> (Plausible, no cookies) and stores your language preference locally. No advertising trackers.</p>
+  <div class="cookie-actions">
+    <button class="cookie-accept" data-i18n="cookie.accept">Got it</button>
+    <button class="cookie-decline" data-i18n="cookie.decline">Decline</button>
+  </div>
+</div>
+
 </body>
 </html>
