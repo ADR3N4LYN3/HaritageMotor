@@ -1,16 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 40" fill="none">
-  <!-- HM Monogram -->
-  <g>
-    <!-- Outer frame -->
-    <rect x="0" y="2" width="36" height="36" rx="2" stroke="#b8955a" stroke-width="1.2" fill="none"/>
-    <!-- H -->
-    <path d="M8 10v20M8 20h8M16 10v20" stroke="#b8955a" stroke-width="1.6" stroke-linecap="round"/>
-    <!-- M -->
-    <path d="M20 30V10l5 10 5-10v20" stroke="#b8955a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 48" fill="none">
+  <!-- ═══ CREST WITH CROWN ═══ -->
+  <g transform="translate(0,0)">
+    <!-- Royal Crown -->
+    <path d="M10 8L14 3l3 4 3-6 3 6 3-4 4 5" stroke="#b8955a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- Crown base band -->
+    <path d="M10 8h20" stroke="#b8955a" stroke-width="1.2" stroke-linecap="round"/>
+    <!-- Crown jewels -->
+    <circle cx="20" cy="2.5" r="1" fill="#b8955a"/>
+    <circle cx="14" cy="4.5" r="0.7" fill="#b8955a"/>
+    <circle cx="26" cy="4.5" r="0.7" fill="#b8955a"/>
+
+    <!-- Shield body -->
+    <path d="M3 10h34v15c0 8-7.5 13.5-17 17C10.5 38.5 3 33 3 25V10z" stroke="#b8955a" stroke-width="1.2" fill="none"/>
+    <!-- Inner shield -->
+    <path d="M6 12.5h28v12.5c0 6.5-6 11-14 14-8-3-14-7.5-14-14V12.5z" stroke="#b8955a" stroke-width="0.5" fill="none" opacity="0.4"/>
+
+    <!-- H — refined with serifs -->
+    <g stroke="#b8955a" stroke-linecap="round">
+      <path d="M11 16v16" stroke-width="1.5"/>
+      <path d="M11 24h6" stroke-width="1.1"/>
+      <path d="M17 16v16" stroke-width="1.5"/>
+      <!-- H serifs -->
+      <path d="M9.2 16.2h3.6M9.2 31.8h3.6M15.2 16.2h3.6M15.2 31.8h3.6" stroke-width="0.6"/>
+    </g>
+
+    <!-- M — refined with serifs -->
+    <g stroke="#b8955a" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 32V16l4.5 11L30 16v16" stroke-width="1.5"/>
+      <!-- M serifs -->
+      <path d="M19.2 31.8h3.6M28.2 31.8h3.6" stroke-width="0.6"/>
+    </g>
+
+    <!-- Laurel branches framing the shield -->
+    <!-- Left laurel -->
+    <g stroke="#b8955a" stroke-width="0.5" fill="none" opacity="0.55">
+      <path d="M1 30c-2-4 0-8 1-10"/>
+      <path d="M-0.5 24c1.5-0.5 2-2.5 1.5-4"/>
+      <path d="M-0.5 28c1.5-0.5 2-2.5 1.5-4"/>
+      <path d="M0 32c1.5-0.5 2-2.5 1-4"/>
+    </g>
+    <!-- Right laurel -->
+    <g stroke="#b8955a" stroke-width="0.5" fill="none" opacity="0.55">
+      <path d="M39 30c2-4 0-8-1-10"/>
+      <path d="M40.5 24c-1.5-0.5-2-2.5-1.5-4"/>
+      <path d="M40.5 28c-1.5-0.5-2-2.5-1.5-4"/>
+      <path d="M40 32c-1.5-0.5-2-2.5-1-4"/>
+    </g>
+
+    <!-- Bottom ribbon flourish -->
+    <path d="M10 40q10 5 20 0" stroke="#b8955a" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+    <path d="M14 41q6 3 12 0" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.5"/>
   </g>
-  <!-- Separator line -->
-  <line x1="48" y1="10" x2="48" y2="30" stroke="#b8955a" stroke-width="0.8" opacity="0.5"/>
-  <!-- HERITAGE MOTOR text -->
-  <text x="60" y="17" font-family="'Cormorant Garamond', 'Georgia', serif" font-size="13" font-weight="600" letter-spacing="3.5" fill="currentColor">HERITAGE</text>
-  <text x="60" y="32" font-family="'Cormorant Garamond', 'Georgia', serif" font-size="13" font-weight="400" letter-spacing="5.5" fill="currentColor">MOTOR</text>
+
+  <!-- ═══ SEPARATOR ═══ -->
+  <g transform="translate(52,8)">
+    <line x1="0" y1="2" x2="0" y2="30" stroke="#b8955a" stroke-width="0.5" opacity="0.3"/>
+    <path d="M-2 2l2-2 2 2" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.4"/>
+    <path d="M-2 30l2 2 2-2" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.4"/>
+  </g>
+
+  <!-- ═══ BRAND TEXT ═══ -->
+  <text x="64" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text>
+  <text x="64" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text>
+  <!-- Gold accent line under text -->
+  <line x1="64" y1="40.5" x2="140" y2="40.5" stroke="#b8955a" stroke-width="0.5" opacity="0.35"/>
 </svg>
