@@ -91,13 +91,14 @@ nav.nav-hidden { transform: translateY(-100%); }
 .nav-cta:hover::after { transform: scaleX(1); }
 
 .lang-switch { position: relative; }
-.lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: color 0.3s ease-out; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 0.35rem; }
+.lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: color 0.3s ease-out; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 0.45rem; }
+.lang-flag { font-style: normal; font-size: 0.85rem; line-height: 1; }
 .lang-btn:hover { color: var(--gold); }
 .lang-btn svg { width: 9px; height: 9px; transition: transform 0.3s var(--ease-lux); }
 .lang-switch.open .lang-btn svg { transform: rotate(180deg); }
 .lang-drop { position: absolute; top: calc(100% + 0.75rem); right: 0; background: var(--dark); border: 1px solid rgba(184,149,90,0.15); box-shadow: 0 16px 48px rgba(0,0,0,0.4); display: none; flex-direction: column; min-width: 120px; z-index: 300; }
 .lang-switch.open .lang-drop { display: flex; }
-.lang-opt { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.7rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.7rem 1.2rem; text-align: left; color: rgba(255,255,255,0.5); transition: all 0.2s; }
+.lang-opt { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.7rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.7rem 1.2rem; text-align: left; color: rgba(255,255,255,0.5); transition: all 0.2s; display: flex; align-items: center; gap: 0.6rem; }
 .lang-opt:hover { background: rgba(184,149,90,0.08); color: var(--gold); }
 .lang-opt.active { color: var(--gold); font-weight: 500; }
 
@@ -400,11 +401,11 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <a href="https://app.heritagemotor.app/login" target="_blank" rel="noopener noreferrer" class="nav-sign-in" data-i18n="nav.signin">Sign in</a>
     <a href="/contact" class="nav-cta" data-i18n="nav.cta">Request a Demo</a>
     <div class="lang-switch" id="langSwitch">
-      <button class="lang-btn" aria-label="Change language" aria-expanded="false"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="lang-btn" aria-label="Change language" aria-expanded="false"><span class="lang-flag" id="langFlag">&#x1F1EC;&#x1F1E7;</span><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="lang-drop">
-        <button class="lang-opt active" data-lang="en">English</button>
-        <button class="lang-opt" data-lang="fr">Fran&ccedil;ais</button>
-        <button class="lang-opt" data-lang="de">Deutsch</button>
+        <button class="lang-opt active" data-lang="en"><span class="lang-flag">&#x1F1EC;&#x1F1E7;</span>English</button>
+        <button class="lang-opt" data-lang="fr"><span class="lang-flag">&#x1F1EB;&#x1F1F7;</span>Fran&ccedil;ais</button>
+        <button class="lang-opt" data-lang="de"><span class="lang-flag">&#x1F1E9;&#x1F1EA;</span>Deutsch</button>
       </div>
     </div>
   </div>
@@ -941,7 +942,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
         el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
       }
     });
+    var flags = { en: '\u{1F1EC}\u{1F1E7}', fr: '\u{1F1EB}\u{1F1F7}', de: '\u{1F1E9}\u{1F1EA}' };
     document.getElementById('langCurrent').textContent = lang.toUpperCase();
+    document.getElementById('langFlag').textContent = flags[lang] || flags.en;
     document.querySelectorAll('.lang-opt').forEach(function(btn) {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
