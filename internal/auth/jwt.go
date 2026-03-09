@@ -37,19 +37,25 @@ func NewJWTManager(secret string, accessExpiry, refreshExpiry time.Duration) *JW
 }
 
 func (m *JWTManager) GenerateAccessToken(userID, tenantID uuid.UUID, role string) (string, error) {
+	now := time.Now()
 	claims := &Claims{
 		UserID:   userID,
 		TenantID: tenantID,
 		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.accessExpiry)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ID:        uuid.New().String(),
+			ExpiresAt: jwt.NewNumericDate(now.Add(m.accessExpiry)),
+			IssuedAt:  jwt.NewNumericDate(now),
 			Issuer:    "heritagemotor.app",
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(m.secret)
+}
+
+func (m *JWTManager) AccessExpiry() time.Duration {
+	return m.accessExpiry
 }
 
 func (m *JWTManager) GenerateMFAPendingToken(userID, tenantID uuid.UUID) (string, error) {

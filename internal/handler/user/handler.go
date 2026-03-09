@@ -1,19 +1,26 @@
 package user
 
 import (
+	"context"
+	"time"
+
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	userSvc "github.com/chriis/heritage-motor/internal/service/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog/log"
 )
 
 type Handler struct {
-	svc *userSvc.Service
+	svc           *userSvc.Service
+	ownerPool     *pgxpool.Pool
+	accessExpiry  time.Duration
 }
 
-func NewHandler(svc *userSvc.Service) *Handler {
-	return &Handler{svc: svc}
+func NewHandler(svc *userSvc.Service, ownerPool *pgxpool.Pool, accessExpiry time.Duration) *Handler {
+	return &Handler{svc: svc, ownerPool: ownerPool, accessExpiry: accessExpiry}
 }
 
 func (h *Handler) RegisterRoutes(r fiber.Router) {
@@ -105,6 +112,28 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 	if err := h.svc.Delete(c.UserContext(), tenantID, userID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
+
+	// Revoke all refresh tokens and blacklist access tokens for deleted user.
+	go func() {
+		bgCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		_, dbErr := h.ownerPool.Exec(bgCtx,
+			`UPDATE refresh_tokens SET revoked_at = NOW() WHERE user_id = $1 AND revoked_at IS NULL`,
+			userID,
+		)
+		if dbErr != nil {
+			log.Error().Err(dbErr).Str("user_id", userID.String()).Msg("failed to revoke refresh tokens on user delete")
+		}
+
+		_, dbErr = h.ownerPool.Exec(bgCtx,
+			`INSERT INTO token_blacklist (user_id, expires_at) VALUES ($1, $2)`,
+			userID, time.Now().Add(h.accessExpiry),
+		)
+		if dbErr != nil {
+			log.Error().Err(dbErr).Str("user_id", userID.String()).Msg("failed to blacklist user tokens on delete")
+		}
+	}()
 
 	return c.SendStatus(204)
 }

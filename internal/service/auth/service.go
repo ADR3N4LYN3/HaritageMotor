@@ -201,8 +201,8 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Login
 	return s.issueTokens(ctx, &user)
 }
 
-// Logout revokes a refresh token.
-func (s *Service) Logout(ctx context.Context, refreshToken string) error {
+// Logout revokes a refresh token and blacklists the current access token.
+func (s *Service) Logout(ctx context.Context, refreshToken, accessJTI string, accessExpiresAt time.Time) error {
 	tokenHash := hashToken(refreshToken)
 
 	tag, err := db.Conn(ctx, s.pool).Exec(ctx,
@@ -215,6 +215,17 @@ func (s *Service) Logout(ctx context.Context, refreshToken string) error {
 	}
 	if tag.RowsAffected() == 0 {
 		return &domain.ErrUnauthorized{Message: "invalid refresh token"}
+	}
+
+	// Blacklist the current access token so it cannot be reused after logout.
+	if accessJTI != "" && !accessExpiresAt.IsZero() {
+		_, blErr := s.pool.Exec(ctx,
+			`INSERT INTO token_blacklist (jti, expires_at) VALUES ($1, $2)`,
+			accessJTI, accessExpiresAt,
+		)
+		if blErr != nil {
+			log.Error().Err(blErr).Str("jti", accessJTI).Msg("failed to blacklist access token on logout")
+		}
 	}
 
 	return nil

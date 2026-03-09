@@ -125,7 +125,11 @@ func (h *Handler) Logout(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	if err := h.service.Logout(c.UserContext(), req.RefreshToken); err != nil {
+	// Extract current access token's jti and expiry for blacklisting.
+	jti := middleware.JTIFromCtx(c)
+	expiresAt := middleware.TokenExpiresAtFromCtx(c)
+
+	if err := h.service.Logout(c.UserContext(), req.RefreshToken, jti, expiresAt); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

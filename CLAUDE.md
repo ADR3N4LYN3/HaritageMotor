@@ -33,7 +33,7 @@ internal/domain/             — Types et erreurs typées
 internal/service/{domaine}/  — Logique métier
 internal/handler/{domaine}/  — Handlers HTTP Fiber
 internal/storage/            — Client S3 (aws-sdk-go-v2)
-internal/db/                 — Pool pgxpool, DBTX, migrations (001-014)
+internal/db/                 — Pool pgxpool, DBTX, migrations (001-015)
 internal/db/dbtx.go          — Interface DBTX, WithTx/TxFromCtx/Conn
 web/static/                  — Landing page
 pwa/                         — Frontend Next.js PWA
@@ -57,12 +57,22 @@ pwa/                         — Frontend Next.js PWA
 
 ### Auth & secrets
 - Mots de passe : bcrypt cost 12 minimum
-- Access token JWT : 15 min, HS256
+- Access token JWT : 15 min, HS256, avec `jti` (UUID) pour blacklisting
 - Refresh token : 7 jours, stocké en DB (SHA-256 hash), révocable
 - MFA TOTP obligatoire (Google Authenticator)
 - Secrets (JWT_SECRET, clés S3) TOUJOURS dans les variables d'env, JAMAIS dans le code
-- Rate limiting : 5 req/15min/IP sur les endpoints auth
+- Rate limiting : 5 req/15min/IP sur auth, 100 req/min/user sur routes authentifiées
+- Upload limiter : 200MB cumulé / 10 min / user sur les endpoints upload
 - Password strength : min 8 chars, upper+lower+digit+special
+
+### Token blacklist (migration 015)
+- Table `token_blacklist` en PostgreSQL (survit aux redémarrages)
+- Entrées par `jti` (token spécifique) ou `user_id` (bloc user-level)
+- Check dans AuthMiddleware : `SELECT EXISTS(... WHERE (jti=$1 OR user_id=$2) AND expires_at > NOW())`
+- Fail-open avec warning log si DB indisponible
+- Logout : blackliste l'access token + révoque le refresh token
+- User delete : révoque tous refresh tokens + blackliste user_id pour durée access token
+- Middleware order : Auth (+ blacklist) → Per-user limiter → Tenant (RLS tx) → Audit
 
 ### Stockage S3
 - Stocker UNIQUEMENT les clés S3 en DB, JAMAIS les URLs signées

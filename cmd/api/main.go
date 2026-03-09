@@ -30,6 +30,7 @@ import (
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/chriis/heritage-motor/internal/storage"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -184,7 +185,7 @@ func main() {
 		eventHandler := eventhandler.NewHandler(eventService)
 		taskHandler := taskhandler.NewHandler(taskService)
 		docHandler := dochandler.NewHandler(docService, s3Client)
-		userHandler := userhandler.NewHandler(userService)
+		userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry())
 		auditHandler := auditloghandler.NewHandler(appPool)
 		scanHandler := scanhandler.NewHandler(appPool)
 
@@ -210,7 +211,23 @@ func main() {
 		authGroup.Post("/refresh", authLimiter, authHandler.Refresh)
 
 		// Authenticated routes
-		authed := api.Use(middleware.AuthMiddleware(jwtManager))
+		authed := api.Use(middleware.AuthMiddleware(jwtManager, ownerPool))
+
+		// Per-user rate limiter: 100 req/min keyed by user_id from JWT.
+		authed.Use(limiter.New(limiter.Config{
+			Max:        100,
+			Expiration: 1 * time.Minute,
+			KeyGenerator: func(c *fiber.Ctx) string {
+				if uid := middleware.UserIDFromCtx(c); uid != uuid.Nil {
+					return uid.String()
+				}
+				return c.IP()
+			},
+			LimitReached: func(c *fiber.Ctx) error {
+				return c.Status(429).JSON(fiber.Map{"error": "rate limit exceeded"})
+			},
+		}))
+
 		authed.Use(middleware.TenantMiddleware(ownerPool, appPool))
 		authed.Use(middleware.AuditMiddleware(ownerPool))
 
@@ -233,16 +250,22 @@ func main() {
 		vehicles.Post("/:id/exit", middleware.RequireOperatorOrAbove(), vehicleHandler.Exit)
 		vehicles.Get("/:id/timeline", vehicleHandler.GetTimeline)
 
+		// Upload bandwidth limiter: 200MB cumulative per user per 10 minutes.
+		uploadLimiter := middleware.UploadLimiter(middleware.UploadLimiterConfig{
+			MaxBytes: 200 * 1024 * 1024,
+			Window:   10 * time.Minute,
+		})
+
 		// Documents (nested under vehicles)
 		vehicles.Get("/:id/documents", docHandler.List)
-		vehicles.Post("/:id/documents", middleware.RequireTechnicianOrAbove(), docHandler.Create)
+		vehicles.Post("/:id/documents", uploadLimiter, middleware.RequireTechnicianOrAbove(), docHandler.Create)
 		vehicles.Get("/:id/documents/:docId", docHandler.GetByID)
 		vehicles.Delete("/:id/documents/:docId", middleware.RequireAdmin(), docHandler.Delete)
 
 		// Events
 		events := authed.Group("/events")
 		events.Get("/", eventHandler.List)
-		events.Post("/", middleware.RequireTechnicianOrAbove(), eventHandler.Create)
+		events.Post("/", uploadLimiter, middleware.RequireTechnicianOrAbove(), eventHandler.Create)
 		events.Get("/:id", eventHandler.GetByID)
 
 		// Bays
