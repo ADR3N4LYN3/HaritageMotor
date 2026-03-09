@@ -1,12 +1,12 @@
 package scan
 
 import (
-	"github.com/chriis/heritage-motor/internal/handler"
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog/log"
 )
 
 type Handler struct {
@@ -25,6 +25,7 @@ type scanResult struct {
 }
 
 // Resolve handles GET /api/v1/scan/:token
+// Uses a single UNION ALL query to check both vehicles and bays.
 func (h *Handler) Resolve(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)
 	role := middleware.RoleFromCtx(c)
@@ -34,46 +35,41 @@ func (h *Handler) Resolve(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "token is required"})
 	}
 
-	// Try vehicles first
-	var vehicleID uuid.UUID
-	var make, model string
-	err := h.pool.QueryRow(c.Context(),
-		"SELECT id, make, model FROM vehicles WHERE qr_token = $1 AND tenant_id = $2 AND deleted_at IS NULL",
+	// Single query: check vehicles and bays in one round-trip.
+	var entityType, entityID, entityName string
+	err := db.Conn(c.UserContext(), h.pool).QueryRow(c.UserContext(),
+		`SELECT entity_type, id, name FROM (
+			SELECT 'vehicle' AS entity_type, id::text, make || ' ' || model AS name
+			FROM vehicles
+			WHERE qr_token = $1 AND tenant_id = $2 AND deleted_at IS NULL
+			UNION ALL
+			SELECT 'bay' AS entity_type, id::text, code AS name
+			FROM bays
+			WHERE qr_token = $1 AND tenant_id = $2
+		) sub LIMIT 1`,
 		token, tenantID,
-	).Scan(&vehicleID, &make, &model)
-	if err == nil {
-		actions := resolveVehicleActions(role)
-		return c.JSON(scanResult{
-			EntityType: "vehicle",
-			EntityID:   vehicleID.String(),
-			EntityName: make + " " + model,
-			Actions:    actions,
-		})
-	}
-	if err != pgx.ErrNoRows {
-		return handler.HandleServiceError(c, err)
+	).Scan(&entityType, &entityID, &entityName)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return c.Status(404).JSON(fiber.Map{"error": "not_found", "message": "QR token not recognized"})
+		}
+		log.Error().Err(err).Str("token", token).Msg("scan query failed")
+		return c.Status(500).JSON(fiber.Map{"error": "internal"})
 	}
 
-	// Try bays
-	var bayID uuid.UUID
-	var code string
-	err = h.pool.QueryRow(c.Context(),
-		"SELECT id, code FROM bays WHERE qr_token = $1 AND tenant_id = $2",
-		token, tenantID,
-	).Scan(&bayID, &code)
-	if err == nil {
-		return c.JSON(scanResult{
-			EntityType: "bay",
-			EntityID:   bayID.String(),
-			EntityName: code,
-			Actions:    []string{},
-		})
-	}
-	if err != pgx.ErrNoRows {
-		return handler.HandleServiceError(c, err)
+	var actions []string
+	if entityType == "vehicle" {
+		actions = resolveVehicleActions(role)
+	} else {
+		actions = []string{}
 	}
 
-	return c.Status(404).JSON(fiber.Map{"error": "not_found", "message": "QR token not recognized"})
+	return c.JSON(scanResult{
+		EntityType: entityType,
+		EntityID:   entityID,
+		EntityName: entityName,
+		Actions:    actions,
+	})
 }
 
 func resolveVehicleActions(role string) []string {

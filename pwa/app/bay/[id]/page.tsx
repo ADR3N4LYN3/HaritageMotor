@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBay } from "@/hooks/useBay";
-import { api } from "@/lib/api";
 import type { Vehicle } from "@/lib/types";
 import useSWR from "swr";
 
@@ -15,9 +14,8 @@ export default function BayPage() {
   const { bay, isLoading } = useBay(id);
 
   // Fetch vehicles in this bay
-  const { data: vehiclesData } = useSWR(
-    id ? `/vehicles?bay_id=${id}` : null,
-    (url: string) => api.get<{ data: Vehicle[] }>(url)
+  const { data: vehiclesData, error: vehiclesError } = useSWR<{ data: Vehicle[] }>(
+    id ? `/vehicles?bay_id=${id}` : null
   );
   const vehicles = vehiclesData?.data || [];
 
@@ -78,7 +76,12 @@ export default function BayPage() {
         </div>
 
         {/* Vehicle in this bay */}
-        {vehicles.length > 0 && (
+        {vehiclesError && (
+          <div className="text-center py-8 text-[#ef4444] text-sm">
+            Failed to load vehicles
+          </div>
+        )}
+        {!vehiclesError && vehicles.length > 0 && (
           <div>
             <h2 className="text-sm font-semibold text-[#0e0d0b]/40 uppercase tracking-wider mb-3">
               Vehicle in Bay

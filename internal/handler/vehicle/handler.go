@@ -64,7 +64,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 		filters.BayID = &bayUUID
 	}
 
-	vehicles, total, err := h.svc.List(c.Context(), tenantID, filters)
+	vehicles, total, err := h.svc.List(c.UserContext(), tenantID, filters)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -95,7 +95,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid vehicle id"})
 	}
 
-	vehicle, err := h.svc.GetByID(c.Context(), tenantID, vehicleID)
+	vehicle, err := h.svc.GetByID(c.UserContext(), tenantID, vehicleID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -151,7 +151,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		BayID:        req.BayID,
 	}
 
-	vehicle, err := h.svc.Create(c.Context(), tenantID, userID, svcReq)
+	vehicle, err := h.svc.Create(c.UserContext(), tenantID, userID, svcReq)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -209,7 +209,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 		Tags:         req.Tags,
 	}
 
-	vehicle, err := h.svc.Update(c.Context(), tenantID, vehicleID, svcReq)
+	vehicle, err := h.svc.Update(c.UserContext(), tenantID, vehicleID, svcReq)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -225,7 +225,7 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid vehicle id"})
 	}
 
-	if err := h.svc.Delete(c.Context(), tenantID, vehicleID); err != nil {
+	if err := h.svc.Delete(c.UserContext(), tenantID, vehicleID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
@@ -256,7 +256,7 @@ func (h *Handler) Move(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	if err := h.svc.Move(c.Context(), tenantID, userID, vehicleID, req.BayID, req.Reason); err != nil {
+	if err := h.svc.Move(c.UserContext(), tenantID, userID, vehicleID, req.BayID, req.Reason); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
@@ -282,7 +282,7 @@ func (h *Handler) Exit(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	if err := h.svc.Exit(c.Context(), tenantID, userID, vehicleID, req.Notes); err != nil {
+	if err := h.svc.Exit(c.UserContext(), tenantID, userID, vehicleID, req.Notes); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
@@ -303,7 +303,7 @@ func (h *Handler) GetTimeline(c *fiber.Ctx) error {
 	}
 	pag.Normalize()
 
-	events, total, err := h.svc.GetTimeline(c.Context(), tenantID, vehicleID, pag.Page, pag.PerPage)
+	events, total, err := h.svc.GetTimeline(c.UserContext(), tenantID, vehicleID, pag.Page, pag.PerPage)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}

@@ -25,9 +25,8 @@ export default function TaskPage() {
   const id = params.id as string;
 
   const { vehicle, isLoading: vehicleLoading } = useVehicle(id);
-  const { data: tasksData, isLoading: tasksLoading, mutate } = useSWR(
-    id ? `/tasks?vehicle_id=${id}&status=pending` : null,
-    (url: string) => api.get<{ data: Task[] }>(url)
+  const { data: tasksData, isLoading: tasksLoading, error: tasksError, mutate } = useSWR<{ data: Task[] }>(
+    id ? `/tasks?vehicle_id=${id}&status=pending` : null
   );
   const tasks = tasksData?.data || [];
 
@@ -109,6 +108,10 @@ export default function TaskPage() {
               {[1, 2, 3].map((i) => (
                 <div key={i} className="skeleton h-16 rounded-xl" />
               ))}
+            </div>
+          ) : tasksError ? (
+            <div className="text-center py-8 text-[#ef4444] text-sm">
+              Failed to load tasks
             </div>
           ) : tasks.length === 0 ? (
             <div className="text-center py-8">

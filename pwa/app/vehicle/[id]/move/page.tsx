@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { AppShell } from "@/components/layout/AppShell";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { BaySelector } from "@/components/ui/BaySelector";
-import { CameraCapture } from "@/components/camera/CameraCapture";
 import { SuccessScreen } from "@/components/ui/SuccessScreen";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
@@ -13,6 +13,14 @@ import { useBays } from "@/hooks/useBay";
 import { useCamera } from "@/hooks/useCamera";
 import { api } from "@/lib/api";
 import type { Bay } from "@/lib/types";
+
+const CameraCapture = dynamic(
+  () =>
+    import("@/components/camera/CameraCapture").then((mod) => ({
+      default: mod.CameraCapture,
+    })),
+  { ssr: false, loading: () => <div className="h-12 bg-neutral-100 animate-pulse rounded-xl" /> }
+);
 
 export default function MoveVehiclePage() {
   const params = useParams();
@@ -35,17 +43,23 @@ export default function MoveVehiclePage() {
     setError(null);
     try {
       await api.post(`/vehicles/${id}/move`, {
-        to_bay_id: selectedBay.id,
+        bay_id: selectedBay.id,
         notes: notes || undefined,
       });
 
-      // Upload photos if any
-      for (const photo of photos) {
-        const formData = new FormData();
-        formData.append("file", photo.file);
-        formData.append("doc_type", "other");
-        formData.append("notes", "Move photo");
-        await api.upload(`/vehicles/${id}/documents`, formData);
+      // Upload photos in parallel if any
+      if (photos.length > 0) {
+        const results = await Promise.allSettled(photos.map((photo) => {
+          const formData = new FormData();
+          formData.append("file", photo.file);
+          formData.append("doc_type", "other");
+          formData.append("notes", "Move photo");
+          return api.upload(`/vehicles/${id}/documents`, formData);
+        }));
+        const failed = results.filter((r) => r.status === "rejected");
+        if (failed.length > 0) {
+          throw new Error(`${failed.length} photo(s) failed to upload`);
+        }
       }
 
       if (typeof navigator !== "undefined" && navigator.vibrate) {

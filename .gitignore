@@ -19,3 +19,9 @@ pwa/public/sw.js
 pwa/public/sw.js.map
 pwa/public/workbox-*.js
 pwa/public/workbox-*.js.map
+
+# Remotion video project
+video/
+
+# Claude Code
+.claude/

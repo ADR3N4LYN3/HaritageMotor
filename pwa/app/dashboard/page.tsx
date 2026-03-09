@@ -1,27 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { VehicleCard } from "@/components/ui/VehicleCard";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
-import { api } from "@/lib/api";
 import type { Vehicle } from "@/lib/types";
 import useSWR from "swr";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  const queryParams = new URLSearchParams();
-  if (search) queryParams.set("search", search);
-  if (statusFilter) queryParams.set("status", statusFilter);
-  const queryString = queryParams.toString();
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchInput), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
-  const { data, isLoading } = useSWR(
+  const queryString = useMemo(() => {
+    const queryParams = new URLSearchParams();
+    if (debouncedSearch) queryParams.set("search", debouncedSearch);
+    if (statusFilter) queryParams.set("status", statusFilter);
+    return queryParams.toString();
+  }, [debouncedSearch, statusFilter]);
+
+  const { data, isLoading, error } = useSWR<{ data: Vehicle[]; total_count: number }>(
     `/vehicles${queryString ? `?${queryString}` : ""}`,
-    (url: string) => api.get<{ data: Vehicle[]; total_count: number }>(url),
     { refreshInterval: 30000 }
   );
 
@@ -37,8 +43,8 @@ export default function DashboardPage() {
         {/* Search */}
         <input
           type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search vehicles..."
           className="w-full px-4 py-3 rounded-xl border border-[#0e0d0b]/10 bg-white text-[#0e0d0b] placeholder:text-[#0e0d0b]/30 focus:outline-none focus:ring-2 focus:ring-[#b8955a]/50 text-sm"
         />
@@ -66,6 +72,10 @@ export default function DashboardPage() {
             {[1, 2, 3, 4].map((i) => (
               <VehicleCardSkeleton key={i} />
             ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-[#ef4444] text-sm">
+            Failed to load vehicles
           </div>
         ) : vehicles.length === 0 ? (
           <div className="text-center py-12 text-[#0e0d0b]/40 text-sm">

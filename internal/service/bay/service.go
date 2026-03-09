@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -69,7 +70,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, status, zone str
 		 ORDER BY code ASC
 		 LIMIT @limit OFFSET @offset`, whereClause)
 
-	rows, err := s.pool.Query(ctx, query, args)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, args)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to list bays")
 		return nil, 0, fmt.Errorf("listing bays: %w", err)
@@ -77,7 +78,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, status, zone str
 	defer rows.Close()
 
 	var total int
-	bays := make([]domain.Bay, 0)
+	bays := make([]domain.Bay, 0, perPage)
 	for rows.Next() {
 		var b domain.Bay
 		if err := rows.Scan(&b.ID, &b.TenantID, &b.Code, &b.Zone, &b.Description,
@@ -101,7 +102,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, status, zone str
 
 func (s *Service) GetByID(ctx context.Context, tenantID, bayID uuid.UUID) (*domain.Bay, error) {
 	var b domain.Bay
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, code, zone, description, status, features, qr_token, created_at, updated_at
 		 FROM bays WHERE id = $1 AND tenant_id = $2`, bayID, tenantID).
 		Scan(&b.ID, &b.TenantID, &b.Code, &b.Zone, &b.Description,
@@ -122,7 +123,7 @@ func (s *Service) GetByID(ctx context.Context, tenantID, bayID uuid.UUID) (*doma
 func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateBayRequest) (*domain.Bay, error) {
 	// Check for unique code per tenant
 	var exists bool
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT EXISTS(SELECT 1 FROM bays WHERE tenant_id = $1 AND code = $2)`,
 		tenantID, req.Code).Scan(&exists)
 	if err != nil {
@@ -139,7 +140,7 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateBayR
 	}
 
 	var b domain.Bay
-	err = s.pool.QueryRow(ctx,
+	err = db.Conn(ctx, s.pool).QueryRow(ctx,
 		`INSERT INTO bays (tenant_id, code, zone, description, status, features)
 		 VALUES ($1, $2, $3, $4, $5, $6)
 		 RETURNING id, tenant_id, code, zone, description, status, features, qr_token, created_at, updated_at`,
@@ -168,7 +169,7 @@ func (s *Service) Update(ctx context.Context, tenantID, bayID uuid.UUID, req Upd
 	// If code is being changed, check uniqueness
 	if req.Code != nil && *req.Code != existing.Code {
 		var exists bool
-		err := s.pool.QueryRow(ctx,
+		err := db.Conn(ctx, s.pool).QueryRow(ctx,
 			`SELECT EXISTS(SELECT 1 FROM bays WHERE tenant_id = $1 AND code = $2 AND id != $3)`,
 			tenantID, *req.Code, bayID).Scan(&exists)
 		if err != nil {
@@ -213,7 +214,7 @@ func (s *Service) Update(ctx context.Context, tenantID, bayID uuid.UUID, req Upd
 	}
 
 	var b domain.Bay
-	err = s.pool.QueryRow(ctx,
+	err = db.Conn(ctx, s.pool).QueryRow(ctx,
 		`UPDATE bays SET code = $1, zone = $2, description = $3, status = $4, features = $5, updated_at = NOW()
 		 WHERE id = $6 AND tenant_id = $7
 		 RETURNING id, tenant_id, code, zone, description, status, features, qr_token, created_at, updated_at`,
@@ -233,28 +234,30 @@ func (s *Service) Update(ctx context.Context, tenantID, bayID uuid.UUID, req Upd
 }
 
 func (s *Service) Delete(ctx context.Context, tenantID, bayID uuid.UUID) error {
-	bay, err := s.GetByID(ctx, tenantID, bayID)
-	if err != nil {
-		return err
-	}
-
-	if bay.Status != domain.BayStatusFree {
-		return &domain.ErrValidation{
-			Field:   "status",
-			Message: fmt.Sprintf("cannot delete bay with status %q, must be free", bay.Status),
-		}
-	}
-
-	ct, err := s.pool.Exec(ctx,
-		`DELETE FROM bays WHERE id = $1 AND tenant_id = $2`, bayID, tenantID)
+	// Try to delete in a single query — only free bays may be deleted.
+	ct, err := db.Conn(ctx, s.pool).Exec(ctx,
+		`DELETE FROM bays WHERE id = $1 AND tenant_id = $2 AND status = $3`,
+		bayID, tenantID, domain.BayStatusFree)
 	if err != nil {
 		log.Error().Err(err).Str("bay_id", bayID.String()).Msg("failed to delete bay")
 		return fmt.Errorf("deleting bay: %w", err)
 	}
-	if ct.RowsAffected() == 0 {
-		return &domain.ErrNotFound{Resource: "bay", ID: bayID}
+	if ct.RowsAffected() == 1 {
+		log.Info().Str("bay_id", bayID.String()).Msg("bay deleted")
+		return nil
 	}
 
-	log.Info().Str("bay_id", bayID.String()).Msg("bay deleted")
-	return nil
+	// 0 rows affected — distinguish "not found" from "wrong status".
+	var status string
+	err = db.Conn(ctx, s.pool).QueryRow(ctx,
+		`SELECT status FROM bays WHERE id = $1 AND tenant_id = $2`, bayID, tenantID,
+	).Scan(&status)
+	if err != nil {
+		// Row truly does not exist.
+		return &domain.ErrNotFound{Resource: "bay", ID: bayID}
+	}
+	return &domain.ErrValidation{
+		Field:   "status",
+		Message: fmt.Sprintf("cannot delete bay with status %q, must be free", status),
+	}
 }

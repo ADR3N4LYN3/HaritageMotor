@@ -22,9 +22,11 @@ export function useCamera() {
   }, []);
 
   const clearPhotos = useCallback(() => {
-    photos.forEach((p) => URL.revokeObjectURL(p.preview));
-    setPhotos([]);
-  }, [photos]);
+    setPhotos((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.preview));
+      return [];
+    });
+  }, []);
 
   return { photos, addPhoto, removePhoto, clearPhotos };
 }

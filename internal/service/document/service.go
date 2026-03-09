@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -32,21 +33,34 @@ func NewService(pool *pgxpool.Pool, s3Bucket string) *Service {
 	return &Service{pool: pool, s3Bucket: s3Bucket}
 }
 
-func (s *Service) List(ctx context.Context, tenantID, vehicleID uuid.UUID) ([]domain.Document, error) {
-	rows, err := s.pool.Query(ctx,
-		`SELECT id, tenant_id, vehicle_id, uploaded_by, doc_type, filename, s3_key, mime_type, size_bytes, expires_at, notes, created_at, deleted_at
+func (s *Service) List(ctx context.Context, tenantID, vehicleID uuid.UUID, page, perPage int) ([]domain.Document, int, error) {
+	// Normalize pagination
+	if page < 1 {
+		page = 1
+	}
+	if perPage < 1 || perPage > 100 {
+		perPage = 20
+	}
+	offset := (page - 1) * perPage
+
+	// Single query with COUNT(*) OVER() to avoid a separate count query.
+	rows, err := db.Conn(ctx, s.pool).Query(ctx,
+		`SELECT id, tenant_id, vehicle_id, uploaded_by, doc_type, filename, s3_key, mime_type, size_bytes, expires_at, notes, created_at, deleted_at,
+		 COUNT(*) OVER() AS total_count
 		 FROM documents
 		 WHERE tenant_id = $1 AND vehicle_id = $2 AND deleted_at IS NULL
-		 ORDER BY created_at DESC`,
-		tenantID, vehicleID,
+		 ORDER BY created_at DESC
+		 LIMIT $3 OFFSET $4`,
+		tenantID, vehicleID, perPage, offset,
 	)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to query documents")
-		return nil, fmt.Errorf("query documents: %w", err)
+		return nil, 0, fmt.Errorf("query documents: %w", err)
 	}
 	defer rows.Close()
 
-	docs := make([]domain.Document, 0)
+	var total int
+	docs := make([]domain.Document, 0, perPage)
 	for rows.Next() {
 		var doc domain.Document
 		if err := rows.Scan(
@@ -54,24 +68,25 @@ func (s *Service) List(ctx context.Context, tenantID, vehicleID uuid.UUID) ([]do
 			&doc.DocType, &doc.Filename, &doc.S3Key, &doc.MimeType,
 			&doc.SizeBytes, &doc.ExpiresAt, &doc.Notes,
 			&doc.CreatedAt, &doc.DeletedAt,
+			&total,
 		); err != nil {
 			log.Error().Err(err).Msg("failed to scan document row")
-			return nil, fmt.Errorf("scan document: %w", err)
+			return nil, 0, fmt.Errorf("scan document: %w", err)
 		}
 		docs = append(docs, doc)
 	}
 	if err := rows.Err(); err != nil {
 		log.Error().Err(err).Msg("error iterating document rows")
-		return nil, fmt.Errorf("iterate documents: %w", err)
+		return nil, 0, fmt.Errorf("iterate documents: %w", err)
 	}
 
-	return docs, nil
+	return docs, total, nil
 }
 
 func (s *Service) GetByID(ctx context.Context, tenantID, vehicleID, docID uuid.UUID) (*domain.Document, error) {
 	var doc domain.Document
 
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, vehicle_id, uploaded_by, doc_type, filename, s3_key, mime_type, size_bytes, expires_at, notes, created_at, deleted_at
 		 FROM documents
 		 WHERE id = $1 AND tenant_id = $2 AND vehicle_id = $3 AND deleted_at IS NULL`,
@@ -111,7 +126,7 @@ func (s *Service) Create(ctx context.Context, tenantID, vehicleID, userID uuid.U
 		CreatedAt:  now,
 	}
 
-	tx, err := s.pool.Begin(ctx)
+	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to begin transaction")
 		return nil, fmt.Errorf("begin tx: %w", err)
@@ -168,7 +183,7 @@ func (s *Service) Create(ctx context.Context, tenantID, vehicleID, userID uuid.U
 }
 
 func (s *Service) Delete(ctx context.Context, tenantID, vehicleID, docID uuid.UUID) error {
-	result, err := s.pool.Exec(ctx,
+	result, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE documents SET deleted_at = NOW()
 		 WHERE id = $1 AND tenant_id = $2 AND vehicle_id = $3 AND deleted_at IS NULL`,
 		docID, tenantID, vehicleID,

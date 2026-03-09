@@ -16,8 +16,8 @@ const config: Config = {
         danger: "#ef4444",
       },
       fontFamily: {
-        display: ["Cormorant Garamond", "serif"],
-        sans: ["DM Sans", "sans-serif"],
+        display: ["var(--font-display)", "Cormorant Garamond", "serif"],
+        sans: ["var(--font-sans)", "DM Sans", "sans-serif"],
       },
     },
   },

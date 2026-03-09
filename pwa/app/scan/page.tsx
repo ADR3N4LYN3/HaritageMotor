@@ -2,9 +2,22 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { QRScanner } from "@/components/scanner/QRScanner";
+import dynamic from "next/dynamic";
 import { api, ApiError } from "@/lib/api";
 import type { ScanResult } from "@/lib/types";
+
+const QRScanner = dynamic(
+  () =>
+    import("@/components/scanner/QRScanner").then((mod) => ({
+      default: mod.QRScanner,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-64 bg-neutral-900 animate-pulse rounded-xl" />
+    ),
+  }
+);
 
 export default function ScanPage() {
   const router = useRouter();

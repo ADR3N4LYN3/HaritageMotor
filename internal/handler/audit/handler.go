@@ -3,6 +3,7 @@ package audit
 import (
 	"fmt"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -34,56 +35,46 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	}
 	filters.Normalize()
 
+	// Single query with COUNT(*) OVER() — avoids a separate COUNT(*) round-trip.
 	query := `SELECT id, tenant_id, user_id, action, resource_type, resource_id,
-		old_values, new_values, ip_address, user_agent, request_id, occurred_at
+		old_values, new_values, ip_address, user_agent, request_id, occurred_at,
+		COUNT(*) OVER() AS total_count
 		FROM audit_log WHERE tenant_id = $1`
-	countQuery := `SELECT COUNT(*) FROM audit_log WHERE tenant_id = $1`
 	args := []interface{}{tenantID}
 	argIdx := 2
 
 	if filters.UserID != "" {
 		query += ` AND user_id = $` + itoa(argIdx)
-		countQuery += ` AND user_id = $` + itoa(argIdx)
 		args = append(args, filters.UserID)
 		argIdx++
 	}
 	if filters.ResourceType != "" {
 		query += ` AND resource_type = $` + itoa(argIdx)
-		countQuery += ` AND resource_type = $` + itoa(argIdx)
 		args = append(args, filters.ResourceType)
 		argIdx++
 	}
 	if filters.DateFrom != "" {
 		query += ` AND occurred_at >= $` + itoa(argIdx)
-		countQuery += ` AND occurred_at >= $` + itoa(argIdx)
 		args = append(args, filters.DateFrom)
 		argIdx++
 	}
 	if filters.DateTo != "" {
 		query += ` AND occurred_at <= $` + itoa(argIdx)
-		countQuery += ` AND occurred_at <= $` + itoa(argIdx)
 		args = append(args, filters.DateTo)
 		argIdx++
 	}
 
-	// Count
-	var totalCount int
-	err := h.pool.QueryRow(c.Context(), countQuery, args...).Scan(&totalCount)
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "database error"})
-	}
-
-	// Paginated query
 	query += ` ORDER BY occurred_at DESC LIMIT $` + itoa(argIdx) + ` OFFSET $` + itoa(argIdx+1)
 	args = append(args, filters.PerPage, filters.Offset())
 
-	rows, err := h.pool.Query(c.Context(), query, args...)
+	rows, err := db.Conn(c.UserContext(), h.pool).Query(c.UserContext(), query, args...)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "database error"})
 	}
 	defer rows.Close()
 
-	entries := make([]fiber.Map, 0)
+	var totalCount int
+	entries := make([]fiber.Map, 0, filters.PerPage)
 	for rows.Next() {
 		var entry struct {
 			ID           string
@@ -104,6 +95,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 			&entry.ResourceType, &entry.ResourceID, &entry.OldValues,
 			&entry.NewValues, &entry.IPAddress, &entry.UserAgent,
 			&entry.RequestID, &entry.OccurredAt,
+			&totalCount,
 		)
 		if err != nil {
 			continue

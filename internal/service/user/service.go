@@ -8,6 +8,7 @@ import (
 	"unicode"
 
 	"github.com/chriis/heritage-motor/internal/auth"
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -37,21 +38,34 @@ func NewService(pool *pgxpool.Pool) *Service {
 	return &Service{pool: pool}
 }
 
-func (s *Service) List(ctx context.Context, tenantID uuid.UUID) ([]domain.User, error) {
-	rows, err := s.pool.Query(ctx,
-		`SELECT id, tenant_id, email, password_hash, first_name, last_name, role, totp_secret, totp_enabled, last_login_at, created_at, updated_at, deleted_at
+func (s *Service) List(ctx context.Context, tenantID uuid.UUID, page, perPage int) ([]domain.User, int, error) {
+	// Normalize pagination
+	if page < 1 {
+		page = 1
+	}
+	if perPage < 1 || perPage > 100 {
+		perPage = 20
+	}
+	offset := (page - 1) * perPage
+
+	// Single query with COUNT(*) OVER() to avoid a separate count query.
+	rows, err := db.Conn(ctx, s.pool).Query(ctx,
+		`SELECT id, tenant_id, email, password_hash, first_name, last_name, role, totp_secret, totp_enabled, last_login_at, created_at, updated_at, deleted_at,
+		 COUNT(*) OVER() AS total_count
 		 FROM users
 		 WHERE tenant_id = $1 AND deleted_at IS NULL
-		 ORDER BY created_at ASC`,
-		tenantID,
+		 ORDER BY created_at ASC
+		 LIMIT $2 OFFSET $3`,
+		tenantID, perPage, offset,
 	)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to query users")
-		return nil, fmt.Errorf("query users: %w", err)
+		return nil, 0, fmt.Errorf("query users: %w", err)
 	}
 	defer rows.Close()
 
-	users := make([]domain.User, 0)
+	var total int
+	users := make([]domain.User, 0, perPage)
 	for rows.Next() {
 		var u domain.User
 		if err := rows.Scan(
@@ -59,18 +73,19 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID) ([]domain.User, 
 			&u.FirstName, &u.LastName, &u.Role,
 			&u.TOTPSecret, &u.TOTPEnabled, &u.LastLoginAt,
 			&u.CreatedAt, &u.UpdatedAt, &u.DeletedAt,
+			&total,
 		); err != nil {
 			log.Error().Err(err).Msg("failed to scan user row")
-			return nil, fmt.Errorf("scan user: %w", err)
+			return nil, 0, fmt.Errorf("scan user: %w", err)
 		}
 		users = append(users, u)
 	}
 	if err := rows.Err(); err != nil {
 		log.Error().Err(err).Msg("error iterating user rows")
-		return nil, fmt.Errorf("iterate users: %w", err)
+		return nil, 0, fmt.Errorf("iterate users: %w", err)
 	}
 
-	return users, nil
+	return users, total, nil
 }
 
 // validatePasswordStrength enforces password complexity rules:
@@ -116,7 +131,7 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateUser
 	// Check email uniqueness within tenant
 	email := strings.ToLower(strings.TrimSpace(req.Email))
 	var exists bool
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT EXISTS(SELECT 1 FROM users WHERE tenant_id = $1 AND LOWER(email) = $2 AND deleted_at IS NULL)`,
 		tenantID, email,
 	).Scan(&exists)
@@ -149,7 +164,7 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateUser
 		UpdatedAt:    now,
 	}
 
-	_, err = s.pool.Exec(ctx,
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, role, totp_enabled, created_at, updated_at)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
 		u.ID, u.TenantID, u.Email, u.PasswordHash,
@@ -205,7 +220,7 @@ func (s *Service) Update(ctx context.Context, tenantID, userID uuid.UUID, req Up
 	)
 
 	var u domain.User
-	err := s.pool.QueryRow(ctx, query, args).Scan(
+	err := db.Conn(ctx, s.pool).QueryRow(ctx, query, args).Scan(
 		&u.ID, &u.TenantID, &u.Email, &u.PasswordHash,
 		&u.FirstName, &u.LastName, &u.Role,
 		&u.TOTPSecret, &u.TOTPEnabled, &u.LastLoginAt,
@@ -227,7 +242,7 @@ func (s *Service) Update(ctx context.Context, tenantID, userID uuid.UUID, req Up
 }
 
 func (s *Service) Delete(ctx context.Context, tenantID, userID uuid.UUID) error {
-	result, err := s.pool.Exec(ctx,
+	result, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET deleted_at = NOW(), updated_at = NOW()
 		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
 		userID, tenantID,

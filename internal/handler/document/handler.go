@@ -39,12 +39,23 @@ func (h *Handler) List(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid vehicle id"})
 	}
 
-	docs, err := h.svc.List(c.Context(), tenantID, vehicleID)
+	var params handler.PaginationParams
+	if err := c.QueryParser(&params); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid query parameters"})
+	}
+	params.Normalize()
+
+	docs, total, err := h.svc.List(c.UserContext(), tenantID, vehicleID, params.Page, params.PerPage)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
-	return c.JSON(fiber.Map{"data": docs})
+	return c.JSON(handler.PaginatedResponse{
+		Data:       docs,
+		TotalCount: total,
+		Page:       params.Page,
+		PerPage:    params.PerPage,
+	})
 }
 
 // GetByID GET /vehicles/:id/documents/:docId
@@ -61,7 +72,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid document id"})
 	}
 
-	doc, err := h.svc.GetByID(c.Context(), tenantID, vehicleID, docID)
+	doc, err := h.svc.GetByID(c.UserContext(), tenantID, vehicleID, docID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -143,7 +154,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		}
 		defer f.Close()
 
-		if err := h.s3.Upload(c.Context(), s3Key, f, file.Header.Get("Content-Type")); err != nil {
+		if err := h.s3.Upload(c.UserContext(), s3Key, f, file.Header.Get("Content-Type")); err != nil {
 			log.Error().Err(err).Str("s3_key", s3Key).Msg("failed to upload to S3")
 			return c.Status(500).JSON(fiber.Map{"error": "failed to upload file"})
 		}
@@ -159,7 +170,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		Notes:     notesPtr,
 	}
 
-	doc, err := h.svc.Create(c.Context(), tenantID, vehicleID, userID, req)
+	doc, err := h.svc.Create(c.UserContext(), tenantID, vehicleID, userID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -181,7 +192,7 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid document id"})
 	}
 
-	if err := h.svc.Delete(c.Context(), tenantID, vehicleID, docID); err != nil {
+	if err := h.svc.Delete(c.UserContext(), tenantID, vehicleID, docID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

@@ -13,7 +13,8 @@ type Config struct {
 	AppPort    string
 	AppBaseURL string
 
-	DatabaseURL string
+	DatabaseURL    string
+	DatabaseAppURL string // App role connection (RLS enforced); falls back to DatabaseURL in dev
 
 	JWTSecret        string
 	JWTAccessExpiry  time.Duration
@@ -39,7 +40,8 @@ func Load() (*Config, error) {
 		AppPort:    getEnv("APP_PORT", "3000"),
 		AppBaseURL: getEnv("APP_BASE_URL", "http://localhost:3000"),
 
-		DatabaseURL: getEnv("DATABASE_URL", "postgresql://heritage_motor:password@localhost:5432/heritage_motor?sslmode=disable"),
+		DatabaseURL:    getEnv("DATABASE_URL", "postgresql://heritage_motor:password@localhost:5432/heritage_motor?sslmode=disable"),
+		DatabaseAppURL: getEnv("DATABASE_APP_URL", ""),
 
 		JWTSecret: getEnv("JWT_SECRET", "dev-secret-change-in-production"),
 
@@ -69,8 +71,9 @@ func Load() (*Config, error) {
 	// Validate required config in production
 	if cfg.AppEnv == "production" {
 		required := map[string]string{
-			"DATABASE_URL":   cfg.DatabaseURL,
-			"S3_ENDPOINT":    cfg.S3Endpoint,
+			"DATABASE_URL":     cfg.DatabaseURL,
+			"DATABASE_APP_URL": cfg.DatabaseAppURL,
+			"S3_ENDPOINT":      cfg.S3Endpoint,
 			"S3_ACCESS_KEY":  cfg.S3AccessKey,
 			"S3_SECRET_KEY":  cfg.S3SecretKey,
 			"S3_BUCKET":      cfg.S3Bucket,

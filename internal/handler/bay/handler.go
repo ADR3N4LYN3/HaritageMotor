@@ -41,7 +41,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	}
 	q.Normalize()
 
-	bays, total, err := h.service.List(c.Context(), tenantID, q.Status, q.Zone, q.Page, q.PerPage)
+	bays, total, err := h.service.List(c.UserContext(), tenantID, q.Status, q.Zone, q.Page, q.PerPage)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -62,7 +62,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid bay id"})
 	}
 
-	bay, err := h.service.GetByID(c.Context(), tenantID, bayID)
+	bay, err := h.service.GetByID(c.UserContext(), tenantID, bayID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -81,7 +81,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	bay, err := h.service.Create(c.Context(), tenantID, req)
+	bay, err := h.service.Create(c.UserContext(), tenantID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -102,7 +102,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	bay, err := h.service.Update(c.Context(), tenantID, bayID, req)
+	bay, err := h.service.Update(c.UserContext(), tenantID, bayID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -118,7 +118,7 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid bay id"})
 	}
 
-	if err := h.service.Delete(c.Context(), tenantID, bayID); err != nil {
+	if err := h.service.Delete(c.UserContext(), tenantID, bayID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -115,7 +116,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters TaskFilt
 		 ORDER BY created_at DESC
 		 LIMIT @limit OFFSET @offset`, taskColumns, whereClause)
 
-	rows, err := s.pool.Query(ctx, query, args)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, args)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to list tasks")
 		return nil, 0, fmt.Errorf("listing tasks: %w", err)
@@ -123,7 +124,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters TaskFilt
 	defer rows.Close()
 
 	var total int
-	tasks := make([]domain.Task, 0)
+	tasks := make([]domain.Task, 0, filters.PerPage)
 	for rows.Next() {
 		var t domain.Task
 		if err := rows.Scan(&t.ID, &t.TenantID, &t.VehicleID, &t.AssignedTo, &t.TaskType,
@@ -145,7 +146,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters TaskFilt
 
 func (s *Service) GetByID(ctx context.Context, tenantID, taskID uuid.UUID) (*domain.Task, error) {
 	query := fmt.Sprintf(`SELECT %s FROM tasks WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`, taskColumns)
-	t, err := scanTask(s.pool.QueryRow(ctx, query, taskID, tenantID))
+	t, err := scanTask(db.Conn(ctx, s.pool).QueryRow(ctx, query, taskID, tenantID))
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, &domain.ErrNotFound{Resource: "task", ID: taskID}
@@ -178,7 +179,7 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateTask
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING %s`, taskColumns)
 
-	t, err := scanTask(s.pool.QueryRow(ctx, query,
+	t, err := scanTask(db.Conn(ctx, s.pool).QueryRow(ctx, query,
 		tenantID, req.VehicleID, req.AssignedTo, req.TaskType, req.Title, req.Description,
 		domain.TaskStatusPending, req.DueDate, req.RecurrenceDays, nextDueDate))
 	if err != nil {
@@ -259,7 +260,7 @@ func (s *Service) Update(ctx context.Context, tenantID, taskID uuid.UUID, req Up
 		WHERE id = $9 AND tenant_id = $10 AND deleted_at IS NULL
 		RETURNING %s`, taskColumns)
 
-	t, err := scanTask(s.pool.QueryRow(ctx, query,
+	t, err := scanTask(db.Conn(ctx, s.pool).QueryRow(ctx, query,
 		assignedTo, taskType, title, description, status, dueDate,
 		recurrenceDays, nextDueDate, taskID, tenantID))
 	if err != nil {
@@ -272,7 +273,7 @@ func (s *Service) Update(ctx context.Context, tenantID, taskID uuid.UUID, req Up
 }
 
 func (s *Service) Complete(ctx context.Context, tenantID, userID, taskID uuid.UUID) error {
-	tx, err := s.pool.Begin(ctx)
+	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to begin transaction")
 		return fmt.Errorf("beginning transaction: %w", err)
@@ -347,7 +348,7 @@ func (s *Service) Complete(ctx context.Context, tenantID, userID, taskID uuid.UU
 }
 
 func (s *Service) Delete(ctx context.Context, tenantID, taskID uuid.UUID) error {
-	ct, err := s.pool.Exec(ctx,
+	ct, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE tasks SET deleted_at = NOW(), updated_at = NOW()
 		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
 		taskID, tenantID)

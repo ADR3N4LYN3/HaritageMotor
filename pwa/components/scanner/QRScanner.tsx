@@ -13,6 +13,12 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
   const [scanning, setScanning] = useState(true);
   const readerRef = useRef<BrowserQRCodeReader | null>(null);
 
+  // Stable refs for callbacks to avoid restarting scanner on every render
+  const onResultRef = useRef(onResult);
+  const onErrorRef = useRef(onError);
+  useEffect(() => { onResultRef.current = onResult; }, [onResult]);
+  useEffect(() => { onErrorRef.current = onError; }, [onError]);
+
   useEffect(() => {
     if (!scanning) return;
 
@@ -29,7 +35,7 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
         const deviceId = backCamera?.deviceId || videoInputDevices[0]?.deviceId;
 
         if (!deviceId) {
-          onError?.("No camera found");
+          onErrorRef.current?.("No camera found");
           return;
         }
 
@@ -43,12 +49,12 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
               if (typeof navigator !== "undefined" && navigator.vibrate) {
                 navigator.vibrate(100);
               }
-              onResult(result.getText());
+              onResultRef.current(result.getText());
             }
           }
         );
       } catch {
-        onError?.("Camera access denied");
+        onErrorRef.current?.("Camera access denied");
       }
     };
 
@@ -64,7 +70,7 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
         }
       }
     };
-  }, [scanning, onResult, onError]);
+  }, [scanning]);
 
   return (
     <div className="relative w-full h-full bg-black">

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/chriis/heritage-motor/internal/auth"
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -54,7 +55,7 @@ func NewService(pool *pgxpool.Pool, jwtManager *auth.JWTManager) *Service {
 // Queries without RLS context because the tenant is unknown at login time.
 func (s *Service) Login(ctx context.Context, email, password string) (*LoginResult, *MFAPendingResult, error) {
 	var user domain.User
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
 		        role, totp_secret, totp_enabled, last_login_at,
 		        created_at, updated_at, deleted_at
@@ -76,7 +77,7 @@ func (s *Service) Login(ctx context.Context, email, password string) (*LoginResu
 
 	// Verify the tenant is active.
 	var tenantActive bool
-	err = s.pool.QueryRow(ctx,
+	err = db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT active FROM tenants WHERE id = $1 AND deleted_at IS NULL`,
 		user.TenantID,
 	).Scan(&tenantActive)
@@ -114,7 +115,7 @@ func (s *Service) VerifyMFA(ctx context.Context, mfaPendingToken, code string) (
 	}
 
 	var user domain.User
-	err = s.pool.QueryRow(ctx,
+	err = db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
 		        role, totp_secret, totp_enabled, last_login_at,
 		        created_at, updated_at, deleted_at
@@ -149,7 +150,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Login
 	var tokenID, userID, tenantID uuid.UUID
 	var expiresAt time.Time
 	var revokedAt *time.Time
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, user_id, tenant_id, expires_at, revoked_at
 		 FROM refresh_tokens
 		 WHERE token_hash = $1`,
@@ -170,7 +171,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Login
 	}
 
 	// Revoke the old token.
-	_, err = s.pool.Exec(ctx,
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE refresh_tokens SET revoked_at = NOW() WHERE id = $1`,
 		tokenID,
 	)
@@ -180,7 +181,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Login
 
 	// Fetch user for the new access token claims.
 	var user domain.User
-	err = s.pool.QueryRow(ctx,
+	err = db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
 		        role, totp_secret, totp_enabled, last_login_at,
 		        created_at, updated_at, deleted_at
@@ -204,7 +205,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Login
 func (s *Service) Logout(ctx context.Context, refreshToken string) error {
 	tokenHash := hashToken(refreshToken)
 
-	tag, err := s.pool.Exec(ctx,
+	tag, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE refresh_tokens SET revoked_at = NOW()
 		 WHERE token_hash = $1 AND revoked_at IS NULL`,
 		tokenHash,
@@ -222,7 +223,7 @@ func (s *Service) Logout(ctx context.Context, refreshToken string) error {
 // GetMe returns the current user profile.
 func (s *Service) GetMe(ctx context.Context, userID, tenantID uuid.UUID) (*domain.User, error) {
 	var user domain.User
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
 		        role, totp_secret, totp_enabled, last_login_at,
 		        created_at, updated_at, deleted_at
@@ -251,7 +252,7 @@ func (s *Service) SetupMFA(ctx context.Context, userID, tenantID uuid.UUID) (*MF
 	// Fetch user email for the TOTP issuer label.
 	var email string
 	var totpEnabled bool
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT email, totp_enabled FROM users
 		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
 		userID, tenantID,
@@ -273,7 +274,7 @@ func (s *Service) SetupMFA(ctx context.Context, userID, tenantID uuid.UUID) (*MF
 	}
 
 	// Store the secret but do not enable TOTP yet.
-	_, err = s.pool.Exec(ctx,
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET totp_secret = $1, updated_at = NOW()
 		 WHERE id = $2 AND tenant_id = $3`,
 		key.Secret(), userID, tenantID,
@@ -292,7 +293,7 @@ func (s *Service) SetupMFA(ctx context.Context, userID, tenantID uuid.UUID) (*MF
 func (s *Service) EnableMFA(ctx context.Context, userID, tenantID uuid.UUID, code string) error {
 	var secret *string
 	var totpEnabled bool
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT totp_secret, totp_enabled FROM users
 		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
 		userID, tenantID,
@@ -315,7 +316,7 @@ func (s *Service) EnableMFA(ctx context.Context, userID, tenantID uuid.UUID, cod
 		return &domain.ErrUnauthorized{Message: "invalid mfa code"}
 	}
 
-	_, err = s.pool.Exec(ctx,
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET totp_enabled = true, updated_at = NOW()
 		 WHERE id = $1 AND tenant_id = $2`,
 		userID, tenantID,
@@ -329,7 +330,7 @@ func (s *Service) EnableMFA(ctx context.Context, userID, tenantID uuid.UUID, cod
 
 // DisableMFA turns off TOTP for a user and clears the stored secret.
 func (s *Service) DisableMFA(ctx context.Context, userID, tenantID uuid.UUID) error {
-	tag, err := s.pool.Exec(ctx,
+	tag, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET totp_enabled = false, totp_secret = NULL, updated_at = NOW()
 		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
 		userID, tenantID,
@@ -360,7 +361,7 @@ func (s *Service) issueTokens(ctx context.Context, user *domain.User) (*LoginRes
 	tokenHash := hashToken(rawRefresh)
 	expiresAt := time.Now().Add(s.jwt.RefreshExpiry())
 
-	_, err = s.pool.Exec(ctx,
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`INSERT INTO refresh_tokens (id, user_id, tenant_id, token_hash, expires_at, created_at)
 		 VALUES ($1, $2, $3, $4, $5, NOW())`,
 		uuid.New(), user.ID, user.TenantID, tokenHash, expiresAt,
@@ -379,7 +380,7 @@ func (s *Service) issueTokens(ctx context.Context, user *domain.User) (*LoginRes
 		}()
 		bgCtx, bgCancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer bgCancel()
-		_, dbErr := s.pool.Exec(bgCtx,
+		_, dbErr := db.Conn(bgCtx, s.pool).Exec(bgCtx,
 			`UPDATE users SET last_login_at = NOW() WHERE id = $1`,
 			userIDCopy,
 		)

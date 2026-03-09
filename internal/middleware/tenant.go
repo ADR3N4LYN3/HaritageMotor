@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -22,7 +23,8 @@ var (
 )
 
 // lookupTenantActive checks the cache first, then queries the DB.
-func lookupTenantActive(pool *pgxpool.Pool, c *fiber.Ctx, tenantID uuid.UUID) (bool, error) {
+// Uses the owner pool because the tenants table has no RLS.
+func lookupTenantActive(ownerPool *pgxpool.Pool, c *fiber.Ctx, tenantID uuid.UUID) (bool, error) {
 	key := tenantID.String()
 
 	if cached, ok := tenantCache.Load(key); ok {
@@ -34,7 +36,7 @@ func lookupTenantActive(pool *pgxpool.Pool, c *fiber.Ctx, tenantID uuid.UUID) (b
 	}
 
 	var active bool
-	err := pool.QueryRow(c.Context(),
+	err := ownerPool.QueryRow(c.UserContext(),
 		`SELECT active FROM tenants WHERE id = $1 AND deleted_at IS NULL`, tenantID,
 	).Scan(&active)
 	if err != nil {
@@ -49,7 +51,13 @@ func lookupTenantActive(pool *pgxpool.Pool, c *fiber.Ctx, tenantID uuid.UUID) (b
 	return active, nil
 }
 
-func TenantMiddleware(pool *pgxpool.Pool) fiber.Handler {
+// TenantMiddleware validates the tenant and wraps each request in a transaction
+// with SET LOCAL app.current_tenant_id, so PostgreSQL RLS policies filter rows
+// automatically.
+//
+// ownerPool is used for the tenant-active lookup (bypasses RLS).
+// appPool is used for the per-request transaction (RLS enforced).
+func TenantMiddleware(ownerPool, appPool *pgxpool.Pool) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tenantID := TenantIDFromCtx(c)
 		if tenantID == uuid.Nil {
@@ -57,7 +65,7 @@ func TenantMiddleware(pool *pgxpool.Pool) fiber.Handler {
 		}
 
 		// Verify tenant exists and is active (cached)
-		active, err := lookupTenantActive(pool, c, tenantID)
+		active, err := lookupTenantActive(ownerPool, c, tenantID)
 		if err != nil {
 			log.Warn().Err(err).Str("tenant_id", tenantID.String()).Msg("tenant lookup failed")
 			return c.Status(403).JSON(fiber.Map{"error": "tenant not found"})
@@ -66,21 +74,40 @@ func TenantMiddleware(pool *pgxpool.Pool) fiber.Handler {
 			return c.Status(403).JSON(fiber.Map{"error": "tenant inactive"})
 		}
 
-		conn, err := pool.Acquire(c.Context())
+		// Begin a transaction on the app pool (heritage_app role, RLS enforced).
+		tx, err := appPool.Begin(c.UserContext())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "database connection error"})
-		}
-		defer conn.Release()
-
-		// Set tenant context for RLS
-		_, err = conn.Exec(c.Context(),
-			"SET LOCAL app.current_tenant_id = $1", tenantID.String())
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to set tenant context"})
+			log.Error().Err(err).Msg("failed to begin RLS transaction")
+			return c.Status(500).JSON(fiber.Map{"error": "internal error"})
 		}
 
-		c.Locals("db_conn", conn)
+		// Set the tenant ID for RLS policies within this transaction.
+		_, err = tx.Exec(c.UserContext(), "SET LOCAL app.current_tenant_id = $1", tenantID.String())
+		if err != nil {
+			_ = tx.Rollback(c.UserContext())
+			log.Error().Err(err).Msg("failed to set tenant context for RLS")
+			return c.Status(500).JSON(fiber.Map{"error": "internal error"})
+		}
 
-		return c.Next()
+		// Inject the transaction into the Go context so services pick it up
+		// via db.Conn(ctx, fallbackPool).
+		ctx := db.WithTx(c.UserContext(), tx)
+		c.SetUserContext(ctx)
+
+		// Execute the rest of the middleware chain + handler.
+		chainErr := c.Next()
+
+		// Rollback on handler error; commit otherwise.
+		if chainErr != nil {
+			_ = tx.Rollback(c.UserContext())
+			return chainErr
+		}
+
+		if err := tx.Commit(c.UserContext()); err != nil {
+			log.Error().Err(err).Msg("failed to commit RLS transaction")
+			return c.Status(500).JSON(fiber.Map{"error": "internal error"})
+		}
+
+		return nil
 	}
 }

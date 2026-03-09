@@ -2,15 +2,23 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { AppShell } from "@/components/layout/AppShell";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { CameraCapture } from "@/components/camera/CameraCapture";
 import { PhotoGrid } from "@/components/camera/PhotoGrid";
 import { SuccessScreen } from "@/components/ui/SuccessScreen";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
 import { useCamera } from "@/hooks/useCamera";
 import { api } from "@/lib/api";
+
+const CameraCapture = dynamic(
+  () =>
+    import("@/components/camera/CameraCapture").then((mod) => ({
+      default: mod.CameraCapture,
+    })),
+  { ssr: false, loading: () => <div className="h-12 bg-neutral-100 animate-pulse rounded-xl" /> }
+);
 
 const REQUIRED_PHOTOS = 2;
 
@@ -44,13 +52,17 @@ export default function ExitVehiclePage() {
     setLoading(true);
     setError(null);
     try {
-      // Upload exit photos
-      for (const photo of photos) {
+      // Upload exit photos in parallel
+      const results = await Promise.allSettled(photos.map((photo) => {
         const formData = new FormData();
         formData.append("file", photo.file);
         formData.append("doc_type", "other");
         formData.append("notes", "Exit photo");
-        await api.upload(`/vehicles/${id}/documents`, formData);
+        return api.upload(`/vehicles/${id}/documents`, formData);
+      }));
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length > 0) {
+        throw new Error(`${failed.length} photo(s) failed to upload`);
       }
 
       // Execute exit

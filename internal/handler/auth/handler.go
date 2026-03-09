@@ -52,7 +52,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	login, mfaPending, err := h.service.Login(c.Context(), req.Email, req.Password)
+	login, mfaPending, err := h.service.Login(c.UserContext(), req.Email, req.Password)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -81,7 +81,7 @@ func (h *Handler) VerifyMFA(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	result, err := h.service.VerifyMFA(c.Context(), req.MFAToken, req.Code)
+	result, err := h.service.VerifyMFA(c.UserContext(), req.MFAToken, req.Code)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -103,7 +103,7 @@ func (h *Handler) Refresh(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	result, err := h.service.RefreshToken(c.Context(), req.RefreshToken)
+	result, err := h.service.RefreshToken(c.UserContext(), req.RefreshToken)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -125,7 +125,7 @@ func (h *Handler) Logout(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	if err := h.service.Logout(c.Context(), req.RefreshToken); err != nil {
+	if err := h.service.Logout(c.UserContext(), req.RefreshToken); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
@@ -137,7 +137,7 @@ func (h *Handler) GetMe(c *fiber.Ctx) error {
 	userID := middleware.UserIDFromCtx(c)
 	tenantID := middleware.TenantIDFromCtx(c)
 
-	user, err := h.service.GetMe(c.Context(), userID, tenantID)
+	user, err := h.service.GetMe(c.UserContext(), userID, tenantID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -150,7 +150,7 @@ func (h *Handler) SetupMFA(c *fiber.Ctx) error {
 	userID := middleware.UserIDFromCtx(c)
 	tenantID := middleware.TenantIDFromCtx(c)
 
-	result, err := h.service.SetupMFA(c.Context(), userID, tenantID)
+	result, err := h.service.SetupMFA(c.UserContext(), userID, tenantID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -174,7 +174,7 @@ func (h *Handler) EnableMFA(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	if err := h.service.EnableMFA(c.Context(), userID, tenantID, req.Code); err != nil {
+	if err := h.service.EnableMFA(c.UserContext(), userID, tenantID, req.Code); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
@@ -196,7 +196,7 @@ func (h *Handler) DisableMFA(c *fiber.Ctx) error {
 		targetUserID = parsed
 	}
 
-	if err := h.service.DisableMFA(c.Context(), targetUserID, tenantID); err != nil {
+	if err := h.service.DisableMFA(c.UserContext(), targetUserID, tenantID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

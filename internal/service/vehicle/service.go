@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -107,14 +108,14 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters VehicleF
 	args["limit"] = filters.PerPage
 	args["offset"] = offset
 
-	rows, err := s.pool.Query(ctx, query, args)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, args)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to query vehicles")
 		return nil, 0, fmt.Errorf("querying vehicles: %w", err)
 	}
 	defer rows.Close()
 
-	var vehicles []domain.Vehicle
+	vehicles := make([]domain.Vehicle, 0, filters.PerPage)
 	var total int
 	for rows.Next() {
 		var v domain.Vehicle
@@ -146,7 +147,7 @@ func (s *Service) GetByID(ctx context.Context, tenantID, vehicleID uuid.UUID) (*
 		FROM vehicles
 		WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`
 
-	rows, err := s.pool.Query(ctx, query, vehicleID, tenantID)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, vehicleID, tenantID)
 	if err != nil {
 		return nil, fmt.Errorf("querying vehicle: %w", err)
 	}
@@ -166,7 +167,7 @@ func (s *Service) GetByID(ctx context.Context, tenantID, vehicleID uuid.UUID) (*
 // Create inserts a new vehicle and records a vehicle_intake event.
 // If a bay_id is provided the bay is marked as occupied.
 func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req CreateVehicleRequest) (*domain.Vehicle, error) {
-	tx, err := s.pool.Begin(ctx)
+	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("beginning transaction: %w", err)
 	}
@@ -316,7 +317,7 @@ func (s *Service) Update(ctx context.Context, tenantID, vehicleID uuid.UUID, req
 			notes, tags, qr_token, created_at, updated_at, deleted_at`,
 		strings.Join(setClauses, ", "))
 
-	rows, err := s.pool.Query(ctx, query, args)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, args)
 	if err != nil {
 		return nil, fmt.Errorf("updating vehicle: %w", err)
 	}
@@ -336,7 +337,7 @@ func (s *Service) Update(ctx context.Context, tenantID, vehicleID uuid.UUID, req
 // Delete performs a soft-delete on the vehicle.
 func (s *Service) Delete(ctx context.Context, tenantID, vehicleID uuid.UUID) error {
 	now := time.Now().UTC()
-	tag, err := s.pool.Exec(ctx,
+	tag, err := db.Conn(ctx, s.pool).Exec(ctx,
 		"UPDATE vehicles SET deleted_at = $1, updated_at = $1 WHERE id = $2 AND tenant_id = $3 AND deleted_at IS NULL",
 		now, vehicleID, tenantID,
 	)
@@ -352,7 +353,7 @@ func (s *Service) Delete(ctx context.Context, tenantID, vehicleID uuid.UUID) err
 // Move transfers a vehicle to a different bay. It updates the old bay to 'free',
 // the new bay to 'occupied', and records a vehicle_moved event.
 func (s *Service) Move(ctx context.Context, tenantID, userID, vehicleID, toBayID uuid.UUID, reason string) error {
-	tx, err := s.pool.Begin(ctx)
+	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
@@ -427,7 +428,7 @@ func (s *Service) Move(ctx context.Context, tenantID, userID, vehicleID, toBayID
 
 // Exit marks a vehicle as out, frees its bay, and records a vehicle_exit event.
 func (s *Service) Exit(ctx context.Context, tenantID, userID, vehicleID uuid.UUID, notes string) error {
-	tx, err := s.pool.Begin(ctx)
+	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
@@ -507,13 +508,13 @@ func (s *Service) GetTimeline(ctx context.Context, tenantID, vehicleID uuid.UUID
 		ORDER BY occurred_at DESC
 		LIMIT $3 OFFSET $4`
 
-	rows, err := s.pool.Query(ctx, query, vehicleID, tenantID, perPage, offset)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, vehicleID, tenantID, perPage, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("querying events: %w", err)
 	}
 	defer rows.Close()
 
-	var events []domain.Event
+	events := make([]domain.Event, 0, perPage)
 	var total int
 	for rows.Next() {
 		var ev domain.Event

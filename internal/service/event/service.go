@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chriis/heritage-motor/internal/db"
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -90,7 +91,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters EventFil
 		whereClause,
 	)
 
-	rows, err := s.pool.Query(ctx, query, args)
+	rows, err := db.Conn(ctx, s.pool).Query(ctx, query, args)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to query events")
 		return nil, 0, fmt.Errorf("query events: %w", err)
@@ -98,7 +99,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, filters EventFil
 	defer rows.Close()
 
 	var total int
-	events := make([]domain.Event, 0)
+	events := make([]domain.Event, 0, filters.PerPage)
 	for rows.Next() {
 		var ev domain.Event
 		var metadataJSON []byte
@@ -139,7 +140,7 @@ func (s *Service) GetByID(ctx context.Context, tenantID, eventID uuid.UUID) (*do
 	var ev domain.Event
 	var metadataJSON []byte
 
-	err := s.pool.QueryRow(ctx,
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT id, tenant_id, vehicle_id, user_id, event_type, metadata, photo_keys, notes, occurred_at, source
 		 FROM events
 		 WHERE id = $1 AND tenant_id = $2`,
@@ -210,7 +211,7 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 		ev.Metadata = make(map[string]interface{})
 	}
 
-	_, err := s.pool.Exec(ctx,
+	_, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`INSERT INTO events (id, tenant_id, vehicle_id, user_id, event_type, metadata, photo_keys, notes, occurred_at, source)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
 		ev.ID, ev.TenantID, ev.VehicleID, ev.UserID,

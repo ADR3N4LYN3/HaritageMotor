@@ -27,12 +27,23 @@ func (h *Handler) RegisterRoutes(r fiber.Router) {
 func (h *Handler) List(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)
 
-	users, err := h.svc.List(c.Context(), tenantID)
+	var params handler.PaginationParams
+	if err := c.QueryParser(&params); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid query parameters"})
+	}
+	params.Normalize()
+
+	users, total, err := h.svc.List(c.UserContext(), tenantID, params.Page, params.PerPage)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
-	return c.JSON(fiber.Map{"data": users})
+	return c.JSON(handler.PaginatedResponse{
+		Data:       users,
+		TotalCount: total,
+		Page:       params.Page,
+		PerPage:    params.PerPage,
+	})
 }
 
 // Create POST /users
@@ -48,7 +59,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	u, err := h.svc.Create(c.Context(), tenantID, req)
+	u, err := h.svc.Create(c.UserContext(), tenantID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -74,7 +85,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	u, err := h.svc.Update(c.Context(), tenantID, userID, req)
+	u, err := h.svc.Update(c.UserContext(), tenantID, userID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -91,7 +102,7 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid user id"})
 	}
 
-	if err := h.svc.Delete(c.Context(), tenantID, userID); err != nil {
+	if err := h.svc.Delete(c.UserContext(), tenantID, userID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

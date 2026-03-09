@@ -64,7 +64,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 		filters.AssignedTo = &id
 	}
 
-	tasks, total, err := h.service.List(c.Context(), tenantID, filters)
+	tasks, total, err := h.service.List(c.UserContext(), tenantID, filters)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -85,7 +85,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid task id"})
 	}
 
-	task, err := h.service.GetByID(c.Context(), tenantID, taskID)
+	task, err := h.service.GetByID(c.UserContext(), tenantID, taskID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -104,7 +104,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	task, err := h.service.Create(c.Context(), tenantID, req)
+	task, err := h.service.Create(c.UserContext(), tenantID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -125,7 +125,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	task, err := h.service.Update(c.Context(), tenantID, taskID, req)
+	task, err := h.service.Update(c.UserContext(), tenantID, taskID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -142,7 +142,7 @@ func (h *Handler) Complete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid task id"})
 	}
 
-	if err := h.service.Complete(c.Context(), tenantID, userID, taskID); err != nil {
+	if err := h.service.Complete(c.UserContext(), tenantID, userID, taskID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 
@@ -157,7 +157,7 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid task id"})
 	}
 
-	if err := h.service.Delete(c.Context(), tenantID, taskID); err != nil {
+	if err := h.service.Delete(c.UserContext(), tenantID, taskID); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

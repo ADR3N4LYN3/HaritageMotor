@@ -67,7 +67,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 		filters.DateTo = &t
 	}
 
-	events, total, err := h.svc.List(c.Context(), tenantID, filters)
+	events, total, err := h.svc.List(c.UserContext(), tenantID, filters)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -89,7 +89,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid event id"})
 	}
 
-	ev, err := h.svc.GetByID(c.Context(), tenantID, eventID)
+	ev, err := h.svc.GetByID(c.UserContext(), tenantID, eventID)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}
@@ -111,7 +111,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	ev, err := h.svc.Create(c.Context(), tenantID, userID, req)
+	ev, err := h.svc.Create(c.UserContext(), tenantID, userID, req)
 	if err != nil {
 		return handler.HandleServiceError(c, err)
 	}

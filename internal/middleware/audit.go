@@ -30,8 +30,9 @@ func AuditMiddleware(pool *pgxpool.Pool) fiber.Handler {
 		c.Locals(string(RequestIDKey), requestID)
 		c.Set("X-Request-ID", requestID)
 
-		// Inject request_id into Go context so services and zerolog can use it
-		ctx := context.WithValue(c.Context(), RequestIDKey, requestID)
+		// Inject request_id into Go context so services and zerolog can use it.
+		// Use c.UserContext() to preserve the RLS transaction set by TenantMiddleware.
+		ctx := context.WithValue(c.UserContext(), RequestIDKey, requestID)
 		c.SetUserContext(ctx)
 
 		err := c.Next()

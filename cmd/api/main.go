@@ -30,6 +30,7 @@ import (
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/chriis/heritage-motor/internal/storage"
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -51,7 +52,7 @@ func main() {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
-	// Handle "migrate" subcommand
+	// Handle "migrate" subcommand (always uses owner role)
 	if len(os.Args) > 1 && os.Args[1] == "migrate" {
 		pool, err := db.NewPool(cfg.DatabaseURL)
 		if err != nil {
@@ -77,8 +78,8 @@ func main() {
 		}
 	}
 
-	// Database
-	pool, err := db.NewPool(cfg.DatabaseURL)
+	// Database — owner pool (migrations, auth login, audit log)
+	ownerPool, err := db.NewPool(cfg.DatabaseURL)
 	if err != nil {
 		if cfg.AppEnv == "development" {
 			log.Warn().Err(err).Msg("database not available - API routes will not work, landing page only")
@@ -86,8 +87,24 @@ func main() {
 			log.Fatal().Err(err).Msg("failed to connect to database")
 		}
 	}
-	if pool != nil {
-		defer pool.Close()
+	if ownerPool != nil {
+		defer ownerPool.Close()
+	}
+
+	// Database — app pool (RLS enforced via heritage_app role)
+	// Falls back to owner pool in dev when DATABASE_APP_URL is not set.
+	var appPool *pgxpool.Pool
+	if ownerPool != nil {
+		if cfg.DatabaseAppURL != "" {
+			appPool, err = db.NewAppPool(cfg.DatabaseAppURL)
+			if err != nil {
+				log.Fatal().Err(err).Msg("failed to connect app pool")
+			}
+			defer appPool.Close()
+		} else {
+			log.Warn().Msg("DATABASE_APP_URL not set — using owner pool for all queries (RLS not enforced)")
+			appPool = ownerPool
+		}
 	}
 
 	// S3 Storage
@@ -135,7 +152,7 @@ func main() {
 	// Health check
 	app.Get("/health", func(c *fiber.Ctx) error {
 		dbStatus := "connected"
-		if pool == nil {
+		if ownerPool == nil {
 			dbStatus = "unavailable"
 		}
 		return c.JSON(fiber.Map{"status": "ok", "service": "heritage-motor", "database": dbStatus})
@@ -148,15 +165,16 @@ func main() {
 	})
 
 	// API routes require database
-	if pool != nil {
-		// Services
-		authService := authsvc.NewService(pool, jwtManager)
-		vehicleService := vehiclesvc.NewService(pool)
-		bayService := baysvc.NewService(pool)
-		eventService := eventsvc.NewService(pool)
-		taskService := tasksvc.NewService(pool)
-		docService := docsvc.NewService(pool, cfg.S3Bucket)
-		userService := usersvc.NewService(pool)
+	if ownerPool != nil {
+		// Services — business services use appPool (RLS enforced via middleware tx).
+		// Auth service uses ownerPool (login/refresh bypass RLS).
+		authService := authsvc.NewService(ownerPool, jwtManager)
+		vehicleService := vehiclesvc.NewService(appPool)
+		bayService := baysvc.NewService(appPool)
+		eventService := eventsvc.NewService(appPool)
+		taskService := tasksvc.NewService(appPool)
+		docService := docsvc.NewService(appPool, cfg.S3Bucket)
+		userService := usersvc.NewService(appPool)
 
 		// Handlers
 		authHandler := authhandler.NewHandler(authService)
@@ -166,8 +184,8 @@ func main() {
 		taskHandler := taskhandler.NewHandler(taskService)
 		docHandler := dochandler.NewHandler(docService, s3Client)
 		userHandler := userhandler.NewHandler(userService)
-		auditHandler := auditloghandler.NewHandler(pool)
-		scanHandler := scanhandler.NewHandler(pool)
+		auditHandler := auditloghandler.NewHandler(appPool)
+		scanHandler := scanhandler.NewHandler(appPool)
 
 		// Rate limiter for auth endpoints: 5 req per 15 min per IP
 		authLimiter := limiter.New(limiter.Config{
@@ -192,8 +210,8 @@ func main() {
 
 		// Authenticated routes
 		authed := api.Use(middleware.AuthMiddleware(jwtManager))
-		authed.Use(middleware.TenantMiddleware(pool))
-		authed.Use(middleware.AuditMiddleware(pool))
+		authed.Use(middleware.TenantMiddleware(ownerPool, appPool))
+		authed.Use(middleware.AuditMiddleware(ownerPool))
 
 		// Auth routes requiring authentication
 		authAuthed := authed.Group("/auth")

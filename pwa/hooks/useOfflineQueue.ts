@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useAppStore } from "@/store/app.store";
 import { getAllActions, getActionCount, removeAction, updateActionStatus } from "@/lib/offline-queue";
 import { api } from "@/lib/api";
@@ -36,6 +36,12 @@ export function useOfflineQueue() {
     }
   }, [refreshCount]);
 
+  const pendingCount = useAppStore((s) => s.pendingCount);
+  const pendingCountRef = useRef(pendingCount);
+  useEffect(() => {
+    pendingCountRef.current = pendingCount;
+  }, [pendingCount]);
+
   // Listen for online events
   useEffect(() => {
     refreshCount();
@@ -46,10 +52,10 @@ export function useOfflineQueue() {
 
     window.addEventListener("online", handleOnline);
 
-    // Periodic sync every 30 seconds if online
-    const interval = setInterval(() => {
-      if (navigator.onLine) {
-        syncAll();
+    // Periodic sync every 30 seconds if online and there are pending actions
+    const interval = setInterval(async () => {
+      if (navigator.onLine && pendingCountRef.current > 0) {
+        await syncAll();
       }
     }, 30000);
 

@@ -1,5 +1,21 @@
 import type { Metadata, Viewport } from "next";
+import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+import { SWRProvider } from "@/components/providers/SWRProvider";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Heritage Motor",
@@ -27,8 +43,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-white text-black antialiased">
-        {children}
+      <body className={`${dmSans.variable} ${cormorant.variable} min-h-screen bg-white text-black antialiased`}>
+        <SWRProvider>{children}</SWRProvider>
       </body>
     </html>
   );
