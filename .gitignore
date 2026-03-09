@@ -24,5 +24,11 @@ video/node_modules/
 video/out/
 video/dist/
 
+# Root dev artifacts
+node_modules/
+package-lock.json
+preview-*.html
+test-results/
+
 # Claude Code
 .claude/
