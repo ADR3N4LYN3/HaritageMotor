@@ -165,6 +165,37 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - Auth service : ownerPool comme fallback ; routes authentifiées utilisent appPool tx du middleware
 - Business services : `db.Conn(ctx, s.pool)` pour récupérer le tx ou fallback sur le pool
 
+## Architecture PWA (pwa/)
+
+### Auth — BFF pattern (Backend-For-Frontend)
+- Refresh token stocké en cookie `httpOnly` (inaccessible au JS client)
+- Routes API Next.js comme proxy vers le backend Go :
+  - `pwa/app/api/auth/refresh/route.ts` — lit le cookie, forwarde au backend, retourne l'access token
+  - `pwa/app/api/auth/logout/route.ts` — lit le cookie, forwarde au backend, supprime le cookie
+  - `pwa/app/api/auth/set-token/route.ts` — stocke le refresh token en cookie httpOnly après login
+- **Next.js middleware** (`pwa/middleware.ts`) : redirige vers `/login` si le cookie `refresh_token` est absent
+
+### Offline queue (IndexedDB)
+- `pwa/lib/offline-queue.ts` — CRUD IndexedDB (`pushAction`, `getAllActions`, `removeAction`, etc.)
+- `pwa/hooks/useOfflineQueue.ts` — hook React : sync listeners (`online` event + polling 30s), retourne `{ syncAll, refreshCount }`
+- `pwa/lib/types.ts` → `PendingAction` : type `move | task | photo | exit`, sérialisé en IndexedDB
+- **Pages d'action intégrées** : `move`, `task`, `exit` — offline fallback via `pushAction()` sur erreur réseau
+  - Pattern : check `navigator.onLine` upfront + catch non-`ApiError` dans le try/catch
+  - Photos non sérialisables en IndexedDB → `photo/page.tsx` n'a que les sync listeners
+- `pwa/components/ui/SyncBadge.tsx` — badge animé dans la nav, affiche le nombre d'actions en attente
+
+### State management
+- Zustand store (`pwa/store/app.store.ts`) : `accessToken`, `pendingCount`, `logout()`
+- SWR pour le data fetching (stale-while-revalidate)
+- `pwa/lib/api.ts` : client API avec auto-refresh token sur 401
+
+## Optimisations performance
+
+- **Blacklist cache** : `sync.Map` avec TTL 30s dans `internal/middleware/auth.go` — évite un SELECT par requête authentifiée. `InvalidateBlacklistCache(jti, userID)` pour invalidation immédiate
+- **Tenant cache** : `sync.Map` avec TTL 5min dans le TenantMiddleware
+- **PresignClient S3** : créé une seule fois dans `NewS3Client()`, réutilisé dans `GetSignedURL()`
+- **COUNT(*) OVER()** : toutes les requêtes list en single query (pas de COUNT séparé)
+
 ## Contraintes UX (non-négociables)
 
 | Action | Cible |
