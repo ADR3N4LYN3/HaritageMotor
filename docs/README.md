@@ -137,6 +137,7 @@ docker compose up -d --build
 
 | Document | Description |
 |----------|-------------|
+| [Pitch](pitch.md) | Non-technical pitch, value prop, business model |
 | [Architecture](architecture.md) | System architecture, layers, data flow |
 | [API Reference](api-reference.md) | Complete REST API documentation |
 | [Database](database.md) | Schema, migrations, RLS policies |
