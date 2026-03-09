@@ -92,8 +92,8 @@ nav.scrolled .lang-btn { color: var(--black); }
 /* ─── HERO ───────────────────────────────────────────────────────── */
 .hero { position: relative; height: 100vh; min-height: 680px; overflow: hidden; }
 .hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 45%; }
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(14,13,11,0.35) 0%, rgba(14,13,11,0.25) 40%, rgba(14,13,11,0.55) 80%, rgba(14,13,11,0.80) 100%); }
-.hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 3.5rem 5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(14,13,11,0.25) 0%, rgba(14,13,11,0.15) 40%, rgba(14,13,11,0.40) 80%, rgba(14,13,11,0.65) 100%); }
+.hero-content { position: absolute; bottom: 18%; left: 0; right: 0; padding: 0 3.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; }
 .hero-left {}
 .hero-tag { display: inline-flex; align-items: center; gap: 0.6rem; margin-bottom: 1.75rem; opacity: 0; animation: fadeUp 0.8s 0.4s ease forwards; }
 .hero-tag-line { width: 30px; height: 1px; background: rgba(255,255,255,0.5); }
@@ -262,7 +262,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   nav.scrolled { padding: 0.9rem 1.5rem; }
   .nav-links { display: none; }
   .nav-cta { font-size: 0.68rem; padding: 0.5rem 1.1rem; white-space: nowrap; }
-  .hero-content { padding: 0 1.5rem 4rem; grid-template-columns: 1fr; }
+  .hero-content { bottom: 12%; padding: 0 1.5rem; grid-template-columns: 1fr; }
   .hero-right { display: none; }
   section, .pillars, .features, .pricing, .manifesto { padding: 5rem 1.5rem; }
   .split { grid-template-columns: 1fr; }
@@ -301,7 +301,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     </ul>
     <a href="/contact" class="nav-cta" data-i18n="nav.cta">Request a Demo</a>
     <div class="lang-switch" id="langSwitch">
-      <button class="lang-btn" aria-label="Change language"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="lang-btn" aria-label="Change language" aria-expanded="false"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="lang-drop">
         <button class="lang-opt active" data-lang="en">English</button>
         <button class="lang-opt" data-lang="fr">Français</button>
@@ -487,36 +487,36 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       <div class="price-period" data-i18n="price1.period">per site / month · up to 50 vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
-        <li>Vehicle registry & bay management</li>
-        <li>Movement log with timestamped photos</li>
-        <li>Recurring tasks & reminders</li>
-        <li>Immutable audit log</li>
-        <li>Exit report PDF</li>
-        <li>5 operator accounts</li>
-        <li class="off">Owner Portal</li>
-        <li class="off">Climate monitoring</li>
+        <li data-i18n="price.feat.registry">Vehicle registry & bay management</li>
+        <li data-i18n="price.feat.movement">Movement log with timestamped photos</li>
+        <li data-i18n="price.feat.tasks">Recurring tasks & reminders</li>
+        <li data-i18n="price.feat.audit">Immutable audit log</li>
+        <li data-i18n="price.feat.exitpdf">Exit report PDF</li>
+        <li data-i18n="price.feat.5ops">5 operator accounts</li>
+        <li class="off" data-i18n="price.feat.portal">Owner Portal</li>
+        <li class="off" data-i18n="price.feat.climate">Climate monitoring</li>
       </ul>
-      <a href="/contact" class="price-btn">Request a Demo</a>
+      <a href="/contact" class="price-btn" data-i18n="nav.cta">Request a Demo</a>
     </div>
     <div class="price-card featured">
-      <div class="price-badge">Most popular</div>
+      <div class="price-badge" data-i18n="price.badge">Most popular</div>
       <div class="price-tier">Pro</div>
       <div class="price-amount">€1,400</div>
       <div class="price-period" data-i18n="price2.period">per site / month · up to 200 vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
-        <li>Everything in Starter</li>
-        <li>Owner Portal</li>
-        <li>Vehicle History Export</li>
-        <li>15 operator accounts</li>
-        <li>Priority support</li>
+        <li data-i18n="price.feat.allstarter">Everything in Starter</li>
+        <li data-i18n="price.feat.portal">Owner Portal</li>
+        <li data-i18n="price.feat.histexport">Vehicle History Export</li>
+        <li data-i18n="price.feat.15ops">15 operator accounts</li>
+        <li data-i18n="price.feat.priority">Priority support</li>
       </ul>
       <div class="price-sep"></div>
-      <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-top:-0.5rem;">Optional add-on</div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-top:-0.5rem;" data-i18n="price.addon">Optional add-on</div>
       <ul class="price-list" style="margin-top:0.75rem;">
-        <li>Climate monitoring — +€350/mo</li>
+        <li data-i18n="price.feat.climateaddon">Climate monitoring — +€350/mo</li>
       </ul>
-      <a href="/contact" class="price-btn">Request a Demo</a>
+      <a href="/contact" class="price-btn" data-i18n="nav.cta">Request a Demo</a>
     </div>
     <div class="price-card">
       <div class="price-tier">Enterprise</div>
@@ -524,14 +524,14 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       <div class="price-period" data-i18n="price3.period">multi-site · unlimited vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
-        <li>Everything in Pro</li>
-        <li>API access & integrations</li>
-        <li>Certified Vehicle History Export</li>
-        <li>Dedicated onboarding manager</li>
-        <li>Climate monitoring included</li>
-        <li>Auction house integrations (roadmap)</li>
+        <li data-i18n="price.feat.allpro">Everything in Pro</li>
+        <li data-i18n="price.feat.api">API access & integrations</li>
+        <li data-i18n="price.feat.certified">Certified Vehicle History Export</li>
+        <li data-i18n="price.feat.onboarding">Dedicated onboarding manager</li>
+        <li data-i18n="price.feat.climateincl">Climate monitoring included</li>
+        <li data-i18n="price.feat.auction">Auction house integrations (roadmap)</li>
       </ul>
-      <a href="/contact" class="price-btn">Contact Us</a>
+      <a href="/contact" class="price-btn" data-i18n="price.contact">Contact Us</a>
     </div>
   </div>
 </section>
@@ -545,7 +545,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     <h2 data-i18n="cta.title">Your facility deserves<br> an <em>operating system.</em></h2>
     <p data-i18n="cta.text">20-minute demo, no commitment. Just a conversation about how your facility operates — and whether Heritage Motor is the right fit.</p>
     <a href="/contact" class="btn-white">
-      Request a Demo
+      <span data-i18n="nav.cta">Request a Demo</span>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
@@ -680,9 +680,8 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     }
   };
 
-  // Store original EN content from the DOM (safe: all values are hardcoded in the i18n dict above)
+  // Store original EN content from the DOM
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    el.setAttribute('data-i18n-en', el.textContent);
     el._origHTML = el.cloneNode(true);
   });
 
@@ -709,14 +708,22 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   }
 
   // Lang switcher toggle
-  document.getElementById('langSwitch').querySelector('.lang-btn').addEventListener('click', function(e) {
+  var langBtn = document.getElementById('langSwitch').querySelector('.lang-btn');
+  function closeLangDrop() {
+    document.getElementById('langSwitch').classList.remove('open');
+    langBtn.setAttribute('aria-expanded', 'false');
+  }
+  langBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    document.getElementById('langSwitch').classList.toggle('open');
+    var sw = document.getElementById('langSwitch');
+    var isOpen = sw.classList.toggle('open');
+    langBtn.setAttribute('aria-expanded', String(isOpen));
   });
   document.querySelectorAll('.lang-opt').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
   });
-  document.addEventListener('click', function() { document.getElementById('langSwitch').classList.remove('open'); });
+  document.addEventListener('click', closeLangDrop);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
 
   // Restore saved language
   try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
