@@ -75,8 +75,8 @@ heritage-motor/
 ├── plausible/                    # Plausible Analytics config
 │   ├── clickhouse-config.xml     #   ClickHouse logging config
 │   └── clickhouse-user-config.xml#   ClickHouse user config
-├── docker-compose.prod.yml       # Production orchestration
-├── Caddyfile.prod                # Reverse proxy config
+├── compose.yaml                  # Production orchestration
+├── Caddyfile                     # Reverse proxy config
 └── deploy.sh                     # Deployment script
 ```
 
@@ -119,9 +119,9 @@ npm run dev
 ### Docker (Production)
 
 ```bash
-cp .env.example .env.prod
-# Edit .env.prod with production values (see inline comments)
-docker compose -f docker-compose.prod.yml up -d --build
+cp .env.example .env
+# Edit .env with production values (see inline comments)
+docker compose up -d --build
 ```
 
 ## Documentation

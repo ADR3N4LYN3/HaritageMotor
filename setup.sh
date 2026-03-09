@@ -16,7 +16,7 @@ warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="$PROJECT_DIR/.env.prod"
+ENV_FILE="$PROJECT_DIR/.env"
 
 # ── Step 1: Install Docker ─────────────────────────────────────
 install_docker() {
@@ -60,14 +60,14 @@ setup_firewall() {
     fi
 }
 
-# ── Step 3: Generate .env.prod ─────────────────────────────────
+# ── Step 3: Generate .env ─────────────────────────────────────
 setup_env() {
     if [ -f "$ENV_FILE" ]; then
-        info ".env.prod already exists — skipping generation"
+        info ".env already exists — skipping generation"
         return
     fi
 
-    info "Generating .env.prod..."
+    info "Generating .env..."
 
     PG_PASS=$(openssl rand -hex 32)
     JWT=$(openssl rand -hex 32)
@@ -113,7 +113,7 @@ PLAUSIBLE_TOTP_KEY=$PLAUSIBLE_TOTP
 EOF
 
     chmod 600 "$ENV_FILE"
-    info ".env.prod generated with secure random secrets"
+    info ".env generated with secure random secrets"
     warn "Fill in S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, and RESEND_API_KEY before deploying"
 }
 

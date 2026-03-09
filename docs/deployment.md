@@ -67,7 +67,7 @@ Multi-stage build in `./pwa/Dockerfile`:
 
 ## Environment Variables
 
-Create a `.env.prod` file on the server (never commit):
+Create a `.env` file on the server (never commit):
 
 ```bash
 # Database
@@ -137,11 +137,11 @@ chmod 600 certs/origin.key
 
 4. Set Cloudflare SSL mode to **Full (strict)**
 
-The `certs/` directory is mounted read-only into the Caddy container and referenced in `Caddyfile.prod`.
+The `certs/` directory is mounted read-only into the Caddy container and referenced in the Caddyfile.
 
 ## Caddy Configuration
 
-`Caddyfile.prod` defines 4 virtual hosts:
+`Caddyfile` (mounted as `/etc/caddy/Caddyfile`) defines 4 virtual hosts:
 
 ```
 heritagemotor.app         → Static landing page (/srv/landing)
@@ -169,18 +169,18 @@ git clone <repo-url>
 cd HaritageMotor
 
 # Create environment file
-cp .env.example .env.prod
-nano .env.prod  # Fill in all values
+cp .env.example .env
+nano .env  # Fill in all values
 
 # Setup SSL certificates
 mkdir certs/
 # Place origin.pem and origin.key
 
 # Run database migrations
-docker compose -f docker-compose.prod.yml run --rm api /app/api migrate
+docker compose run --rm api /app/api migrate
 
 # Start all services
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose up -d --build
 ```
 
 ### Using deploy.sh
@@ -209,12 +209,12 @@ git pull
 
 ```bash
 # All services
-docker compose -f docker-compose.prod.yml logs -f
+docker compose logs -f
 
 # Specific service
-docker compose -f docker-compose.prod.yml logs -f api
-docker compose -f docker-compose.prod.yml logs -f app
-docker compose -f docker-compose.prod.yml logs -f caddy
+docker compose logs -f api
+docker compose logs -f app
+docker compose logs -f caddy
 ```
 
 ### Health Check

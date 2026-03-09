@@ -1,6 +1,5 @@
 bin/
 .env
-.env.prod
 .env.local
 certs/
 *.exe
