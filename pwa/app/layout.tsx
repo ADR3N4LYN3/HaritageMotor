@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 import { SWRProvider } from "@/components/providers/SWRProvider";
+import { AppErrorBoundary } from "@/components/ErrorBoundary";
+import { AuthBootstrap } from "@/components/AuthBootstrap";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -44,7 +46,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${dmSans.variable} ${cormorant.variable} min-h-screen bg-white text-black antialiased`}>
-        <SWRProvider>{children}</SWRProvider>
+        <AppErrorBoundary>
+          <AuthBootstrap>
+            <SWRProvider>{children}</SWRProvider>
+          </AuthBootstrap>
+        </AppErrorBoundary>
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-.PHONY: build run test migrate-up migrate-down dev clean
+.PHONY: build run test migrate-up migrate-down dev lint clean
 
 DATABASE_URL ?= postgresql://heritage_motor:password@localhost:5432/heritage_motor?sslmode=disable
 MIGRATIONS_DIR = internal/db/migrations
@@ -25,6 +25,9 @@ test-coverage:
 	go test -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report: coverage.html"
+
+lint:
+	golangci-lint run ./...
 
 migrate-up:
 	migrate -path $(MIGRATIONS_DIR) -database "$(DATABASE_URL)" up

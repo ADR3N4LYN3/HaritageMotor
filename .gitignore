@@ -30,5 +30,9 @@ package-lock.json
 preview-*.html
 test-results/
 
+# Playwright
+pwa/playwright-report/
+pwa/test-results/
+
 # Claude Code
 .claude/

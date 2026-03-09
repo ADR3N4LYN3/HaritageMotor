@@ -96,18 +96,6 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		return c.Status(413).JSON(fiber.Map{"error": "file too large, max 20MB"})
 	}
 
-	// Validate MIME type
-	allowedMIME := map[string]bool{
-		"image/jpeg": true, "image/png": true, "image/webp": true, "image/heic": true,
-		"application/pdf": true, "application/msword": true,
-		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true,
-		"text/plain": true,
-	}
-	mimeType := file.Header.Get("Content-Type")
-	if !allowedMIME[mimeType] {
-		return c.Status(415).JSON(fiber.Map{"error": "unsupported file type"})
-	}
-
 	// Sanitize filename — strip path separators
 	sanitizedFilename := file.Filename
 	for _, ch := range []string{"/", "\\", "..", "\x00"} {
@@ -143,15 +131,22 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		tenantID.String(), vehicleID.String(), timestamp, sanitizedFilename,
 	)
 
+	// Open file for validation and upload
+	f, err := file.Open()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to read uploaded file"})
+	}
+	defer f.Close()
+
+	// Validate real file type via magic bytes (not just Content-Type header)
+	mimeType, err := handler.ValidateFileType(f, handler.AllowedDocTypes)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "unsupported file type"})
+	}
+
 	// Upload file to S3 if configured
 	if h.s3 != nil && h.s3.IsConfigured() {
-		f, err := file.Open()
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to read uploaded file"})
-		}
-		defer f.Close()
-
-		if err := h.s3.Upload(c.UserContext(), s3Key, f, file.Header.Get("Content-Type")); err != nil {
+		if err := h.s3.Upload(c.UserContext(), s3Key, f, mimeType); err != nil {
 			log.Error().Err(err).Str("s3_key", s3Key).Msg("failed to upload to S3")
 			return c.Status(500).JSON(fiber.Map{"error": "failed to upload file"})
 		}
@@ -161,7 +156,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		DocType:   docType,
 		Filename:  sanitizedFilename,
 		S3Key:     s3Key,
-		MimeType:  file.Header.Get("Content-Type"),
+		MimeType:  mimeType,
 		SizeBytes: file.Size,
 		ExpiresAt: expiresAt,
 		Notes:     notesPtr,
