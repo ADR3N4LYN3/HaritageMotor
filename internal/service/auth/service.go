@@ -77,8 +77,11 @@ func tenantIDOrNil(tid *uuid.UUID) uuid.UUID {
 func (s *Service) Login(ctx context.Context, email, password string) (*LoginResult, *MFAPendingResult, error) {
 	user, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT `+userColumns+`
-		 FROM users
-		 WHERE email = $1 AND deleted_at IS NULL`,
+		 FROM users u
+		 WHERE u.email = $1 AND u.deleted_at IS NULL
+		   AND (u.role = 'superadmin' OR EXISTS (
+		     SELECT 1 FROM tenants t WHERE t.id = u.tenant_id AND t.deleted_at IS NULL
+		   ))`,
 		email,
 	))
 	if err != nil {

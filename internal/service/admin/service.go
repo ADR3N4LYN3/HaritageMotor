@@ -237,7 +237,7 @@ func (s *Service) UpdateTenant(ctx context.Context, tenantID uuid.UUID, req Upda
 	return &t, nil
 }
 
-// DeleteTenant soft-deletes a tenant.
+// DeleteTenant soft-deletes a tenant and its associated users.
 func (s *Service) DeleteTenant(ctx context.Context, tenantID uuid.UUID) error {
 	tag, err := s.pool.Exec(ctx,
 		`UPDATE tenants SET deleted_at = NOW(), active = false, status = 'suspended', updated_at = NOW()
@@ -249,6 +249,15 @@ func (s *Service) DeleteTenant(ctx context.Context, tenantID uuid.UUID) error {
 	}
 	if tag.RowsAffected() == 0 {
 		return &domain.ErrNotFound{Resource: "tenant", ID: tenantID}
+	}
+
+	// Cascade soft-delete users belonging to this tenant.
+	if _, err := s.pool.Exec(ctx,
+		`UPDATE users SET deleted_at = NOW(), updated_at = NOW()
+		 WHERE tenant_id = $1 AND deleted_at IS NULL`,
+		tenantID,
+	); err != nil {
+		log.Error().Err(err).Str("tenant_id", tenantID.String()).Msg("failed to soft-delete tenant users")
 	}
 
 	middleware.InvalidateTenantCache(tenantID)
