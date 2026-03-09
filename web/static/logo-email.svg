@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="280" height="340">
+  <defs>
+    <linearGradient id="goldH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#96783f"/>
+      <stop offset="20%" stop-color="#d4b07a"/>
+      <stop offset="50%" stop-color="#dcc28a"/>
+      <stop offset="80%" stop-color="#d4b07a"/>
+      <stop offset="100%" stop-color="#96783f"/>
+    </linearGradient>
+    <linearGradient id="darkBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#191816"/>
+      <stop offset="100%" stop-color="#0e0d0b"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcc28a"/>
+      <stop offset="45%" stop-color="#b8955a"/>
+      <stop offset="100%" stop-color="#96783f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark background for email -->
+  <rect width="280" height="340" fill="#0a0908"/>
+
+  <!-- Shield outer (gold gradient fill) -->
+  <path d="M140,4 L264,4 Q276,4 276,16 L276,186 Q276,230 248,260 Q218,292 140,332 Q62,292 32,260 Q4,230 4,186 L4,16 Q4,4 16,4 Z" fill="url(#goldH)"/>
+  <!-- Shield inner (dark fill) -->
+  <path d="M140,12 L260,12 Q268,12 268,20 L268,184 Q268,226 242,254 Q214,284 140,322 Q66,284 38,254 Q12,226 12,184 L12,20 Q12,12 20,12 Z" fill="url(#darkBg)"/>
+  <!-- Inner outline -->
+  <path d="M140,22 L254,22 Q260,22 260,28 L260,180 Q260,220 236,246 Q210,274 140,310 Q70,274 44,246 Q20,220 20,180 L20,28 Q20,22 26,22 Z" fill="none" stroke="#b8955a" stroke-width="1.2"/>
+  <!-- Corner dots -->
+  <circle cx="26" cy="22" r="2" fill="#b8955a"/>
+  <circle cx="254" cy="22" r="2" fill="#b8955a"/>
+
+  <!-- HM monogram -->
+  <text x="140" y="185" text-anchor="middle" font-family="'Cormorant Garamond','Garamond','Georgia',serif" font-size="118" font-weight="700" letter-spacing="5" fill="url(#goldText)">HM</text>
+</svg>

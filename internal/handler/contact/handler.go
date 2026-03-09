@@ -20,6 +20,7 @@ type submitRequest struct {
 	Company  string `json:"company"  validate:"omitempty,max=200"`
 	Vehicles string `json:"vehicles" validate:"omitempty,max=50"`
 	Message  string `json:"message"  validate:"omitempty,max=5000"`
+	Lang     string `json:"lang"     validate:"omitempty,oneof=en fr de"`
 }
 
 func (h *Handler) Submit(c *fiber.Ctx) error {
@@ -31,6 +32,11 @@ func (h *Handler) Submit(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
+	lang := req.Lang
+	if lang == "" {
+		lang = "en"
+	}
+
 	err := h.service.Submit(c.UserContext(), contactsvc.Request{
 		Name:     req.Name,
 		Email:    req.Email,
@@ -38,6 +44,7 @@ func (h *Handler) Submit(c *fiber.Ctx) error {
 		Vehicles: req.Vehicles,
 		Message:  req.Message,
 		IP:       c.IP(),
+		Lang:     lang,
 	})
 	if err != nil {
 		return handler.HandleServiceError(c, err)

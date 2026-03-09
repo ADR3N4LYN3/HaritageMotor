@@ -166,54 +166,141 @@ func (s *Service) sendNotification(req Request) {
 }
 
 func (s *Service) sendConfirmation(req Request) {
+	t, ok := translations[req.Lang]
+	if !ok {
+		t = translations["en"]
+	}
+
+	company := req.Company
+	if company == "" {
+		company = "—"
+	}
+	vehicles := req.Vehicles
+	if vehicles == "" {
+		vehicles = "—"
+	}
+	message := req.Message
+	if message == "" {
+		message = "—"
+	}
+
+	greeting := fmt.Sprintf(t.Greeting, req.Name)
+
 	htmlBody := fmt.Sprintf(`<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background:#f8f7f5;font-family:'Helvetica Neue',Arial,sans-serif;">
-<table width="100%%" cellpadding="0" cellspacing="0" style="background:#f8f7f5;padding:40px 0;">
+<html lang="%s">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0a0908;">
+<table width="100%%" cellpadding="0" cellspacing="0" style="background:#0a0908;padding:0;">
 <tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
-  <tr><td style="background:#0e0d0b;padding:32px 40px;text-align:center;">
-    <h1 style="margin:0;font-size:24px;color:#b8955a;letter-spacing:2px;">Heritage Motor</h1>
+<table width="600" cellpadding="0" cellspacing="0" style="background:#0a0908;">
+
+  <!-- Top spacer -->
+  <tr><td style="height:48px;"></td></tr>
+
+  <!-- Logo (shield only) -->
+  <tr><td align="center" style="padding:0 0 14px;">
+    <img src="https://heritagemotor.app/logo-email.png" alt="HM" width="72" height="88" style="display:block;width:72px;height:88px;" />
   </td></tr>
-  <tr><td style="padding:40px;">
-    <p style="margin:0 0 20px;font-size:16px;color:#333;">Dear %s,</p>
-    <p style="margin:0 0 20px;font-size:16px;color:#333;line-height:1.6;">
-      Thank you for your interest in Heritage Motor. We have received your demo request and our team will get back to you shortly.
-    </p>
-    <p style="margin:0 0 8px;font-size:14px;color:#666;">Here is a summary of your request:</p>
-    <table style="width:100%%;border-collapse:collapse;margin:16px 0 24px;">
-      <tr><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#999;font-size:13px;">Company</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#333;font-size:14px;">%s</td></tr>
-      <tr><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#999;font-size:13px;">Fleet size</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#333;font-size:14px;">%s</td></tr>
-      <tr><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#999;font-size:13px;">Message</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#333;font-size:14px;">%s</td></tr>
+
+  <!-- Brand name -->
+  <tr><td align="center" style="padding:0 0 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
+  </td></tr>
+
+  <!-- Gold accent line -->
+  <tr><td align="center" style="padding:24px 0 0;">
+    <table cellpadding="0" cellspacing="0"><tr>
+      <td style="width:40px;height:1px;background:linear-gradient(to right, transparent, #b8955a40);font-size:0;">&nbsp;</td>
+      <td style="width:6px;height:6px;font-size:0;padding:0 8px;"><table cellpadding="0" cellspacing="0"><tr><td style="width:6px;height:6px;background:#b8955a;transform:rotate(45deg);font-size:0;opacity:0.4;">&nbsp;</td></tr></table></td>
+      <td style="width:40px;height:1px;background:linear-gradient(to left, transparent, #b8955a40);font-size:0;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Body -->
+  <tr><td style="padding:36px 56px 0;">
+    <p style="margin:0 0 24px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">%s</p>
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#8a867e;line-height:1.8;">%s</p>
+  </td></tr>
+
+  <!-- Spacer -->
+  <tr><td style="height:36px;"></td></tr>
+
+  <!-- Summary card -->
+  <tr><td style="padding:0 40px;">
+    <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#12110e;border:1px solid #b8955a18;border-radius:4px;">
+      <!-- Card header -->
+      <tr><td style="padding:20px 28px 16px;border-bottom:1px solid #b8955a12;">
+        <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">%s</p>
+      </td></tr>
+      <!-- Row 1 -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Row 2 -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Row 3 -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;vertical-align:top;">%s</td>
+          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;line-height:1.6;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Card bottom padding -->
+      <tr><td style="height:4px;"></td></tr>
     </table>
-    <p style="margin:0;font-size:16px;color:#333;line-height:1.6;">
-      We typically respond within 24 hours.
-    </p>
   </td></tr>
-  <tr><td style="background:#faf9f7;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
-    <p style="margin:0;font-size:12px;color:#999;">Heritage Motor — Vehicle Custody Platform</p>
+
+  <!-- Response time -->
+  <tr><td style="padding:32px 56px 0;">
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5a564e;line-height:1.6;font-style:italic;">%s</p>
   </td></tr>
+
+  <!-- Bottom spacer -->
+  <tr><td style="height:48px;"></td></tr>
+
+  <!-- Footer divider -->
+  <tr><td style="padding:0 56px;">
+    <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+      <td style="border-bottom:1px solid #b8955a10;font-size:0;height:1px;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td align="center" style="padding:24px 56px 48px;">
+    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">%s</p>
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
+  </td></tr>
+
 </table>
 </td></tr>
 </table>
 </body>
 </html>`,
-		req.Name,
-		func() string { if req.Company != "" { return req.Company }; return "—" }(),
-		func() string { if req.Vehicles != "" { return req.Vehicles }; return "—" }(),
-		func() string { if req.Message != "" { return req.Message }; return "—" }(),
+		req.Lang,
+		greeting,
+		t.Body,
+		t.Summary,
+		t.Company, company,
+		t.Fleet, vehicles,
+		t.Message, message,
+		t.Response,
+		t.Footer,
 	)
 
-	// Use welcome@ instead of noreply@ for confirmation emails
 	welcomeFrom := strings.Replace(s.emailFrom, "noreply@", "welcome@", 1)
 
 	payload := map[string]interface{}{
 		"from":    welcomeFrom,
 		"to":      []string{req.Email},
-		"subject": "Heritage Motor — We received your request",
+		"subject": t.Subject,
 		"html":    htmlBody,
 	}
 
@@ -241,6 +328,6 @@ func (s *Service) sendConfirmation(req Request) {
 	if resp.StatusCode >= 400 {
 		log.Error().Int("status", resp.StatusCode).Msg("resend API returned error for confirmation email")
 	} else {
-		log.Info().Str("to", req.Email).Msg("confirmation email sent")
+		log.Info().Str("to", req.Email).Str("lang", req.Lang).Msg("confirmation email sent")
 	}
 }

@@ -232,12 +232,16 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     btn.disabled = true;
     btn.textContent = 'Sending...';
 
+    var lang = 'en';
+    try { lang = localStorage.getItem('hm-lang') || 'en'; } catch(e) {}
+
     var data = {
       name: form.name.value,
       email: form.email.value,
       company: form.company.value,
       vehicles: form.vehicles.value,
-      message: form.message.value
+      message: form.message.value,
+      lang: lang
     };
 
     fetch('/api/v1/contact', {
