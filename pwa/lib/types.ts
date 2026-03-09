@@ -70,15 +70,47 @@ export interface Task {
 
 export interface User {
   id: string;
-  tenant_id: string;
+  tenant_id?: string;
   email: string;
   first_name: string;
   last_name: string;
   role: string;
   totp_enabled: boolean;
+  password_change_required?: boolean;
   last_login_at?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface Tenant {
+  id: string;
+  name: string;
+  slug: string;
+  plan: string;
+  status: string;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TenantWithStats extends Tenant {
+  user_count: number;
+  vehicle_count: number;
+  bay_count: number;
+}
+
+export interface DashboardStats {
+  total_tenants: number;
+  active_tenants: number;
+  total_users: number;
+  total_vehicles: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total_count: number;
+  page: number;
+  per_page: number;
 }
 
 export interface ScanResult {

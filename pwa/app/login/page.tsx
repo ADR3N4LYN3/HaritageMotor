@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { login, verifyMFA } from "@/lib/auth";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { ApiError } from "@/lib/api";
+import type { User } from "@/lib/types";
+
+function getRedirectPath(user: User): string {
+  if (user.password_change_required) return "/change-password";
+  if (user.role === "superadmin") return "/admin";
+  return "/scan";
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,7 +49,7 @@ export default function LoginPage() {
         setMfaToken(result.mfa_token);
         setStep("mfa");
       } else {
-        router.push("/scan");
+        router.push(getRedirectPath(result.user));
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -59,8 +66,8 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      await verifyMFA(mfaToken, mfaCode);
-      router.push("/scan");
+      const user = await verifyMFA(mfaToken, mfaCode);
+      router.push(getRedirectPath(user));
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
