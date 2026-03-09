@@ -75,7 +75,9 @@ heritage-motor/
 │   │   └── user/                 #   User operations
 │   └── storage/                  # S3 client
 ├── pwa/                          # Next.js PWA frontend
-├── web/static/                   # Landing page
+├── video/                        # Remotion 4 hero video generator
+│   └── src/                      #   HeroVideo (v1) + HeroVideoV2 (v2, active)
+├── web/static/                   # Landing page + hero-bg.mp4
 ├── docs/                         # Documentation (this folder)
 ├── Dockerfile                    # Go API Docker image
 ├── plausible/                    # Plausible Analytics config

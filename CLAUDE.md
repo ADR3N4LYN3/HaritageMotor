@@ -256,8 +256,9 @@ Le dossier `video/` contient un projet Remotion 4 qui génère la vidéo de fond
 video/
   src/
     index.ts           — registerRoot
-    Root.tsx            — Composition 1920×1080 30fps
-    HeroVideo.tsx       — 6 scènes + transitions + watermark
+    Root.tsx            — Compositions v1 + v2 (1920×1080 30fps)
+    HeroVideo.tsx       — v1 : 6 scènes (19s, 570 frames)
+    HeroVideoV2.tsx     — v2 : 8 scènes dont 2 garage indoor (25s, 750 frames) ← ACTIF
     CarScene.tsx        — Scène individuelle (Ken Burns + vignette)
     BrandWatermark.tsx  — "Heritage Motor" semi-transparent (12% opacity)
   package.json          — dépendances Remotion
@@ -268,12 +269,15 @@ video/
 ```bash
 cd video
 npm install
-npm run dev      # Ouvre Remotion Studio (preview)
-npm run render   # Génère ../web/static/hero-bg.mp4
+npm run dev              # Ouvre Remotion Studio (preview v1 + v2)
+npm run render           # Render v1 → ../web/static/hero-bg.mp4
+npm run render:v2        # Render v2 → ../web/static/hero-bg.mp4 (actuellement déployé)
+npm run render:preview   # Preview v1 → out/preview.mp4
+npm run render:preview:v2 # Preview v2 → out/preview-v2.mp4
 ```
 
 **Clips** : tous issus de Pexels (licence commerciale gratuite, pas d'attribution requise).
-Pour changer un clip, modifier l'URL dans le tableau `CLIPS` de `HeroVideo.tsx` et re-render.
+Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVideo correspondant et re-render.
 
 ## Références détaillées
 
