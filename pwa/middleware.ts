@@ -24,6 +24,16 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Protect /admin — only superadmin role (UX guard, backend enforces real RBAC)
+  if (pathname.startsWith("/admin")) {
+    const role = req.cookies.get("user_role")?.value;
+    if (role !== "superadmin") {
+      const scanUrl = req.nextUrl.clone();
+      scanUrl.pathname = "/scan";
+      return NextResponse.redirect(scanUrl);
+    }
+  }
+
   return NextResponse.next();
 }
 

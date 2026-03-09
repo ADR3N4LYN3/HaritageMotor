@@ -22,8 +22,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Always clear the cookie regardless of backend result
+  // Always clear cookies regardless of backend result
   const response = NextResponse.json({ ok: true });
   response.cookies.delete("refresh_token");
+  response.cookies.delete("user_role");
   return response;
 }

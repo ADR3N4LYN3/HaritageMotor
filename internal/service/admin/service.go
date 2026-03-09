@@ -257,10 +257,11 @@ func (s *Service) DeleteTenant(ctx context.Context, tenantID uuid.UUID) error {
 }
 
 // InviteUser creates a user with a temp password in a tenant and sends a welcome email.
+// Uses a transaction to ensure user + invitation are created atomically.
 func (s *Service) InviteUser(ctx context.Context, invitedBy uuid.UUID, req InviteUserRequest) (*domain.User, error) {
 	email := strings.ToLower(strings.TrimSpace(req.Email))
 
-	// Check email uniqueness within tenant.
+	// Check email uniqueness within tenant (outside tx — read-only).
 	var exists bool
 	err := s.pool.QueryRow(ctx,
 		`SELECT EXISTS(SELECT 1 FROM users WHERE tenant_id = $1 AND LOWER(email) = $2 AND deleted_at IS NULL)`,
@@ -273,7 +274,7 @@ func (s *Service) InviteUser(ctx context.Context, invitedBy uuid.UUID, req Invit
 		return nil, &domain.ErrConflict{Message: "email already in use"}
 	}
 
-	// Get tenant name for the welcome email.
+	// Get tenant name for the welcome email (outside tx — read-only).
 	var tenantName string
 	err = s.pool.QueryRow(ctx,
 		`SELECT name FROM tenants WHERE id = $1 AND deleted_at IS NULL`, req.TenantID,
@@ -296,8 +297,14 @@ func (s *Service) InviteUser(ctx context.Context, invitedBy uuid.UUID, req Invit
 	now := time.Now().UTC()
 	userID := uuid.New()
 
-	// Create user with password_change_required = true.
-	_, err = s.pool.Exec(ctx,
+	// Transaction: create user + record invitation atomically.
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx,
 		`INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, role, totp_enabled, password_change_required, created_at, updated_at)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, false, true, $8, $9)`,
 		userID, req.TenantID, email, hash,
@@ -308,17 +315,20 @@ func (s *Service) InviteUser(ctx context.Context, invitedBy uuid.UUID, req Invit
 		return nil, fmt.Errorf("insert user: %w", err)
 	}
 
-	// Record invitation.
-	_, err = s.pool.Exec(ctx,
+	_, err = tx.Exec(ctx,
 		`INSERT INTO invitations (tenant_id, email, role, invited_by, temp_password_hash, created_at)
 		 VALUES ($1, $2, $3, $4, $5, $6)`,
 		req.TenantID, email, req.Role, invitedBy, hash, now,
 	)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to record invitation — user was created")
+		return nil, fmt.Errorf("insert invitation: %w", err)
 	}
 
-	// Send welcome email (async, don't block).
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("commit tx: %w", err)
+	}
+
+	// Send welcome email (async, don't block — after commit).
 	go func() {
 		if mailErr := s.mailer.SendWelcome(email, req.FirstName, tenantName, tempPassword); mailErr != nil {
 			log.Error().Err(mailErr).Str("email", email).Msg("failed to send welcome email")

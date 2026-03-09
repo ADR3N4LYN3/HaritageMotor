@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { api, ApiError } from "@/lib/api";
@@ -15,12 +15,18 @@ import type {
 export default function AdminPage() {
   const router = useRouter();
   const user = useAppStore((s) => s.user);
+  const [authorized, setAuthorized] = useState(false);
 
-  // Redirect non-superadmin
-  if (user && user.role !== "superadmin") {
-    router.push("/scan");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) return;
+    if (user.role !== "superadmin") {
+      router.replace("/scan");
+    } else {
+      setAuthorized(true);
+    }
+  }, [user, router]);
+
+  if (!authorized) return null;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -148,6 +154,8 @@ function TenantsSection() {
 function CreateTenantForm({ onDone }: { onDone: () => void }) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [country, setCountry] = useState("FR");
+  const [timezone, setTimezone] = useState("Europe/Paris");
   const [plan, setPlan] = useState("starter");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -157,7 +165,7 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
     setLoading(true);
     setError(null);
     try {
-      await api.post("/admin/tenants", { name, slug, plan });
+      await api.post("/admin/tenants", { name, slug, country, timezone, plan });
       mutate("/admin/tenants");
       mutate("/admin/dashboard");
       onDone();
@@ -208,6 +216,31 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
           <option value="starter">Starter (25v/5u/20b)</option>
           <option value="pro">Pro (100v/20u/100b)</option>
           <option value="enterprise">Enterprise (unlimited)</option>
+        </select>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input
+          value={country}
+          onChange={(e) => setCountry(e.target.value.toUpperCase())}
+          placeholder="Country code (FR)"
+          required
+          pattern="[A-Z]{2}"
+          maxLength={2}
+          className={inputClass}
+        />
+        <select
+          value={timezone}
+          onChange={(e) => setTimezone(e.target.value)}
+          className={inputClass}
+        >
+          <option value="Europe/Paris">Europe/Paris</option>
+          <option value="Europe/London">Europe/London</option>
+          <option value="Europe/Berlin">Europe/Berlin</option>
+          <option value="Europe/Zurich">Europe/Zurich</option>
+          <option value="Europe/Brussels">Europe/Brussels</option>
+          <option value="America/New_York">America/New_York</option>
+          <option value="America/Los_Angeles">America/Los_Angeles</option>
+          <option value="Asia/Dubai">Asia/Dubai</option>
         </select>
       </div>
       {error && <p className="text-danger text-xs">{error}</p>}

@@ -35,11 +35,11 @@ export async function login(
   store.setAccessToken(data.access_token);
   store.setUser(data.user);
 
-  // Store refresh token via Next.js API route (httpOnly cookie)
+  // Store refresh token + role via Next.js API route (httpOnly cookies)
   await fetch("/api/auth/set-token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: data.refresh_token }),
+    body: JSON.stringify({ refresh_token: data.refresh_token, user_role: data.user.role }),
   });
 
   return { step: "complete", user: data.user };
@@ -72,7 +72,7 @@ export async function verifyMFA(
   await fetch("/api/auth/set-token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: data.refresh_token }),
+    body: JSON.stringify({ refresh_token: data.refresh_token, user_role: data.user.role }),
   });
 
   return data.user;

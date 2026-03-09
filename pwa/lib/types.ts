@@ -86,6 +86,8 @@ export interface Tenant {
   id: string;
   name: string;
   slug: string;
+  country: string;
+  timezone: string;
   plan: string;
   status: string;
   active: boolean;
