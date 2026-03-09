@@ -4,12 +4,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/db"
-	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/db"
+	"github.com/chriis/heritage-motor/internal/domain"
 )
 
 // tenantCacheEntry holds a cached tenant active status with expiry.

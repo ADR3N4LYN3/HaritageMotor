@@ -1,11 +1,12 @@
 package admin
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	adminsvc "github.com/chriis/heritage-motor/internal/service/admin"
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 type Handler struct {

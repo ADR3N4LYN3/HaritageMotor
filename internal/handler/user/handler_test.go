@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/chriis/heritage-motor/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/chriis/heritage-motor/internal/testutil"
 )
 
 func TestListUsers_AdminOnly(t *testing.T) {

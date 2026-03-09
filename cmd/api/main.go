@@ -8,6 +8,15 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+
 	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/chriis/heritage-motor/internal/config"
 	"github.com/chriis/heritage-motor/internal/db"
@@ -35,14 +44,6 @@ import (
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/chriis/heritage-motor/internal/storage"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 func main() {
@@ -72,7 +73,7 @@ func main() {
 		if len(os.Args) > 2 {
 			migrationsDir = os.Args[2]
 		}
-		if err := db.RunMigrations(pool, migrationsDir); err != nil {
+		if err := db.RunMigrations(pool, migrationsDir); err != nil { //nolint:govet // scoped err in if block
 			log.Fatal().Err(err).Msg("migration failed")
 		}
 		log.Info().Msg("migrations completed successfully")

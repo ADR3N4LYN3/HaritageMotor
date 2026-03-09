@@ -4,11 +4,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/chriis/heritage-motor/internal/middleware"
-	"github.com/chriis/heritage-motor/internal/testutil"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/chriis/heritage-motor/internal/middleware"
+	"github.com/chriis/heritage-motor/internal/testutil"
 )
 
 // ---------------------------------------------------------------------------
@@ -59,6 +60,7 @@ func TestBlacklist_JTI_BlockedAfterLogout(t *testing.T) {
 	// --- Login ---
 	loginBody := map[string]string{"email": email, "password": password}
 	loginResp := env.DoRequest(t, http.MethodPost, "/auth/login", "", loginBody)
+	defer loginResp.Body.Close()
 	require.Equal(t, http.StatusOK, loginResp.StatusCode)
 
 	var loginJSON struct {
@@ -74,8 +76,8 @@ func TestBlacklist_JTI_BlockedAfterLogout(t *testing.T) {
 
 	// Sanity check — token works before logout.
 	meResp := env.DoRequest(t, http.MethodGet, "/auth/me", accessToken, nil)
+	defer meResp.Body.Close()
 	require.Equal(t, http.StatusOK, meResp.StatusCode)
-	meResp.Body.Close()
 
 	// Invalidate the blacklist cache so the next check hits the DB.
 	// Extract claims to get jti and userID for cache invalidation.
@@ -86,8 +88,8 @@ func TestBlacklist_JTI_BlockedAfterLogout(t *testing.T) {
 	// --- Logout ---
 	logoutBody := map[string]string{"refresh_token": refreshToken}
 	logoutResp := env.DoRequest(t, http.MethodPost, "/auth/logout", accessToken, logoutBody)
+	defer logoutResp.Body.Close()
 	require.Equal(t, http.StatusOK, logoutResp.StatusCode)
-	logoutResp.Body.Close()
 
 	// Invalidate cache again after logout so the blacklist entry is seen.
 	middleware.InvalidateBlacklistCache(claims.ID, claims.UserID)
@@ -156,6 +158,7 @@ func TestRBAC_TechnicianCanCompleteTasks(t *testing.T) {
 		"title":      "Check tires",
 	}
 	createResp := env.DoRequest(t, http.MethodPost, "/tasks", operatorToken, createBody)
+	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
 	var task struct {
@@ -207,6 +210,7 @@ func TestPasswordChangeRequired_BlocksAccess(t *testing.T) {
 
 	// Regular route should be blocked with 403.
 	vehiclesResp := env.DoRequest(t, http.MethodGet, "/vehicles", pcrToken, nil)
+	defer vehiclesResp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, vehiclesResp.StatusCode)
 
 	var errBody map[string]interface{}

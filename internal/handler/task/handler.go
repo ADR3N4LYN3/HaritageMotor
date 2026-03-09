@@ -1,12 +1,13 @@
 package task
 
 import (
-	"github.com/chriis/heritage-motor/internal/handler"
-	"github.com/chriis/heritage-motor/internal/middleware"
-	taskservice "github.com/chriis/heritage-motor/internal/service/task"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/handler"
+	"github.com/chriis/heritage-motor/internal/middleware"
+	taskservice "github.com/chriis/heritage-motor/internal/service/task"
 )
 
 type Handler struct {
@@ -112,7 +113,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 	}
 
 	var req taskservice.UpdateTaskRequest
-	if err := c.BodyParser(&req); err != nil {
+	if err = c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 

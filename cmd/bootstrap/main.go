@@ -6,10 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/auth"
-	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+
+	"github.com/chriis/heritage-motor/internal/auth"
+	"github.com/chriis/heritage-motor/internal/domain"
 )
 
 func main() {

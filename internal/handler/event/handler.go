@@ -3,11 +3,12 @@ package event
 import (
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	eventSvc "github.com/chriis/heritage-motor/internal/service/event"
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 type Handler struct {

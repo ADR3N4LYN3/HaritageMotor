@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/chriis/heritage-motor/internal/testutil"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/chriis/heritage-motor/internal/testutil"
 )
 
 // countRows begins a tx on AppPool, sets the tenant context, and returns the row count for the table.

@@ -6,12 +6,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/auth"
 )
 
 // blacklistCache caches token blacklist lookups to avoid a DB hit on every request.

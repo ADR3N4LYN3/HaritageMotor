@@ -1,11 +1,12 @@
 package auth
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	authservice "github.com/chriis/heritage-motor/internal/service/auth"
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 // Handler exposes HTTP endpoints for authentication and MFA.

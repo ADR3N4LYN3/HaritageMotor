@@ -7,12 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/db"
-	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/db"
+	"github.com/chriis/heritage-motor/internal/domain"
 )
 
 // VehicleFilters contains the filter and pagination parameters for listing vehicles.

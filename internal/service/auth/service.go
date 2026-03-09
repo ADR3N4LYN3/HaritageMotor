@@ -9,13 +9,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/auth"
-	"github.com/chriis/heritage-motor/internal/db"
-	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/auth"
+	"github.com/chriis/heritage-motor/internal/db"
+	"github.com/chriis/heritage-motor/internal/domain"
 )
 
 // LoginResult is returned on successful authentication when MFA is not required.

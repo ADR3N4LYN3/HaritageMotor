@@ -4,14 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/handler"
-	"github.com/chriis/heritage-motor/internal/middleware"
-	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
-	userSvc "github.com/chriis/heritage-motor/internal/service/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/handler"
+	"github.com/chriis/heritage-motor/internal/middleware"
+	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
+	userSvc "github.com/chriis/heritage-motor/internal/service/user"
 )
 
 type Handler struct {
@@ -86,11 +87,11 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 	}
 
 	var req userSvc.UpdateUserRequest
-	if err := c.BodyParser(&req); err != nil {
+	if err = c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	if err := handler.Validate.Struct(req); err != nil {
+	if err = handler.Validate.Struct(req); err != nil {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 

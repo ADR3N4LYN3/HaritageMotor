@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/chriis/heritage-motor/internal/domain"
 )
 
 func RequireRole(roles ...string) fiber.Handler {

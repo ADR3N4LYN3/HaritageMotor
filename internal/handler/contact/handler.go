@@ -1,9 +1,10 @@
 package contact
 
 import (
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/chriis/heritage-motor/internal/handler"
 	contactsvc "github.com/chriis/heritage-motor/internal/service/contact"
-	"github.com/gofiber/fiber/v2"
 )
 
 type Handler struct {

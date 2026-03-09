@@ -6,10 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/testutil"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/chriis/heritage-motor/internal/testutil"
 )
 
 // listEventsResponse mirrors the paginated JSON envelope returned by GET /events.

@@ -1,12 +1,13 @@
 package scan
 
 import (
-	"github.com/chriis/heritage-motor/internal/db"
-	"github.com/chriis/heritage-motor/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/db"
+	"github.com/chriis/heritage-motor/internal/middleware"
 )
 
 type Handler struct {

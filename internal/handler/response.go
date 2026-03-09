@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/domain"
 )
 
 var Validate = validator.New()

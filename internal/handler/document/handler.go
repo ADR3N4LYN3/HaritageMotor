@@ -5,14 +5,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
+
 	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	docSvc "github.com/chriis/heritage-motor/internal/service/document"
 	"github.com/chriis/heritage-motor/internal/storage"
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 )
 
 type Handler struct {
@@ -34,7 +35,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	}
 
 	var params handler.PaginationParams
-	if err := c.QueryParser(&params); err != nil {
+	if err = c.QueryParser(&params); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid query parameters"})
 	}
 	params.Normalize()
@@ -118,7 +119,8 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 
 	var expiresAt *time.Time
 	if ea := c.FormValue("expires_at"); ea != "" {
-		t, err := time.Parse(time.RFC3339, ea)
+		var t time.Time
+		t, err = time.Parse(time.RFC3339, ea)
 		if err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid expires_at, expected RFC3339"})
 		}
@@ -146,7 +148,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 
 	// Upload file to S3 if configured
 	if h.s3 != nil && h.s3.IsConfigured() {
-		if err := h.s3.Upload(c.UserContext(), s3Key, f, mimeType); err != nil {
+		if err = h.s3.Upload(c.UserContext(), s3Key, f, mimeType); err != nil {
 			log.Error().Err(err).Str("s3_key", s3Key).Msg("failed to upload to S3")
 			return c.Status(500).JSON(fiber.Map{"error": "failed to upload file"})
 		}

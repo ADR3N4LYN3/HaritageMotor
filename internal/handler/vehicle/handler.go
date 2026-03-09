@@ -1,13 +1,14 @@
 package vehicle
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
+
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 )
 
 // Handler holds the HTTP handlers for vehicle endpoints.
@@ -182,11 +183,11 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 	}
 
 	var req updateRequest
-	if err := c.BodyParser(&req); err != nil {
+	if err = c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	if err := handler.Validate.Struct(req); err != nil {
+	if err = handler.Validate.Struct(req); err != nil {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
@@ -295,7 +296,7 @@ func (h *Handler) GetTimeline(c *fiber.Ctx) error {
 	}
 
 	var pag handler.PaginationParams
-	if err := c.QueryParser(&pag); err != nil {
+	if err = c.QueryParser(&pag); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid query parameters"})
 	}
 	pag.Normalize()

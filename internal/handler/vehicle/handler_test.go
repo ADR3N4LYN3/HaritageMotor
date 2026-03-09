@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/chriis/heritage-motor/internal/testutil"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/chriis/heritage-motor/internal/testutil"
 )
 
 // ---------- response types for JSON decoding ----------

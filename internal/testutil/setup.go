@@ -12,6 +12,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
+
 	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/chriis/heritage-motor/internal/db"
 	adminhandler "github.com/chriis/heritage-motor/internal/handler/admin"
@@ -37,11 +43,6 @@ import (
 	tasksvc "github.com/chriis/heritage-motor/internal/service/task"
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 // Env holds all test dependencies.

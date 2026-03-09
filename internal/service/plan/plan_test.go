@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/chriis/heritage-motor/internal/domain"
 	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
 	"github.com/chriis/heritage-motor/internal/testutil"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // ---------- Plan limit enforcement ----------
@@ -154,5 +155,6 @@ func TestPlanLimit_VehicleCreation_BlockedAtLimit(t *testing.T) {
 	}
 
 	resp := env.DoRequest(t, "POST", "/vehicles", token, payload)
+	defer resp.Body.Close()
 	assert.Equal(t, 402, resp.StatusCode, "should return 402 when plan limit is reached")
 }

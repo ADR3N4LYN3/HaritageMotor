@@ -8,14 +8,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chriis/heritage-motor/internal/auth"
-	"github.com/chriis/heritage-motor/internal/domain"
-	"github.com/chriis/heritage-motor/internal/middleware"
-	"github.com/chriis/heritage-motor/internal/service/mailer"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/auth"
+	"github.com/chriis/heritage-motor/internal/domain"
+	"github.com/chriis/heritage-motor/internal/middleware"
+	"github.com/chriis/heritage-motor/internal/service/mailer"
 )
 
 // TenantWithStats is a tenant augmented with resource counts.
