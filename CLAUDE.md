@@ -223,10 +223,24 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 ## Optimisations performance
 
-- **Blacklist cache** : `sync.Map` avec TTL 30s dans `internal/middleware/auth.go` — évite un SELECT par requête authentifiée. `InvalidateBlacklistCache(jti, userID)` pour invalidation immédiate
-- **Tenant cache** : `sync.Map` avec TTL 5min dans le TenantMiddleware
+### Backend (Go)
+- **Blacklist cache** : `sync.Map` avec TTL 30s dans `internal/middleware/auth.go` — évite un SELECT par requête authentifiée. `InvalidateBlacklistCache(jti, userID)` : invalidation O(1) via `Delete()` direct (pas de `Range()` scan)
+- **Tenant cache** : `sync.Map` avec TTL 5min dans le TenantMiddleware. `InvalidateTenantCache(tenantID)` : invalidation immédiate sur update/delete tenant (évite données stales pendant 5min)
+- **Upload limiter** : `sync.RWMutex` (pas `sync.Mutex`) avec cleanup 2-pass (RLock collect → Lock delete) pour ne pas bloquer les uploads pendant le nettoyage
+- **Admin GetTenant** : LEFT JOIN subqueries (comme ListTenants) au lieu de 3 subqueries corrélées
 - **PresignClient S3** : créé une seule fois dans `NewS3Client()`, réutilisé dans `GetSignedURL()`
 - **COUNT(*) OVER()** : toutes les requêtes list en single query (pas de COUNT séparé)
+
+### Frontend (PWA)
+- **VehicleCard** : `React.memo()` pour éviter re-renders sur changement de filtre/recherche
+- **Dashboard** : `useCallback` pour `handleVehicleClick` (référence stable pour les VehicleCard mémoïsés)
+- **useCamera** : `URL.revokeObjectURL()` sur toutes les previews au unmount (empêche memory leaks sur sessions longues)
+- **useOfflineQueue** : effets séparés avec dépendances minimales (initial count runs once, listeners/polling séparés)
+
+### Landing page (web/static/)
+- **Navigation** : `IntersectionObserver` au lieu de `scroll` event listener (1 callback/intersection vs ~60/sec)
+- **Google Fonts** : 6 variantes au lieu de 11 (removed unused weights)
+- **SEO** : `og:image`, `twitter:image`, `preconnect` vers `fonts.gstatic.com`
 
 ## Contraintes UX (non-négociables)
 
