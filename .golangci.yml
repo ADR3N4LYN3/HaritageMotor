@@ -1,5 +1,6 @@
-# Heritage Motor — golangci-lint configuration
+# Heritage Motor — golangci-lint v2 configuration
 # https://golangci-lint.run/usage/configuration/
+version: "2"
 
 run:
   timeout: 5m
@@ -8,7 +9,7 @@ run:
   modules-download-mode: readonly
 
 linters:
-  disable-all: true
+  default: none
   enable:
     # Security
     - gosec
@@ -20,96 +21,78 @@ linters:
     - errcheck
     - ineffassign
     - unused
-    - gofmt
-    - goimports
     - misspell
     # HTTP body leaks
     - bodyclose
-
-linters-settings:
-  gosec:
-    excludes:
-      # G104: unhandled errors — covered by errcheck
-      - G104
-    config:
-      global:
-        audit: false
-
-  revive:
-    severity: warning
+  settings:
+    gosec:
+      excludes:
+        - G104
+      config:
+        global:
+          audit: false
+    revive:
+      severity: warning
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: exported
+          disabled: true
+        - name: increment-decrement
+        - name: var-naming
+        - name: package-comments
+          disabled: true
+        - name: range
+        - name: receiver-naming
+        - name: indent-error-flow
+        - name: superfluous-else
+        - name: unreachable-code
+        - name: redefines-builtin-id
+    staticcheck:
+      checks:
+        - all
+        - -ST1000  # package comments — too verbose
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+    misspell:
+      locale: US
+  exclusions:
     rules:
-      - name: blank-imports
-      - name: context-as-argument
-      - name: context-keys-type
-      - name: dot-imports
-      - name: error-return
-      - name: error-strings
-      - name: error-naming
-      - name: exported
-        disabled: true
-      - name: increment-decrement
-      - name: var-naming
-      - name: package-comments
-        disabled: true
-      - name: range
-      - name: receiver-naming
-      - name: indent-error-flow
-      - name: superfluous-else
-      - name: unreachable-code
-      - name: redefines-builtin-id
+      - path: _test\.go
+        linters:
+          - gosec
+          - errcheck
+      - path: testutil/
+        linters:
+          - gosec
+          - errcheck
+      - linters:
+          - gosec
+        text: "G114"
+      - linters:
+          - gosec
+        text: "G404"
+    paths:
+      - vendor
+      - node_modules
+      - video
+      - pwa
+      - web
+      - docs
+      - plausible
 
-  staticcheck:
-    checks:
-      - all
-
-  govet:
-    enable-all: true
-    disable:
-      # fieldalignment is noisy and rarely actionable
-      - fieldalignment
-
-  goimports:
-    local-prefixes: github.com/chriis/heritage-motor
-
-  misspell:
-    locale: US
-
-issues:
-  exclude-rules:
-    # Exclude gosec from test files (false positives on hardcoded credentials, etc.)
-    - path: _test\.go
-      linters:
-        - gosec
-
-    # Exclude errcheck from test files (test assertions handle errors)
-    - path: _test\.go
-      linters:
-        - errcheck
-
-    # Allow context.Background() in test utilities
-    - path: testutil/
-      linters:
-        - gosec
-        - errcheck
-
-    # G114: net/http server without timeout — not applicable (we use Fiber)
-    - linters:
-        - gosec
-      text: "G114"
-
-    # G404: weak random number generator — acceptable for non-crypto uses
-    - linters:
-        - gosec
-      text: "G404"
-
-  exclude-dirs:
-    - vendor
-    - node_modules
-    - video
-    - pwa
-    - web
-    - docs
-    - plausible
-
-  max-issues-per-linter: 0
-  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/chriis/heritage-motor

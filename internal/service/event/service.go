@@ -179,7 +179,7 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 	if !manualEventTypes[req.EventType] {
 		return nil, &domain.ErrValidation{
 			Field:   "event_type",
-			Message: fmt.Sprintf("manual creation only allowed for: note_added, incident_reported, photo_added"),
+			Message: "manual creation only allowed for: note_added, incident_reported, photo_added",
 		}
 	}
 

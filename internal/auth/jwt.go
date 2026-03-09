@@ -1,3 +1,4 @@
+// Package auth provides JWT token management, password hashing, and TOTP verification.
 package auth
 
 import (

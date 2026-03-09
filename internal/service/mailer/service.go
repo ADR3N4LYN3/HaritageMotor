@@ -58,7 +58,7 @@ func (s *Service) send(to, subject, html string) error {
 	if err != nil {
 		return fmt.Errorf("send email: %w", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // HTTP cleanup
 
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("resend API returned %d", resp.StatusCode)

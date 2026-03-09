@@ -254,7 +254,7 @@ func (s *Service) sendNotification(req Request) {
 		log.Error().Err(err).Msg("failed to send contact notification email")
 		return
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // HTTP cleanup
 
 	if resp.StatusCode >= 400 {
 		log.Error().Int("status", resp.StatusCode).Msg("resend API returned error for contact notification")
@@ -421,7 +421,7 @@ func (s *Service) sendConfirmation(req Request) {
 		log.Error().Err(err).Msg("failed to send confirmation email")
 		return
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // HTTP cleanup
 
 	if resp.StatusCode >= 400 {
 		log.Error().Int("status", resp.StatusCode).Msg("resend API returned error for confirmation email")

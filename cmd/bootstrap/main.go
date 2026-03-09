@@ -43,7 +43,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "database connection failed: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(ctx)
+	defer conn.Close(ctx) //nolint:errcheck // cleanup on exit
 
 	// Conditional INSERT — the unique index is on (email, tenant_id) so
 	// ON CONFLICT (email) won't match for tenant_id IS NULL.

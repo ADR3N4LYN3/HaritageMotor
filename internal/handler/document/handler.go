@@ -138,7 +138,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "failed to read uploaded file"})
 	}
-	defer f.Close()
+	defer f.Close() //nolint:errcheck // file cleanup
 
 	// Validate real file type via magic bytes (not just Content-Type header)
 	mimeType, err := handler.ValidateFileType(f, handler.AllowedDocTypes)

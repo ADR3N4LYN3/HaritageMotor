@@ -68,7 +68,7 @@ func RunMigrations(pool *pgxpool.Pool, migrationsDir string) error {
 			continue
 		}
 
-		sqlBytes, err := os.ReadFile(file)
+		sqlBytes, err := os.ReadFile(file) //nolint:gosec // migrations path is controlled by the application
 		if err != nil {
 			return fmt.Errorf("read migration %s: %w", name, err)
 		}
