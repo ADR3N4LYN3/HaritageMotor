@@ -1,57 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 52" fill="none">
-  <g transform="translate(0,0)">
-    <!-- ═══ ROYAL CROWN ═══ -->
-    <!-- Crown base band -->
-    <rect x="8" y="8" width="24" height="3" rx="0.5" fill="#b8955a"/>
-    <!-- Crown velvet (filled arch) -->
-    <path d="M8 8c0-3 4-6 12-6s12 3 12 6" fill="#b8955a" opacity="0.15"/>
-    <!-- Crown rim with arches -->
-    <path d="M8 8c0-3 4-6 12-6s12 3 12 6" stroke="#b8955a" stroke-width="1" fill="none"/>
-    <!-- Crown fleur-de-lis / points -->
-    <circle cx="20" cy="1" r="1.5" fill="#b8955a"/>
-    <circle cx="12" cy="4.5" r="1" fill="#b8955a"/>
-    <circle cx="28" cy="4.5" r="1" fill="#b8955a"/>
-    <!-- Cross pattée on top -->
-    <line x1="20" y1="-1" x2="20" y2="2.5" stroke="#b8955a" stroke-width="0.8"/>
-    <line x1="18.5" y1="0.5" x2="21.5" y2="0.5" stroke="#b8955a" stroke-width="0.8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="280" height="340">
+  <defs>
+    <linearGradient id="goldH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#96783f"/>
+      <stop offset="20%" stop-color="#d4b07a"/>
+      <stop offset="50%" stop-color="#dcc28a"/>
+      <stop offset="80%" stop-color="#d4b07a"/>
+      <stop offset="100%" stop-color="#96783f"/>
+    </linearGradient>
+    <linearGradient id="darkBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#191816"/>
+      <stop offset="100%" stop-color="#0e0d0b"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcc28a"/>
+      <stop offset="45%" stop-color="#b8955a"/>
+      <stop offset="100%" stop-color="#96783f"/>
+    </linearGradient>
+  </defs>
 
-    <!-- ═══ SHIELD ═══ -->
-    <path d="M2 13h36v14c0 9-8 15-18 19C10 42 2 36 2 27V13z" stroke="#b8955a" stroke-width="1.4" fill="none"/>
-    <!-- Inner shield line -->
-    <path d="M5.5 15.5h29v11.5c0 7.5-6.5 12.5-14.5 15.5-8-3-14.5-8-14.5-15.5V15.5z" stroke="#b8955a" stroke-width="0.4" fill="none" opacity="0.35"/>
+  <!-- Shield outer (gold gradient fill) -->
+  <path d="M140,4 L264,4 Q276,4 276,16 L276,186 Q276,230 248,260 Q218,292 140,332 Q62,292 32,260 Q4,230 4,186 L4,16 Q4,4 16,4 Z" fill="url(#goldH)"/>
+  <!-- Shield inner (dark fill) -->
+  <path d="M140,12 L260,12 Q268,12 268,20 L268,184 Q268,226 242,254 Q214,284 140,322 Q66,284 38,254 Q12,226 12,184 L12,20 Q12,12 20,12 Z" fill="url(#darkBg)"/>
+  <!-- Inner outline -->
+  <path d="M140,22 L254,22 Q260,22 260,28 L260,180 Q260,220 236,246 Q210,274 140,310 Q70,274 44,246 Q20,220 20,180 L20,28 Q20,22 26,22 Z" fill="none" stroke="#b8955a" stroke-width="1.2"/>
+  <!-- Corner dots -->
+  <circle cx="26" cy="22" r="2" fill="#b8955a"/>
+  <circle cx="254" cy="22" r="2" fill="#b8955a"/>
 
-    <!-- ═══ HM MONOGRAM ═══ -->
-    <g fill="#b8955a">
-      <!-- H -->
-      <rect x="9" y="18" width="1.8" height="16" rx="0.3"/>
-      <rect x="9" y="25" width="7.2" height="1.5" rx="0.2"/>
-      <rect x="16.2" y="18" width="1.8" height="16" rx="0.3"/>
-
-      <!-- M -->
-      <rect x="21" y="18" width="1.8" height="16" rx="0.3"/>
-      <polygon points="21.9,18 25.5,27 26,27 26,18 27.5,18 27.5,27 28,27 31.1,18 31.1,20 28.5,28 27.5,28 27.5,27.5 26,27.5 26,28 24.5,28 21.9,20"/>
-      <rect x="30.2" y="18" width="1.8" height="16" rx="0.3"/>
-    </g>
-
-    <!-- ═══ LAUREL BRANCHES ═══ -->
-    <!-- Left -->
-    <g fill="#b8955a" opacity="0.4">
-      <ellipse cx="-0.5" cy="25" rx="1.8" ry="3.5" transform="rotate(20 -0.5 25)"/>
-      <ellipse cx="0" cy="31" rx="1.8" ry="3.5" transform="rotate(10 0 31)"/>
-      <ellipse cx="1" cy="37" rx="1.5" ry="3" transform="rotate(-5 1 37)"/>
-    </g>
-    <!-- Right -->
-    <g fill="#b8955a" opacity="0.4">
-      <ellipse cx="40.5" cy="25" rx="1.8" ry="3.5" transform="rotate(-20 40.5 25)"/>
-      <ellipse cx="40" cy="31" rx="1.8" ry="3.5" transform="rotate(-10 40 31)"/>
-      <ellipse cx="39" cy="37" rx="1.5" ry="3" transform="rotate(5 39 37)"/>
-    </g>
-  </g>
-
-  <!-- ═══ SEPARATOR ═══ -->
-  <line x1="54" y1="10" x2="54" y2="42" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/>
-
-  <!-- ═══ BRAND TEXT ═══ -->
-  <text x="66" y="22" font-family="'Cormorant Garamond','Georgia',serif" font-size="15" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text>
-  <text x="66" y="40" font-family="'Cormorant Garamond','Georgia',serif" font-size="13.5" font-weight="400" letter-spacing="7.8" fill="currentColor">MOTOR</text>
+  <!-- HM monogram -->
+  <text x="140" y="185" text-anchor="middle" font-family="'Cormorant Garamond','Garamond','Georgia',serif" font-size="118" font-weight="700" letter-spacing="5" fill="url(#goldText)">HM</text>
 </svg>

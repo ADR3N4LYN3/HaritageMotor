@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heritage Motor — Logo Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0e0d0b; color: #faf9f7; font-family: 'DM Sans', sans-serif; }
+  .tabs { display: flex; justify-content: center; gap: 32px; padding: 28px 0 20px; border-bottom: 1px solid rgba(184,149,90,0.08); }
+  .tabs button { background: none; border: none; cursor: pointer; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: rgba(250,249,247,0.25); border-bottom: 1px solid transparent; padding-bottom: 6px; transition: all 0.3s; }
+  .tabs button.active { color: #b8955a; border-bottom-color: #b8955a; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Crest */
+  .crest-wrap { display: flex; align-items: center; justify-content: center; min-height: 85vh; padding: 40px; }
+
+  /* Monogram variants */
+  .mono-section { padding: 60px 20px; text-align: center; }
+  .mono-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: #b8955a; opacity: 0.5; margin-bottom: 40px; }
+  .mono-row { display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; }
+  .mono-card { text-align: center; }
+  .mono-card-inner { padding: 28px; border-radius: 6px; display: inline-block; }
+  .mono-card p { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; opacity: 0.3; }
+  .sizes-row { display: flex; align-items: center; justify-content: center; gap: 32px; margin-top: 30px; }
+  .sizes-row p { font-size: 9px; opacity: 0.25; margin-top: 6px; text-align: center; }
+
+  /* Navbar */
+  .nav-section { padding: 60px 20px; }
+  .nav-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 36px; max-width: 860px; margin: 0 auto 8px; border-radius: 4px; }
+  .nav-bar.dark { background: #0e0d0b; border: 1px solid rgba(184,149,90,0.06); }
+  .nav-bar.light { background: #faf9f7; border: 1px solid rgba(14,13,11,0.03); }
+  .nav-brand { display: flex; align-items: center; gap: 12px; }
+  .nav-text { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; letter-spacing: 2.5px; line-height: 1.15; }
+  .nav-links { display: flex; gap: 28px; font-size: 11px; letter-spacing: 1px; }
+  .nav-links span { opacity: 0.45; cursor: pointer; }
+  .nav-links span.gold { opacity: 1; color: #b8955a; }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <button class="active" onclick="showTab('crest')">Crest</button>
+  <button onclick="showTab('mono')">Monogramme</button>
+  <button onclick="showTab('nav')">Nav Bar</button>
+</div>
+
+<!-- CREST -->
+<div id="crest" class="panel active">
+  <div class="crest-wrap">
+    <div style="text-align:center">
+      <img src="logo-crest.svg" width="280" alt="Heritage Motor Crest">
+    </div>
+  </div>
+</div>
+
+<!-- MONOGRAM -->
+<div id="mono" class="panel">
+  <div class="mono-section">
+    <p class="mono-label">Monogramme — Declinaisons</p>
+    <div class="mono-row">
+      <div class="mono-card">
+        <div class="mono-card-inner" style="background:#0e0d0b; border:1px solid rgba(184,149,90,0.09)">
+          <img src="logo.svg" width="52" height="52" alt="Monogram gold">
+        </div>
+        <p>Or / sombre</p>
+      </div>
+      <div class="mono-card">
+        <div class="mono-card-inner" style="background:#faf9f7; border:1px solid rgba(14,13,11,0.04)">
+          <img src="logo.svg" width="52" height="52" alt="Monogram light" style="filter:brightness(0.3)">
+        </div>
+        <p>Sombre / clair</p>
+      </div>
+    </div>
+    <p class="mono-label" style="margin-top:60px">Tailles</p>
+    <div class="sizes-row">
+      <div><img src="logo.svg" width="24" height="24"><p>24px</p></div>
+      <div><img src="logo.svg" width="32" height="32"><p>32px</p></div>
+      <div><img src="logo.svg" width="40" height="40"><p>40px</p></div>
+      <div><img src="logo.svg" width="52" height="52"><p>52px</p></div>
+      <div><img src="logo.svg" width="72" height="72"><p>72px</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<div id="nav" class="panel">
+  <div class="nav-section">
+    <p class="mono-label" style="text-align:center; margin-bottom:30px">Nav Bar</p>
+    <div class="nav-bar dark">
+      <div class="nav-brand">
+        <img src="logo.svg" width="34" height="34">
+        <div class="nav-text" style="color:#b8955a"><div>HERITAGE</div><div>MOTOR</div></div>
+      </div>
+      <div class="nav-links" style="color:#faf9f7">
+        <span>Services</span><span>Collection</span><span>A propos</span><span class="gold">Contact</span>
+      </div>
+    </div>
+    <div class="nav-bar light">
+      <div class="nav-brand">
+        <img src="logo.svg" width="34" height="34" style="filter:brightness(0.3)">
+        <div class="nav-text" style="color:#0e0d0b"><div>HERITAGE</div><div>MOTOR</div></div>
+      </div>
+      <div class="nav-links" style="color:#0e0d0b">
+        <span>Services</span><span>Collection</span><span>A propos</span><span class="gold">Contact</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
