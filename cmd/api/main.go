@@ -44,18 +44,37 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to load config")
 	}
 
-	// Validate production config
-	if cfg.AppEnv == "production" {
-		if cfg.JWTSecret == "dev-secret-change-in-production" || len(cfg.JWTSecret) < 32 {
-			log.Fatal().Msg("JWT_SECRET must be at least 32 characters in production")
-		}
-	}
-
 	// Setup logging
 	level, _ := zerolog.ParseLevel(cfg.LogLevel)
 	zerolog.SetGlobalLevel(level)
 	if cfg.AppEnv == "development" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
+
+	// Handle "migrate" subcommand
+	if len(os.Args) > 1 && os.Args[1] == "migrate" {
+		pool, err := db.NewPool(cfg.DatabaseURL)
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to connect to database for migration")
+		}
+		defer pool.Close()
+
+		migrationsDir := "./migrations"
+		if len(os.Args) > 2 {
+			migrationsDir = os.Args[2]
+		}
+		if err := db.RunMigrations(pool, migrationsDir); err != nil {
+			log.Fatal().Err(err).Msg("migration failed")
+		}
+		log.Info().Msg("migrations completed successfully")
+		return
+	}
+
+	// Validate production config
+	if cfg.AppEnv == "production" {
+		if cfg.JWTSecret == "dev-secret-change-in-production" || len(cfg.JWTSecret) < 32 {
+			log.Fatal().Msg("JWT_SECRET must be at least 32 characters in production")
+		}
 	}
 
 	// Database
