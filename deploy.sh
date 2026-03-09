@@ -73,6 +73,9 @@ docker image prune -f
 
 echo ""
 echo "=== Deploy complete ==="
+echo ""
+echo "   First deploy? Create the superadmin account:"
+echo "   ./bootstrap.sh"
 echo "   Landing : https://heritagemotor.app"
 echo "   API     : https://api.heritagemotor.app/health"
 echo "   App     : https://app.heritagemotor.app"
