@@ -44,6 +44,7 @@ type InviteUserRequest struct {
 	TenantID  uuid.UUID `json:"tenant_id" validate:"required"`
 	Email     string    `json:"email" validate:"required,email"`
 	FirstName string    `json:"first_name" validate:"required"`
+	Lang      string    `json:"lang" validate:"omitempty,oneof=en fr de"`
 	LastName  string    `json:"last_name" validate:"required"`
 	Role      string    `json:"role" validate:"required,oneof=admin operator technician viewer"`
 }
@@ -330,7 +331,11 @@ func (s *Service) InviteUser(ctx context.Context, invitedBy uuid.UUID, req Invit
 
 	// Send welcome email (async, don't block — after commit).
 	go func() {
-		if mailErr := s.mailer.SendWelcome(email, req.FirstName, tenantName, tempPassword); mailErr != nil {
+		lang := req.Lang
+		if lang == "" {
+			lang = "fr"
+		}
+		if mailErr := s.mailer.SendWelcome(email, req.FirstName, tenantName, tempPassword, lang); mailErr != nil {
 			log.Error().Err(mailErr).Str("email", email).Msg("failed to send welcome email")
 		}
 	}()

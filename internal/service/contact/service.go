@@ -119,14 +119,112 @@ func (s *Service) sendNotification(req Request) {
 		vehicles = "N/A"
 	}
 
-	htmlBody := fmt.Sprintf(`<h2>New Demo Request</h2>
-<table style="border-collapse:collapse;font-family:sans-serif;">
-<tr><td style="padding:6px 12px;font-weight:bold;">Name</td><td style="padding:6px 12px;">%s</td></tr>
-<tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;"><a href="mailto:%s">%s</a></td></tr>
-<tr><td style="padding:6px 12px;font-weight:bold;">Company</td><td style="padding:6px 12px;">%s</td></tr>
-<tr><td style="padding:6px 12px;font-weight:bold;">Fleet size</td><td style="padding:6px 12px;">%s</td></tr>
-<tr><td style="padding:6px 12px;font-weight:bold;">Message</td><td style="padding:6px 12px;">%s</td></tr>
-</table>`,
+	htmlBody := fmt.Sprintf(`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0a0908;">
+<table width="100%%" cellpadding="0" cellspacing="0" style="background:#0a0908;padding:0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#0a0908;">
+
+  <!-- Top spacer -->
+  <tr><td style="height:48px;"></td></tr>
+
+  <!-- Logo -->
+  <tr><td align="center" style="padding:0 0 14px;">
+    <img src="https://heritagemotor.app/logo-email.png" alt="HM" width="72" height="88" style="display:block;width:72px;height:88px;" />
+  </td></tr>
+
+  <!-- Brand name -->
+  <tr><td align="center" style="padding:0 0 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
+  </td></tr>
+
+  <!-- Gold accent line -->
+  <tr><td align="center" style="padding:24px 0 0;">
+    <table cellpadding="0" cellspacing="0"><tr>
+      <td style="width:40px;height:1px;background:linear-gradient(to right, transparent, #b8955a40);font-size:0;">&nbsp;</td>
+      <td style="width:6px;height:6px;font-size:0;padding:0 8px;"><table cellpadding="0" cellspacing="0"><tr><td style="width:6px;height:6px;background:#b8955a;transform:rotate(45deg);font-size:0;opacity:0.4;">&nbsp;</td></tr></table></td>
+      <td style="width:40px;height:1px;background:linear-gradient(to left, transparent, #b8955a40);font-size:0;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Title -->
+  <tr><td style="padding:36px 56px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">New Demo Request</p>
+  </td></tr>
+
+  <!-- Spacer -->
+  <tr><td style="height:28px;"></td></tr>
+
+  <!-- Detail card -->
+  <tr><td style="padding:0 40px;">
+    <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#12110e;border:1px solid #b8955a18;border-radius:4px;">
+      <!-- Card header -->
+      <tr><td style="padding:20px 28px 16px;border-bottom:1px solid #b8955a12;">
+        <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">Contact Details</p>
+      </td></tr>
+      <!-- Name -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Name</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Email -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Email</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;"><a href="mailto:%s" style="color:#b8955a;text-decoration:none;">%s</a></td>
+        </tr></table>
+      </td></tr>
+      <!-- Company -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Company</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Fleet -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Fleet size</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Message -->
+      <tr><td style="padding:0 28px;">
+        <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;vertical-align:top;">Message</td>
+          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;line-height:1.6;">%s</td>
+        </tr></table>
+      </td></tr>
+      <!-- Card bottom padding -->
+      <tr><td style="height:4px;"></td></tr>
+    </table>
+  </td></tr>
+
+  <!-- Bottom spacer -->
+  <tr><td style="height:48px;"></td></tr>
+
+  <!-- Footer divider -->
+  <tr><td style="padding:0 56px;">
+    <table width="100%%" cellpadding="0" cellspacing="0"><tr>
+      <td style="border-bottom:1px solid #b8955a10;font-size:0;height:1px;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td align="center" style="padding:24px 56px 48px;">
+    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">Heritage Motor — Admin Notification</p>
+    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`,
 		req.Name, req.Email, req.Email, company, vehicles, req.Message,
 	)
 
