@@ -1,0 +1,42 @@
+# Landing page
+heritagemotor.app {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+	root * /srv/landing
+	file_server
+	encode gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+}
+
+# Go API
+api.heritagemotor.app {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+	reverse_proxy api:8080
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
+
+# PWA Next.js
+app.heritagemotor.app {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+	reverse_proxy app:3000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		# PWA: allow camera for QR scanning
+		Permissions-Policy "camera=(self), microphone=()"
+		-Server
+	}
+}

@@ -1,0 +1,21 @@
+bin/
+.env
+.env.prod
+.env.local
+certs/
+*.exe
+*.test
+*.out
+tmp/
+vendor/
+
+# Next.js
+pwa/.next/
+pwa/node_modules/
+pwa/out/
+
+# PWA service worker (generated)
+pwa/public/sw.js
+pwa/public/sw.js.map
+pwa/public/workbox-*.js
+pwa/public/workbox-*.js.map

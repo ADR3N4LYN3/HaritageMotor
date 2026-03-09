@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heritage Motor — Vehicle Chain of Custody Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:   #0e0d0b;
+  --dark:    #1a1916;
+  --mid:     #3d3c38;
+  --muted:   #8a8880;
+  --border:  #e2dfd8;
+  --bg:      #faf9f7;
+  --white:   #ffffff;
+  --gold:    #b8955a;
+  --gold-lt: #d4b07a;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--black);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── NAV ────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.75rem 3.5rem;
+  transition: all 0.4s ease;
+}
+
+nav.on-photo {
+  /* on hero — white text, transparent bg */
+}
+
+nav.scrolled {
+  background: rgba(250,249,247,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 1.1rem 3.5rem;
+}
+
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+nav.on-photo .nav-logo { color: #fff; }
+nav.scrolled .nav-logo { color: var(--black); }
+
+.nav-right {
+  display: flex; align-items: center; gap: 2.5rem;
+}
+
+.nav-links {
+  display: flex; gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: opacity 0.25s;
+  opacity: 0.75;
+}
+
+nav.on-photo .nav-links a { color: #fff; }
+nav.scrolled .nav-links a { color: var(--black); }
+.nav-links a:hover { opacity: 1; }
+
+.nav-cta {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.6rem 1.6rem;
+  border-radius: 1px;
+  font-weight: 500;
+  transition: all 0.25s;
+}
+
+nav.on-photo .nav-cta {
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+}
+
+nav.on-photo .nav-cta:hover {
+  background: #fff;
+  color: var(--black);
+  border-color: #fff;
+}
+
+nav.scrolled .nav-cta {
+  background: var(--black);
+  color: #fff;
+  border: 1px solid var(--black);
+}
+
+nav.scrolled .nav-cta:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+/* ─── HERO ───────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 680px;
+  overflow: hidden;
+}
+
+.hero-photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 45%;
+  transform: scale(1.04);
+  animation: heroZoom 18s ease-in-out infinite alternate;
+}
+
+@keyframes heroZoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.10); }
+}
+
+.hero-overlay {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom,
+      rgba(14,13,11,0.35) 0%,
+      rgba(14,13,11,0.25) 40%,
+      rgba(14,13,11,0.55) 80%,
+      rgba(14,13,11,0.80) 100%
+    );
+}
+
+.hero-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 0 3.5rem 5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+}
+
+.hero-left {}
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  margin-bottom: 1.75rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s ease forwards;
+}
+
+.hero-tag-line {
+  width: 30px; height: 1px;
+  background: rgba(255,255,255,0.5);
+}
+
+.hero-tag-text {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  font-family: var(--sans);
+  font-weight: 400;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(3.5rem, 6vw, 7rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 1s 0.6s ease forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(255,255,255,0.75);
+}
+
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  background: #fff;
+  color: var(--black);
+  text-decoration: none;
+  padding: 1rem 2.2rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 1px;
+  transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+  opacity: 0;
+  animation: fadeUp 1s 0.9s ease forwards;
+}
+
+.hero-cta:hover {
+  background: var(--gold);
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 1s 1s ease forwards;
+}
+
+.hero-stat {
+  text-align: right;
+  border-right: 1px solid rgba(255,255,255,0.25);
+  padding-right: 1.25rem;
+}
+
+.hero-stat-val {
+  font-family: var(--serif);
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1;
+}
+
+.hero-stat-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-top: 0.2rem;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.4s ease forwards;
+}
+
+.hero-scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+  animation: scrollPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(0.7); }
+}
+
+.hero-scroll-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  writing-mode: vertical-rl;
+  margin-top: 0.3rem;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── INTRO BAND ─────────────────────────────────────────────────── */
+.intro-band {
+  background: var(--black);
+  padding: 2rem 3.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 2rem;
+}
+
+.intro-band-text {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.75);
+  font-style: italic;
+  max-width: 680px;
+}
+
+.intro-band-link {
+  display: flex; align-items: center; gap: 0.6rem;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: gap 0.25s;
+}
+
+.intro-band-link:hover { gap: 0.9rem; }
+
+/* ─── MAKE IT SIMPLE (3-column with photos, like Carsup) ─────────── */
+.pillars {
+  padding: 7rem 3.5rem;
+  background: var(--white);
+}
+
+.pillars-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.section-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: var(--sans);
+  margin-bottom: 1.25rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+}
+
+.section-tag::before, .section-tag::after {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+}
+
+.pillars-header h2 {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+  font-weight: 300;
+  color: var(--black);
+  line-height: 1.15;
+}
+
+.pillars-header h2 em {
+  font-style: italic;
+  color: var(--muted);
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.pillar {}
+
+.pillar-photo {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 2rem;
+  filter: grayscale(15%);
+  transition: filter 0.4s;
+}
+
+.pillar:hover .pillar-photo { filter: grayscale(0%); }
+
+.pillar-num {
+  font-family: var(--serif);
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.75rem;
+}
+
+.pillar h3 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.pillar p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ─── FULL-BLEED PHOTO + TEXT (alternating, like Carsup sections) ── */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 600px;
+}
+
+.split.reverse { direction: rtl; }
+.split.reverse > * { direction: ltr; }
+
+.split-photo {
+  position: relative;
+  overflow: hidden;
+}
+
+.split-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s ease;
+}
+
+.split:hover .split-photo img { transform: scale(1.03); }
+
+.split-content {
+  background: var(--white);
+  padding: 5rem 4.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.split-content.dark {
+  background: var(--black);
+}
+
+.split-content.dark h2 { color: #fff; }
+.split-content.dark p  { color: rgba(255,255,255,0.5); }
+.split-content.dark .section-tag { color: var(--gold-lt); }
+.split-content.dark .section-tag::before,
+.split-content.dark .section-tag::after { background: var(--gold-lt); }
+.split-content.dark .split-link { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+.split-content.dark .split-link:hover { color: var(--gold-lt); border-color: var(--gold-lt); }
+
+.split-content .section-tag { justify-content: flex-start; }
+.split-content .section-tag::after { display: none; }
+
+.split-content h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  font-weight: 300;
+  color: var(--black);
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.split-content h2 em { font-style: italic; }
+
+.split-content p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.85;
+  font-weight: 300;
+  max-width: 420px;
+  margin-bottom: 2.5rem;
+}
+
+.split-link {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--black);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 3px;
+  transition: color 0.25s, border-color 0.25s, gap 0.25s;
+}
+
+.split-link:hover { color: var(--gold); border-color: var(--gold); gap: 0.9rem; }
+
+/* ─── FEATURES CARD GRID (light, editorial) ──────────────────────── */
+.features {
+  background: var(--bg);
+  padding: 7rem 3.5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.features-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  margin-bottom: 5rem;
+  align-items: end;
+}
+
+.features-intro h2 {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--black);
+}
+
+.features-intro h2 em { font-style: italic; color: var(--muted); }
+
+.features-intro-right p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.85;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.feat {
+  background: var(--white);
+  padding: 2.5rem 2.25rem;
+  transition: background 0.3s;
+}
+
+.feat:hover { background: var(--bg); }
+
+.feat-icon {
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.feat h3 {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.feat p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+.feat-tag {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+/* ─── QUOTE / MANIFESTO ──────────────────────────────────────────── */
+.manifesto {
+  padding: 8rem 3.5rem;
+  background: var(--white);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 6rem;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.manifesto-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  align-self: center;
+}
+
+.manifesto-quote {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.25;
+  color: var(--black);
+}
+
+.manifesto-quote em { font-style: italic; color: var(--muted); }
+
+.manifesto-attr {
+  margin-top: 2.5rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+
+.manifesto-attr::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--border);
+}
+
+/* ─── STATS ──────────────────────────────────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stat {
+  padding: 4rem 2.5rem;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  transition: background 0.3s;
+}
+
+.stat:last-child { border-right: none; }
+.stat:hover { background: var(--white); }
+
+.stat-val {
+  font-family: var(--serif);
+  font-size: 3.5rem;
+  font-weight: 300;
+  color: var(--black);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-val span { color: var(--gold); }
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 1.5;
+  max-width: 160px;
+}
+
+/* ─── PRICING (editorial cards, light) ───────────────────────────── */
+.pricing {
+  padding: 7rem 3.5rem;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+}
+
+.pricing-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: end;
+  margin-bottom: 5rem;
+}
+
+.pricing-header h2 {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--black);
+}
+
+.pricing-header h2 em { font-style: italic; }
+
+.pricing-header p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.price-card {
+  border: 1px solid var(--border);
+  padding: 3rem 2.5rem;
+  position: relative;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.price-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+  border-color: rgba(184,149,90,0.3);
+}
+
+.price-card.featured {
+  border-color: var(--black);
+  background: var(--black);
+}
+
+.price-badge {
+  position: absolute;
+  top: -1px; right: 2rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: #fff;
+  padding: 0.3rem 0.75rem;
+  border-radius: 0 0 3px 3px;
+  font-weight: 500;
+}
+
+.price-tier {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.75rem;
+}
+
+.price-card.featured .price-tier { color: var(--gold-lt); }
+
+.price-amount {
+  font-family: var(--serif);
+  font-size: 4rem;
+  font-weight: 300;
+  color: var(--black);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.price-card.featured .price-amount { color: #fff; }
+
+.price-period {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+}
+
+.price-card.featured .price-period { color: rgba(255,255,255,0.4); }
+
+.price-sep { height: 1px; background: var(--border); margin-bottom: 2rem; }
+.price-card.featured .price-sep { background: rgba(255,255,255,0.1); }
+
+.price-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.price-list li {
+  font-size: 0.82rem;
+  color: var(--mid);
+  display: flex; gap: 0.6rem; align-items: flex-start;
+  line-height: 1.4;
+}
+
+.price-card.featured .price-list li { color: rgba(255,255,255,0.6); }
+
+.price-list li::before {
+  content: '—';
+  color: var(--gold);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.price-list li.off { color: var(--border); }
+.price-card.featured .price-list li.off { color: rgba(255,255,255,0.2); }
+.price-list li.off::before { color: var(--border); }
+
+.price-btn {
+  display: block;
+  margin-top: 2.5rem;
+  padding: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--black);
+  color: var(--black);
+  border-radius: 1px;
+  transition: background 0.25s, color 0.25s;
+}
+
+.price-btn:hover { background: var(--black); color: #fff; }
+
+.price-card.featured .price-btn {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #fff;
+}
+
+.price-card.featured .price-btn:hover {
+  background: var(--gold-lt);
+  border-color: var(--gold-lt);
+}
+
+/* ─── FINAL CTA (full bleed photo) ───────────────────────────────── */
+.final-cta {
+  position: relative;
+  min-height: 520px;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+
+.final-photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  filter: grayscale(20%);
+}
+
+.final-overlay {
+  position: absolute; inset: 0;
+  background: rgba(14,13,11,0.72);
+}
+
+.final-content {
+  position: relative; z-index: 2;
+  padding: 5rem 3.5rem;
+  max-width: 700px;
+}
+
+.final-content .section-tag {
+  justify-content: flex-start;
+  color: rgba(255,255,255,0.5);
+}
+
+.final-content .section-tag::before { background: rgba(255,255,255,0.3); }
+.final-content .section-tag::after { display: none; }
+
+.final-content h2 {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  font-weight: 300;
+  color: #fff;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+}
+
+.final-content h2 em { font-style: italic; color: rgba(255,255,255,0.6); }
+
+.final-content p {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 3rem;
+  max-width: 480px;
+}
+
+.final-actions {
+  display: flex; align-items: center; gap: 2rem;
+}
+
+.btn-white {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: #fff;
+  color: var(--black);
+  text-decoration: none;
+  padding: 1rem 2.2rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 1px;
+  transition: background 0.25s, color 0.25s;
+}
+
+.btn-white:hover { background: var(--gold); color: #fff; }
+
+.btn-ghost-white {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 2px;
+  transition: color 0.25s, border-color 0.25s;
+}
+
+.btn-ghost-white:hover { color: #fff; border-color: rgba(255,255,255,0.6); }
+
+/* ─── FOOTER ─────────────────────────────────────────────────────── */
+footer {
+  background: var(--black);
+  padding: 3rem 3.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+
+.footer-logo {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+}
+
+.footer-links {
+  display: flex; gap: 2.5rem; list-style: none;
+  justify-content: center;
+}
+
+.footer-links a {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--gold); }
+
+.footer-copy {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+
+/* ─── SCROLL REVEAL ──────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.12s; }
+.reveal-d2 { transition-delay: 0.22s; }
+.reveal-d3 { transition-delay: 0.32s; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  nav { padding: 1.25rem 1.5rem; }
+  nav.scrolled { padding: 0.9rem 1.5rem; }
+  .nav-links { display: none; }
+  .hero-content { padding: 0 1.5rem 4rem; grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  section, .pillars, .features, .pricing, .manifesto { padding: 5rem 1.5rem; }
+  .split { grid-template-columns: 1fr; }
+  .split-photo { aspect-ratio: 16/9; }
+  .split-content { padding: 3rem 1.5rem; }
+  .pillars-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+  .features-intro, .pricing-header, .manifesto { grid-template-columns: 1fr; gap: 2rem; }
+  .manifesto-label { display: none; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .intro-band { flex-direction: column; gap: 1rem; }
+  footer { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+  .footer-copy { text-align: center; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav" class="on-photo">
+  <a href="#" class="nav-logo">Heritage Motor</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#platform">Platform</a></li>
+      <li><a href="#timeline">Timeline</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Request Demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <video class="hero-photo" autoplay muted loop playsinline
+    poster="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1920&q=85&auto=format&fit=crop">
+    <source src="/static/hero-bg.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-tag">
+        <div class="hero-tag-line"></div>
+        <span class="hero-tag-text">Vehicle Chain of Custody</span>
+      </div>
+      <h1>The operating<br>system for<br><em>premium storage.</em></h1>
+      <a href="#contact" class="hero-cta">
+        Request a Demo
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-right">
+      <div class="hero-stat">
+        <div class="hero-stat-val">€2M+</div>
+        <div class="hero-stat-label">Average assets under<br>management per facility</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">&lt;30s</div>
+        <div class="hero-stat-label">To log any vehicle<br>movement or event</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">1 click</div>
+        <div class="hero-stat-label">Full Chain of Custody<br>PDF at exit</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span class="hero-scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- INTRO BAND -->
+<div class="intro-band">
+  <p class="intro-band-text">Heritage Motor replaces Excel, WhatsApp and paper — with a single, immutable record of everything that happens to every vehicle in your care.</p>
+  <a href="#platform" class="intro-band-link">
+    Explore the platform
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</div>
+
+<!-- PILLARS (3-up with photos) -->
+<section class="pillars" id="platform">
+  <div class="pillars-header reveal">
+    <div class="section-tag">Why Heritage Motor</div>
+    <h2>Protection.<br>Transparency.<br><em>Excellence.</em></h2>
+  </div>
+  <div class="pillars-grid">
+    <div class="pillar reveal">
+      <img class="pillar-photo"
+        src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80&auto=format&fit=crop&crop=center"
+        alt="Vehicle documentation">
+      <div class="pillar-num">01</div>
+      <h3>Chain of Custody</h3>
+      <p>From intake to exit, every movement, task and event is timestamped, attributed and permanent. When an owner disputes a scratch, you have proof — down to the minute and the person.</p>
+    </div>
+    <div class="pillar reveal reveal-d1">
+      <img class="pillar-photo"
+        src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop&crop=center"
+        alt="Operational excellence">
+      <div class="pillar-num">02</div>
+      <h3>Operational Control</h3>
+      <p>Battery starts, tyre pressure, storage checks — assigned, reminded, completed and logged. Bay management in three taps. Nothing slips through, nothing is forgotten.</p>
+    </div>
+    <div class="pillar reveal reveal-d2">
+      <img class="pillar-photo"
+        src="https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=800&q=80&auto=format&fit=crop&crop=top"
+        alt="Owner transparency">
+      <div class="pillar-num">03</div>
+      <h3>Owner Confidence</h3>
+      <p>The Vehicle History Export becomes a provenance document — useful at auction, at insurer, at sale. Your service adds demonstrable value to the asset itself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 1 — Timeline (photo left, text right) -->
+<div class="split" id="timeline">
+  <div class="split-photo reveal">
+    <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1000&q=85&auto=format&fit=crop&crop=center" alt="Ferrari in premium storage">
+  </div>
+  <div class="split-content reveal reveal-d1">
+    <div class="section-tag">Vehicle Timeline</div>
+    <h2>The complete<br>story of every<br><em>vehicle you touch.</em></h2>
+    <p>A chronological, immutable log of every intake photo, every bay move, every maintenance task, every incident — with timestamp and operator identity. The chain of custody, made visual and exportable.</p>
+    <p>At exit, one click generates the full Vehicle History Export: intake photos, exit photos, all events, all tasks completed. Your legal protection — and your client's provenance document.</p>
+    <a href="#contact" class="split-link">See a live demo →</a>
+  </div>
+</div>
+
+<!-- SPLIT 2 — Problem (text left, photo right, dark) -->
+<div class="split reverse">
+  <div class="split-photo reveal">
+    <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=1000&q=85&auto=format&fit=crop&crop=right" alt="Premium garage interior">
+  </div>
+  <div class="split-content dark reveal reveal-d1">
+    <div class="section-tag">The Problem</div>
+    <h2>You manage<br><em>million-euro</em><br>assets with Excel.</h2>
+    <p>When an owner disputes the condition of their Porsche at exit, you have no timestamped photos, no movement history, no proof. A single incident can cost more than a year of software fees.</p>
+    <p>Heritage Motor exists to make that scenario impossible — permanently.</p>
+    <a href="#contact" class="split-link">Book a demo →</a>
+  </div>
+</div>
+
+<!-- FEATURES GRID -->
+<section class="features">
+  <div class="features-intro">
+    <div class="reveal">
+      <div class="section-tag" style="justify-content:flex-start;">
+        <span>Platform Features</span>
+      </div>
+      <h2>Everything<br>your facility<br><em>needs.</em></h2>
+    </div>
+    <div class="reveal reveal-d1">
+      <p>Built specifically for premium collection vehicle storage — not adapted from generic self-storage software. Every feature was designed around real operational workflows.</p>
+      <a href="#contact" class="split-link">Request a demo →</a>
+    </div>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feat">
+      <span class="feat-tag">Registry</span>
+      <span class="feat-icon">🚗</span>
+      <h3>Vehicle Registry</h3>
+      <p>Structured records with intake photos, VIN, owner details, documents and current status — all in one place, always current.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-tag">Logistics</span>
+      <span class="feat-icon">📍</span>
+      <h3>Bay Management</h3>
+      <p>Real-time map showing which car is where. Move a vehicle in 3 taps — log and photo created automatically.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-tag">History</span>
+      <span class="feat-icon">⚡</span>
+      <h3>Vehicle Timeline</h3>
+      <p>Complete chronological history of every event with photos and operator identity. The chain of custody, made visual.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-tag">Operations</span>
+      <span class="feat-icon">✅</span>
+      <h3>Recurring Tasks</h3>
+      <p>Battery starts, tyre pressure, washes — assigned, reminded, completed and logged. Nothing slips through.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-tag">Protection</span>
+      <span class="feat-icon">📄</span>
+      <h3>Exit Report PDF</h3>
+      <p>One-click PDF with intake photos, exit photos, full timeline and completed tasks. Generated in seconds.</p>
+    </div>
+    <div class="feat">
+      <span class="feat-tag">Compliance</span>
+      <span class="feat-icon">🔐</span>
+      <h3>Immutable Audit Log</h3>
+      <p>Append-only record of every action by every operator. Nobody can alter history — and that's the point.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO QUOTE -->
+<div class="manifesto reveal">
+  <div class="manifesto-label">Heritage Motor</div>
+  <div>
+    <p class="manifesto-quote">
+      "The facilities that survive the next decade will be the ones that can prove — on paper, to any owner, at any moment — <em>exactly what happened to their car.</em>"
+    </p>
+    <div class="manifesto-attr">Platform philosophy · heritagemotor.app</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat reveal">
+    <div class="stat-val">€<span>2M</span></div>
+    <div class="stat-label">Average asset value per facility</div>
+  </div>
+  <div class="stat reveal reveal-d1">
+    <div class="stat-val">&lt;<span>30</span>s</div>
+    <div class="stat-label">To log any vehicle movement</div>
+  </div>
+  <div class="stat reveal reveal-d2">
+    <div class="stat-val"><span>1</span></div>
+    <div class="stat-label">Click to generate full Chain of Custody PDF</div>
+  </div>
+  <div class="stat reveal reveal-d3">
+    <div class="stat-val"><span>0</span></div>
+    <div class="stat-label">External auth dependencies — your data stays yours</div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-header">
+    <div class="reveal">
+      <div class="section-tag" style="justify-content:flex-start;"><span>Pricing</span></div>
+      <h2>Priced for<br>the value<br><em>you protect.</em></h2>
+    </div>
+    <div class="reveal reveal-d1">
+      <p>A flat monthly rate per site — no per-vehicle fees, no surprises. Setup and onboarding included for the first three months.</p>
+    </div>
+  </div>
+
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="price-tier">Starter</div>
+      <div class="price-amount">€800</div>
+      <div class="price-period">per site / month · up to 50 vehicles</div>
+      <div class="price-sep"></div>
+      <ul class="price-list">
+        <li>Vehicle registry & bay management</li>
+        <li>Movement log with timestamped photos</li>
+        <li>Recurring tasks & reminders</li>
+        <li>Immutable audit log</li>
+        <li>Exit report PDF</li>
+        <li>5 operator accounts</li>
+        <li class="off">Owner portal</li>
+        <li class="off">Climate sensor alerts</li>
+      </ul>
+      <a href="#contact" class="price-btn">Request Demo</a>
+    </div>
+
+    <div class="price-card featured">
+      <div class="price-badge">Most popular</div>
+      <div class="price-tier">Pro</div>
+      <div class="price-amount">€1,400</div>
+      <div class="price-period">per site / month · up to 200 vehicles</div>
+      <div class="price-sep"></div>
+      <ul class="price-list">
+        <li>Everything in Starter</li>
+        <li>Owner transparency portal</li>
+        <li>Vehicle History Export</li>
+        <li>15 operator accounts</li>
+        <li>Priority support</li>
+        <li>Climate alerts +€350/mo</li>
+      </ul>
+      <a href="#contact" class="price-btn">Request Demo</a>
+    </div>
+
+    <div class="price-card">
+      <div class="price-tier">Enterprise</div>
+      <div class="price-amount">Sur devis</div>
+      <div class="price-period">multi-site · unlimited vehicles</div>
+      <div class="price-sep"></div>
+      <ul class="price-list">
+        <li>Everything in Pro</li>
+        <li>API access & integrations</li>
+        <li>Certified Vehicle History Export</li>
+        <li>Dedicated onboarding manager</li>
+        <li>Climate monitoring included</li>
+        <li>Auction house integrations (roadmap)</li>
+      </ul>
+      <a href="#contact" class="price-btn">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta" id="contact">
+  <img class="final-photo"
+    src="https://images.unsplash.com/photo-1504215680853-026ed2a45def?w=1920&q=80&auto=format&fit=crop&crop=center"
+    alt="Premium collection storage">
+  <div class="final-overlay"></div>
+  <div class="final-content reveal">
+    <div class="section-tag">Get Started</div>
+    <h2>Your facility deserves<br>an <em>operating system.</em></h2>
+    <p>20-minute demo, no commitment. Just a conversation about how your facility operates — and whether Heritage Motor is the right fit.</p>
+    <div class="final-actions">
+      <a href="mailto:hello@heritagemotor.app" class="btn-white">
+        Book a Demo
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="mailto:hello@heritagemotor.app" class="btn-ghost-white">hello@heritagemotor.app</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Heritage Motor</a>
+  <ul class="footer-links">
+    <li><a href="#platform">Platform</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="mailto:hello@heritagemotor.app">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 heritagemotor.app</div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+
+  window.addEventListener('scroll', () => {
+    const hero = document.getElementById('hero');
+    const heroBottom = hero.offsetTop + hero.offsetHeight;
+
+    if (window.scrollY > heroBottom - 80) {
+      nav.classList.remove('on-photo');
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.add('on-photo');
+      nav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // Scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
