@@ -69,7 +69,7 @@ jobs:
           DATABASE_APP_URL_TEST: postgres://heritage_app:testapppassword@localhost:5432/heritage_motor_test?sslmode=disable
           JWT_SECRET: test-jwt-secret-for-ci-minimum-32-chars-long
           APP_ENV: test
-        run: go test -v -race -timeout 120s ./...
+        run: go test -v -race -p 1 -timeout 120s ./...
 
   pwa-lint-build:
     name: PWA Lint & Build

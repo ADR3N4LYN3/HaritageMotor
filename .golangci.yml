@@ -7,11 +7,6 @@ run:
   tests: true
   modules-download-mode: readonly
 
-output:
-  formats:
-    - format: colored-line-number
-  sort-results: true
-
 linters:
   disable-all: true
   enable:
