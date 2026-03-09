@@ -28,15 +28,22 @@
 cmd/api/main.go              — Point d'entrée, toutes les routes
 internal/config/             — Config depuis env vars
 internal/auth/               — JWT, bcrypt, TOTP
-internal/middleware/          — Auth, Tenant (RLS), RBAC, Audit
-internal/domain/             — Types et erreurs typées
-internal/service/{domaine}/  — Logique métier
+internal/middleware/          — Auth, Tenant (RLS), RBAC, Audit, UploadLimiter
+internal/domain/             — Types, erreurs typées, password validation
+internal/service/            — Logique métier :
+  auth/                      —   Login, logout, refresh, MFA, change-password
+  admin/                     —   Superadmin : tenants CRUD, invitations, dashboard
+  contact/                   —   Formulaire contact public (landing)
+  mailer/                    —   Envoi d'emails via Resend API
+  plan/                      —   Limites par plan (starter/pro/enterprise)
+  user/, vehicle/, bay/, event/, task/, document/
 internal/handler/{domaine}/  — Handlers HTTP Fiber
 internal/storage/            — Client S3 (aws-sdk-go-v2)
-internal/db/                 — Pool pgxpool, DBTX, migrations (001-015)
+internal/db/                 — Pool pgxpool, DBTX, migrations (001-018)
 internal/db/dbtx.go          — Interface DBTX, WithTx/TxFromCtx/Conn
-web/static/                  — Landing page
+web/static/                  — Landing page + page contact
 pwa/                         — Frontend Next.js PWA
+pwa/middleware.ts            — Auth middleware Next.js (cookie refresh_token)
 ```
 
 ## Règles de sécurité impératives
@@ -72,7 +79,8 @@ pwa/                         — Frontend Next.js PWA
 - Fail-open avec warning log si DB indisponible
 - Logout : blackliste l'access token + révoque le refresh token
 - User delete : révoque tous refresh tokens + blackliste user_id pour durée access token
-- Middleware order : Auth (+ blacklist) → Per-user limiter → Tenant (RLS tx) → Audit
+- Middleware order : Auth (+ blacklist) → Per-user limiter → RequirePasswordChanged → Tenant (RLS tx) → Audit
+- Superadmin routes : Auth → RequireSuperAdmin (pas de TenantMiddleware, utilisent ownerPool)
 
 ### Stockage S3
 - Stocker UNIQUEMENT les clés S3 en DB, JAMAIS les URLs signées
@@ -82,29 +90,44 @@ pwa/                         — Frontend Next.js PWA
 
 ## RBAC — Matrice des permissions
 
-| Action | admin | operator | technician | viewer |
-|---|---|---|---|---|
-| Lire véhicules | ✓ | ✓ | ✓ | ✓ |
-| Créer/modifier véhicule | ✓ | ✓ | ✗ | ✗ |
-| Supprimer véhicule (soft) | ✓ | ✗ | ✗ | ✗ |
-| Logger un événement | ✓ | ✓ | ✓ | ✗ |
-| Uploader photos/docs | ✓ | ✓ | ✓ | ✗ |
-| Gérer/compléter tâches | ✓ | ✓ | ✓ | ✗ |
-| Voir audit log | ✓ | ✗ | ✗ | ✗ |
-| Gérer utilisateurs | ✓ | ✗ | ✗ | ✗ |
-| Gérer bays | ✓ | ✓ | ✗ | ✗ |
-| Générer rapport PDF | ✓ | ✓ | ✗ | ✗ |
+5 rôles : `superadmin` (plateforme), `admin`, `operator`, `technician`, `viewer` (tenant).
+
+| Action | superadmin | admin | operator | technician | viewer |
+|---|---|---|---|---|---|
+| Gérer tenants/plans | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Inviter users cross-tenant | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Dashboard plateforme | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Lire véhicules | — | ✓ | ✓ | ✓ | ✓ |
+| Créer/modifier véhicule | — | ✓ | ✓ | ✗ | ✗ |
+| Supprimer véhicule (soft) | — | ✓ | ✗ | ✗ | ✗ |
+| Logger un événement | — | ✓ | ✓ | ✓ | ✗ |
+| Uploader photos/docs | — | ✓ | ✓ | ✓ | ✗ |
+| Gérer/compléter tâches | — | ✓ | ✓ | ✓ | ✗ |
+| Voir audit log | — | ✓ | ✗ | ✗ | ✗ |
+| Gérer utilisateurs | — | ✓ | ✗ | ✗ | ✗ |
+| Gérer bays | — | ✓ | ✓ | ✗ | ✗ |
+| Générer rapport PDF | — | ✓ | ✓ | ✗ | ✗ |
 
 ## Routes API
 
-Préfixe : `/api/v1`. Toutes sauf `/auth/*` requièrent JWT. `tenant_id` toujours du JWT.
+Préfixe : `/api/v1`. Toutes sauf `/auth/*` et `/contact` requièrent JWT. `tenant_id` toujours du JWT.
 
 ```
+# Public (pas de JWT)
+POST   /contact                 — Formulaire contact (3 req/15min/IP)
+
 # Auth
 POST   /auth/login              POST   /auth/mfa/verify
 POST   /auth/refresh            POST   /auth/logout
 GET    /auth/me                 POST   /auth/mfa/setup
 POST   /auth/mfa/enable         DELETE /auth/mfa
+POST   /auth/change-password    — Accessible même avec password_change_required
+
+# Superadmin (JWT + superadmin role, pas de tenant)
+GET    /admin/dashboard          — Stats globales plateforme
+GET    /admin/tenants            POST   /admin/tenants
+GET    /admin/tenants/:id        PATCH  /admin/tenants/:id
+DELETE /admin/tenants/:id        POST   /admin/invitations
 
 # Vehicles
 GET    /vehicles                POST   /vehicles
@@ -164,6 +187,14 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 ### Transactions
 - Auth service : ownerPool comme fallback ; routes authentifiées utilisent appPool tx du middleware
 - Business services : `db.Conn(ctx, s.pool)` pour récupérer le tx ou fallback sur le pool
+- Superadmin/contact/plan services : ownerPool direct (pas de RLS, pas de tenant)
+
+### Superadmin & Plans
+- Superadmin = `user_role='superadmin'`, `tenant_id IS NULL` (pas attaché à un tenant)
+- `plan_limits` table : plan → resource → max_count (starter/pro/enterprise)
+- Plan service avec cache mémoire (TTL 5min), fail-open
+- Invitation flow : crée user avec temp password → email Resend → `password_change_required=true`
+- Mailer service : Resend API, no-op si `RESEND_API_KEY` vide (dev mode)
 
 ## Architecture PWA (pwa/)
 
