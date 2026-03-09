@@ -90,8 +90,8 @@ S3_BUCKET=<bucket-name>
 S3_REGION=eu-central
 
 # RLS (heritage_app role)
-HERITAGE_APP_PASSWORD=<strong-password>    # openssl rand -hex 32
-DATABASE_APP_URL=postgresql://heritage_app:${HERITAGE_APP_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+APP_DB_PASSWORD=<strong-password>          # openssl rand -hex 32
+DATABASE_APP_URL=postgresql://heritage_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
 
 # Email (Resend)
 RESEND_API_KEY=<resend-api-key>
