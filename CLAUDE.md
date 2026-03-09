@@ -355,6 +355,31 @@ npm run render:preview:v2 # Preview v2 → out/preview-v2.mp4
 **Clips** : tous issus de Pexels (licence commerciale gratuite, pas d'attribution requise).
 Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVideo correspondant et re-render.
 
+## Bugs connus et corrections
+
+### Login : exclure les users de tenants supprimés
+- **Symptôme** : "unauthorized" au login malgré bon mot de passe
+- **Cause** : `SELECT FROM users WHERE email = $1` retournait un user d'un tenant soft-deleted (même email, ancien tenant)
+- **Fix** : La query login filtre via `EXISTS (SELECT 1 FROM tenants t WHERE t.id = u.tenant_id AND t.deleted_at IS NULL)`, superadmin exempté
+- **Fichier** : `internal/service/auth/service.go` Login()
+
+### DeleteTenant : cascade soft-delete users
+- **Symptôme** : Users orphelins après suppression tenant → bloquent le login (email dupliqué)
+- **Cause** : `DeleteTenant` ne supprimait que le tenant, pas ses users
+- **Fix** : Ajout `UPDATE users SET deleted_at = NOW() WHERE tenant_id = $1` dans DeleteTenant
+- **Fichier** : `internal/service/admin/service.go` DeleteTenant()
+
+### APP_BASE_URL : doit pointer vers la PWA
+- **Symptôme** : Lien "Se connecter" dans l'email d'invitation mène vers l'API (404)
+- **Cause** : `APP_BASE_URL=https://api.heritagemotor.app` au lieu de `https://app.heritagemotor.app`
+- **Fix** : Variable d'env corrigée sur le VPS
+- **Règle** : `APP_BASE_URL` est utilisé **uniquement** par le mailer pour les liens email → toujours `app.heritagemotor.app`
+
+### Anti-patterns à éviter
+- **Email pas unique globalement** : email est unique par tenant (`UNIQUE(tenant_id, email)`), pas cross-tenant. Les queries par email doivent joindre le tenant.
+- **Toujours cascader les soft-deletes** : tenant → users, vehicle → events/tasks/documents
+- **Cookie `user_role` éphémère** : Le middleware Next.js vérifie le cookie `user_role` pour `/admin`. Ce cookie est posé au login uniquement — s'il expire, l'accès /admin est perdu jusqu'au re-login.
+
 ## Références détaillées
 
 | Document | Contenu |
