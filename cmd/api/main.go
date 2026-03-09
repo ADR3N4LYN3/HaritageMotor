@@ -238,8 +238,9 @@ func main() {
 		authGroup.Post("/mfa/verify", authLimiter, authHandler.VerifyMFA)
 		authGroup.Post("/refresh", authLimiter, authHandler.Refresh)
 
-		// Authenticated routes
-		authed := api.Use(middleware.AuthMiddleware(jwtManager, ownerPool))
+		// Authenticated routes (isolated group — middleware does not leak to other groups)
+		authed := api.Group("")
+		authed.Use(middleware.AuthMiddleware(jwtManager, ownerPool))
 
 		// Per-user rate limiter: 100 req/min keyed by user_id from JWT.
 		authed.Use(limiter.New(limiter.Config{
@@ -331,12 +332,12 @@ func main() {
 		// Audit log (admin only)
 		authed.Get("/audit", middleware.RequireAdmin(), auditHandler.List)
 
-		// ---- Super-Admin routes (no tenant, no RLS) ----
-		superadmin := api.Use(middleware.AuthMiddleware(jwtManager, ownerPool))
-		superadmin.Use(middleware.RequireSuperAdmin())
-		superadmin.Use(middleware.AuditMiddleware(ownerPool))
-
-		sa := superadmin.Group("/admin")
+		// ---- Super-Admin routes (isolated group, no tenant, no RLS) ----
+		sa := api.Group("/admin",
+			middleware.AuthMiddleware(jwtManager, ownerPool),
+			middleware.RequireSuperAdmin(),
+			middleware.AuditMiddleware(ownerPool),
+		)
 		sa.Get("/dashboard", adminHandler.DashboardStats)
 		sa.Get("/tenants", adminHandler.ListTenants)
 		sa.Get("/tenants/:id", adminHandler.GetTenant)
