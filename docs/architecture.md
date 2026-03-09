@@ -62,6 +62,14 @@ Located in `internal/domain/`:
 - **PostgreSQL**: Direct SQL queries using `pgx/v5` with connection pooling (`pgxpool`)
 - **S3**: File storage via `aws-sdk-go-v2` for document uploads
 
+### Test Infrastructure (`internal/testutil/`)
+
+Integration tests use a shared `Env` initialized via `sync.Once`:
+- Full Fiber app with all routes and middleware
+- Dual pools (owner + app) against a real PostgreSQL test database
+- Helpers: `CreateTenant`, `CreateUser`, `CreateVehicle`, `CreateBay`, `AuthToken`, `DoRequest`, `ReadJSON`
+- 12 test files covering RLS isolation, RBAC matrix, blacklist, audit, plan limits, and all CRUD handlers
+
 ## Request Flow
 
 ```

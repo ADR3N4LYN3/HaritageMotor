@@ -50,7 +50,7 @@ heritage-motor/
 │   ├── handler/                 # HTTP handlers (REST controllers)
 │   │   ├── admin/               #   Superadmin: tenants CRUD, invitations, dashboard
 │   │   ├── auth/                #   Authentication + MFA + change-password
-│   │   ├── contact/             #   Public contact form
+│   │   ├── contact/             #   Public contact form (i18n confirmation)
 │   │   ├── vehicle/             #   Vehicle CRUD + Move/Exit
 │   │   ├── bay/                 #   Bay management
 │   │   ├── event/               #   Event timeline
@@ -64,7 +64,7 @@ heritage-motor/
 │   ├── service/                  # Business logic layer
 │   │   ├── admin/                #   Superadmin tenant/user management
 │   │   ├── auth/                 #   Login, MFA, logout, change-password
-│   │   ├── contact/              #   Contact form (public landing page)
+│   │   ├── contact/              #   Contact form + i18n confirmation email (EN/FR/DE)
 │   │   ├── mailer/               #   Email sending via Resend API
 │   │   ├── plan/                 #   Plan limits enforcement (starter/pro/enterprise)
 │   │   ├── vehicle/              #   Vehicle operations
@@ -73,11 +73,12 @@ heritage-motor/
 │   │   ├── task/                 #   Task operations
 │   │   ├── document/             #   Document operations
 │   │   └── user/                 #   User operations
-│   └── storage/                  # S3 client
+│   ├── storage/                  # S3 client
+│   └── testutil/                 # Integration test infrastructure (Setup, Env, helpers)
 ├── pwa/                          # Next.js PWA frontend
 ├── video/                        # Remotion 4 hero video generator
 │   └── src/                      #   HeroVideo (v1) + HeroVideoV2 (v2, active)
-├── web/static/                   # Landing page + hero-bg.mp4
+├── web/static/                   # Landing page, hero video, logo assets
 ├── docs/                         # Documentation (this folder)
 ├── Dockerfile                    # Go API Docker image
 ├── plausible/                    # Plausible Analytics config
@@ -154,6 +155,7 @@ docker compose up -d --build
 - **Token blacklist**: Immediate JWT revocation via JTI or user-level blocks
 - **Background goroutines**: Pre-capture Fiber ctx values, add recovery + timeout
 - **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
+- **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
 
 ## Domains
 

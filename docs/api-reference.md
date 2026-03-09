@@ -517,11 +517,14 @@ Submit a contact/demo request from the landing page. No authentication required.
   "email": "jane@company.com",
   "company": "Luxury Storage Inc.",
   "vehicles": "26-50",
-  "message": "Interested in a demo for our facility."
+  "message": "Interested in a demo for our facility.",
+  "lang": "en"
 }
 ```
 
-Required: `name` (2-100 chars), `email`. Optional: `company` (max 200), `vehicles` (max 50), `message` (max 5000).
+Required: `name` (2-100 chars), `email`. Optional: `company` (max 200), `vehicles` (max 50), `message` (max 5000), `lang` (en|fr|de, default: en).
+
+A confirmation email is sent in the specified language (EN/FR/DE) using a branded dark luxury template.
 
 **Response:** `201` + `{"message": "request received"}`
 
