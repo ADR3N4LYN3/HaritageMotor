@@ -80,7 +80,8 @@ pwa/middleware.ts            — Auth middleware Next.js (cookie refresh_token)
 - Logout : blackliste l'access token + révoque le refresh token
 - User delete : révoque tous refresh tokens + blackliste user_id pour durée access token
 - Middleware order : Auth (+ blacklist) → Per-user limiter → RequirePasswordChanged → Tenant (RLS tx) → Audit
-- Superadmin routes : Auth → RequireSuperAdmin (pas de TenantMiddleware, utilisent ownerPool)
+- Superadmin routes : Auth → RequireSuperAdmin → Audit (pas de TenantMiddleware, utilisent ownerPool)
+- **Isolation obligatoire** : chaque chaîne middleware utilise `api.Group()` (PAS `api.Use()` qui accumule sur le même routeur). Tenant routes = `api.Group("")`, admin routes = `api.Group("/admin", ...)`
 
 ### Stockage S3
 - Stocker UNIQUEMENT les clés S3 en DB, JAMAIS les URLs signées
