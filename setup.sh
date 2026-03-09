@@ -71,6 +71,9 @@ setup_env() {
 
     PG_PASS=$(openssl rand -hex 32)
     JWT=$(openssl rand -hex 32)
+    PLAUSIBLE_DB_PASS=$(openssl rand -hex 32)
+    PLAUSIBLE_SECRET=$(openssl rand -base64 48 | tr -d '\n')
+    PLAUSIBLE_TOTP=$(openssl rand -base64 32 | tr -d '\n')
 
     cat > "$ENV_FILE" <<EOF
 # ── Application ──────────────────────────────────────────────
@@ -102,6 +105,11 @@ EMAIL_FROM=noreply@heritagemotor.app
 
 # ── Logging ──────────────────────────────────────────────────
 LOG_LEVEL=info
+
+# ── Plausible Analytics ──────────────────────────────────────
+PLAUSIBLE_DB_PASSWORD=$PLAUSIBLE_DB_PASS
+PLAUSIBLE_SECRET_KEY=$PLAUSIBLE_SECRET
+PLAUSIBLE_TOTP_KEY=$PLAUSIBLE_TOTP
 EOF
 
     chmod 600 "$ENV_FILE"

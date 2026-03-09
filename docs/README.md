@@ -10,6 +10,7 @@ Multi-tenant B2B SaaS platform for premium vehicle storage facilities.
 | Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
 | Auth | JWT (HS256), bcrypt, TOTP (RFC 6238) |
 | Storage | Hetzner Object Storage (S3-compatible) |
+| Analytics | Plausible CE (self-hosted) |
 | Infra | Docker, Caddy, Cloudflare |
 | Email | Resend |
 
@@ -71,6 +72,9 @@ heritage-motor/
 ├── web/static/                   # Landing page
 ├── docs/                         # Documentation (this folder)
 ├── Dockerfile                    # Go API Docker image
+├── plausible/                    # Plausible Analytics config
+│   ├── clickhouse-config.xml     #   ClickHouse logging config
+│   └── clickhouse-user-config.xml#   ClickHouse user config
 ├── docker-compose.prod.yml       # Production orchestration
 ├── Caddyfile.prod                # Reverse proxy config
 └── deploy.sh                     # Deployment script
@@ -148,3 +152,4 @@ docker compose -f docker-compose.prod.yml up -d --build
 | `heritagemotor.app` | Landing page |
 | `api.heritagemotor.app` | Go REST API |
 | `app.heritagemotor.app` | PWA (mobile operators) |
+| `stats.heritagemotor.app` | Plausible Analytics dashboard |

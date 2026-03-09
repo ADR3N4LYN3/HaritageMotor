@@ -11,21 +11,25 @@ Cloudflare (DNS + Proxy + SSL termination)
    |
 Hetzner VPS
    |
-┌──────────────────────────────────────────┐
-│  Caddy :80/:443                          │
-│  ├── heritagemotor.app → /srv/landing    │
-│  ├── api.heritagemotor.app → api:8080    │
-│  └── app.heritagemotor.app → app:3000    │
-│                                          │
-│  ┌─── web network ────────────────────┐  │
-│  │  caddy ↔ api ↔ app                │  │
-│  └────────────────────────────────────┘  │
-│  ┌─── internal network ──────────────┐   │
-│  │  api ↔ postgres, app              │   │
-│  └────────────────────────────────────┘   │
-│                                          │
-│  PostgreSQL 16 (persistent volume)       │
-└──────────────────────────────────────────┘
+┌───────────────────────────────────────────────────┐
+│  Caddy :80/:443                                   │
+│  ├── heritagemotor.app → /srv/landing             │
+│  ├── api.heritagemotor.app → api:8080             │
+│  ├── app.heritagemotor.app → app:3000             │
+│  └── stats.heritagemotor.app → plausible:8000     │
+│                                                   │
+│  ┌─── web network ─────────────────────────────┐  │
+│  │  caddy ↔ api ↔ app ↔ plausible             │  │
+│  └─────────────────────────────────────────────┘  │
+│  ┌─── internal network ────────────────────────┐  │
+│  │  api ↔ postgres                             │  │
+│  │  plausible ↔ plausible_db ↔ clickhouse      │  │
+│  └─────────────────────────────────────────────┘  │
+│                                                   │
+│  PostgreSQL 16 (app data, persistent volume)      │
+│  PostgreSQL 16 (plausible config, persistent vol) │
+│  ClickHouse (plausible events, persistent vol)    │
+└───────────────────────────────────────────────────┘
 ```
 
 ## Services
@@ -35,6 +39,9 @@ Hetzner VPS
 | `postgres` | `postgres:16-alpine` | 5432 (internal) | internal |
 | `api` | Go build (multi-stage) | 8080 (internal) | internal + web |
 | `app` | Next.js standalone | 3000 (internal) | internal + web |
+| `plausible` | `ghcr.io/plausible/community-edition:v2.1` | 8000 (internal) | internal + web |
+| `plausible_db` | `postgres:16-alpine` | 5432 (internal) | internal |
+| `plausible_events_db` | `clickhouse/clickhouse-server:24.3-alpine` | 8123 (internal) | internal |
 | `caddy` | `caddy:2-alpine` | 80, 443 (TCP+UDP) | web |
 
 ## Docker Images
@@ -88,6 +95,11 @@ RESEND_API_KEY=<resend-api-key>
 # PWA
 NEXT_PUBLIC_API_URL=https://api.heritagemotor.app/api/v1
 NEXT_PUBLIC_APP_URL=https://app.heritagemotor.app
+
+# Plausible Analytics
+PLAUSIBLE_DB_PASSWORD=<strong-password>         # openssl rand -hex 32
+PLAUSIBLE_SECRET_KEY=<64-char-base64-string>   # openssl rand -base64 48
+PLAUSIBLE_TOTP_KEY=<44-char-base64-string>     # openssl rand -base64 32
 ```
 
 ### Production Config Validation
@@ -129,12 +141,13 @@ The `certs/` directory is mounted read-only into the Caddy container and referen
 
 ## Caddy Configuration
 
-`Caddyfile.prod` defines 3 virtual hosts:
+`Caddyfile.prod` defines 4 virtual hosts:
 
 ```
-heritagemotor.app       → Static landing page (/srv/landing)
-api.heritagemotor.app   → Reverse proxy to api:8080
-app.heritagemotor.app   → Reverse proxy to app:3000
+heritagemotor.app         → Static landing page (/srv/landing)
+api.heritagemotor.app     → Reverse proxy to api:8080
+stats.heritagemotor.app   → Reverse proxy to plausible:8000
+app.heritagemotor.app     → Reverse proxy to app:3000
 ```
 
 All hosts use:
@@ -211,11 +224,43 @@ curl https://api.heritagemotor.app/health
 # Expected: {"status":"ok","service":"heritage-motor","database":"connected"}
 ```
 
+## Plausible Analytics
+
+Plausible Community Edition is self-hosted for privacy-friendly page view tracking.
+
+### Components
+
+- **Plausible** (`plausible:8000`): Analytics engine (Elixir/Phoenix)
+- **Plausible DB** (`plausible_db:5432`): PostgreSQL for config/sessions (separate from app DB)
+- **ClickHouse** (`plausible_events_db:8123`): Column store for analytics events
+
+### Configuration
+
+ClickHouse logging is reduced via config files in `plausible/`:
+- `clickhouse-config.xml`: Disables query/trace/metric logs
+- `clickhouse-user-config.xml`: Disables per-user query logging
+
+Registration is set to `invite_only`. After first deploy, visit `https://stats.heritagemotor.app` to create the admin account and add the site `heritagemotor.app`.
+
+### Script Integration
+
+The Plausible tracking script is included in the landing page `<head>`:
+
+```html
+<script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.js"></script>
+```
+
+### DNS
+
+Add a Cloudflare A record for `stats.heritagemotor.app` pointing to the same VPS IP. Ensure the Cloudflare Origin Certificate covers `stats.heritagemotor.app` (use a wildcard `*.heritagemotor.app` cert).
+
 ## Volumes
 
 | Volume | Purpose |
 |--------|---------|
-| `postgres_data` | PostgreSQL data persistence |
+| `postgres_data` | PostgreSQL data persistence (app) |
+| `plausible_db_data` | PostgreSQL data persistence (Plausible config) |
+| `plausible_events_data` | ClickHouse data persistence (analytics events) |
 | `caddy_data` | Caddy TLS certificates and data |
 | `caddy_config` | Caddy runtime configuration |
 

@@ -27,6 +27,18 @@ api.heritagemotor.app {
 	}
 }
 
+# Plausible Analytics
+stats.heritagemotor.app {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+	reverse_proxy plausible:8000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
+
 # PWA Next.js
 app.heritagemotor.app {
 	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
