@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"runtime"
 	"sync"
 	"testing"
 	"time"
@@ -77,8 +79,13 @@ func Setup(t *testing.T) *Env {
 }
 
 func initEnv() (*Env, error) {
+	// Resolve paths relative to this file (works from any test package)
+	_, thisFile, _, _ := runtime.Caller(0)
+	testutilDir := filepath.Dir(thisFile)
+	migrationsDir := filepath.Join(testutilDir, "..", "db", "migrations")
+
 	// Load .env.test if present
-	_ = godotenv.Load("../../.env.test")
+	_ = godotenv.Load(filepath.Join(testutilDir, "..", "..", ".env.test"))
 
 	dbURL := os.Getenv("DATABASE_URL_TEST")
 	if dbURL == "" {
@@ -94,7 +101,7 @@ func initEnv() (*Env, error) {
 	}
 
 	// Run migrations
-	if err = db.RunMigrations(ownerPool, "../../internal/db/migrations"); err != nil {
+	if err = db.RunMigrations(ownerPool, migrationsDir); err != nil {
 		return nil, fmt.Errorf("migrations: %w", err)
 	}
 
