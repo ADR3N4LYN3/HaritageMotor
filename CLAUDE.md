@@ -220,8 +220,9 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - Superadmin = `user_role='superadmin'`, `tenant_id IS NULL` (pas attaché à un tenant)
 - `plan_limits` table : plan → resource → max_count (starter/pro/enterprise)
 - Plan service avec cache mémoire (TTL 5min), fail-open
-- Invitation flow : crée user avec temp password → email Resend → `password_change_required=true`
-- Mailer service : Resend API, no-op si `RESEND_API_KEY` vide (dev mode)
+- Invitation flow : crée user avec temp password → email Resend i18n → `password_change_required=true`
+- Mailer service : Resend API, i18n (FR/EN/DE), no-op si `RESEND_API_KEY` vide (dev mode)
+- `InviteUserRequest` inclut `Lang` (optionnel, défaut `fr`)
 
 ## Tests d'intégration
 
@@ -241,10 +242,22 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **CRUD handlers** : vehicle, bay, event, task, user, document, admin (`handler/*/handler_test.go`)
 - **Plan limits** : starter/pro/enterprise, HTTP 402 blocking (`service/plan/plan_test.go`)
 
-### Contact i18n
-- Champ `lang` (en|fr|de) envoyé depuis `localStorage('hm-lang')` du frontend
-- Email de confirmation traduit (sujet + corps) avec template HTML dark luxury
-- Logo shield crest embarqué, accents dorés (#b8955a)
+### Emails transactionnels (Resend API)
+
+7 templates email, tous en design dark luxury cohérent (fond #0a0908, accents or #b8955a, logo shield PNG) :
+
+| Template | Service | i18n | Envoyé quand |
+|----------|---------|------|--------------|
+| Confirmation contact (×3) | `contact/service.go` | FR/EN/DE | Soumission formulaire contact |
+| Notification admin | `contact/service.go` | — | Soumission formulaire contact (→ admin) |
+| Welcome (×3) | `mailer/service.go` | FR/EN/DE | Invitation utilisateur |
+
+- Champ `lang` (en|fr|de) : depuis `localStorage('hm-lang')` (contact) ou `InviteUserRequest.Lang` (welcome)
+- Logo : `web/static/logo-email.png` généré via Playwright depuis `logo.svg` (fond noir intégré)
+- Hébergé à `https://heritagemotor.app/logo-email.png`
+- Nom du tenant affiché en or (#b8955a) dans le welcome email
+- Expéditeurs : `welcome@` (confirmation/welcome), `noreply@` (notification admin)
+- Cloudflare Email Routing : `welcome@` et `noreply@` redirigent vers admin
 
 ## Architecture PWA (pwa/)
 

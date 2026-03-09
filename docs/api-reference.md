@@ -630,7 +630,7 @@ Soft-delete tenant (sets `deleted_at`, `active=false`, `status='suspended'`).
 
 ### POST /admin/invitations
 
-Invite a user to a tenant. Generates a temp password and sends a welcome email via Resend.
+Invite a user to a tenant. Generates a temp password and sends a welcome email via Resend (i18n FR/EN/DE).
 
 ```json
 {
@@ -638,11 +638,13 @@ Invite a user to a tenant. Generates a temp password and sends a welcome email v
   "email": "new-user@example.com",
   "first_name": "Jean",
   "last_name": "Dupont",
-  "role": "operator"
+  "role": "operator",
+  "lang": "fr"
 }
 ```
 
-The invited user will have `password_change_required=true` and must change password on first login.
+- `lang` (optional): `en`, `fr`, `de`. Defaults to `fr`. Controls welcome email language.
+- The invited user will have `password_change_required=true` and must change password on first login.
 
 **Response:** `201` + User object.
 

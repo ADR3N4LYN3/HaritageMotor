@@ -127,15 +127,9 @@ Every business table has RLS enabled. The `tenant_id` is **never** taken from th
 
 ## Service Naming Conventions
 
-| Service | Constructor | Rationale |
-|---------|-------------|-----------|
-| Vehicle | `vehiclesvc.New()` | Historical convention |
-| All others | `svc.NewService()` | Standard pattern |
-
-| Handler | Constructor |
-|---------|-------------|
-| Vehicle | `vehiclehandler.New()` |
-| All others | `handler.NewHandler()` |
+All services and handlers follow a unified convention:
+- Services: `svc.NewService()` (e.g., `vehiclesvc.NewService()`, `authsvc.NewService()`)
+- Handlers: `handler.NewHandler()` (e.g., `vehiclehandler.NewHandler()`, `authhandler.NewHandler()`)
 
 ## Error Handling
 
