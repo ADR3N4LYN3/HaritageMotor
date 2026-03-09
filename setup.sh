@@ -142,50 +142,9 @@ setup_certs() {
 
 # ── Step 5: Deploy ─────────────────────────────────────────────
 deploy() {
-    cd "$PROJECT_DIR"
-
-    # Verify .env.prod has required values
-    source "$ENV_FILE"
-    if [ -z "$JWT_SECRET" ] || [ -z "$POSTGRES_PASSWORD" ]; then
-        error ".env.prod is missing required secrets"
-    fi
-
-    info "Building Docker images (this may take a few minutes)..."
-    docker compose -f docker-compose.prod.yml --env-file .env.prod build --no-cache
-
-    info "Starting PostgreSQL..."
-    docker compose -f docker-compose.prod.yml --env-file .env.prod up -d postgres
-
-    # Wait for PostgreSQL to be ready
-    info "Waiting for PostgreSQL to be healthy..."
-    for i in $(seq 1 30); do
-        if docker compose -f docker-compose.prod.yml --env-file .env.prod exec postgres pg_isready -U heritage_motor &>/dev/null; then
-            break
-        fi
-        sleep 1
-    done
-
-    info "Running database migrations..."
-    docker compose -f docker-compose.prod.yml --env-file .env.prod run --rm api ./api migrate
-
-    info "Starting all services..."
-    docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
-
-    info "Cleaning up old images..."
-    docker image prune -f
-
-    echo ""
-    info "═══════════════════════════════════════════════════"
-    info "  Heritage Motor deployed successfully!"
-    info "═══════════════════════════════════════════════════"
-    echo ""
-    echo "  Landing : https://heritagemotor.app"
-    echo "  API     : https://api.heritagemotor.app/health"
-    echo "  App     : https://app.heritagemotor.app"
-    echo ""
-    echo "  Logs    : docker compose -f docker-compose.prod.yml logs -f"
-    echo "  Status  : docker compose -f docker-compose.prod.yml ps"
-    echo ""
+    info "Launching deployment..."
+    chmod +x "$PROJECT_DIR/deploy.sh"
+    "$PROJECT_DIR/deploy.sh"
 }
 
 # ── Main ───────────────────────────────────────────────────────

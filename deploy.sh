@@ -1,19 +1,51 @@
 #!/bin/bash
 set -e
 
+# ═══════════════════════════════════════════════════════════════
+# Heritage Motor — Deploy / Redeploy
+# Usage: ./deploy.sh
+# ═══════════════════════════════════════════════════════════════
+
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ENV_FILE="$PROJECT_DIR/.env.prod"
+COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
+
+cd "$PROJECT_DIR"
+
+# Verify prerequisites
+if ! command -v docker &>/dev/null; then
+    echo "ERROR: Docker not installed. Run ./setup.sh first."
+    exit 1
+fi
+if [ ! -f "$ENV_FILE" ]; then
+    echo "ERROR: .env.prod not found. Run ./setup.sh first."
+    exit 1
+fi
+
 echo "=== Heritage Motor — Deploy ==="
 
 # Build images
 echo "-> Building images..."
-docker compose -f docker-compose.prod.yml --env-file .env.prod build --no-cache
+$COMPOSE build --no-cache
+
+# Start PostgreSQL first and wait for healthy
+echo "-> Starting PostgreSQL..."
+$COMPOSE up -d postgres
+echo "-> Waiting for PostgreSQL..."
+for i in $(seq 1 30); do
+    if $COMPOSE exec postgres pg_isready -U heritage_motor &>/dev/null; then
+        break
+    fi
+    sleep 1
+done
 
 # Run migrations
 echo "-> Running migrations..."
-docker compose -f docker-compose.prod.yml --env-file .env.prod run --rm api ./api migrate
+$COMPOSE run --rm api ./api migrate
 
-# Start services
+# Start all services
 echo "-> Starting services..."
-docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+$COMPOSE up -d
 
 # Cleanup
 echo "-> Cleaning old images..."
@@ -24,3 +56,6 @@ echo "=== Deploy complete ==="
 echo "   Landing : https://heritagemotor.app"
 echo "   API     : https://api.heritagemotor.app/health"
 echo "   App     : https://app.heritagemotor.app"
+echo ""
+echo "   Logs    : $COMPOSE logs -f"
+echo "   Status  : $COMPOSE ps"
