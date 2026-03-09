@@ -11,7 +11,9 @@ import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
 import { useBays } from "@/hooks/useBay";
 import { useCamera } from "@/hooks/useCamera";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import { useOfflineQueue } from "@/hooks/useOfflineQueue";
+import { pushAction } from "@/lib/offline-queue";
 import type { Bay } from "@/lib/types";
 
 const CameraCapture = dynamic(
@@ -30,6 +32,7 @@ export default function MoveVehiclePage() {
   const { vehicle, isLoading: vehicleLoading } = useVehicle(id);
   const { bays, isLoading: baysLoading } = useBays();
   const { photos, addPhoto, removePhoto } = useCamera();
+  const { refreshCount } = useOfflineQueue();
 
   const [selectedBay, setSelectedBay] = useState<Bay | null>(null);
   const [notes, setNotes] = useState("");
@@ -41,11 +44,26 @@ export default function MoveVehiclePage() {
     if (!selectedBay) return;
     setLoading(true);
     setError(null);
+
+    const payload = { bay_id: selectedBay.id, notes: notes || undefined };
+
+    // Offline fallback — queue for later sync
+    if (!navigator.onLine) {
+      try {
+        await pushAction({ type: "move", vehicle_id: id, payload, photos: [] });
+        await refreshCount();
+        if (navigator.vibrate) navigator.vibrate(100);
+        setSuccess(true);
+      } catch {
+        setError("Failed to queue action offline");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
-      await api.post(`/vehicles/${id}/move`, {
-        bay_id: selectedBay.id,
-        notes: notes || undefined,
-      });
+      await api.post(`/vehicles/${id}/move`, payload);
 
       // Upload photos in parallel if any
       if (photos.length > 0) {
@@ -62,11 +80,19 @@ export default function MoveVehiclePage() {
         }
       }
 
-      if (typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate(100);
-      }
+      if (navigator.vibrate) navigator.vibrate(100);
       setSuccess(true);
     } catch (err: unknown) {
+      // Network error — queue for offline sync
+      if (!(err instanceof ApiError)) {
+        try {
+          await pushAction({ type: "move", vehicle_id: id, payload, photos: [] });
+          await refreshCount();
+          if (navigator.vibrate) navigator.vibrate(100);
+          setSuccess(true);
+          return;
+        } catch { /* fall through */ }
+      }
       setError(err instanceof Error ? err.message : "Move failed");
     } finally {
       setLoading(false);

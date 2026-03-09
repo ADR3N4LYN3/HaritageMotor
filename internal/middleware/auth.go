@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/chriis/heritage-motor/internal/auth"
@@ -13,15 +14,26 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// blacklistCache caches token blacklist lookups to avoid a DB hit on every request.
+var blacklistCache sync.Map
+
+const blacklistCacheTTL = 30 * time.Second
+
+type blacklistEntry struct {
+	blacklisted bool
+	cachedAt    time.Time
+}
+
 type contextKey string
 
 const (
-	UserIDKey         contextKey = "user_id"
-	TenantIDKey       contextKey = "tenant_id"
-	RoleKey           contextKey = "role"
-	RequestIDKey      contextKey = "request_id"
-	JTIKey            contextKey = "jti"
-	TokenExpiresAtKey contextKey = "token_expires_at"
+	UserIDKey                 contextKey = "user_id"
+	TenantIDKey               contextKey = "tenant_id"
+	RoleKey                   contextKey = "role"
+	RequestIDKey              contextKey = "request_id"
+	JTIKey                    contextKey = "jti"
+	TokenExpiresAtKey         contextKey = "token_expires_at"
+	PasswordChangeRequiredKey contextKey = "password_change_required"
 )
 
 func AuthMiddleware(jwtManager *auth.JWTManager, pool *pgxpool.Pool) fiber.Handler {
@@ -58,13 +70,27 @@ func AuthMiddleware(jwtManager *auth.JWTManager, pool *pgxpool.Pool) fiber.Handl
 		if claims.ExpiresAt != nil {
 			c.Locals(string(TokenExpiresAtKey), claims.ExpiresAt.Time)
 		}
+		if claims.PasswordChangeRequired {
+			c.Locals(string(PasswordChangeRequiredKey), true)
+		}
 
 		return c.Next()
 	}
 }
 
 // isTokenBlacklisted checks if a token's jti or user is in the blacklist.
+// Results are cached for 30s to avoid a DB round-trip on every request.
 func isTokenBlacklisted(ctx context.Context, pool *pgxpool.Pool, jti string, userID uuid.UUID) (bool, error) {
+	cacheKey := jti + ":" + userID.String()
+
+	if v, ok := blacklistCache.Load(cacheKey); ok {
+		entry := v.(blacklistEntry)
+		if time.Since(entry.cachedAt) < blacklistCacheTTL {
+			return entry.blacklisted, nil
+		}
+		blacklistCache.Delete(cacheKey)
+	}
+
 	var exists bool
 	err := pool.QueryRow(ctx,
 		`SELECT EXISTS(
@@ -73,7 +99,25 @@ func isTokenBlacklisted(ctx context.Context, pool *pgxpool.Pool, jti string, use
 		)`,
 		jti, userID,
 	).Scan(&exists)
-	return exists, err
+	if err != nil {
+		return false, err
+	}
+
+	blacklistCache.Store(cacheKey, blacklistEntry{blacklisted: exists, cachedAt: time.Now()})
+	return exists, nil
+}
+
+// InvalidateBlacklistCache removes cached entries for a specific jti or user.
+// Call after logout or user deletion to ensure immediate revocation.
+func InvalidateBlacklistCache(jti string, userID uuid.UUID) {
+	blacklistCache.Range(func(key, _ any) bool {
+		k := key.(string)
+		uid := userID.String()
+		if strings.Contains(k, jti) || strings.Contains(k, uid) {
+			blacklistCache.Delete(key)
+		}
+		return true
+	})
 }
 
 func UserIDFromCtx(c *fiber.Ctx) uuid.UUID {
@@ -109,6 +153,11 @@ func TokenExpiresAtFromCtx(c *fiber.Ctx) time.Time {
 		return v
 	}
 	return time.Time{}
+}
+
+func PasswordChangeRequiredFromCtx(c *fiber.Ctx) bool {
+	v, _ := c.Locals(string(PasswordChangeRequiredKey)).(bool)
+	return v
 }
 
 // RequestIDFromGoCtx extracts the request ID from a standard Go context.

@@ -21,6 +21,10 @@ func HandleServiceError(c *fiber.Ctx, err error) error {
 		return c.Status(409).JSON(fiber.Map{"error": "conflict", "message": e.Message})
 	case *domain.ErrUnauthorized:
 		return c.Status(401).JSON(fiber.Map{"error": "unauthorized", "message": e.Message})
+	case *domain.ErrPlanLimitReached:
+		return c.Status(402).JSON(fiber.Map{"error": "plan_limit", "resource": e.Resource, "limit": e.Limit})
+	case *domain.ErrTenantSuspended:
+		return c.Status(403).JSON(fiber.Map{"error": "tenant_suspended"})
 	default:
 		log.Error().Err(err).Msg("unhandled service error")
 		return c.Status(500).JSON(fiber.Map{"error": "internal"})

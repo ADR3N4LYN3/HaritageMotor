@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	docSvc "github.com/chriis/heritage-motor/internal/service/document"
@@ -21,13 +22,6 @@ type Handler struct {
 
 func NewHandler(svc *docSvc.Service, s3Client *storage.S3Client) *Handler {
 	return &Handler{svc: svc, s3: s3Client}
-}
-
-func (h *Handler) RegisterRoutes(r fiber.Router) {
-	r.Get("/vehicles/:id/documents", h.List)
-	r.Get("/vehicles/:id/documents/:docId", h.GetByID)
-	r.Post("/vehicles/:id/documents", h.Create)
-	r.Delete("/vehicles/:id/documents/:docId", h.Delete)
 }
 
 // List GET /vehicles/:id/documents
@@ -123,6 +117,9 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 	docType := c.FormValue("doc_type")
 	if docType == "" {
 		return c.Status(422).JSON(fiber.Map{"error": "validation", "field": "doc_type", "message": "doc_type is required"})
+	}
+	if !domain.ValidDocType(docType) {
+		return c.Status(422).JSON(fiber.Map{"error": "validation", "field": "doc_type", "message": "invalid document type"})
 	}
 
 	notes := c.FormValue("notes")

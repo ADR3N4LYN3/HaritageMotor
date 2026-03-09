@@ -42,6 +42,11 @@ type enableMFARequest struct {
 	Code string `json:"code" validate:"required,len=6"`
 }
 
+type changePasswordRequest struct {
+	CurrentPassword string `json:"current_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required,min=8"`
+}
+
 // Login handles POST /auth/login.
 func (h *Handler) Login(c *fiber.Ctx) error {
 	var req loginRequest
@@ -183,6 +188,25 @@ func (h *Handler) EnableMFA(c *fiber.Ctx) error {
 	}
 
 	return c.Status(200).JSON(fiber.Map{"message": "mfa enabled"})
+}
+
+// ChangePassword handles POST /auth/change-password.
+func (h *Handler) ChangePassword(c *fiber.Ctx) error {
+	userID := middleware.UserIDFromCtx(c)
+
+	var req changePasswordRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+	}
+	if err := handler.Validate.Struct(req); err != nil {
+		return c.Status(422).JSON(handler.ValidationError(err))
+	}
+
+	if err := h.service.ChangePassword(c.UserContext(), userID, req.CurrentPassword, req.NewPassword); err != nil {
+		return handler.HandleServiceError(c, err)
+	}
+
+	return c.Status(200).JSON(fiber.Map{"message": "password changed"})
 }
 
 // DisableMFA handles DELETE /auth/mfa?user_id=<uuid>.

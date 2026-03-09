@@ -11,32 +11,36 @@ import (
 	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/chriis/heritage-motor/internal/config"
 	"github.com/chriis/heritage-motor/internal/db"
+	adminhandler "github.com/chriis/heritage-motor/internal/handler/admin"
+	auditloghandler "github.com/chriis/heritage-motor/internal/handler/audit"
 	authhandler "github.com/chriis/heritage-motor/internal/handler/auth"
 	bayhandler "github.com/chriis/heritage-motor/internal/handler/bay"
+	contacthandler "github.com/chriis/heritage-motor/internal/handler/contact"
 	dochandler "github.com/chriis/heritage-motor/internal/handler/document"
 	eventhandler "github.com/chriis/heritage-motor/internal/handler/event"
-	contacthandler "github.com/chriis/heritage-motor/internal/handler/contact"
 	scanhandler "github.com/chriis/heritage-motor/internal/handler/scan"
 	taskhandler "github.com/chriis/heritage-motor/internal/handler/task"
 	userhandler "github.com/chriis/heritage-motor/internal/handler/user"
 	vehiclehandler "github.com/chriis/heritage-motor/internal/handler/vehicle"
-	auditloghandler "github.com/chriis/heritage-motor/internal/handler/audit"
 	"github.com/chriis/heritage-motor/internal/middleware"
+	adminsvc "github.com/chriis/heritage-motor/internal/service/admin"
 	authsvc "github.com/chriis/heritage-motor/internal/service/auth"
-	contactsvc "github.com/chriis/heritage-motor/internal/service/contact"
 	baysvc "github.com/chriis/heritage-motor/internal/service/bay"
+	contactsvc "github.com/chriis/heritage-motor/internal/service/contact"
 	docsvc "github.com/chriis/heritage-motor/internal/service/document"
 	eventsvc "github.com/chriis/heritage-motor/internal/service/event"
+	mailersvc "github.com/chriis/heritage-motor/internal/service/mailer"
+	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
 	tasksvc "github.com/chriis/heritage-motor/internal/service/task"
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/chriis/heritage-motor/internal/storage"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -172,9 +176,7 @@ func main() {
 
 	// API routes require database
 	if ownerPool != nil {
-		// Services — business services use appPool (RLS enforced via middleware tx).
-		// Auth service uses ownerPool as fallback; authenticated auth routes
-		// (logout, me, mfa) use the appPool tx injected by TenantMiddleware.
+		// Services
 		authService := authsvc.NewService(ownerPool, jwtManager)
 		vehicleService := vehiclesvc.NewService(appPool)
 		bayService := baysvc.NewService(appPool)
@@ -182,17 +184,21 @@ func main() {
 		taskService := tasksvc.NewService(appPool)
 		docService := docsvc.NewService(appPool, cfg.S3Bucket)
 		userService := usersvc.NewService(appPool)
+		planService := plansvc.NewService(ownerPool)
+		mailerService := mailersvc.NewService(cfg.ResendAPIKey, cfg.EmailFrom, cfg.AppBaseURL)
+		adminService := adminsvc.NewService(ownerPool, mailerService)
 
 		// Handlers
 		authHandler := authhandler.NewHandler(authService)
-		vehicleHandler := vehiclehandler.NewHandler(vehicleService)
-		bayHandler := bayhandler.NewHandler(bayService)
+		vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService)
+		bayHandler := bayhandler.NewHandler(bayService, planService)
 		eventHandler := eventhandler.NewHandler(eventService)
 		taskHandler := taskhandler.NewHandler(taskService)
 		docHandler := dochandler.NewHandler(docService, s3Client)
-		userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry())
+		userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry(), planService)
 		auditHandler := auditloghandler.NewHandler(appPool)
 		scanHandler := scanhandler.NewHandler(appPool)
+		adminHandler := adminhandler.NewHandler(adminService)
 
 		// Contact service (public, uses ownerPool — no RLS needed)
 		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo)
@@ -250,6 +256,11 @@ func main() {
 			},
 		}))
 
+		// Change-password route: accessible even with password_change_required.
+		// Placed BEFORE RequirePasswordChanged and TenantMiddleware.
+		authed.Post("/auth/change-password", authHandler.ChangePassword)
+
+		authed.Use(middleware.RequirePasswordChanged())
 		authed.Use(middleware.TenantMiddleware(ownerPool, appPool))
 		authed.Use(middleware.AuditMiddleware(ownerPool))
 
@@ -319,6 +330,20 @@ func main() {
 
 		// Audit log (admin only)
 		authed.Get("/audit", middleware.RequireAdmin(), auditHandler.List)
+
+		// ---- Super-Admin routes (no tenant, no RLS) ----
+		superadmin := api.Use(middleware.AuthMiddleware(jwtManager, ownerPool))
+		superadmin.Use(middleware.RequireSuperAdmin())
+		superadmin.Use(middleware.AuditMiddleware(ownerPool))
+
+		sa := superadmin.Group("/admin")
+		sa.Get("/dashboard", adminHandler.DashboardStats)
+		sa.Get("/tenants", adminHandler.ListTenants)
+		sa.Get("/tenants/:id", adminHandler.GetTenant)
+		sa.Post("/tenants", adminHandler.CreateTenant)
+		sa.Patch("/tenants/:id", adminHandler.UpdateTenant)
+		sa.Delete("/tenants/:id", adminHandler.DeleteTenant)
+		sa.Post("/invitations", adminHandler.InviteUser)
 	}
 
 	// Graceful shutdown with timeout

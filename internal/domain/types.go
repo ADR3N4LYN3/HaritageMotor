@@ -12,6 +12,14 @@ const (
 	RoleOperator   = "operator"
 	RoleTechnician = "technician"
 	RoleViewer     = "viewer"
+	RoleSuperAdmin = "superadmin"
+)
+
+// Tenant statuses
+const (
+	TenantStatusActive    = "active"
+	TenantStatusSuspended = "suspended"
+	TenantStatusTrial     = "trial"
 )
 
 // Vehicle statuses
@@ -71,6 +79,26 @@ const (
 	DocTypeOther            = "other"
 )
 
+// ValidVehicleStatus checks if a vehicle status value is in the allowed set.
+func ValidVehicleStatus(s string) bool {
+	switch s {
+	case VehicleStatusStored, VehicleStatusOut, VehicleStatusTransit,
+		VehicleStatusMaintenance, VehicleStatusSold:
+		return true
+	}
+	return false
+}
+
+// ValidDocType checks if a document type value is in the allowed set.
+func ValidDocType(s string) bool {
+	switch s {
+	case DocTypeStorageContract, DocTypeInsurance, DocTypeMandate,
+		DocTypeTechnicalControl, DocTypeExpertise, DocTypeOther:
+		return true
+	}
+	return false
+}
+
 type Tenant struct {
 	ID        uuid.UUID  `json:"id"`
 	Name      string     `json:"name"`
@@ -79,25 +107,27 @@ type Tenant struct {
 	Timezone  string     `json:"timezone"`
 	Plan      string     `json:"plan"`
 	Active    bool       `json:"active"`
+	Status    string     `json:"status"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
 type User struct {
-	ID           uuid.UUID  `json:"id"`
-	TenantID     uuid.UUID  `json:"tenant_id"`
-	Email        string     `json:"email"`
-	PasswordHash string     `json:"-"`
-	FirstName    string     `json:"first_name"`
-	LastName     string     `json:"last_name"`
-	Role         string     `json:"role"`
-	TOTPSecret   *string    `json:"-"`
-	TOTPEnabled  bool       `json:"totp_enabled"`
-	LastLoginAt  *time.Time `json:"last_login_at,omitempty"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
-	DeletedAt    *time.Time `json:"deleted_at,omitempty"`
+	ID                     uuid.UUID  `json:"id"`
+	TenantID               *uuid.UUID `json:"tenant_id,omitempty"`
+	Email                  string     `json:"email"`
+	PasswordHash           string     `json:"-"`
+	FirstName              string     `json:"first_name"`
+	LastName               string     `json:"last_name"`
+	Role                   string     `json:"role"`
+	TOTPSecret             *string    `json:"-"`
+	TOTPEnabled            bool       `json:"totp_enabled"`
+	PasswordChangeRequired bool       `json:"password_change_required,omitempty"`
+	LastLoginAt            *time.Time `json:"last_login_at,omitempty"`
+	CreatedAt              time.Time  `json:"created_at"`
+	UpdatedAt              time.Time  `json:"updated_at"`
+	DeletedAt              *time.Time `json:"deleted_at,omitempty"`
 }
 
 type Vehicle struct {
@@ -200,11 +230,28 @@ type AuditEntry struct {
 }
 
 type RefreshToken struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"user_id"`
-	TenantID  uuid.UUID `json:"tenant_id"`
-	Token     string    `json:"-"`
-	ExpiresAt time.Time `json:"expires_at"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        uuid.UUID  `json:"id"`
+	UserID    uuid.UUID  `json:"user_id"`
+	TenantID  *uuid.UUID `json:"tenant_id,omitempty"`
+	Token     string     `json:"-"`
+	ExpiresAt time.Time  `json:"expires_at"`
+	CreatedAt time.Time  `json:"created_at"`
 	RevokedAt *time.Time `json:"revoked_at,omitempty"`
+}
+
+type PlanLimit struct {
+	Plan     string `json:"plan"`
+	Resource string `json:"resource"`
+	MaxCount int    `json:"max_count"`
+}
+
+type Invitation struct {
+	ID               uuid.UUID  `json:"id"`
+	TenantID         uuid.UUID  `json:"tenant_id"`
+	Email            string     `json:"email"`
+	Role             string     `json:"role"`
+	InvitedBy        uuid.UUID  `json:"invited_by"`
+	TempPasswordHash string     `json:"-"`
+	AcceptedAt       *time.Time `json:"accepted_at,omitempty"`
+	CreatedAt        time.Time  `json:"created_at"`
 }

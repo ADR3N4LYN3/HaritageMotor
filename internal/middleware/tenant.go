@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/chriis/heritage-motor/internal/db"
+	"github.com/chriis/heritage-motor/internal/domain"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -59,6 +60,11 @@ func lookupTenantActive(ownerPool *pgxpool.Pool, c *fiber.Ctx, tenantID uuid.UUI
 // appPool is used for the per-request transaction (RLS enforced).
 func TenantMiddleware(ownerPool, appPool *pgxpool.Pool) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// Superadmin has no tenant — skip RLS entirely.
+		if RoleFromCtx(c) == domain.RoleSuperAdmin {
+			return c.Next()
+		}
+
 		tenantID := TenantIDFromCtx(c)
 		if tenantID == uuid.Nil {
 			return c.Status(401).JSON(fiber.Map{"error": "missing tenant context"})

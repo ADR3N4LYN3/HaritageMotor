@@ -97,10 +97,3 @@ export interface PendingAction {
   created_at: string;
   status: "pending" | "syncing" | "failed";
 }
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total_count: number;
-  page: number;
-  per_page: number;
-}

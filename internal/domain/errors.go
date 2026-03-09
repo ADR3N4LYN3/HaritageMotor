@@ -47,3 +47,20 @@ type ErrUnauthorized struct {
 func (e *ErrUnauthorized) Error() string {
 	return fmt.Sprintf("unauthorized: %s", e.Message)
 }
+
+// ErrPlanLimitReached is returned when a tenant exceeds their plan limits (HTTP 402).
+type ErrPlanLimitReached struct {
+	Resource string
+	Limit    int
+}
+
+func (e *ErrPlanLimitReached) Error() string {
+	return fmt.Sprintf("plan limit reached: max %d %s", e.Limit, e.Resource)
+}
+
+// ErrTenantSuspended is returned when a tenant is suspended (HTTP 403).
+type ErrTenantSuspended struct{}
+
+func (e *ErrTenantSuspended) Error() string {
+	return "tenant suspended"
+}

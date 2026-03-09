@@ -291,6 +291,9 @@ func (s *Service) Update(ctx context.Context, tenantID, vehicleID uuid.UUID, req
 		args["ownerNotes"] = *req.OwnerNotes
 	}
 	if req.Status != nil {
+		if !domain.ValidVehicleStatus(*req.Status) {
+			return nil, &domain.ErrValidation{Field: "status", Message: "invalid vehicle status"}
+		}
 		setClauses = append(setClauses, "status = @status")
 		args["status"] = *req.Status
 	}

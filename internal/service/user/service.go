@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/chriis/heritage-motor/internal/db"
@@ -38,8 +37,24 @@ func NewService(pool *pgxpool.Pool) *Service {
 	return &Service{pool: pool}
 }
 
+// userColumns is the standard SELECT list for scanning into domain.User.
+const userColumns = `id, tenant_id, email, password_hash, first_name, last_name, role,
+	totp_secret, totp_enabled, password_change_required, last_login_at,
+	created_at, updated_at, deleted_at`
+
+// scanUser scans a row into a domain.User.
+func scanUser(row pgx.Row) (domain.User, error) {
+	var u domain.User
+	err := row.Scan(
+		&u.ID, &u.TenantID, &u.Email, &u.PasswordHash,
+		&u.FirstName, &u.LastName, &u.Role,
+		&u.TOTPSecret, &u.TOTPEnabled, &u.PasswordChangeRequired, &u.LastLoginAt,
+		&u.CreatedAt, &u.UpdatedAt, &u.DeletedAt,
+	)
+	return u, err
+}
+
 func (s *Service) List(ctx context.Context, tenantID uuid.UUID, page, perPage int) ([]domain.User, int, error) {
-	// Normalize pagination
 	if page < 1 {
 		page = 1
 	}
@@ -48,9 +63,8 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, page, perPage in
 	}
 	offset := (page - 1) * perPage
 
-	// Single query with COUNT(*) OVER() to avoid a separate count query.
 	rows, err := db.Conn(ctx, s.pool).Query(ctx,
-		`SELECT id, tenant_id, email, password_hash, first_name, last_name, role, totp_secret, totp_enabled, last_login_at, created_at, updated_at, deleted_at,
+		`SELECT `+userColumns+`,
 		 COUNT(*) OVER() AS total_count
 		 FROM users
 		 WHERE tenant_id = $1 AND deleted_at IS NULL
@@ -71,7 +85,7 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, page, perPage in
 		if err := rows.Scan(
 			&u.ID, &u.TenantID, &u.Email, &u.PasswordHash,
 			&u.FirstName, &u.LastName, &u.Role,
-			&u.TOTPSecret, &u.TOTPEnabled, &u.LastLoginAt,
+			&u.TOTPSecret, &u.TOTPEnabled, &u.PasswordChangeRequired, &u.LastLoginAt,
 			&u.CreatedAt, &u.UpdatedAt, &u.DeletedAt,
 			&total,
 		); err != nil {
@@ -88,47 +102,11 @@ func (s *Service) List(ctx context.Context, tenantID uuid.UUID, page, perPage in
 	return users, total, nil
 }
 
-// validatePasswordStrength enforces password complexity rules:
-// min 8 chars, at least 1 uppercase, 1 lowercase, 1 digit, 1 special character.
-func validatePasswordStrength(password string) error {
-	if len(password) < 8 {
-		return &domain.ErrValidation{Field: "password", Message: "password must be at least 8 characters"}
-	}
-	var hasUpper, hasLower, hasDigit, hasSpecial bool
-	for _, r := range password {
-		switch {
-		case unicode.IsUpper(r):
-			hasUpper = true
-		case unicode.IsLower(r):
-			hasLower = true
-		case unicode.IsDigit(r):
-			hasDigit = true
-		case unicode.IsPunct(r) || unicode.IsSymbol(r):
-			hasSpecial = true
-		}
-	}
-	if !hasUpper {
-		return &domain.ErrValidation{Field: "password", Message: "password must contain at least one uppercase letter"}
-	}
-	if !hasLower {
-		return &domain.ErrValidation{Field: "password", Message: "password must contain at least one lowercase letter"}
-	}
-	if !hasDigit {
-		return &domain.ErrValidation{Field: "password", Message: "password must contain at least one digit"}
-	}
-	if !hasSpecial {
-		return &domain.ErrValidation{Field: "password", Message: "password must contain at least one special character"}
-	}
-	return nil
-}
-
 func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateUserRequest) (*domain.User, error) {
-	// Validate password strength
-	if err := validatePasswordStrength(req.Password); err != nil {
+	if err := domain.ValidatePasswordStrength(req.Password); err != nil {
 		return nil, err
 	}
 
-	// Check email uniqueness within tenant
 	email := strings.ToLower(strings.TrimSpace(req.Email))
 	var exists bool
 	err := db.Conn(ctx, s.pool).QueryRow(ctx,
@@ -143,7 +121,6 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateUser
 		return nil, &domain.ErrConflict{Message: "email already in use"}
 	}
 
-	// Hash password
 	hash, err := auth.HashPassword(req.Password)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to hash password")
@@ -153,7 +130,7 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateUser
 	now := time.Now().UTC()
 	u := domain.User{
 		ID:           uuid.New(),
-		TenantID:     tenantID,
+		TenantID:     &tenantID,
 		Email:        email,
 		PasswordHash: hash,
 		FirstName:    strings.TrimSpace(req.FirstName),
@@ -186,7 +163,6 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateUser
 }
 
 func (s *Service) Update(ctx context.Context, tenantID, userID uuid.UUID, req UpdateUserRequest) (*domain.User, error) {
-	// Build dynamic SET clause
 	setClauses := []string{"updated_at = @updatedAt"}
 	args := pgx.NamedArgs{
 		"id":        userID,
@@ -208,24 +184,17 @@ func (s *Service) Update(ctx context.Context, tenantID, userID uuid.UUID, req Up
 	}
 
 	if len(setClauses) == 1 {
-		// Only updated_at, nothing to change
 		return nil, &domain.ErrValidation{Field: "body", Message: "no fields to update"}
 	}
 
 	query := fmt.Sprintf(
 		`UPDATE users SET %s
 		 WHERE id = @id AND tenant_id = @tenantID AND deleted_at IS NULL
-		 RETURNING id, tenant_id, email, password_hash, first_name, last_name, role, totp_secret, totp_enabled, last_login_at, created_at, updated_at, deleted_at`,
+		 RETURNING `+userColumns,
 		strings.Join(setClauses, ", "),
 	)
 
-	var u domain.User
-	err := db.Conn(ctx, s.pool).QueryRow(ctx, query, args).Scan(
-		&u.ID, &u.TenantID, &u.Email, &u.PasswordHash,
-		&u.FirstName, &u.LastName, &u.Role,
-		&u.TOTPSecret, &u.TOTPEnabled, &u.LastLoginAt,
-		&u.CreatedAt, &u.UpdatedAt, &u.DeletedAt,
-	)
+	u, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx, query, args))
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, &domain.ErrNotFound{Resource: "user", ID: userID}
@@ -234,10 +203,7 @@ func (s *Service) Update(ctx context.Context, tenantID, userID uuid.UUID, req Up
 		return nil, fmt.Errorf("update user: %w", err)
 	}
 
-	log.Info().
-		Str("user_id", u.ID.String()).
-		Msg("user updated")
-
+	log.Info().Str("user_id", u.ID.String()).Msg("user updated")
 	return &u, nil
 }
 
@@ -256,9 +222,6 @@ func (s *Service) Delete(ctx context.Context, tenantID, userID uuid.UUID) error 
 		return &domain.ErrNotFound{Resource: "user", ID: userID}
 	}
 
-	log.Info().
-		Str("user_id", userID.String()).
-		Msg("user soft-deleted")
-
+	log.Info().Str("user_id", userID.String()).Msg("user soft-deleted")
 	return nil
 }

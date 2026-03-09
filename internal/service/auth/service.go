@@ -49,25 +49,38 @@ func NewService(pool *pgxpool.Pool, jwtManager *auth.JWTManager) *Service {
 	}
 }
 
+// userColumns is the standard SELECT list for scanning into domain.User.
+const userColumns = `id, tenant_id, email, password_hash, first_name, last_name,
+	role, totp_secret, totp_enabled, password_change_required, last_login_at,
+	created_at, updated_at, deleted_at`
+
+func scanUser(row pgx.Row) (domain.User, error) {
+	var u domain.User
+	err := row.Scan(
+		&u.ID, &u.TenantID, &u.Email, &u.PasswordHash,
+		&u.FirstName, &u.LastName, &u.Role,
+		&u.TOTPSecret, &u.TOTPEnabled, &u.PasswordChangeRequired, &u.LastLoginAt,
+		&u.CreatedAt, &u.UpdatedAt, &u.DeletedAt,
+	)
+	return u, err
+}
+
+// tenantIDOrNil returns the UUID value or uuid.Nil if the pointer is nil (superadmin).
+func tenantIDOrNil(tid *uuid.UUID) uuid.UUID {
+	if tid != nil {
+		return *tid
+	}
+	return uuid.Nil
+}
+
 // Login authenticates a user by email and password.
-// If the user has TOTP enabled, an MFA pending token is returned instead of
-// full JWT tokens. The caller must then call VerifyMFA to complete login.
-// Queries without RLS context because the tenant is unknown at login time.
 func (s *Service) Login(ctx context.Context, email, password string) (*LoginResult, *MFAPendingResult, error) {
-	var user domain.User
-	err := db.Conn(ctx, s.pool).QueryRow(ctx,
-		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
-		        role, totp_secret, totp_enabled, last_login_at,
-		        created_at, updated_at, deleted_at
+	user, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx,
+		`SELECT `+userColumns+`
 		 FROM users
 		 WHERE email = $1 AND deleted_at IS NULL`,
 		email,
-	).Scan(
-		&user.ID, &user.TenantID, &user.Email, &user.PasswordHash,
-		&user.FirstName, &user.LastName, &user.Role,
-		&user.TOTPSecret, &user.TOTPEnabled, &user.LastLoginAt,
-		&user.CreatedAt, &user.UpdatedAt, &user.DeletedAt,
-	)
+	))
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil, &domain.ErrUnauthorized{Message: "invalid credentials"}
@@ -75,14 +88,20 @@ func (s *Service) Login(ctx context.Context, email, password string) (*LoginResu
 		return nil, nil, fmt.Errorf("query user: %w", err)
 	}
 
-	// Verify the tenant is active.
-	var tenantActive bool
-	err = db.Conn(ctx, s.pool).QueryRow(ctx,
-		`SELECT active FROM tenants WHERE id = $1 AND deleted_at IS NULL`,
-		user.TenantID,
-	).Scan(&tenantActive)
-	if err != nil || !tenantActive {
-		return nil, nil, &domain.ErrUnauthorized{Message: "tenant inactive"}
+	// Superadmin has no tenant — skip tenant check.
+	if user.Role != domain.RoleSuperAdmin {
+		tenantID := tenantIDOrNil(user.TenantID)
+		var tenantStatus string
+		err = db.Conn(ctx, s.pool).QueryRow(ctx,
+			`SELECT status FROM tenants WHERE id = $1 AND deleted_at IS NULL`,
+			tenantID,
+		).Scan(&tenantStatus)
+		if err != nil {
+			return nil, nil, &domain.ErrUnauthorized{Message: "tenant not found"}
+		}
+		if tenantStatus == domain.TenantStatusSuspended {
+			return nil, nil, &domain.ErrTenantSuspended{}
+		}
 	}
 
 	if !auth.CheckPassword(password, user.PasswordHash) {
@@ -91,14 +110,13 @@ func (s *Service) Login(ctx context.Context, email, password string) (*LoginResu
 
 	// If TOTP is enabled, return an MFA pending token.
 	if user.TOTPEnabled {
-		mfaToken, err := s.jwt.GenerateMFAPendingToken(user.ID, user.TenantID)
+		mfaToken, err := s.jwt.GenerateMFAPendingToken(user.ID, tenantIDOrNil(user.TenantID))
 		if err != nil {
 			return nil, nil, fmt.Errorf("generate mfa token: %w", err)
 		}
 		return nil, &MFAPendingResult{MFAToken: mfaToken}, nil
 	}
 
-	// Issue full tokens.
 	result, err := s.issueTokens(ctx, &user)
 	if err != nil {
 		return nil, nil, err
@@ -114,20 +132,12 @@ func (s *Service) VerifyMFA(ctx context.Context, mfaPendingToken, code string) (
 		return nil, &domain.ErrUnauthorized{Message: "invalid or expired mfa token"}
 	}
 
-	var user domain.User
-	err = db.Conn(ctx, s.pool).QueryRow(ctx,
-		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
-		        role, totp_secret, totp_enabled, last_login_at,
-		        created_at, updated_at, deleted_at
+	user, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx,
+		`SELECT `+userColumns+`
 		 FROM users
-		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-		claims.UserID, claims.TenantID,
-	).Scan(
-		&user.ID, &user.TenantID, &user.Email, &user.PasswordHash,
-		&user.FirstName, &user.LastName, &user.Role,
-		&user.TOTPSecret, &user.TOTPEnabled, &user.LastLoginAt,
-		&user.CreatedAt, &user.UpdatedAt, &user.DeletedAt,
-	)
+		 WHERE id = $1 AND deleted_at IS NULL`,
+		claims.UserID,
+	))
 	if err != nil {
 		return nil, &domain.ErrUnauthorized{Message: "user not found"}
 	}
@@ -147,7 +157,8 @@ func (s *Service) VerifyMFA(ctx context.Context, mfaPendingToken, code string) (
 func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*LoginResult, error) {
 	tokenHash := hashToken(refreshToken)
 
-	var tokenID, userID, tenantID uuid.UUID
+	var tokenID, userID uuid.UUID
+	var tenantID *uuid.UUID
 	var expiresAt time.Time
 	var revokedAt *time.Time
 	err := db.Conn(ctx, s.pool).QueryRow(ctx,
@@ -180,20 +191,12 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Login
 	}
 
 	// Fetch user for the new access token claims.
-	var user domain.User
-	err = db.Conn(ctx, s.pool).QueryRow(ctx,
-		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
-		        role, totp_secret, totp_enabled, last_login_at,
-		        created_at, updated_at, deleted_at
+	user, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx,
+		`SELECT `+userColumns+`
 		 FROM users
-		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-		userID, tenantID,
-	).Scan(
-		&user.ID, &user.TenantID, &user.Email, &user.PasswordHash,
-		&user.FirstName, &user.LastName, &user.Role,
-		&user.TOTPSecret, &user.TOTPEnabled, &user.LastLoginAt,
-		&user.CreatedAt, &user.UpdatedAt, &user.DeletedAt,
-	)
+		 WHERE id = $1 AND deleted_at IS NULL`,
+		userID,
+	))
 	if err != nil {
 		return nil, &domain.ErrUnauthorized{Message: "user not found"}
 	}
@@ -233,20 +236,12 @@ func (s *Service) Logout(ctx context.Context, refreshToken, accessJTI string, ac
 
 // GetMe returns the current user profile.
 func (s *Service) GetMe(ctx context.Context, userID, tenantID uuid.UUID) (*domain.User, error) {
-	var user domain.User
-	err := db.Conn(ctx, s.pool).QueryRow(ctx,
-		`SELECT id, tenant_id, email, password_hash, first_name, last_name,
-		        role, totp_secret, totp_enabled, last_login_at,
-		        created_at, updated_at, deleted_at
+	user, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx,
+		`SELECT `+userColumns+`
 		 FROM users
-		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-		userID, tenantID,
-	).Scan(
-		&user.ID, &user.TenantID, &user.Email, &user.PasswordHash,
-		&user.FirstName, &user.LastName, &user.Role,
-		&user.TOTPSecret, &user.TOTPEnabled, &user.LastLoginAt,
-		&user.CreatedAt, &user.UpdatedAt, &user.DeletedAt,
-	)
+		 WHERE id = $1 AND deleted_at IS NULL`,
+		userID,
+	))
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, &domain.ErrNotFound{Resource: "user", ID: userID}
@@ -257,16 +252,53 @@ func (s *Service) GetMe(ctx context.Context, userID, tenantID uuid.UUID) (*domai
 	return &user, nil
 }
 
+// ChangePassword changes a user's password and clears the password_change_required flag.
+func (s *Service) ChangePassword(ctx context.Context, userID uuid.UUID, currentPassword, newPassword string) error {
+	var passwordHash string
+	err := db.Conn(ctx, s.pool).QueryRow(ctx,
+		`SELECT password_hash FROM users WHERE id = $1 AND deleted_at IS NULL`,
+		userID,
+	).Scan(&passwordHash)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return &domain.ErrNotFound{Resource: "user", ID: userID}
+		}
+		return fmt.Errorf("query user: %w", err)
+	}
+
+	if !auth.CheckPassword(currentPassword, passwordHash) {
+		return &domain.ErrUnauthorized{Message: "invalid current password"}
+	}
+
+	if err := domain.ValidatePasswordStrength(newPassword); err != nil {
+		return err
+	}
+
+	hash, err := auth.HashPassword(newPassword)
+	if err != nil {
+		return fmt.Errorf("hash password: %w", err)
+	}
+
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
+		`UPDATE users SET password_hash = $1, password_change_required = false, updated_at = NOW()
+		 WHERE id = $2`,
+		hash, userID,
+	)
+	if err != nil {
+		return fmt.Errorf("update password: %w", err)
+	}
+
+	return nil
+}
+
 // SetupMFA generates a new TOTP secret for the user.
-// The secret is stored but TOTP is not enabled until EnableMFA is called.
 func (s *Service) SetupMFA(ctx context.Context, userID, tenantID uuid.UUID) (*MFASetupResult, error) {
-	// Fetch user email for the TOTP issuer label.
 	var email string
 	var totpEnabled bool
 	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT email, totp_enabled FROM users
-		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-		userID, tenantID,
+		 WHERE id = $1 AND deleted_at IS NULL`,
+		userID,
 	).Scan(&email, &totpEnabled)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -284,11 +316,10 @@ func (s *Service) SetupMFA(ctx context.Context, userID, tenantID uuid.UUID) (*MF
 		return nil, fmt.Errorf("generate totp secret: %w", err)
 	}
 
-	// Store the secret but do not enable TOTP yet.
 	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET totp_secret = $1, updated_at = NOW()
-		 WHERE id = $2 AND tenant_id = $3`,
-		key.Secret(), userID, tenantID,
+		 WHERE id = $2`,
+		key.Secret(), userID,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("store totp secret: %w", err)
@@ -306,8 +337,8 @@ func (s *Service) EnableMFA(ctx context.Context, userID, tenantID uuid.UUID, cod
 	var totpEnabled bool
 	err := db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT totp_secret, totp_enabled FROM users
-		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-		userID, tenantID,
+		 WHERE id = $1 AND deleted_at IS NULL`,
+		userID,
 	).Scan(&secret, &totpEnabled)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -329,8 +360,8 @@ func (s *Service) EnableMFA(ctx context.Context, userID, tenantID uuid.UUID, cod
 
 	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET totp_enabled = true, updated_at = NOW()
-		 WHERE id = $1 AND tenant_id = $2`,
-		userID, tenantID,
+		 WHERE id = $1`,
+		userID,
 	)
 	if err != nil {
 		return fmt.Errorf("enable totp: %w", err)
@@ -343,8 +374,8 @@ func (s *Service) EnableMFA(ctx context.Context, userID, tenantID uuid.UUID, cod
 func (s *Service) DisableMFA(ctx context.Context, userID, tenantID uuid.UUID) error {
 	tag, err := db.Conn(ctx, s.pool).Exec(ctx,
 		`UPDATE users SET totp_enabled = false, totp_secret = NULL, updated_at = NOW()
-		 WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-		userID, tenantID,
+		 WHERE id = $1 AND deleted_at IS NULL`,
+		userID,
 	)
 	if err != nil {
 		return fmt.Errorf("disable totp: %w", err)
@@ -359,7 +390,8 @@ func (s *Service) DisableMFA(ctx context.Context, userID, tenantID uuid.UUID) er
 // issueTokens generates an access token and a refresh token, persists the
 // refresh token hash, and updates the user's last_login_at timestamp.
 func (s *Service) issueTokens(ctx context.Context, user *domain.User) (*LoginResult, error) {
-	accessToken, err := s.jwt.GenerateAccessToken(user.ID, user.TenantID, user.Role)
+	tid := tenantIDOrNil(user.TenantID)
+	accessToken, err := s.jwt.GenerateAccessToken(user.ID, tid, user.Role, user.PasswordChangeRequired)
 	if err != nil {
 		return nil, fmt.Errorf("generate access token: %w", err)
 	}

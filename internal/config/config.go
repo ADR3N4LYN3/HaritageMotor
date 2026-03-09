@@ -54,7 +54,7 @@ func Load() (*Config, error) {
 
 		ResendAPIKey:   getEnv("RESEND_API_KEY", ""),
 		EmailFrom:      getEnv("EMAIL_FROM", "noreply@heritagemotor.app"),
-		ContactEmailTo: getEnv("CONTACT_EMAIL_TO", "hello@heritagemotor.app"),
+		ContactEmailTo: getEnv("CONTACT_EMAIL_TO", "welcome@heritagemotor.app"),
 
 		LogLevel: getEnv("LOG_LEVEL", "info"),
 	}

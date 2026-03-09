@@ -1,4 +1,4 @@
-import { api, ApiError } from "./api";
+import { ApiError } from "./api";
 import { useAppStore } from "@/store/app.store";
 import type { User } from "./types";
 
@@ -79,11 +79,14 @@ export async function verifyMFA(
 }
 
 export async function logout(): Promise<void> {
+  const token = useAppStore.getState().accessToken;
   try {
-    await api.post("/auth/logout");
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
   } catch {
-    // Ignore errors during logout
+    // Best-effort — don't block local logout
   }
-  await fetch("/api/auth/clear-token", { method: "POST" });
   useAppStore.getState().logout();
 }

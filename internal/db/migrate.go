@@ -68,28 +68,41 @@ func RunMigrations(pool *pgxpool.Pool, migrationsDir string) error {
 			continue
 		}
 
-		sql, err := os.ReadFile(file)
+		sqlBytes, err := os.ReadFile(file)
 		if err != nil {
 			return fmt.Errorf("read migration %s: %w", name, err)
 		}
 
-		tx, err := pool.Begin(ctx)
-		if err != nil {
-			return fmt.Errorf("begin tx for %s: %w", name, err)
-		}
+		sqlContent := string(sqlBytes)
+		noTx := strings.HasPrefix(strings.TrimSpace(sqlContent), "-- no-transaction")
 
-		if _, err := tx.Exec(ctx, string(sql)); err != nil {
-			_ = tx.Rollback(ctx)
-			return fmt.Errorf("execute migration %s: %w", name, err)
-		}
+		if noTx {
+			// Execute without transaction (required for ALTER TYPE ADD VALUE).
+			if _, err := pool.Exec(ctx, sqlContent); err != nil {
+				return fmt.Errorf("execute migration %s: %w", name, err)
+			}
+			if _, err := pool.Exec(ctx, "INSERT INTO schema_migrations (version) VALUES ($1)", name); err != nil {
+				return fmt.Errorf("record migration %s: %w", name, err)
+			}
+		} else {
+			tx, err := pool.Begin(ctx)
+			if err != nil {
+				return fmt.Errorf("begin tx for %s: %w", name, err)
+			}
 
-		if _, err := tx.Exec(ctx, "INSERT INTO schema_migrations (version) VALUES ($1)", name); err != nil {
-			_ = tx.Rollback(ctx)
-			return fmt.Errorf("record migration %s: %w", name, err)
-		}
+			if _, err := tx.Exec(ctx, sqlContent); err != nil {
+				_ = tx.Rollback(ctx)
+				return fmt.Errorf("execute migration %s: %w", name, err)
+			}
 
-		if err := tx.Commit(ctx); err != nil {
-			return fmt.Errorf("commit migration %s: %w", name, err)
+			if _, err := tx.Exec(ctx, "INSERT INTO schema_migrations (version) VALUES ($1)", name); err != nil {
+				_ = tx.Rollback(ctx)
+				return fmt.Errorf("record migration %s: %w", name, err)
+			}
+
+			if err := tx.Commit(ctx); err != nil {
+				return fmt.Errorf("commit migration %s: %w", name, err)
+			}
 		}
 
 		log.Info().Str("migration", name).Msg("applied")

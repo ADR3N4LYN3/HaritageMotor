@@ -7,7 +7,9 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { SuccessScreen } from "@/components/ui/SuccessScreen";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import { useOfflineQueue } from "@/hooks/useOfflineQueue";
+import { pushAction } from "@/lib/offline-queue";
 import type { Task } from "@/lib/types";
 import useSWR from "swr";
 
@@ -29,6 +31,7 @@ export default function TaskPage() {
     id ? `/tasks?vehicle_id=${id}&status=pending` : null
   );
   const tasks = tasksData?.data || [];
+  const { refreshCount } = useOfflineQueue();
 
   const [completing, setCompleting] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
@@ -39,16 +42,42 @@ export default function TaskPage() {
   async function handleComplete(task: Task) {
     setLoading(true);
     setError(null);
+
+    const payload = { task_id: task.id, notes: notes || undefined };
+
+    // Offline fallback — queue for later sync
+    if (!navigator.onLine) {
+      try {
+        await pushAction({ type: "task", vehicle_id: id, payload, photos: [] });
+        await refreshCount();
+        if (navigator.vibrate) navigator.vibrate(100);
+        setSuccess({ task });
+      } catch {
+        setError("Failed to queue action offline");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       await api.post(`/tasks/${task.id}/complete`, {
         notes: notes || undefined,
       });
-      if (typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate(100);
-      }
+      if (navigator.vibrate) navigator.vibrate(100);
       setSuccess({ task });
       mutate();
     } catch (err: unknown) {
+      // Network error — queue for offline sync
+      if (!(err instanceof ApiError)) {
+        try {
+          await pushAction({ type: "task", vehicle_id: id, payload, photos: [] });
+          await refreshCount();
+          if (navigator.vibrate) navigator.vibrate(100);
+          setSuccess({ task });
+          return;
+        } catch { /* fall through */ }
+      }
       setError(err instanceof Error ? err.message : "Failed to complete task");
     } finally {
       setLoading(false);

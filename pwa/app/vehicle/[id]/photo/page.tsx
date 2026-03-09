@@ -10,6 +10,7 @@ import { SuccessScreen } from "@/components/ui/SuccessScreen";
 import { useVehicle } from "@/hooks/useVehicle";
 import { useCamera } from "@/hooks/useCamera";
 import { api } from "@/lib/api";
+import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 
 const CameraCapture = dynamic(
   () =>
@@ -26,6 +27,7 @@ export default function PhotoPage() {
 
   const { vehicle } = useVehicle(id);
   const { photos, addPhoto, removePhoto } = useCamera();
+  useOfflineQueue(); // Activate sync listeners for pending actions
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);

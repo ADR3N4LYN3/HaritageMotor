@@ -18,12 +18,6 @@ func NewHandler(svc *eventSvc.Service) *Handler {
 	return &Handler{svc: svc}
 }
 
-func (h *Handler) RegisterRoutes(r fiber.Router) {
-	r.Get("/events", h.List)
-	r.Get("/events/:id", h.GetByID)
-	r.Post("/events", h.Create)
-}
-
 // List GET /events?vehicle_id=&type=&date_from=&date_to=&page=&per_page=
 func (h *Handler) List(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)

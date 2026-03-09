@@ -3,6 +3,7 @@ package vehicle
 import (
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
+	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -11,24 +12,13 @@ import (
 
 // Handler holds the HTTP handlers for vehicle endpoints.
 type Handler struct {
-	svc *vehiclesvc.Service
+	svc     *vehiclesvc.Service
+	planSvc *plansvc.Service
 }
 
 // NewHandler creates a new vehicle handler.
-func NewHandler(svc *vehiclesvc.Service) *Handler {
-	return &Handler{svc: svc}
-}
-
-// RegisterRoutes mounts all vehicle routes on the given router group.
-func (h *Handler) RegisterRoutes(r fiber.Router) {
-	r.Get("/vehicles", h.List)
-	r.Get("/vehicles/:id", h.GetByID)
-	r.Post("/vehicles", h.Create)
-	r.Patch("/vehicles/:id", h.Update)
-	r.Delete("/vehicles/:id", h.Delete)
-	r.Post("/vehicles/:id/move", h.Move)
-	r.Post("/vehicles/:id/exit", h.Exit)
-	r.Get("/vehicles/:id/timeline", h.GetTimeline)
+func NewHandler(svc *vehiclesvc.Service, planSvc *plansvc.Service) *Handler {
+	return &Handler{svc: svc, planSvc: planSvc}
 }
 
 // listQuery maps query parameters for the List endpoint.
@@ -124,6 +114,13 @@ type createRequest struct {
 func (h *Handler) Create(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)
 	userID := middleware.UserIDFromCtx(c)
+
+	// Plan gating: check vehicle limit.
+	if h.planSvc != nil {
+		if err := h.planSvc.CheckLimitForTenant(c.UserContext(), tenantID, "vehicles"); err != nil {
+			return handler.HandleServiceError(c, err)
+		}
+	}
 
 	var req createRequest
 	if err := c.BodyParser(&req); err != nil {

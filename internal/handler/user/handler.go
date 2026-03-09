@@ -6,6 +6,7 @@ import (
 
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
+	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
 	userSvc "github.com/chriis/heritage-motor/internal/service/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -14,20 +15,14 @@ import (
 )
 
 type Handler struct {
-	svc           *userSvc.Service
-	ownerPool     *pgxpool.Pool
-	accessExpiry  time.Duration
+	svc          *userSvc.Service
+	ownerPool    *pgxpool.Pool
+	accessExpiry time.Duration
+	planSvc      *plansvc.Service
 }
 
-func NewHandler(svc *userSvc.Service, ownerPool *pgxpool.Pool, accessExpiry time.Duration) *Handler {
-	return &Handler{svc: svc, ownerPool: ownerPool, accessExpiry: accessExpiry}
-}
-
-func (h *Handler) RegisterRoutes(r fiber.Router) {
-	r.Get("/users", h.List)
-	r.Post("/users", h.Create)
-	r.Patch("/users/:id", h.Update)
-	r.Delete("/users/:id", h.Delete)
+func NewHandler(svc *userSvc.Service, ownerPool *pgxpool.Pool, accessExpiry time.Duration, planSvc *plansvc.Service) *Handler {
+	return &Handler{svc: svc, ownerPool: ownerPool, accessExpiry: accessExpiry, planSvc: planSvc}
 }
 
 // List GET /users
@@ -56,6 +51,13 @@ func (h *Handler) List(c *fiber.Ctx) error {
 // Create POST /users
 func (h *Handler) Create(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)
+
+	// Plan gating: check user limit.
+	if h.planSvc != nil {
+		if err := h.planSvc.CheckLimitForTenant(c.UserContext(), tenantID, "users"); err != nil {
+			return handler.HandleServiceError(c, err)
+		}
+	}
 
 	var req userSvc.CreateUserRequest
 	if err := c.BodyParser(&req); err != nil {

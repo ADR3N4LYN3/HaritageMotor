@@ -4,6 +4,7 @@ import (
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	bayservice "github.com/chriis/heritage-motor/internal/service/bay"
+	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
@@ -11,18 +12,11 @@ import (
 
 type Handler struct {
 	service *bayservice.Service
+	planSvc *plansvc.Service
 }
 
-func NewHandler(service *bayservice.Service) *Handler {
-	return &Handler{service: service}
-}
-
-func (h *Handler) RegisterRoutes(r fiber.Router) {
-	r.Get("/", h.List)
-	r.Get("/:id", h.GetByID)
-	r.Post("/", h.Create)
-	r.Patch("/:id", h.Update)
-	r.Delete("/:id", h.Delete)
+func NewHandler(service *bayservice.Service, planSvc *plansvc.Service) *Handler {
+	return &Handler{service: service, planSvc: planSvc}
 }
 
 type listQuery struct {
@@ -72,6 +66,13 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 
 func (h *Handler) Create(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)
+
+	// Plan gating: check bay limit.
+	if h.planSvc != nil {
+		if err := h.planSvc.CheckLimitForTenant(c.UserContext(), tenantID, "bays"); err != nil {
+			return handler.HandleServiceError(c, err)
+		}
+	}
 
 	var req bayservice.CreateBayRequest
 	if err := c.BodyParser(&req); err != nil {

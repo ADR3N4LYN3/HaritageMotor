@@ -9,9 +9,10 @@ import (
 )
 
 type Claims struct {
-	UserID   uuid.UUID `json:"user_id"`
-	TenantID uuid.UUID `json:"tenant_id"`
-	Role     string    `json:"role"`
+	UserID                 uuid.UUID `json:"user_id"`
+	TenantID               uuid.UUID `json:"tenant_id"`
+	Role                   string    `json:"role"`
+	PasswordChangeRequired bool      `json:"pcr,omitempty"`
 	jwt.RegisteredClaims
 }
 
@@ -36,12 +37,13 @@ func NewJWTManager(secret string, accessExpiry, refreshExpiry time.Duration) *JW
 	}
 }
 
-func (m *JWTManager) GenerateAccessToken(userID, tenantID uuid.UUID, role string) (string, error) {
+func (m *JWTManager) GenerateAccessToken(userID, tenantID uuid.UUID, role string, passwordChangeRequired bool) (string, error) {
 	now := time.Now()
 	claims := &Claims{
-		UserID:   userID,
-		TenantID: tenantID,
-		Role:     role,
+		UserID:                 userID,
+		TenantID:               tenantID,
+		Role:                   role,
+		PasswordChangeRequired: passwordChangeRequired,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ID:        uuid.New().String(),
 			ExpiresAt: jwt.NewNumericDate(now.Add(m.accessExpiry)),

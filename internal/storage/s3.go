@@ -13,8 +13,9 @@ import (
 )
 
 type S3Client struct {
-	client *s3.Client
-	bucket string
+	client    *s3.Client
+	presigner *s3.PresignClient
+	bucket    string
 }
 
 func NewS3Client(endpoint, bucket, accessKey, secretKey, region string) (*S3Client, error) {
@@ -36,8 +37,9 @@ func NewS3Client(endpoint, bucket, accessKey, secretKey, region string) (*S3Clie
 	})
 
 	return &S3Client{
-		client: client,
-		bucket: bucket,
+		client:    client,
+		presigner: s3.NewPresignClient(client),
+		bucket:    bucket,
 	}, nil
 }
 
@@ -66,8 +68,7 @@ func (s *S3Client) GetSignedURL(ctx context.Context, key string, duration time.D
 		return "", fmt.Errorf("s3 client not configured")
 	}
 
-	presigner := s3.NewPresignClient(s.client)
-	result, err := presigner.PresignGetObject(ctx, &s3.GetObjectInput{
+	result, err := s.presigner.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(key),
 	}, s3.WithPresignExpires(duration))

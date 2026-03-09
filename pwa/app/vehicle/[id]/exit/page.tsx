@@ -10,7 +10,9 @@ import { SuccessScreen } from "@/components/ui/SuccessScreen";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
 import { useCamera } from "@/hooks/useCamera";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import { useOfflineQueue } from "@/hooks/useOfflineQueue";
+import { pushAction } from "@/lib/offline-queue";
 
 const CameraCapture = dynamic(
   () =>
@@ -35,6 +37,7 @@ export default function ExitVehiclePage() {
 
   const { vehicle, isLoading } = useVehicle(id);
   const { photos, addPhoto, removePhoto } = useCamera();
+  const { refreshCount } = useOfflineQueue();
 
   const [step, setStep] = useState<"warning" | "form">("warning");
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
@@ -51,6 +54,28 @@ export default function ExitVehiclePage() {
     if (!canConfirm) return;
     setLoading(true);
     setError(null);
+
+    const payload = {
+      recipient_name: recipient,
+      notes: notes || undefined,
+      checklist: checklistItems.filter((c) => checklist[c.id]).map((c) => c.id),
+    };
+
+    // Offline fallback — queue for later sync (photos can't be serialized)
+    if (!navigator.onLine) {
+      try {
+        await pushAction({ type: "exit", vehicle_id: id, payload, photos: [] });
+        await refreshCount();
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        setSuccess(true);
+      } catch {
+        setError("Failed to queue action offline");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       // Upload exit photos in parallel
       const results = await Promise.allSettled(photos.map((photo) => {
@@ -66,17 +91,21 @@ export default function ExitVehiclePage() {
       }
 
       // Execute exit
-      await api.post(`/vehicles/${id}/exit`, {
-        recipient_name: recipient,
-        notes: notes || undefined,
-        checklist: checklistItems.filter((c) => checklist[c.id]).map((c) => c.id),
-      });
+      await api.post(`/vehicles/${id}/exit`, payload);
 
-      if (typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate([100, 50, 100]);
-      }
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       setSuccess(true);
     } catch (err: unknown) {
+      // Network error on exit API call — queue for offline sync
+      if (!(err instanceof ApiError)) {
+        try {
+          await pushAction({ type: "exit", vehicle_id: id, payload, photos: [] });
+          await refreshCount();
+          if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+          setSuccess(true);
+          return;
+        } catch { /* fall through */ }
+      }
       setError(err instanceof Error ? err.message : "Exit failed");
     } finally {
       setLoading(false);

@@ -17,15 +17,6 @@ func NewHandler(service *taskservice.Service) *Handler {
 	return &Handler{service: service}
 }
 
-func (h *Handler) RegisterRoutes(r fiber.Router) {
-	r.Get("/", h.List)
-	r.Get("/:id", h.GetByID)
-	r.Post("/", h.Create)
-	r.Patch("/:id", h.Update)
-	r.Post("/:id/complete", h.Complete)
-	r.Delete("/:id", h.Delete)
-}
-
 type taskListQuery struct {
 	handler.PaginationParams
 	Status     string `query:"status"`
