@@ -49,6 +49,9 @@ services:
     build:
       context: ./pwa
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://api.heritagemotor.app/api/v1
+        NEXT_PUBLIC_APP_URL: https://app.heritagemotor.app
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: https://api.heritagemotor.app/api/v1

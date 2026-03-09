@@ -48,7 +48,7 @@ pwa/
 │       ├── refresh/route.ts     # Proxy refresh through Next.js (cookie → API)
 │       ├── logout/route.ts      # Proxy logout to backend + clear cookie
 │       └── clear-token/route.ts # Clear refresh token cookie on logout
-├── middleware.ts                 # Auth guard: redirect to /login if no refresh_token cookie
+├── middleware.ts                 # Auth guard + role-based route protection (/admin → superadmin only)
 ├── components/
 │   ├── layout/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
@@ -114,6 +114,7 @@ Login Page                    Next.js API Routes             Go API
 |-------|---------|-----------|
 | Access token | Zustand (memory) | Cleared on page refresh, no XSS exposure |
 | Refresh token | httpOnly cookie (via Next.js API route) | Not accessible to JavaScript |
+| User role | httpOnly cookie (`user_role`) | UX-only route guard for `/admin` in middleware — backend RBAC is the real authority |
 
 ### MFA Support
 
@@ -258,6 +259,7 @@ Fallback: manual code entry for devices without camera access.
 |-------|------|-------------|
 | `/` | No | Redirects to `/scan` |
 | `/login` | No | Login form + MFA verification |
+| `/admin` | Yes (superadmin) | Platform administration (tenants, invitations) |
 | `/scan` | Yes | QR scanner (default landing page) |
 | `/dashboard` | Yes | Vehicle list with search and status filters |
 | `/vehicle/[id]` | Yes | Vehicle detail with timeline and actions |
@@ -336,14 +338,23 @@ Bottom navigation bar with two tabs:
 Multi-stage build in `pwa/Dockerfile`:
 
 1. **deps** — install node_modules
-2. **builder** — `next build` with `output: "standalone"`
+2. **builder** — `next build` with build args for `NEXT_PUBLIC_*` env vars
 3. **runner** — minimal Node.js image with standalone output
+
+**Critical**: `NEXT_PUBLIC_*` variables are inlined into the client-side bundle at build time by Next.js. They must be passed as Docker `ARG` (not just runtime `ENV`). The Dockerfile declares `ARG NEXT_PUBLIC_API_URL` and `ARG NEXT_PUBLIC_APP_URL` before `npm run build`, and `compose.yaml` passes them via `build.args`. Runtime `environment` is also needed for server-side API routes (refresh, logout).
+
+To rebuild with updated env vars:
+```bash
+docker compose build app --no-cache
+docker compose up -d app
+```
 
 ### Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Yes | Backend API base URL (e.g., `https://api.heritagemotor.app/api/v1`) |
+| Variable | Required | Build-time | Description |
+|----------|----------|------------|-------------|
+| `NEXT_PUBLIC_API_URL` | Yes | Yes (ARG) | Backend API base URL (e.g., `https://api.heritagemotor.app/api/v1`) |
+| `NEXT_PUBLIC_APP_URL` | No | Yes (ARG) | Frontend app URL (e.g., `https://app.heritagemotor.app`) |
 
 ### PWA Manifest
 

@@ -60,10 +60,12 @@ Multi-stage build in `./Dockerfile`:
 Multi-stage build in `./pwa/Dockerfile`:
 
 - **Dependencies**: `node:20-alpine` - installs npm packages
-- **Builder**: `node:20-alpine` - runs `npm run build`
+- **Builder**: `node:20-alpine` - runs `npm run build` with build args
 - **Runner**: `node:20-alpine` - standalone server
 - Uses Next.js `output: "standalone"` for minimal production image
 - Exposed port: 3000
+
+**Important**: `NEXT_PUBLIC_*` variables must be passed as Docker build args (not just runtime env vars), because Next.js inlines them into the client-side JavaScript bundle at build time. The `compose.yaml` passes them via `build.args`, and the Dockerfile declares them as `ARG` before `npm run build`. Runtime `environment` is also set for server-side API routes (refresh, logout).
 
 ## Environment Variables
 
