@@ -13,7 +13,7 @@
 <meta name="twitter:title" content="Heritage Motor — Vehicle Chain of Custody Platform">
 <meta name="twitter:description" content="The operating system for premium vehicle storage. Immutable timeline, bay management, and one-click exit reports.">
 <link rel="canonical" href="https://heritagemotor.app">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%8F%9B%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'%3E%3Crect width='64' height='64' rx='8' fill='%230e0d0b'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Georgia,serif' font-size='28' font-weight='400' fill='%23b8955a'%3EHM%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -574,24 +574,27 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     btn.disabled = true;
     btn.textContent = 'Sending...';
 
-    // TODO: Replace with your form endpoint (Formspree, API, etc.)
-    // fetch('https://formspree.io/f/YOUR_FORM_ID', {
-    //   method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
-    // }).then(function() { showSuccess(form); });
-
-    var name = fd.get('name');
-    var email = fd.get('email');
-    var company = fd.get('company');
-    var message = fd.get('message');
-    var subject = encodeURIComponent('Demo Request \u2014 ' + name + (company ? ' (' + company + ')' : ''));
-    var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nCompany: ' + (company || 'N/A') + '\n\n' + (message || ''));
-    window.open('mailto:hello@heritagemotor.app?subject=' + subject + '&body=' + body, '_self');
-
-    while (form.firstChild) { form.removeChild(form.firstChild); }
-    var msg = document.createElement('p');
-    msg.className = 'form-success';
-    msg.textContent = 'Thank you! We\u2019ll get back to you within 24 hours.';
-    form.appendChild(msg);
+    // Replace YOUR_FORM_ID: go to formspree.io → New Form → copy the ID
+    fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
+    }).then(function(res) {
+      if (!res.ok) throw new Error('Network error');
+      while (form.firstChild) { form.removeChild(form.firstChild); }
+      var msg = document.createElement('p');
+      msg.className = 'form-success';
+      msg.textContent = 'Thank you! We\u2019ll get back to you within 24 hours.';
+      form.appendChild(msg);
+    }).catch(function() {
+      var name = fd.get('name');
+      var email = fd.get('email');
+      var company = fd.get('company');
+      var message = fd.get('message');
+      var subject = encodeURIComponent('Demo Request \u2014 ' + name + (company ? ' (' + company + ')' : ''));
+      var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nCompany: ' + (company || 'N/A') + '\n\n' + (message || ''));
+      window.open('mailto:hello@heritagemotor.app?subject=' + subject + '&body=' + body, '_self');
+      btn.disabled = false;
+      btn.textContent = 'Request a Demo';
+    });
   });
 </script>
 </body>
