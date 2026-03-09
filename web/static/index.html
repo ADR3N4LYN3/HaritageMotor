@@ -75,6 +75,20 @@ nav.on-photo .nav-cta:hover { background: #fff; color: var(--black); border-colo
 nav.scrolled .nav-cta { background: var(--black); color: #fff; border: 1px solid var(--black); }
 nav.scrolled .nav-cta:hover { background: var(--gold); border-color: var(--gold); }
 
+/* ─── LANG SWITCHER ─────────────────────────────────────────────── */
+.lang-switch { position: relative; }
+.lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: opacity 0.25s; opacity: 0.7; display: flex; align-items: center; gap: 0.35rem; }
+.lang-btn:hover { opacity: 1; }
+nav.on-photo .lang-btn { color: #fff; }
+nav.scrolled .lang-btn { color: var(--black); }
+.lang-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+.lang-switch.open .lang-btn svg { transform: rotate(180deg); }
+.lang-drop { position: absolute; top: calc(100% + 0.5rem); right: 0; background: var(--white); border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.1); display: none; flex-direction: column; min-width: 100px; z-index: 300; }
+.lang-switch.open .lang-drop { display: flex; }
+.lang-opt { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.72rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.6rem 1rem; text-align: left; color: var(--mid); transition: background 0.15s, color 0.15s; }
+.lang-opt:hover { background: var(--bg); color: var(--black); }
+.lang-opt.active { color: var(--gold); font-weight: 500; }
+
 /* ─── HERO ───────────────────────────────────────────────────────── */
 .hero { position: relative; height: 100vh; min-height: 680px; overflow: hidden; }
 .hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 45%; }
@@ -247,6 +261,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   nav { padding: 1.25rem 1.5rem; }
   nav.scrolled { padding: 0.9rem 1.5rem; }
   .nav-links { display: none; }
+  .nav-cta { font-size: 0.68rem; padding: 0.5rem 1.1rem; white-space: nowrap; }
   .hero-content { padding: 0 1.5rem 4rem; grid-template-columns: 1fr; }
   .hero-right { display: none; }
   section, .pillars, .features, .pricing, .manifesto { padding: 5rem 1.5rem; }
@@ -257,10 +272,18 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   .features-intro, .pricing-header, .manifesto { grid-template-columns: 1fr; gap: 2rem; }
   .manifesto-label { display: none; }
   .stats { grid-template-columns: 1fr 1fr; }
+  .stat-val { font-size: 2.5rem; white-space: nowrap; }
   .intro-band { flex-direction: column; gap: 1rem; }
+  .final-content .btn-white, .final-content .hero-cta { white-space: nowrap; }
   footer { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+  .footer-links { flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
   .footer-copy { text-align: center; }
   .form-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 400px) {
+  .nav-cta { font-size: 0.62rem; padding: 0.45rem 0.9rem; }
+  .stat-val { font-size: 2rem; }
+  .stat { padding: 2.5rem 1.5rem; }
 }
 
 </style>
@@ -272,11 +295,19 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   <a href="#hero" class="nav-logo">Heritage Motor</a>
   <div class="nav-right">
     <ul class="nav-links">
-      <li><a href="#platform">Platform</a></li>
-      <li><a href="#timeline">Timeline</a></li>
-      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#platform" data-i18n="nav.platform">Platform</a></li>
+      <li><a href="#timeline" data-i18n="nav.timeline">Timeline</a></li>
+      <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
     </ul>
-    <a href="/contact" class="nav-cta">Request a Demo</a>
+    <a href="/contact" class="nav-cta" data-i18n="nav.cta">Request a Demo</a>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn" aria-label="Change language"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lang-drop">
+        <button class="lang-opt active" data-lang="en">English</button>
+        <button class="lang-opt" data-lang="fr">Français</button>
+        <button class="lang-opt" data-lang="de">Deutsch</button>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -291,11 +322,11 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     <div class="hero-left">
       <div class="hero-tag">
         <div class="hero-tag-line"></div>
-        <span class="hero-tag-text">Vehicle Chain of Custody</span>
+        <span class="hero-tag-text" data-i18n="hero.tag">Vehicle Chain of Custody</span>
       </div>
-      <h1>The operating<br> system for<br> <em>premium storage.</em></h1>
+      <h1 data-i18n="hero.title">The operating<br> system for<br> <em>premium storage.</em></h1>
       <a href="/contact" class="hero-cta">
-        Request a Demo
+        <span data-i18n="hero.cta">Request a Demo</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
@@ -322,9 +353,9 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 
 <!-- INTRO BAND -->
 <div class="intro-band">
-  <p class="intro-band-text">Heritage Motor replaces Excel, WhatsApp and paper — with a single, immutable record of everything that happens to every vehicle in your care.</p>
+  <p class="intro-band-text" data-i18n="intro.text">Heritage Motor replaces Excel, WhatsApp and paper — with a single, immutable record of everything that happens to every vehicle in your care.</p>
   <a href="#platform" class="intro-band-link">
-    Explore the platform
+    <span data-i18n="intro.link">Explore the platform</span>
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </a>
 </div>
@@ -332,27 +363,27 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 <!-- PILLARS -->
 <section class="pillars" id="platform" aria-label="Why Heritage Motor">
   <div class="pillars-header reveal">
-    <div class="section-tag">Why Heritage Motor</div>
-    <h2>Protection.<br> Transparency.<br> <em>Excellence.</em></h2>
+    <div class="section-tag" data-i18n="pillars.tag">Why Heritage Motor</div>
+    <h2 data-i18n="pillars.title">Protection.<br> Transparency.<br> <em>Excellence.</em></h2>
   </div>
   <div class="pillars-grid">
     <div class="pillar reveal">
       <img class="pillar-photo" loading="lazy" src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80&auto=format&fit=crop&crop=center" alt="Vehicle documentation">
       <div class="pillar-num">01</div>
-      <h3>Chain of Custody</h3>
-      <p>From intake to exit, every movement, task and event is timestamped, attributed and permanent. When an owner disputes a scratch, you have proof — down to the minute and the person.</p>
+      <h3 data-i18n="pillar1.title">Chain of Custody</h3>
+      <p data-i18n="pillar1.text">From intake to exit, every movement, task and event is timestamped, attributed and permanent. When an owner disputes a scratch, you have proof — down to the minute and the person.</p>
     </div>
     <div class="pillar reveal reveal-d1">
       <img class="pillar-photo" loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop&crop=center" alt="Operational excellence">
       <div class="pillar-num">02</div>
-      <h3>Operational Control</h3>
-      <p>Battery starts, tyre pressure, storage checks — assigned, reminded, completed and logged. Bay management in three taps. Nothing slips through, nothing is forgotten.</p>
+      <h3 data-i18n="pillar2.title">Operational Control</h3>
+      <p data-i18n="pillar2.text">Battery starts, tyre pressure, storage checks — assigned, reminded, completed and logged. Bay management in three taps. Nothing slips through, nothing is forgotten.</p>
     </div>
     <div class="pillar reveal reveal-d2">
       <img class="pillar-photo" loading="lazy" src="https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=800&q=80&auto=format&fit=crop&crop=top" alt="Owner transparency">
       <div class="pillar-num">03</div>
-      <h3>Owner Confidence</h3>
-      <p>The Vehicle History Export becomes a provenance document — useful at auction, at insurer, at sale. Your service adds demonstrable value to the asset itself.</p>
+      <h3 data-i18n="pillar3.title">Owner Confidence</h3>
+      <p data-i18n="pillar3.text">The Vehicle History Export becomes a provenance document — useful at auction, at insurer, at sale. Your service adds demonstrable value to the asset itself.</p>
     </div>
   </div>
 </section>
@@ -363,11 +394,11 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     <img loading="lazy" src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1000&q=85&auto=format&fit=crop&crop=center" alt="Ferrari in premium storage">
   </div>
   <div class="split-content reveal reveal-d1">
-    <div class="section-tag">Vehicle Timeline</div>
-    <h2>The complete<br> story of every<br> <em>vehicle you touch.</em></h2>
-    <p>A chronological, immutable log of every intake photo, every bay move, every maintenance task, every incident — with timestamp and operator identity. The chain of custody, made visual and exportable.</p>
-    <p>At exit, one click generates the full Vehicle History Export: intake photos, exit photos, all events, all tasks completed. Your legal protection — and your client's provenance document.</p>
-    <a href="#contact" class="split-link">Request a demo →</a>
+    <div class="section-tag" data-i18n="split1.tag">Vehicle Timeline</div>
+    <h2 data-i18n="split1.title">The complete<br> story of every<br> <em>vehicle you touch.</em></h2>
+    <p data-i18n="split1.text1">A chronological, immutable log of every intake photo, every bay move, every maintenance task, every incident — with timestamp and operator identity. The chain of custody, made visual and exportable.</p>
+    <p data-i18n="split1.text2">At exit, one click generates the full Vehicle History Export: intake photos, exit photos, all events, all tasks completed. Your legal protection — and your client's provenance document.</p>
+    <a href="#contact" class="split-link" data-i18n="cta.demo">Request a demo →</a>
   </div>
 </section>
 
@@ -377,11 +408,11 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     <img loading="lazy" src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=1000&q=85&auto=format&fit=crop&crop=right" alt="Premium garage interior">
   </div>
   <div class="split-content dark reveal reveal-d1">
-    <div class="section-tag">The Problem</div>
-    <h2>You manage<br> <em>million-euro</em><br> assets with Excel.</h2>
-    <p>When an owner disputes the condition of their Porsche at exit, you have no timestamped photos, no movement history, no proof. A single incident can cost more than a year of software fees.</p>
-    <p>Heritage Motor exists to make that scenario impossible — permanently.</p>
-    <a href="#contact" class="split-link">Request a demo →</a>
+    <div class="section-tag" data-i18n="split2.tag">The Problem</div>
+    <h2 data-i18n="split2.title">You manage<br> <em>million-euro</em><br> assets with Excel.</h2>
+    <p data-i18n="split2.text1">When an owner disputes the condition of their Porsche at exit, you have no timestamped photos, no movement history, no proof. A single incident can cost more than a year of software fees.</p>
+    <p data-i18n="split2.text2">Heritage Motor exists to make that scenario impossible — permanently.</p>
+    <a href="#contact" class="split-link" data-i18n="cta.demo">Request a demo →</a>
   </div>
 </section>
 
@@ -389,21 +420,21 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 <section class="features" aria-label="Platform Features">
   <div class="features-intro">
     <div class="reveal">
-      <div class="section-tag" style="justify-content:flex-start;"><span>Platform Features</span></div>
-      <h2>Everything<br> your facility<br> <em>needs.</em></h2>
+      <div class="section-tag" style="justify-content:flex-start;"><span data-i18n="features.tag">Platform Features</span></div>
+      <h2 data-i18n="features.title">Everything<br> your facility<br> <em>needs.</em></h2>
     </div>
     <div class="reveal reveal-d1">
-      <p>Built specifically for premium collection vehicle storage — not adapted from generic self-storage software. Every feature was designed around real operational workflows.</p>
-      <a href="#contact" class="split-link">Request a demo →</a>
+      <p data-i18n="features.text">Built specifically for premium collection vehicle storage — not adapted from generic self-storage software. Every feature was designed around real operational workflows.</p>
+      <a href="#contact" class="split-link" data-i18n="cta.demo">Request a demo →</a>
     </div>
   </div>
   <div class="features-grid reveal">
-    <div class="feat"><span class="feat-tag">Registry</span><span class="feat-icon">🚗</span><h3>Vehicle Registry</h3><p>Structured records with intake photos, VIN, owner details, documents and current status — all in one place, always current.</p></div>
-    <div class="feat"><span class="feat-tag">Logistics</span><span class="feat-icon">📍</span><h3>Bay Management</h3><p>Real-time map showing which car is where. Move a vehicle in 3 taps — log and photo created automatically.</p></div>
-    <div class="feat"><span class="feat-tag">History</span><span class="feat-icon">⚡</span><h3>Vehicle Timeline</h3><p>Complete chronological history of every event with photos and operator identity. The chain of custody, made visual.</p></div>
-    <div class="feat"><span class="feat-tag">Operations</span><span class="feat-icon">✅</span><h3>Recurring Tasks</h3><p>Battery starts, tyre pressure, washes — assigned, reminded, completed and logged. Nothing slips through.</p></div>
-    <div class="feat"><span class="feat-tag">Protection</span><span class="feat-icon">📄</span><h3>Exit Report PDF</h3><p>One-click PDF with intake photos, exit photos, full timeline and completed tasks. Generated in seconds.</p></div>
-    <div class="feat"><span class="feat-tag">Compliance</span><span class="feat-icon">🔐</span><h3>Immutable Audit Log</h3><p>Append-only record of every action by every operator. Nobody can alter history — and that's the point.</p></div>
+    <div class="feat"><span class="feat-tag" data-i18n="feat1.tag">Registry</span><span class="feat-icon">🚗</span><h3 data-i18n="feat1.title">Vehicle Registry</h3><p data-i18n="feat1.text">Structured records with intake photos, VIN, owner details, documents and current status — all in one place, always current.</p></div>
+    <div class="feat"><span class="feat-tag" data-i18n="feat2.tag">Logistics</span><span class="feat-icon">📍</span><h3 data-i18n="feat2.title">Bay Management</h3><p data-i18n="feat2.text">Real-time map showing which car is where. Move a vehicle in 3 taps — log and photo created automatically.</p></div>
+    <div class="feat"><span class="feat-tag" data-i18n="feat3.tag">History</span><span class="feat-icon">⚡</span><h3 data-i18n="feat3.title">Vehicle Timeline</h3><p data-i18n="feat3.text">Complete chronological history of every event with photos and operator identity. The chain of custody, made visual.</p></div>
+    <div class="feat"><span class="feat-tag" data-i18n="feat4.tag">Operations</span><span class="feat-icon">✅</span><h3 data-i18n="feat4.title">Recurring Tasks</h3><p data-i18n="feat4.text">Battery starts, tyre pressure, washes — assigned, reminded, completed and logged. Nothing slips through.</p></div>
+    <div class="feat"><span class="feat-tag" data-i18n="feat5.tag">Protection</span><span class="feat-icon">📄</span><h3 data-i18n="feat5.title">Exit Report PDF</h3><p data-i18n="feat5.text">One-click PDF with intake photos, exit photos, full timeline and completed tasks. Generated in seconds.</p></div>
+    <div class="feat"><span class="feat-tag" data-i18n="feat6.tag">Compliance</span><span class="feat-icon">🔐</span><h3 data-i18n="feat6.title">Immutable Audit Log</h3><p data-i18n="feat6.text">Append-only record of every action by every operator. Nobody can alter history — and that's the point.</p></div>
   </div>
 </section>
 
@@ -412,9 +443,9 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   <div class="manifesto-label">Manifesto</div>
   <div>
     <p class="manifesto-quote">
-      The facilities that survive the next decade will be the ones that can prove — on paper, to any owner, at any moment — <em>exactly what happened to their car.</em>
+      <span data-i18n="manifesto.quote">The facilities that survive the next decade will be the ones that can prove — on paper, to any owner, at any moment — <em>exactly what happened to their car.</em></span>
     </p>
-    <div class="manifesto-attr">The Heritage Motor Manifesto</div>
+    <div class="manifesto-attr" data-i18n="manifesto.attr">The Heritage Motor Manifesto</div>
   </div>
 </div>
 
@@ -422,19 +453,19 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 <div class="stats" role="region" aria-label="Key metrics">
   <div class="stat reveal">
     <div class="stat-val">€<span>2M</span>+</div>
-    <div class="stat-label">Average assets under management per facility</div>
+    <div class="stat-label" data-i18n="stat1.label">Average assets under management per facility</div>
   </div>
   <div class="stat reveal reveal-d1">
     <div class="stat-val">&lt;<span>30</span>s</div>
-    <div class="stat-label">To log any vehicle movement or event</div>
+    <div class="stat-label" data-i18n="stat2.label">To log any vehicle movement or event</div>
   </div>
   <div class="stat reveal reveal-d2">
     <div class="stat-val"><span>1</span>-click</div>
-    <div class="stat-label">Full Chain of Custody PDF at exit</div>
+    <div class="stat-label" data-i18n="stat3.label">Full Chain of Custody PDF at exit</div>
   </div>
   <div class="stat reveal reveal-d3">
     <div class="stat-val"><span>0</span></div>
-    <div class="stat-label">External auth dependencies — your data stays yours</div>
+    <div class="stat-label" data-i18n="stat4.label">External auth dependencies — your data stays yours</div>
   </div>
 </div>
 
@@ -442,18 +473,18 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 <section class="pricing" id="pricing" aria-label="Pricing">
   <div class="pricing-header">
     <div class="reveal">
-      <div class="section-tag" style="justify-content:flex-start;"><span>Pricing</span></div>
-      <h2>Priced for<br> the value<br> <em>you protect.</em></h2>
+      <div class="section-tag" style="justify-content:flex-start;"><span data-i18n="pricing.tag">Pricing</span></div>
+      <h2 data-i18n="pricing.title">Priced for<br> the value<br> <em>you protect.</em></h2>
     </div>
     <div class="reveal reveal-d1">
-      <p>A flat monthly rate per site — no per-vehicle fees, no surprises. Setup and onboarding included for the first three months.</p>
+      <p data-i18n="pricing.text">A flat monthly rate per site — no per-vehicle fees, no surprises. Setup and onboarding included for the first three months.</p>
     </div>
   </div>
   <div class="pricing-grid reveal">
     <div class="price-card">
       <div class="price-tier">Starter</div>
       <div class="price-amount">€800</div>
-      <div class="price-period">per site / month · up to 50 vehicles</div>
+      <div class="price-period" data-i18n="price1.period">per site / month · up to 50 vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
         <li>Vehicle registry & bay management</li>
@@ -471,7 +502,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       <div class="price-badge">Most popular</div>
       <div class="price-tier">Pro</div>
       <div class="price-amount">€1,400</div>
-      <div class="price-period">per site / month · up to 200 vehicles</div>
+      <div class="price-period" data-i18n="price2.period">per site / month · up to 200 vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
         <li>Everything in Starter</li>
@@ -490,7 +521,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
     <div class="price-card">
       <div class="price-tier">Enterprise</div>
       <div class="price-amount">Custom</div>
-      <div class="price-period">multi-site · unlimited vehicles</div>
+      <div class="price-period" data-i18n="price3.period">multi-site · unlimited vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
         <li>Everything in Pro</li>
@@ -510,9 +541,9 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
   <img class="final-photo" loading="lazy" src="https://images.unsplash.com/photo-1504215680853-026ed2a45def?w=1920&q=80&auto=format&fit=crop&crop=center" alt="Premium collection storage">
   <div class="final-overlay"></div>
   <div class="final-content reveal">
-    <div class="section-tag">Get Started</div>
-    <h2>Your facility deserves<br> an <em>operating system.</em></h2>
-    <p>20-minute demo, no commitment. Just a conversation about how your facility operates — and whether Heritage Motor is the right fit.</p>
+    <div class="section-tag" data-i18n="cta.tag">Get Started</div>
+    <h2 data-i18n="cta.title">Your facility deserves<br> an <em>operating system.</em></h2>
+    <p data-i18n="cta.text">20-minute demo, no commitment. Just a conversation about how your facility operates — and whether Heritage Motor is the right fit.</p>
     <a href="/contact" class="btn-white">
       Request a Demo
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -524,10 +555,10 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 <footer role="contentinfo">
   <a href="#hero" class="footer-logo">Heritage Motor</a>
   <ul class="footer-links">
-    <li><a href="#platform">Platform</a></li>
-    <li><a href="#timeline">Timeline</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="/contact">Contact</a></li>
+    <li><a href="#platform" data-i18n="nav.platform">Platform</a></li>
+    <li><a href="#timeline" data-i18n="nav.timeline">Timeline</a></li>
+    <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
+    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
   </ul>
   <div class="footer-copy">© 2026 heritagemotor.app</div>
 </footer>
@@ -545,6 +576,150 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       nav.classList.remove('scrolled');
     }
   }, { passive: true });
+
+  /* ─── i18n ─────────────────────────────────────────────────────── */
+  var i18n = {
+    en: {},
+    fr: {
+      'nav.platform': 'Plateforme', 'nav.timeline': 'Chronologie', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
+      'nav.cta': 'Demander une Démo',
+      'hero.tag': 'Chaîne de Traçabilité Véhicule',
+      'hero.title': 'Le système<br> d\'exploitation du<br> <em>stockage premium.</em>',
+      'hero.cta': 'Demander une Démo',
+      'intro.text': 'Heritage Motor remplace Excel, WhatsApp et le papier — par un registre unique et immuable de tout ce qui arrive à chaque véhicule confié à vos soins.',
+      'intro.link': 'Explorer la plateforme',
+      'pillars.tag': 'Pourquoi Heritage Motor',
+      'pillars.title': 'Protection.<br> Transparence.<br> <em>Excellence.</em>',
+      'pillar1.title': 'Chaîne de Traçabilité',
+      'pillar1.text': 'De l\'entrée à la sortie, chaque mouvement, tâche et événement est horodaté, attribué et permanent. Quand un propriétaire conteste une rayure, vous avez la preuve — à la minute et à la personne près.',
+      'pillar2.title': 'Contrôle Opérationnel',
+      'pillar2.text': 'Démarrages batterie, pression pneus, contrôles de stockage — assignés, rappelés, complétés et enregistrés. Gestion des emplacements en trois clics. Rien ne passe à travers les mailles du filet.',
+      'pillar3.title': 'Confiance Propriétaire',
+      'pillar3.text': 'L\'Export Historique Véhicule devient un document de provenance — utile en salle des ventes, chez l\'assureur, à la revente. Votre service ajoute une valeur démontrable à l\'actif lui-même.',
+      'split1.tag': 'Chronologie Véhicule',
+      'split1.title': 'L\'histoire<br> complète de chaque<br> <em>véhicule que vous touchez.</em>',
+      'split1.text1': 'Un journal chronologique et immuable de chaque photo d\'entrée, chaque déplacement, chaque tâche de maintenance, chaque incident — avec horodatage et identité de l\'opérateur. La chaîne de traçabilité, visuelle et exportable.',
+      'split1.text2': 'À la sortie, un clic génère l\'Export Historique complet : photos d\'entrée, photos de sortie, tous les événements, toutes les tâches complétées. Votre protection juridique — et le document de provenance de votre client.',
+      'cta.demo': 'Demander une démo →',
+      'split2.tag': 'Le Problème',
+      'split2.title': 'Vous gérez des<br> actifs à <em>un million</em><br> d\'euros avec Excel.',
+      'split2.text1': 'Quand un propriétaire conteste l\'état de sa Porsche à la sortie, vous n\'avez pas de photos horodatées, pas d\'historique de mouvements, pas de preuve. Un seul incident peut coûter plus qu\'un an de licence logicielle.',
+      'split2.text2': 'Heritage Motor existe pour rendre ce scénario impossible — définitivement.',
+      'features.tag': 'Fonctionnalités',
+      'features.title': 'Tout ce dont<br> votre site<br> <em>a besoin.</em>',
+      'features.text': 'Conçu spécifiquement pour le stockage de véhicules de collection premium — pas adapté d\'un logiciel de self-storage générique. Chaque fonctionnalité a été pensée autour de workflows opérationnels réels.',
+      'feat1.tag': 'Registre', 'feat1.title': 'Registre Véhicules', 'feat1.text': 'Fiches structurées avec photos d\'entrée, VIN, coordonnées propriétaire, documents et statut actuel — tout au même endroit, toujours à jour.',
+      'feat2.tag': 'Logistique', 'feat2.title': 'Gestion des Emplacements', 'feat2.text': 'Carte temps réel de l\'emplacement de chaque véhicule. Déplacez en 3 clics — journal et photo créés automatiquement.',
+      'feat3.tag': 'Historique', 'feat3.title': 'Chronologie Véhicule', 'feat3.text': 'Historique chronologique complet de chaque événement avec photos et identité de l\'opérateur. La chaîne de traçabilité, visuelle.',
+      'feat4.tag': 'Opérations', 'feat4.title': 'Tâches Récurrentes', 'feat4.text': 'Démarrages batterie, pression pneus, lavages — assignés, rappelés, complétés et enregistrés. Rien ne passe entre les mailles.',
+      'feat5.tag': 'Protection', 'feat5.title': 'Rapport de Sortie PDF', 'feat5.text': 'PDF en un clic avec photos d\'entrée, photos de sortie, chronologie complète et tâches réalisées. Généré en secondes.',
+      'feat6.tag': 'Conformité', 'feat6.title': 'Journal d\'Audit Immuable', 'feat6.text': 'Registre en ajout seul de chaque action de chaque opérateur. Personne ne peut altérer l\'historique — c\'est tout l\'intérêt.',
+      'manifesto.quote': 'Les sites qui survivront à la prochaine décennie seront ceux capables de prouver — noir sur blanc, à n\'importe quel propriétaire, à n\'importe quel moment — <em>exactement ce qui est arrivé à leur voiture.</em>',
+      'manifesto.attr': 'Le Manifeste Heritage Motor',
+      'stat1.label': 'Actifs moyens sous gestion par site',
+      'stat2.label': 'Pour enregistrer tout mouvement ou événement',
+      'stat3.label': 'Rapport de traçabilité PDF complet à la sortie',
+      'stat4.label': 'Dépendances d\'authentification externes — vos données restent les vôtres',
+      'pricing.tag': 'Tarifs', 'pricing.title': 'Tarifé à la hauteur<br> de la valeur<br> <em>que vous protégez.</em>',
+      'pricing.text': 'Un tarif mensuel fixe par site — pas de frais par véhicule, pas de surprises. Installation et accompagnement inclus les trois premiers mois.',
+      'price1.period': 'par site / mois · jusqu\'à 50 véhicules',
+      'price2.period': 'par site / mois · jusqu\'à 200 véhicules',
+      'price3.period': 'multi-site · véhicules illimités',
+      'cta.tag': 'Commencer',
+      'cta.title': 'Votre site mérite<br> un <em>système d\'exploitation.</em>',
+      'cta.text': '20 minutes de démo, sans engagement. Juste une conversation sur le fonctionnement de votre site — et si Heritage Motor est le bon choix.'
+    },
+    de: {
+      'nav.platform': 'Plattform', 'nav.timeline': 'Zeitleiste', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
+      'nav.cta': 'Demo Anfragen',
+      'hero.tag': 'Fahrzeug-Dokumentationskette',
+      'hero.title': 'Das Betriebs-<br>system für<br> <em>Premium-Einlagerung.</em>',
+      'hero.cta': 'Demo Anfragen',
+      'intro.text': 'Heritage Motor ersetzt Excel, WhatsApp und Papier — durch ein einziges, unveränderliches Protokoll über alles, was mit jedem Fahrzeug in Ihrer Obhut geschieht.',
+      'intro.link': 'Plattform entdecken',
+      'pillars.tag': 'Warum Heritage Motor',
+      'pillars.title': 'Schutz.<br> Transparenz.<br> <em>Exzellenz.</em>',
+      'pillar1.title': 'Dokumentationskette',
+      'pillar1.text': 'Von der Einlagerung bis zur Auslieferung wird jede Bewegung, Aufgabe und jedes Ereignis mit Zeitstempel, Zuordnung und Unveränderlichkeit erfasst. Bei einem Kratzer-Streit haben Sie den Beweis — auf die Minute und Person genau.',
+      'pillar2.title': 'Operative Kontrolle',
+      'pillar2.text': 'Batterie-Starts, Reifendruck, Lagerkontrollen — zugewiesen, erinnert, erledigt und protokolliert. Stellplatzverwaltung in drei Klicks. Nichts geht verloren.',
+      'pillar3.title': 'Vertrauen der Eigentümer',
+      'pillar3.text': 'Der Fahrzeughistorie-Export wird zum Herkunftsnachweis — nützlich bei Auktionen, beim Versicherer, beim Verkauf. Ihr Service steigert den nachweisbaren Wert des Fahrzeugs.',
+      'split1.tag': 'Fahrzeug-Zeitleiste',
+      'split1.title': 'Die vollständige<br> Geschichte jedes<br> <em>Fahrzeugs in Ihrer Obhut.</em>',
+      'split1.text1': 'Ein chronologisches, unveränderliches Protokoll jedes Einlagerungsfotos, jeder Stellplatzänderung, jeder Wartungsaufgabe, jedes Vorfalls — mit Zeitstempel und Identität des Bedieners. Die Dokumentationskette, visuell und exportierbar.',
+      'split1.text2': 'Bei der Auslieferung generiert ein Klick den vollständigen Fahrzeughistorie-Export: Einlagerungsfotos, Auslieferungsfotos, alle Ereignisse, alle erledigten Aufgaben. Ihr Rechtsschutz — und das Herkunftsdokument Ihres Kunden.',
+      'cta.demo': 'Demo anfragen →',
+      'split2.tag': 'Das Problem',
+      'split2.title': 'Sie verwalten<br> <em>Millionen-Euro</em>-Werte<br> mit Excel.',
+      'split2.text1': 'Wenn ein Eigentümer den Zustand seines Porsche bei der Auslieferung beanstandet, haben Sie keine zeitgestempelten Fotos, keine Bewegungshistorie, keinen Beweis. Ein einziger Vorfall kann mehr kosten als ein Jahr Softwarelizenz.',
+      'split2.text2': 'Heritage Motor existiert, um dieses Szenario unmöglich zu machen — dauerhaft.',
+      'features.tag': 'Funktionen',
+      'features.title': 'Alles, was<br> Ihr Standort<br> <em>braucht.</em>',
+      'features.text': 'Speziell für die Einlagerung von Premium-Sammlungsfahrzeugen entwickelt — nicht aus generischer Self-Storage-Software adaptiert. Jede Funktion wurde um reale operative Arbeitsabläufe herum konzipiert.',
+      'feat1.tag': 'Register', 'feat1.title': 'Fahrzeugregister', 'feat1.text': 'Strukturierte Datensätze mit Einlagerungsfotos, FIN, Eigentümerangaben, Dokumenten und aktuellem Status — alles an einem Ort, immer aktuell.',
+      'feat2.tag': 'Logistik', 'feat2.title': 'Stellplatzverwaltung', 'feat2.text': 'Echtzeit-Karte, die zeigt, welches Fahrzeug wo steht. Fahrzeug in 3 Klicks umstellen — Protokoll und Foto werden automatisch erstellt.',
+      'feat3.tag': 'Historie', 'feat3.title': 'Fahrzeug-Zeitleiste', 'feat3.text': 'Vollständige chronologische Historie jedes Ereignisses mit Fotos und Bediener-Identität. Die Dokumentationskette, visuell dargestellt.',
+      'feat4.tag': 'Betrieb', 'feat4.title': 'Wiederkehrende Aufgaben', 'feat4.text': 'Batterie-Starts, Reifendruck, Wäschen — zugewiesen, erinnert, erledigt und protokolliert. Nichts wird übersehen.',
+      'feat5.tag': 'Schutz', 'feat5.title': 'Auslieferungsbericht PDF', 'feat5.text': 'Ein-Klick-PDF mit Einlagerungsfotos, Auslieferungsfotos, vollständiger Zeitleiste und erledigten Aufgaben. In Sekunden generiert.',
+      'feat6.tag': 'Compliance', 'feat6.title': 'Unveränderliches Audit-Log', 'feat6.text': 'Nur-Anhängen-Protokoll jeder Aktion jedes Bedieners. Niemand kann die Historie ändern — und genau das ist der Punkt.',
+      'manifesto.quote': 'Die Standorte, die das nächste Jahrzehnt überleben, werden diejenigen sein, die beweisen können — schwarz auf weiß, jedem Eigentümer, jederzeit — <em>was genau mit seinem Fahrzeug passiert ist.</em>',
+      'manifesto.attr': 'Das Heritage Motor Manifest',
+      'stat1.label': 'Durchschnittliche verwaltete Vermögenswerte pro Standort',
+      'stat2.label': 'Um jede Fahrzeugbewegung oder jedes Ereignis zu erfassen',
+      'stat3.label': 'Vollständiger Dokumentationsketten-PDF bei Auslieferung',
+      'stat4.label': 'Externe Auth-Abhängigkeiten — Ihre Daten bleiben Ihre',
+      'pricing.tag': 'Preise', 'pricing.title': 'Bepreist nach<br> dem Wert, den<br> <em>Sie schützen.</em>',
+      'pricing.text': 'Ein fester Monatstarif pro Standort — keine Gebühren pro Fahrzeug, keine Überraschungen. Einrichtung und Onboarding in den ersten drei Monaten inklusive.',
+      'price1.period': 'pro Standort / Monat · bis zu 50 Fahrzeuge',
+      'price2.period': 'pro Standort / Monat · bis zu 200 Fahrzeuge',
+      'price3.period': 'Multi-Standort · unbegrenzte Fahrzeuge',
+      'cta.tag': 'Loslegen',
+      'cta.title': 'Ihr Standort verdient<br> ein <em>Betriebssystem.</em>',
+      'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespräch darüber, wie Ihr Standort arbeitet — und ob Heritage Motor die richtige Lösung ist.'
+    }
+  };
+
+  // Store original EN content from the DOM (safe: all values are hardcoded in the i18n dict above)
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.setAttribute('data-i18n-en', el.textContent);
+    el._origHTML = el.cloneNode(true);
+  });
+
+  function setLang(lang) {
+    document.documentElement.lang = lang;
+    var dict = i18n[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        // Safe: values come from hardcoded i18n dict, not user input
+        var temp = document.createElement('template');
+        temp.innerHTML = dict[key];
+        el.replaceChildren(temp.content);
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    document.getElementById('langCurrent').textContent = lang.toUpperCase();
+    document.querySelectorAll('.lang-opt').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+    document.getElementById('langSwitch').classList.remove('open');
+    try { localStorage.setItem('hm-lang', lang); } catch(e) {}
+  }
+
+  // Lang switcher toggle
+  document.getElementById('langSwitch').querySelector('.lang-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('langSwitch').classList.toggle('open');
+  });
+  document.querySelectorAll('.lang-opt').forEach(function(btn) {
+    btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
+  });
+  document.addEventListener('click', function() { document.getElementById('langSwitch').classList.remove('open'); });
+
+  // Restore saved language
+  try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
 
   var io = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
