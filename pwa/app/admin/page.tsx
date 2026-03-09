@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { api, ApiError } from "@/lib/api";
@@ -299,19 +299,19 @@ function TenantRow({
             </div>
             <div>
               <label className={labelClass}>Plan</label>
-              <select value={plan} onChange={(e) => setPlan(e.target.value)} className={inputClass}>
-                <option value="starter">Starter</option>
-                <option value="pro">Pro</option>
-                <option value="enterprise">Enterprise</option>
-              </select>
+              <Select value={plan} onChange={setPlan} options={[
+                { value: "starter", label: "Starter" },
+                { value: "pro", label: "Pro" },
+                { value: "enterprise", label: "Enterprise" },
+              ]} />
             </div>
             <div>
               <label className={labelClass}>Status</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value)} className={inputClass}>
-                <option value="active">Active</option>
-                <option value="trial">Trial</option>
-                <option value="suspended">Suspended</option>
-              </select>
+              <Select value={status} onChange={setStatus} options={[
+                { value: "active", label: "Active" },
+                { value: "trial", label: "Trial" },
+                { value: "suspended", label: "Suspended" },
+              ]} />
             </div>
           </div>
 
@@ -380,6 +380,72 @@ const inputClass =
 
 const labelClass = "block text-[10px] tracking-[0.15em] uppercase text-white/30 mb-1.5";
 
+type SelectOption = { value: string; label: string };
+
+function Select({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: SelectOption[];
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const selected = options.find((o) => o.value === value);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`${inputClass} text-left flex items-center justify-between`}
+      >
+        <span className={selected ? "text-white/90" : "text-white/20"}>
+          {selected?.label ?? placeholder ?? "Select..."}
+        </span>
+        <svg
+          className={`w-4 h-4 text-white/20 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-white/[0.08] bg-[#0e0d0a] shadow-xl shadow-black/40 overflow-hidden">
+          {options.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => { onChange(o.value); setOpen(false); }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-150 ${
+                o.value === value
+                  ? "bg-gold/[0.1] text-gold"
+                  : "text-white/70 hover:bg-white/[0.04] hover:text-white/90"
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CreateTenantForm({ onDone }: { onDone: () => void }) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -445,11 +511,11 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
         </div>
         <div>
           <label className={labelClass}>Plan</label>
-          <select value={plan} onChange={(e) => setPlan(e.target.value)} className={inputClass}>
-            <option value="starter">Starter — 25 vehicles, 5 users, 20 bays</option>
-            <option value="pro">Pro — 100 vehicles, 20 users, 100 bays</option>
-            <option value="enterprise">Enterprise — unlimited</option>
-          </select>
+          <Select value={plan} onChange={setPlan} options={[
+            { value: "starter", label: "Starter — 25 vehicles, 5 users, 20 bays" },
+            { value: "pro", label: "Pro — 100 vehicles, 20 users, 100 bays" },
+            { value: "enterprise", label: "Enterprise — unlimited" },
+          ]} />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -467,16 +533,16 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
         </div>
         <div>
           <label className={labelClass}>Timezone</label>
-          <select value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass}>
-            <option value="Europe/Paris">Europe / Paris</option>
-            <option value="Europe/London">Europe / London</option>
-            <option value="Europe/Berlin">Europe / Berlin</option>
-            <option value="Europe/Zurich">Europe / Zurich</option>
-            <option value="Europe/Brussels">Europe / Brussels</option>
-            <option value="America/New_York">America / New York</option>
-            <option value="America/Los_Angeles">America / Los Angeles</option>
-            <option value="Asia/Dubai">Asia / Dubai</option>
-          </select>
+          <Select value={timezone} onChange={setTimezone} options={[
+            { value: "Europe/Paris", label: "Europe / Paris" },
+            { value: "Europe/London", label: "Europe / London" },
+            { value: "Europe/Berlin", label: "Europe / Berlin" },
+            { value: "Europe/Zurich", label: "Europe / Zurich" },
+            { value: "Europe/Brussels", label: "Europe / Brussels" },
+            { value: "America/New_York", label: "America / New York" },
+            { value: "America/Los_Angeles", label: "America / Los Angeles" },
+            { value: "Asia/Dubai", label: "Asia / Dubai" },
+          ]} />
         </div>
       </div>
       {error && <p className="text-red-400/80 text-xs">{error}</p>}
@@ -518,14 +584,15 @@ function InviteSection() {
     setError(null);
     setResult(null);
     try {
+      const trimmedEmail = email.trim();
       await api.post("/admin/invitations", {
         tenant_id: tenantId,
-        email,
-        first_name: firstName,
-        last_name: lastName,
+        email: trimmedEmail,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
         role,
       });
-      setResult(`Invitation sent to ${email}`);
+      setResult(`Invitation sent to ${trimmedEmail}`);
       setEmail("");
       setFirstName("");
       setLastName("");
@@ -547,32 +614,21 @@ function InviteSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Tenant</label>
-            <select
+            <Select
               value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-              required
-              className={inputClass}
-            >
-              <option value="">Select tenant...</option>
-              {tenants?.data?.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+              onChange={setTenantId}
+              placeholder="Select tenant..."
+              options={tenants?.data?.map((t) => ({ value: t.id, label: t.name })) ?? []}
+            />
           </div>
           <div>
             <label className={labelClass}>Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className={inputClass}
-            >
-              <option value="admin">Admin</option>
-              <option value="operator">Operator</option>
-              <option value="technician">Technician</option>
-              <option value="viewer">Viewer</option>
-            </select>
+            <Select value={role} onChange={setRole} options={[
+              { value: "admin", label: "Admin" },
+              { value: "operator", label: "Operator" },
+              { value: "technician", label: "Technician" },
+              { value: "viewer", label: "Viewer" },
+            ]} />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

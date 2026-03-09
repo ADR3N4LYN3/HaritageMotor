@@ -68,7 +68,7 @@ web/static/
   logo.svg                       — Logo Heritage Motor
   logo-crest.svg                 — Shield crest logo (watermark vidéo + emails)
   logo-email.png / .svg          — Logo optimisé pour emails HTML
-video/                           — Projet Remotion 4 (génération hero-bg.mp4)
+video/                           — Projet Remotion 4 (génération hero-bg.mp4, v2/v3/v4)
 pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 ```
 
@@ -332,9 +332,10 @@ Le dossier `video/` contient un projet Remotion 4 qui génère la vidéo de fond
 video/
   src/
     index.ts           — registerRoot
-    Root.tsx            — Compositions v1 + v2 (1920×1080 30fps)
-    HeroVideo.tsx       — v1 : 6 scènes (19s, 570 frames)
-    HeroVideoV2.tsx     — v2 : 8 scènes dont 2 garage indoor (25s, 750 frames) ← ACTIF
+    Root.tsx            — Compositions v2 + v3 + v4 (1920×1080 30fps)
+    HeroVideoV2.tsx     — v2 : 8 scènes dont 2 garage indoor (25s, 750 frames)
+    HeroVideoV3.tsx     — v3 "Night & Mood" : 12 scènes, tonalité sombre (37s, 1110 frames)
+    HeroVideoV4.tsx     — v4 "Detail & Drive" : 12 scènes, alternance détail/conduite (37s, 1110 frames)
     CarScene.tsx        — Scène individuelle (Ken Burns + vignette)
     BrandWatermark.tsx  — Shield crest watermark semi-transparent (12% opacity)
   package.json          — dépendances Remotion
@@ -345,11 +346,13 @@ video/
 ```bash
 cd video
 npm install
-npm run dev              # Ouvre Remotion Studio (preview v1 + v2)
-npm run render           # Render v1 → ../web/static/hero-bg.mp4
-npm run render:v2        # Render v2 → ../web/static/hero-bg.mp4 (actuellement déployé)
-npm run render:preview   # Preview v1 → out/preview.mp4
+npm run dev              # Ouvre Remotion Studio (preview v2 + v3 + v4)
+npm run render:v2        # Render v2 → ../web/static/hero-bg.mp4
+npm run render:v3        # Render v3 → ../web/static/hero-bg.mp4
+npm run render:v4        # Render v4 → ../web/static/hero-bg.mp4
 npm run render:preview:v2 # Preview v2 → out/preview-v2.mp4
+npm run render:preview:v3 # Preview v3 → out/preview-v3.mp4
+npm run render:preview:v4 # Preview v4 → out/preview-v4.mp4
 ```
 
 **Clips** : tous issus de Pexels (licence commerciale gratuite, pas d'attribution requise).
@@ -375,10 +378,24 @@ Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVide
 - **Fix** : Variable d'env corrigée sur le VPS
 - **Règle** : `APP_BASE_URL` est utilisé **uniquement** par le mailer pour les liens email → toujours `app.heritagemotor.app`
 
+### Login : normaliser l'email (trim + lowercase)
+- **Symptôme** : Espace accidentel avant l'email → "unauthorized"
+- **Cause** : Le service Login ne normalisait pas l'email reçu
+- **Fix** : `strings.TrimSpace(strings.ToLower(email))` en début de Login(), + `email.trim()` côté frontend
+- **Fichiers** : `internal/service/auth/service.go` Login(), `pwa/app/login/page.tsx`, `pwa/app/admin/page.tsx`
+
+### Password hash : toujours utiliser bcrypt
+- **Symptôme** : "unauthorized" au login malgré password correct
+- **Cause** : Mot de passe mis à jour directement en SQL sans bcrypt (`UPDATE SET password_hash = 'plaintext'`)
+- **Fix** : Toujours hasher avec bcrypt cost 12. Le hash doit commencer par `$2a$12$` et faire 60 caractères
+- **Règle** : Ne JAMAIS modifier `password_hash` directement en SQL sans passer par `bcrypt.GenerateFromPassword()`
+
 ### Anti-patterns à éviter
 - **Email pas unique globalement** : email est unique par tenant (`UNIQUE(tenant_id, email)`), pas cross-tenant. Les queries par email doivent joindre le tenant.
 - **Toujours cascader les soft-deletes** : tenant → users, vehicle → events/tasks/documents
 - **Cookie `user_role` éphémère** : Le middleware Next.js vérifie le cookie `user_role` pour `/admin`. Ce cookie est posé au login uniquement — s'il expire, l'accès /admin est perdu jusqu'au re-login.
+- **Toujours normaliser les emails** : `TrimSpace + ToLower` côté backend ET `.trim()` côté frontend avant tout appel API
+- **Ne jamais écrire de password_hash en SQL brut** : utiliser exclusivement bcrypt cost 12 via le code Go
 
 ## Références détaillées
 

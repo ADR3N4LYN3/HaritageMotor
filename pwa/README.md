@@ -39,11 +39,11 @@ pwa/
     layout.tsx                    Root layout (fonts, providers, metadata)
     page.tsx                      Redirect -> /scan
     globals.css                   Animations, touch targets, safe areas
-    login/page.tsx                Login (email/password + MFA)
-    change-password/page.tsx      Changement de mot de passe (premier login)
+    login/page.tsx                Login (email/password + MFA, show/hide password)
+    change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
     dashboard/page.tsx            Liste vehicules (recherche, filtres)
     scan/page.tsx                 Scanner QR -> detail vehicule/bay
-    admin/page.tsx                Dashboard superadmin (tenants, invitations)
+    admin/page.tsx                Superadmin (tenants CRUD, invitations, custom Select)
     vehicle/[id]/
       page.tsx                    Detail vehicule + timeline
       move/page.tsx               Deplacement vers un bay
@@ -134,6 +134,15 @@ Les actions move/task/exit peuvent fonctionner hors ligne :
 | Font body | DM Sans (sans-serif) |
 
 Touch targets : min 44x44px. Safe areas iOS/Android gerees.
+
+### Composants inline notables
+
+| Composant | Fichier | Description |
+|---|---|---|
+| `PasswordInput` | `change-password/page.tsx` | Input mot de passe avec toggle show/hide (eye icon) |
+| `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
+| `Select` | `admin/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
+| `TenantRow` | `admin/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
 
 ## Docker
 

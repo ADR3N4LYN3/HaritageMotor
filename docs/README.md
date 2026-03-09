@@ -77,7 +77,7 @@ heritage-motor/
 │   └── testutil/                 # Integration test infrastructure (Setup, Env, helpers)
 ├── pwa/                          # Next.js PWA frontend
 ├── video/                        # Remotion 4 hero video generator
-│   └── src/                      #   HeroVideo (v1) + HeroVideoV2 (v2, active)
+│   └── src/                      #   HeroVideoV2/V3/V4 (v1 removed)
 ├── web/static/                   # Landing page, hero video, logo assets
 ├── docs/                         # Documentation (this folder)
 ├── Dockerfile                    # Go API Docker image
@@ -157,6 +157,7 @@ docker compose up -d --build
 - **Background goroutines**: Pre-capture Fiber ctx values, add recovery + timeout
 - **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
 - **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
+- **Email normalization**: TrimSpace + ToLower on both backend (Go) and frontend (TypeScript) before any auth/invite call
 
 ## Domains
 

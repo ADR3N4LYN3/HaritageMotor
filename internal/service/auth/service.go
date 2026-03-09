@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/chriis/heritage-motor/internal/auth"
@@ -75,6 +76,8 @@ func tenantIDOrNil(tid *uuid.UUID) uuid.UUID {
 
 // Login authenticates a user by email and password.
 func (s *Service) Login(ctx context.Context, email, password string) (*LoginResult, *MFAPendingResult, error) {
+	email = strings.TrimSpace(strings.ToLower(email))
+
 	user, err := scanUser(db.Conn(ctx, s.pool).QueryRow(ctx,
 		`SELECT `+userColumns+`
 		 FROM users u

@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "npx remotion studio src/index.ts",
-    "render": "npx remotion render src/index.ts HeroVideo ../web/static/hero-bg.mp4 --codec h264",
     "render:v2": "npx remotion render src/index.ts HeroVideoV2 ../web/static/hero-bg.mp4 --codec h264",
-    "render:preview": "npx remotion render src/index.ts HeroVideo out/preview.mp4 --codec h264",
-    "render:preview:v2": "npx remotion render src/index.ts HeroVideoV2 out/preview-v2.mp4 --codec h264"
+    "render:v3": "npx remotion render src/index.ts HeroVideoV3 ../web/static/hero-bg.mp4 --codec h264",
+    "render:v4": "npx remotion render src/index.ts HeroVideoV4 ../web/static/hero-bg.mp4 --codec h264",
+    "render:preview:v2": "npx remotion render src/index.ts HeroVideoV2 out/preview-v2.mp4 --codec h264",
+    "render:preview:v3": "npx remotion render src/index.ts HeroVideoV3 out/preview-v3.mp4 --codec h264",
+    "render:preview:v4": "npx remotion render src/index.ts HeroVideoV4 out/preview-v4.mp4 --codec h264"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",
