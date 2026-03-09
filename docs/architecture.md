@@ -12,7 +12,7 @@ Heritage Motor follows a layered architecture pattern with strict separation of 
 │  Handlers → parse request, validate, route  │
 ├─────────────────────────────────────────────┤
 │          Middleware Pipeline                 │
-│  Auth → Tenant RLS → Audit → RBAC          │
+│  Auth → Limiter → PwdCheck → Tenant → Audit│
 ├─────────────────────────────────────────────┤
 │          Service Layer                      │
 │  Business logic, transactions, validation   │
@@ -34,10 +34,14 @@ Located in `internal/handler/`. Each handler package:
 
 Every authenticated request passes through (in order):
 
-1. **AuthMiddleware** (`internal/middleware/auth.go`): Validates JWT Bearer token, extracts `user_id`, `tenant_id`, `role` into Fiber locals
-2. **TenantMiddleware** (`internal/middleware/tenant.go`): Verifies tenant is active (cached), acquires a DB connection, sets `SET LOCAL app.current_tenant_id` for RLS
-3. **AuditMiddleware** (`internal/middleware/audit.go`): Captures request metadata and logs to `audit_log` in a background goroutine
-4. **RBAC** (`internal/middleware/rbac.go`): Per-route role checks (`RequireAdmin`, `RequireOperatorOrAbove`, `RequireTechnicianOrAbove`)
+1. **AuthMiddleware** (`internal/middleware/auth.go`): Validates JWT Bearer token, checks token blacklist (cached 30s), extracts `user_id`, `tenant_id`, `role`, `jti`, `expires_at` into Fiber locals
+2. **Per-user rate limiter**: 100 req/min per user_id
+3. **RequirePasswordChanged**: Blocks all routes except `/auth/change-password` if `password_change_required=true`
+4. **TenantMiddleware** (`internal/middleware/tenant.go`): Verifies tenant is active (cached 5min), acquires a DB connection on appPool, sets `SET LOCAL app.current_tenant_id` for RLS
+5. **AuditMiddleware** (`internal/middleware/audit.go`): Captures request metadata and logs to `audit_log` in a background goroutine
+6. **RBAC** (`internal/middleware/rbac.go`): Per-route role checks (`RequireAdmin`, `RequireOperatorOrAbove`, `RequireTechnicianOrAbove`, `RequireSuperAdmin`)
+
+**Superadmin routes** follow a separate chain: Auth → RequireSuperAdmin (no TenantMiddleware, uses ownerPool directly).
 
 ### Service Layer
 
@@ -68,20 +72,25 @@ Client Request
 │  1. Global middleware: Recover, CORS                    │
 │  2. Route matching: /api/v1/...                        │
 │                                                        │
-│  Unauthenticated routes:                               │
+│  Public routes:                                        │
 │    POST /auth/login → Rate limiter → AuthHandler       │
 │    POST /auth/mfa/verify → Rate limiter → AuthHandler  │
 │    POST /auth/refresh → Rate limiter → AuthHandler     │
+│    POST /contact → Rate limiter → ContactHandler       │
 │    GET /health → Health check                          │
 │                                                        │
-│  Authenticated routes:                                  │
-│    AuthMiddleware                                       │
-│      → TenantMiddleware (+ RLS)                        │
-│        → AuditMiddleware (background)                  │
-│          → [Optional RBAC]                             │
-│            → Handler                                   │
-│              → Service                                 │
-│                → PostgreSQL / S3                        │
+│  Authenticated routes (tenant-scoped):                  │
+│    AuthMiddleware (+ blacklist check)                   │
+│      → Per-user limiter (100 req/min)                  │
+│        → RequirePasswordChanged                        │
+│          → TenantMiddleware (+ RLS on appPool)         │
+│            → AuditMiddleware (background)              │
+│              → [Optional RBAC]                         │
+│                → Handler → Service → PostgreSQL / S3   │
+│                                                        │
+│  Superadmin routes (no tenant):                         │
+│    AuthMiddleware → RequireSuperAdmin                  │
+│      → AdminHandler → AdminService → ownerPool         │
 └────────────────────────────────────────────────────────┘
 ```
 

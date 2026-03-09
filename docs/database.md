@@ -32,13 +32,20 @@ Migrations are located in `internal/db/migrations/` and run sequentially on star
 | 009 | `009_refresh_tokens.up.sql` | Refresh tokens with hash-based lookup |
 | 010 | `010_qr_tokens.up.sql` | QR token columns on vehicles and bays |
 | 011 | `011_events_user_index.up.sql` | Index on `events(user_id, occurred_at DESC)` |
+| 012 | `012_rls_enable.up.sql` | Enable RLS on all business tables |
+| 013 | `013_rls_enforce.up.sql` | `heritage_app` role, grants, policies with missing_ok |
+| 014 | `014_rls_harden.up.sql` | FORCE RLS on all business tables |
+| 015 | `015_token_blacklist.up.sql` | Token blacklist table for JWT revocation |
+| 016 | `016_contact_requests.up.sql` | Contact form submissions (public, no RLS) |
+| 017 | `017_superadmin_role.up.sql` | Add `superadmin` to `user_role` ENUM |
+| 018 | `018_superadmin_schema.up.sql` | Tenant status, password_change_required, plan_limits, invitations |
 
 ## ENUM Types
 
 ### user_role
 
 ```sql
-CREATE TYPE user_role AS ENUM ('admin', 'operator', 'technician', 'viewer');
+CREATE TYPE user_role AS ENUM ('superadmin', 'admin', 'operator', 'technician', 'viewer');
 ```
 
 ### vehicle_status
@@ -99,6 +106,7 @@ Root entity. All other business tables reference `tenants(id)`.
 | `timezone` | TEXT | NOT NULL, default `'Europe/Paris'` |
 | `plan` | TEXT | NOT NULL, default `'starter'`, CHECK `IN ('starter', 'pro', 'enterprise')` |
 | `active` | BOOLEAN | NOT NULL, default `true` |
+| `status` | TEXT | NOT NULL, default `'active'` (active/suspended/trial) |
 | `created_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
 | `updated_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
 | `deleted_at` | TIMESTAMPTZ | Soft delete |
@@ -110,9 +118,10 @@ Root entity. All other business tables reference `tenants(id)`.
 | Column | Type | Constraints |
 |--------|------|-------------|
 | `id` | UUID | PK, `gen_random_uuid()` |
-| `tenant_id` | UUID | NOT NULL, FK `tenants(id)` CASCADE |
+| `tenant_id` | UUID | Nullable (NULL for superadmin), FK `tenants(id)` CASCADE |
 | `email` | TEXT | NOT NULL |
 | `password_hash` | TEXT | NOT NULL |
+| `password_change_required` | BOOLEAN | NOT NULL, default `false` |
 | `first_name` | TEXT | NOT NULL |
 | `last_name` | TEXT | NOT NULL |
 | `role` | `user_role` | NOT NULL, default `'operator'` |
@@ -307,7 +316,7 @@ CREATE RULE no_delete_audit AS ON DELETE TO audit_log DO INSTEAD NOTHING;
 |--------|------|-------------|
 | `id` | UUID | PK, `gen_random_uuid()` |
 | `user_id` | UUID | NOT NULL, FK `users(id)` CASCADE |
-| `tenant_id` | UUID | NOT NULL, FK `tenants(id)` CASCADE |
+| `tenant_id` | UUID | Nullable (NULL for superadmin), FK `tenants(id)` CASCADE |
 | `token_hash` | TEXT | NOT NULL, UNIQUE |
 | `expires_at` | TIMESTAMPTZ | NOT NULL |
 | `created_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
@@ -316,6 +325,72 @@ CREATE RULE no_delete_audit AS ON DELETE TO audit_log DO INSTEAD NOTHING;
 **Indexes:**
 - `idx_refresh_tokens_user` on `user_id` WHERE `revoked_at IS NULL`
 - `idx_refresh_tokens_hash` on `token_hash` WHERE `revoked_at IS NULL`
+
+### token_blacklist
+
+Enables immediate JWT revocation on logout or user deletion (migration 015).
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `id` | UUID | PK, `gen_random_uuid()` |
+| `jti` | TEXT | Nullable (token-level block) |
+| `user_id` | UUID | Nullable (user-level block) |
+| `expires_at` | TIMESTAMPTZ | NOT NULL |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
+
+**Constraint:** `CHECK (jti IS NOT NULL OR user_id IS NOT NULL)`
+
+**Indexes:**
+- `idx_token_blacklist_jti` — UNIQUE on `jti` WHERE `jti IS NOT NULL`
+- `idx_token_blacklist_user` on `user_id` WHERE `user_id IS NOT NULL`
+
+### contact_requests
+
+Public landing page contact form submissions (migration 016). No RLS (no tenant context).
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `id` | UUID | PK, `gen_random_uuid()` |
+| `name` | TEXT | NOT NULL |
+| `email` | TEXT | NOT NULL |
+| `company` | TEXT | default `''` |
+| `vehicles` | TEXT | default `''` |
+| `message` | TEXT | default `''` |
+| `ip_address` | TEXT | default `''` |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
+
+**Indexes:** `idx_contact_requests_created` on `created_at DESC`
+
+### plan_limits
+
+Per-plan resource limits, enforced by the plan service (migration 018).
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `plan` | TEXT | PK (composite) |
+| `resource` | TEXT | PK (composite) |
+| `max_count` | INTEGER | NOT NULL (-1 = unlimited) |
+
+**Default data:** starter (25v/5u/20b), pro (100v/20u/100b), enterprise (unlimited).
+
+### invitations
+
+Onboarding invitations created by superadmin (migration 018).
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `id` | UUID | PK, `gen_random_uuid()` |
+| `tenant_id` | UUID | NOT NULL, FK `tenants(id)` |
+| `email` | TEXT | NOT NULL |
+| `role` | `user_role` | NOT NULL |
+| `invited_by` | UUID | NOT NULL, FK `users(id)` |
+| `temp_password_hash` | TEXT | NOT NULL |
+| `accepted_at` | TIMESTAMPTZ | Nullable |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
+
+**Indexes:**
+- `idx_invitations_tenant` on `tenant_id`
+- `idx_invitations_email` on `email` WHERE `accepted_at IS NULL`
 
 ## Row Level Security (RLS)
 

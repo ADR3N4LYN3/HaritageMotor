@@ -75,30 +75,37 @@ Each refresh uses token rotation:
 
 | Role | Level | Capabilities |
 |------|-------|-------------|
-| `admin` | Highest | Full access, user management, audit log |
-| `operator` | Mid | Vehicle CRUD, bay management, moves, exits |
-| `technician` | Base | Task completion, event creation, document upload |
+| `superadmin` | Platform | Tenant CRUD, invitations, global dashboard (no tenant context) |
+| `admin` | Tenant-high | Full tenant access, user management, audit log |
+| `operator` | Tenant-mid | Vehicle CRUD, bay management, moves, exits |
+| `technician` | Tenant-base | Task completion, event creation, document upload |
+| `viewer` | Tenant-read | Read-only access to vehicles, bays, events, tasks |
 
 ### Middleware Chain
 
 ```
-Request → AuthMiddleware → TenantMiddleware → AuditMiddleware → RBAC → Handler
+Request → AuthMiddleware → Per-user limiter → RequirePasswordChanged → TenantMiddleware → AuditMiddleware → RBAC → Handler
 ```
 
-1. **AuthMiddleware**: Validates JWT, extracts `user_id`, `tenant_id`, `role`
-2. **TenantMiddleware**: Verifies tenant active (cached 5min), acquires DB connection, sets RLS context
-3. **AuditMiddleware**: Logs request to audit_log in background goroutine
-4. **RBAC Middleware**: Per-route role check
+1. **AuthMiddleware**: Validates JWT, checks token blacklist (sync.Map cache 30s), extracts `user_id`, `tenant_id`, `role`, `jti`, `expires_at`
+2. **Per-user rate limiter**: 100 req/min per user_id
+3. **RequirePasswordChanged**: Blocks all routes except `/auth/change-password` if `password_change_required=true`
+4. **TenantMiddleware**: Verifies tenant active (cached 5min), acquires DB connection on appPool, sets RLS context
+5. **AuditMiddleware**: Logs request to audit_log in background goroutine
+6. **RBAC Middleware**: Per-route role check
+
+Superadmin routes: `Auth → RequireSuperAdmin` (no TenantMiddleware, uses ownerPool)
 
 ### Route Protection
 
 | Middleware | Routes |
 |-----------|--------|
+| `RequireSuperAdmin()` | GET /admin/*, POST /admin/*, PATCH /admin/*, DELETE /admin/* |
 | `RequireAdmin()` | DELETE vehicles/:id, DELETE documents/:docId, DELETE tasks/:id, DELETE /mfa, GET /users, POST /users, PATCH /users/:id, DELETE /users/:id, GET /audit |
 | `RequireOperatorOrAbove()` | POST vehicles, PATCH vehicles, POST move, POST exit, POST/PATCH/DELETE bays |
 | `RequireTechnicianOrAbove()` | POST events, POST documents, POST/PATCH tasks, POST complete |
-| No RBAC (authenticated) | GET vehicles, GET bays, GET events, GET tasks, GET /me |
-| No auth | POST /login, POST /mfa/verify, POST /refresh, GET /health |
+| No RBAC (authenticated) | GET vehicles, GET bays, GET events, GET tasks, GET /me, POST /auth/change-password, POST /auth/logout |
+| No auth | POST /login, POST /mfa/verify, POST /refresh, POST /contact, GET /health |
 
 ## Multi-Tenant Isolation (RLS)
 
@@ -130,17 +137,54 @@ The tenant middleware verifies tenant existence and active status against the da
 
 ## API Hardening
 
+### Token Blacklist
+
+Immediate JWT revocation without waiting for token expiry (migration 015):
+
+- **Table**: `token_blacklist` in PostgreSQL (survives restarts)
+- **Two modes**: `jti` (single token) or `user_id` (all tokens for a user)
+- **Checked by**: AuthMiddleware on every request (`SELECT EXISTS(... WHERE (jti=$1 OR user_id=$2) AND expires_at > NOW())`)
+- **Cache**: sync.Map with 30s TTL, `InvalidateBlacklistCache()` for immediate invalidation
+- **Fail-open**: Logs warning if DB is unavailable, allows request through
+- **Logout**: Blacklists access token JTI + revokes refresh token
+- **User delete**: Revokes all refresh tokens + blacklists user_id for access token duration
+
+### Password Strength
+
+All user-created passwords must meet:
+- Minimum 8 characters
+- At least 1 uppercase letter (A-Z)
+- At least 1 lowercase letter (a-z)
+- At least 1 digit (0-9)
+- At least 1 special character
+
+Enforced in `internal/domain/password.go` via `ValidatePasswordStrength()`.
+
 ### Rate Limiting
 
-Auth endpoints are rate-limited to prevent brute-force attacks:
+Endpoints are rate-limited to prevent brute-force and abuse:
 
 | Endpoint | Limit | Window | Key |
 |----------|-------|--------|-----|
 | `POST /auth/login` | 5 requests | 15 minutes | IP + path |
 | `POST /auth/mfa/verify` | 5 requests | 15 minutes | IP + path |
 | `POST /auth/refresh` | 5 requests | 15 minutes | IP + path |
+| `POST /contact` | 3 requests | 15 minutes | IP |
+| Authenticated routes | 100 requests | 1 minute | user_id |
 
 Exceeded limits return `429 Too Many Requests`.
+
+### Upload Limiter
+
+Per-user bandwidth rate limiting for file uploads (`internal/middleware/upload_limiter.go`):
+
+| Setting | Value |
+|---------|-------|
+| Max cumulative bytes | 200 MB per user |
+| Window | 10 minutes (sliding) |
+| Applied to | POST documents, POST events |
+
+Reads `Content-Length` header (no body buffering). Returns `429` if threshold exceeded.
 
 ### CORS
 

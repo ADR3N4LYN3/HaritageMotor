@@ -46,7 +46,9 @@ pwa/
 │   └── api/auth/
 │       ├── set-token/route.ts   # Store refresh token as httpOnly cookie
 │       ├── refresh/route.ts     # Proxy refresh through Next.js (cookie → API)
+│       ├── logout/route.ts      # Proxy logout to backend + clear cookie
 │       └── clear-token/route.ts # Clear refresh token cookie on logout
+├── middleware.ts                 # Auth guard: redirect to /login if no refresh_token cookie
 ├── components/
 │   ├── layout/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav

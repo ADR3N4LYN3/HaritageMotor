@@ -504,6 +504,147 @@ Soft delete.
 
 ---
 
+## Contact (Public)
+
+### POST /contact
+
+Submit a contact/demo request from the landing page. No authentication required. Rate limited: 3 req / 15 min per IP.
+
+**Request:**
+```json
+{
+  "name": "Jane Doe",
+  "email": "jane@company.com",
+  "company": "Luxury Storage Inc.",
+  "vehicles": "26-50",
+  "message": "Interested in a demo for our facility."
+}
+```
+
+Required: `name` (2-100 chars), `email`. Optional: `company` (max 200), `vehicles` (max 50), `message` (max 5000).
+
+**Response:** `201` + `{"message": "request received"}`
+
+---
+
+## Password Change
+
+### POST /auth/change-password
+**Auth required.** Accessible even when `password_change_required` is `true`.
+
+```json
+{
+  "current_password": "old-password",
+  "new_password": "New-Password-1!"
+}
+```
+
+New password must meet strength rules: min 8 chars, upper + lower + digit + special.
+
+**Response:** `{"message": "password changed"}`
+
+---
+
+## Superadmin (Platform Management)
+
+All superadmin endpoints require JWT with `role=superadmin`. No tenant context.
+
+### GET /admin/dashboard
+
+Global platform statistics.
+
+**Response:**
+```json
+{
+  "total_tenants": 12,
+  "active_tenants": 10,
+  "total_users": 87,
+  "total_vehicles": 423
+}
+```
+
+### GET /admin/tenants
+
+Paginated list of all tenants with resource counts.
+
+**Query params:** `page`, `per_page`
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid", "name": "...", "slug": "...", "plan": "pro", "status": "active",
+      "user_count": 5, "vehicle_count": 42, "bay_count": 20, ...
+    }
+  ],
+  "total_count": 12, "page": 1, "per_page": 20
+}
+```
+
+### GET /admin/tenants/:id
+
+Single tenant details with resource stats.
+
+### POST /admin/tenants
+
+Create a new tenant.
+
+```json
+{
+  "name": "Premium Storage Paris",
+  "slug": "premium-storage-paris",
+  "country": "FR",
+  "timezone": "Europe/Paris",
+  "plan": "pro"
+}
+```
+
+Required: `name`, `slug`, `plan` (starter/pro/enterprise). Slug must be unique.
+
+**Response:** `201` + Tenant object.
+
+### PATCH /admin/tenants/:id
+
+Update tenant name, plan, or status.
+
+```json
+{
+  "plan": "enterprise",
+  "status": "active"
+}
+```
+
+Status values: `active`, `suspended`, `trial`.
+
+**Response:** Updated Tenant object.
+
+### DELETE /admin/tenants/:id
+
+Soft-delete tenant (sets `deleted_at`, `active=false`, `status='suspended'`).
+
+**Response:** `204 No Content`
+
+### POST /admin/invitations
+
+Invite a user to a tenant. Generates a temp password and sends a welcome email via Resend.
+
+```json
+{
+  "tenant_id": "uuid",
+  "email": "new-user@example.com",
+  "first_name": "Jean",
+  "last_name": "Dupont",
+  "role": "operator"
+}
+```
+
+The invited user will have `password_change_required=true` and must change password on first login.
+
+**Response:** `201` + User object.
+
+---
+
 ## Health Check
 
 ### GET /health

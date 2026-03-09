@@ -89,8 +89,14 @@ S3_SECRET_KEY=<s3-secret-key>
 S3_BUCKET=<bucket-name>
 S3_REGION=eu-central
 
+# RLS (heritage_app role)
+HERITAGE_APP_PASSWORD=<strong-password>    # openssl rand -hex 32
+DATABASE_APP_URL=postgresql://heritage_app:${HERITAGE_APP_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+
 # Email (Resend)
 RESEND_API_KEY=<resend-api-key>
+EMAIL_FROM=noreply@heritagemotor.app
+CONTACT_EMAIL_TO=welcome@heritagemotor.app
 
 # PWA
 NEXT_PUBLIC_API_URL=https://api.heritagemotor.app/api/v1
@@ -144,7 +150,7 @@ The `certs/` directory is mounted read-only into the Caddy container and referen
 `Caddyfile` (mounted as `/etc/caddy/Caddyfile`) defines 4 virtual hosts:
 
 ```
-heritagemotor.app         → Static landing page (/srv/landing)
+heritagemotor.app         → Landing page (/srv/landing) + /contact + /api/v1/* → api:8080
 api.heritagemotor.app     → Reverse proxy to api:8080
 stats.heritagemotor.app   → Reverse proxy to plausible:8000
 app.heritagemotor.app     → Reverse proxy to app:3000

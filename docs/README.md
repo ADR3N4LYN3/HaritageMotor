@@ -45,10 +45,12 @@ heritage-motor/
 ├── internal/
 │   ├── auth/                    # JWT, bcrypt, TOTP
 │   ├── config/                  # Environment config loader
-│   ├── db/                      # Connection pool + migrations (001-011)
-│   ├── domain/                  # Types (models) + typed errors
+│   ├── db/                      # Connection pool + migrations (001-018)
+│   ├── domain/                  # Types (models), typed errors, password validation
 │   ├── handler/                 # HTTP handlers (REST controllers)
-│   │   ├── auth/                #   Authentication + MFA
+│   │   ├── admin/               #   Superadmin: tenants CRUD, invitations, dashboard
+│   │   ├── auth/                #   Authentication + MFA + change-password
+│   │   ├── contact/             #   Public contact form
 │   │   ├── vehicle/             #   Vehicle CRUD + Move/Exit
 │   │   ├── bay/                 #   Bay management
 │   │   ├── event/               #   Event timeline
@@ -58,9 +60,13 @@ heritage-motor/
 │   │   ├── scan/                #   QR code resolution
 │   │   ├── audit/               #   Audit log viewer
 │   │   └── response.go          #   Shared response helpers
-│   ├── middleware/               # Auth, Tenant RLS, RBAC, Audit
+│   ├── middleware/               # Auth, Tenant RLS, RBAC, Audit, UploadLimiter
 │   ├── service/                  # Business logic layer
-│   │   ├── auth/                 #   Login, MFA, tokens
+│   │   ├── admin/                #   Superadmin tenant/user management
+│   │   ├── auth/                 #   Login, MFA, logout, change-password
+│   │   ├── contact/              #   Contact form (public landing page)
+│   │   ├── mailer/               #   Email sending via Resend API
+│   │   ├── plan/                 #   Plan limits enforcement (starter/pro/enterprise)
 │   │   ├── vehicle/              #   Vehicle operations
 │   │   ├── bay/                  #   Bay operations
 │   │   ├── event/                #   Event operations
@@ -143,7 +149,9 @@ docker compose up -d --build
 - **Soft delete**: All business entities use `deleted_at` column
 - **S3 keys only**: Database stores S3 keys, never signed URLs
 - **Refresh token rotation**: SHA-256 hash stored, old token revoked on refresh
+- **Token blacklist**: Immediate JWT revocation via JTI or user-level blocks
 - **Background goroutines**: Pre-capture Fiber ctx values, add recovery + timeout
+- **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
 
 ## Domains
 
