@@ -22,6 +22,9 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
+# Load env vars for use in this script
+set -a; source "$ENV_FILE"; set +a
+
 echo "=== Heritage Motor — Deploy ==="
 
 # Build images
@@ -33,7 +36,7 @@ echo "-> Starting PostgreSQL..."
 $COMPOSE up -d postgres
 echo "-> Waiting for PostgreSQL..."
 for i in $(seq 1 30); do
-    if $COMPOSE exec postgres pg_isready -U heritage_motor &>/dev/null; then
+    if $COMPOSE exec postgres pg_isready -U "$POSTGRES_USER" &>/dev/null; then
         break
     fi
     sleep 1
