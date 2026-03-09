@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 40" fill="none">
+  <!-- HM Monogram -->
+  <g>
+    <!-- Outer frame -->
+    <rect x="0" y="2" width="36" height="36" rx="2" stroke="#b8955a" stroke-width="1.2" fill="none"/>
+    <!-- H -->
+    <path d="M8 10v20M8 20h8M16 10v20" stroke="#b8955a" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- M -->
+    <path d="M20 30V10l5 10 5-10v20" stroke="#b8955a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Separator line -->
+  <line x1="48" y1="10" x2="48" y2="30" stroke="#b8955a" stroke-width="0.8" opacity="0.5"/>
+  <!-- HERITAGE MOTOR text -->
+  <text x="60" y="17" font-family="'Cormorant Garamond', 'Georgia', serif" font-size="13" font-weight="600" letter-spacing="3.5" fill="currentColor">HERITAGE</text>
+  <text x="60" y="32" font-family="'Cormorant Garamond', 'Georgia', serif" font-size="13" font-weight="400" letter-spacing="5.5" fill="currentColor">MOTOR</text>
+</svg>
