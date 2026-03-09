@@ -27,12 +27,20 @@ const CLIPS = [
   "https://videos.pexels.com/video-files/13795953/13795953-hd_1920_1080_30fps.mp4",
   // Scene 8: Sports car speeding through city — closing movement
   "https://videos.pexels.com/video-files/7727415/7727415-hd_1920_1080_25fps.mp4",
+  // Scene 9: Luxury sports car — detail/design shot
+  "https://videos.pexels.com/video-files/5309352/5309352-hd_1920_1080_25fps.mp4",
+  // Scene 10: Luxury car cruising — street driving
+  "https://videos.pexels.com/video-files/5309380/5309380-hd_1920_1080_25fps.mp4",
+  // Scene 11: Prestige car — dynamic road shot
+  "https://videos.pexels.com/video-files/7727413/7727413-hd_1920_1080_25fps.mp4",
+  // Scene 12: Luxury car — prestige closing
+  "https://videos.pexels.com/video-files/5309354/5309354-hd_1920_1080_25fps.mp4",
 ];
 
 // ── Duration calculation ─────────────────────────────────────────────
-// 8 scenes × 120 frames = 960
-// 7 fade transitions × 30 frames = -210
-// Total = 750 frames = 25 seconds
+// 12 scenes × 120 frames = 1440
+// 11 fade transitions × 30 frames = -330
+// Total = 1110 frames = 37 seconds
 const TRANSITION_COUNT = CLIPS.length - 1;
 export const TOTAL_DURATION_V2 =
   CLIPS.length * SCENE_DURATION - TRANSITION_COUNT * TRANSITION_DURATION;
@@ -115,6 +123,46 @@ export const HeroVideoV2: React.FC = () => {
         {/* ── Scene 8: Sports car — city closing shot ────────────── */}
         <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
           <CarScene src={CLIPS[7]} zoomFrom={1.02} zoomTo={1.0} playbackRate={0.7} />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+        />
+
+        {/* ── Scene 9: Luxury sports car — detail/design ───────── */}
+        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+          <CarScene src={CLIPS[8]} zoomFrom={1.0} zoomTo={1.06} />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+        />
+
+        {/* ── Scene 10: Luxury car — street cruising ───────────── */}
+        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+          <CarScene src={CLIPS[9]} zoomFrom={1.04} zoomTo={1.0} />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+        />
+
+        {/* ── Scene 11: Prestige car — dynamic road ────────────── */}
+        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+          <CarScene src={CLIPS[10]} zoomFrom={1.0} zoomTo={1.05} />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+        />
+
+        {/* ── Scene 12: Classic vintage — heritage closing ──────── */}
+        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+          <CarScene src={CLIPS[11]} zoomFrom={1.02} zoomTo={1.0} playbackRate={0.7} />
         </TransitionSeries.Sequence>
       </TransitionSeries>
 
