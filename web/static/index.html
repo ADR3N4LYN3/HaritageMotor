@@ -12,6 +12,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Heritage Motor — Vehicle Chain of Custody Platform">
 <meta name="twitter:description" content="The operating system for premium vehicle storage. Immutable timeline, bay management, and one-click exit reports.">
+<meta property="og:image" content="https://heritagemotor.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://heritagemotor.app/og-image.png">
 <link rel="canonical" href="https://heritagemotor.app">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'%3E%3Crect width='64' height='64' rx='8' fill='%230e0d0b'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Georgia,serif' font-size='28' font-weight='400' fill='%23b8955a'%3EHM%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">
@@ -33,7 +37,8 @@
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
 <script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.outbound-links.js"></script>
 <style>
 
@@ -60,7 +65,8 @@ body { background: var(--bg); color: var(--black); font-family: var(--sans); fon
 nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 1.75rem 3.5rem; transition: all 0.4s ease; }
 nav.on-photo { /* transparent */ }
 nav.scrolled { background: rgba(250,249,247,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 1.1rem 3.5rem; }
-.nav-logo { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; letter-spacing: 0.06em; text-decoration: none; transition: color 0.3s; }
+.nav-logo { display: flex; align-items: center; text-decoration: none; transition: color 0.3s; }
+.logo-svg { height: 28px; width: auto; }
 nav.on-photo .nav-logo { color: #fff; }
 nav.scrolled .nav-logo { color: var(--black); }
 .nav-right { display: flex; align-items: center; gap: 2.5rem; }
@@ -292,7 +298,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 
 <!-- NAV -->
 <nav id="nav" class="on-photo" role="navigation" aria-label="Main navigation">
-  <a href="#hero" class="nav-logo">Heritage Motor</a>
+  <a href="#hero" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 260 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><rect x="0.6" y="2.6" width="34.8" height="34.8" rx="1.8" stroke="#b8955a" stroke-width="1.2"/><path d="M8 10v20M8 20h8M16 10v20" stroke="#b8955a" stroke-width="1.6" stroke-linecap="round"/><path d="M20 30V10l5 10 5-10v20" stroke="#b8955a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="46" y1="10" x2="46" y2="30" stroke="#b8955a" stroke-width="0.8" opacity="0.4"/><text x="56" y="17" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="600" letter-spacing="3.5" fill="currentColor">HERITAGE</text><text x="56" y="32" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="5.5" fill="currentColor">MOTOR</text></svg></a>
   <div class="nav-right">
     <ul class="nav-links">
       <li><a href="#platform" data-i18n="nav.platform">Platform</a></li>
@@ -313,8 +319,8 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 
 <!-- HERO -->
 <section class="hero" id="hero" aria-label="Hero">
-  <video class="hero-photo" autoplay muted loop playsinline
-    poster="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1920&q=85&auto=format&fit=crop">
+  <video class="hero-photo" autoplay muted loop playsinline preload="metadata"
+    poster="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1920&q=80&auto=format&fit=crop">
     <source src="/hero-bg.mp4?v=2" type="video/mp4">
   </video>
   <div class="hero-overlay"></div>
@@ -565,17 +571,17 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 
 <script>
   var nav = document.getElementById('nav');
-  window.addEventListener('scroll', function() {
-    var hero = document.getElementById('hero');
-    var heroBottom = hero.offsetTop + hero.offsetHeight;
-    if (window.scrollY > heroBottom - 80) {
-      nav.classList.remove('on-photo');
-      nav.classList.add('scrolled');
-    } else {
+  var hero = document.getElementById('hero');
+  var navObserver = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) {
       nav.classList.add('on-photo');
       nav.classList.remove('scrolled');
+    } else {
+      nav.classList.remove('on-photo');
+      nav.classList.add('scrolled');
     }
-  }, { passive: true });
+  }, { rootMargin: '-80px 0px 0px 0px' });
+  navObserver.observe(hero);
 
   /* ─── i18n ─────────────────────────────────────────────────────── */
   var i18n = {
@@ -622,6 +628,28 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       'stat4.label': 'Dépendances d\'authentification externes — vos données restent les vôtres',
       'pricing.tag': 'Tarifs', 'pricing.title': 'Tarifé à la hauteur<br> de la valeur<br> <em>que vous protégez.</em>',
       'pricing.text': 'Un tarif mensuel fixe par site — pas de frais par véhicule, pas de surprises. Installation et accompagnement inclus les trois premiers mois.',
+      'price.badge': 'Le plus populaire',
+      'price.contact': 'Nous Contacter',
+      'price.addon': 'Option supplémentaire',
+      'price.feat.registry': 'Registre véhicules & gestion emplacements',
+      'price.feat.movement': 'Journal des mouvements avec photos horodatées',
+      'price.feat.tasks': 'Tâches récurrentes & rappels',
+      'price.feat.audit': 'Journal d\'audit immuable',
+      'price.feat.exitpdf': 'Rapport de sortie PDF',
+      'price.feat.5ops': '5 comptes opérateurs',
+      'price.feat.portal': 'Portail Propriétaire',
+      'price.feat.climate': 'Monitoring climatique',
+      'price.feat.allstarter': 'Tout le plan Starter',
+      'price.feat.histexport': 'Export Historique Véhicule',
+      'price.feat.15ops': '15 comptes opérateurs',
+      'price.feat.priority': 'Support prioritaire',
+      'price.feat.climateaddon': 'Monitoring climatique — +350€/mois',
+      'price.feat.allpro': 'Tout le plan Pro',
+      'price.feat.api': 'Accès API & intégrations',
+      'price.feat.certified': 'Export Historique Véhicule certifié',
+      'price.feat.onboarding': 'Responsable d\'onboarding dédié',
+      'price.feat.climateincl': 'Monitoring climatique inclus',
+      'price.feat.auction': 'Intégrations maisons de ventes (roadmap)',
       'price1.period': 'par site / mois · jusqu\'à 50 véhicules',
       'price2.period': 'par site / mois · jusqu\'à 200 véhicules',
       'price3.period': 'multi-site · véhicules illimités',
@@ -671,6 +699,28 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       'stat4.label': 'Externe Auth-Abhängigkeiten — Ihre Daten bleiben Ihre',
       'pricing.tag': 'Preise', 'pricing.title': 'Bepreist nach<br> dem Wert, den<br> <em>Sie schützen.</em>',
       'pricing.text': 'Ein fester Monatstarif pro Standort — keine Gebühren pro Fahrzeug, keine Überraschungen. Einrichtung und Onboarding in den ersten drei Monaten inklusive.',
+      'price.badge': 'Am beliebtesten',
+      'price.contact': 'Kontaktieren Sie uns',
+      'price.addon': 'Optionales Add-on',
+      'price.feat.registry': 'Fahrzeugregister & Stellplatzverwaltung',
+      'price.feat.movement': 'Bewegungsprotokoll mit zeitgestempelten Fotos',
+      'price.feat.tasks': 'Wiederkehrende Aufgaben & Erinnerungen',
+      'price.feat.audit': 'Unveränderliches Audit-Log',
+      'price.feat.exitpdf': 'Auslieferungsbericht PDF',
+      'price.feat.5ops': '5 Bediener-Konten',
+      'price.feat.portal': 'Eigentümer-Portal',
+      'price.feat.climate': 'Klimaüberwachung',
+      'price.feat.allstarter': 'Alles aus Starter',
+      'price.feat.histexport': 'Fahrzeughistorie-Export',
+      'price.feat.15ops': '15 Bediener-Konten',
+      'price.feat.priority': 'Prioritäts-Support',
+      'price.feat.climateaddon': 'Klimaüberwachung — +350€/Monat',
+      'price.feat.allpro': 'Alles aus Pro',
+      'price.feat.api': 'API-Zugang & Integrationen',
+      'price.feat.certified': 'Zertifizierter Fahrzeughistorie-Export',
+      'price.feat.onboarding': 'Dedizierter Onboarding-Manager',
+      'price.feat.climateincl': 'Klimaüberwachung inklusive',
+      'price.feat.auction': 'Auktionshaus-Integrationen (Roadmap)',
       'price1.period': 'pro Standort / Monat · bis zu 50 Fahrzeuge',
       'price2.period': 'pro Standort / Monat · bis zu 200 Fahrzeuge',
       'price3.period': 'Multi-Standort · unbegrenzte Fahrzeuge',
