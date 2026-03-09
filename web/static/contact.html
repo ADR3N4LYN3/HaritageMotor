@@ -248,6 +248,11 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
       if (!res.ok) {
         return res.json().then(function(body) { throw new Error(body.error || 'error'); });
       }
+      var wrap = form.closest('.contact-form-wrap');
+      var title = wrap.querySelector('.form-title');
+      var subtitle = wrap.querySelector('.form-subtitle');
+      if (title) title.style.display = 'none';
+      if (subtitle) subtitle.style.display = 'none';
       while (form.firstChild) { form.removeChild(form.firstChild); }
       var msg = document.createElement('p');
       msg.className = 'form-success';

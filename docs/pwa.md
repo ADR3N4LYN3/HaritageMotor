@@ -30,6 +30,8 @@ pwa/
 │   ├── scan/
 │   │   ├── layout.tsx         # Scan layout (no AppShell)
 │   │   └── page.tsx           # QR scanner + manual code entry
+│   ├── admin/
+│   │   └── page.tsx           # Superadmin dashboard (tenants, stats, invitations)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
 │   │   └── page.tsx           # Vehicle list with search & filters

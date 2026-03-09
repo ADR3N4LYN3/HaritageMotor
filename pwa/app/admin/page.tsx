@@ -29,9 +29,14 @@ export default function AdminPage() {
   if (!authorized) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[#080704]">
+      {/* Subtle cross-hatch texture */}
+      <div className="fixed inset-0 opacity-[0.012] pointer-events-none" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8955a' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+      }} />
+
       <Header />
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <main className="relative max-w-6xl mx-auto px-6 lg:px-8 py-12 space-y-16">
         <StatsSection />
         <TenantsSection />
         <InviteSection />
@@ -40,8 +45,31 @@ export default function AdminPage() {
   );
 }
 
+/* ─── Gold separator ─── */
+function GoldRule() {
+  return (
+    <div className="h-px bg-gradient-to-r from-gold/25 via-gold/10 to-transparent" />
+  );
+}
+
+/* ─── Section heading ─── */
+function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-end justify-between">
+        <h2 className="text-2xl font-display font-semibold text-white/90 tracking-wide">
+          {title}
+        </h2>
+        {action}
+      </div>
+      <GoldRule />
+    </div>
+  );
+}
+
 function Header() {
   const router = useRouter();
+  const user = useAppStore((s) => s.user);
 
   async function handleLogout() {
     await logout();
@@ -49,20 +77,34 @@ function Header() {
   }
 
   return (
-    <header className="border-b border-white/10 px-4 py-4">
-      <div className="max-w-5xl mx-auto flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-display font-bold text-gold">
-            Heritage Motor
-          </h1>
-          <p className="text-white/40 text-xs">Platform Administration</p>
+    <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#080704]/80 border-b border-white/[0.06]">
+      <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold/80 to-gold/40 flex items-center justify-center">
+            <span className="text-[#080704] font-display font-bold text-sm">H</span>
+          </div>
+          <div>
+            <h1 className="text-sm font-display font-semibold text-white/90 tracking-wider uppercase">
+              Heritage Motor
+            </h1>
+            <p className="text-white/30 text-[10px] tracking-[0.2em] uppercase">
+              Platform Administration
+            </p>
+          </div>
         </div>
-        <button
-          onClick={handleLogout}
-          className="text-white/40 text-sm hover:text-white transition-colors"
-        >
-          Sign out
-        </button>
+        <div className="flex items-center gap-6">
+          {user && (
+            <span className="text-white/30 text-xs">
+              {user.email}
+            </span>
+          )}
+          <button
+            onClick={handleLogout}
+            className="text-white/40 text-xs tracking-wider uppercase hover:text-gold transition-colors duration-300"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
     </header>
   );
@@ -72,24 +114,36 @@ function StatsSection() {
   const { data } = useSWR<DashboardStats>("/admin/dashboard");
 
   const stats = [
-    { label: "Tenants", value: data?.total_tenants ?? "-" },
-    { label: "Active", value: data?.active_tenants ?? "-" },
-    { label: "Users", value: data?.total_users ?? "-" },
-    { label: "Vehicles", value: data?.total_vehicles ?? "-" },
+    { label: "Tenants", value: data?.total_tenants ?? "-", sub: "registered" },
+    { label: "Active", value: data?.active_tenants ?? "-", sub: "operational" },
+    { label: "Users", value: data?.total_users ?? "-", sub: "across tenants" },
+    { label: "Vehicles", value: data?.total_vehicles ?? "-", sub: "in custody" },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {stats.map((s) => (
-        <div
-          key={s.label}
-          className="bg-white/5 border border-white/10 rounded-xl p-4 text-center"
-        >
-          <p className="text-2xl font-bold text-gold">{s.value}</p>
-          <p className="text-white/50 text-xs mt-1">{s.label}</p>
-        </div>
-      ))}
-    </div>
+    <section>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="bg-[#0c0b08] p-6 lg:p-8 group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative">
+              <p className="text-3xl lg:text-4xl font-display font-semibold text-white/90 tabular-nums">
+                {s.value}
+              </p>
+              <p className="text-[11px] tracking-[0.15em] uppercase text-gold/70 mt-2 font-medium">
+                {s.label}
+              </p>
+              <p className="text-white/20 text-[10px] mt-0.5">
+                {s.sub}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -100,49 +154,64 @@ function TenantsSection() {
   const [showCreate, setShowCreate] = useState(false);
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-display font-semibold text-gold">
-          Tenants
-        </h2>
-        <button
-          onClick={() => setShowCreate(!showCreate)}
-          className="text-sm px-4 py-2 rounded-lg bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20 transition-colors"
-        >
-          {showCreate ? "Cancel" : "+ New Tenant"}
-        </button>
-      </div>
+    <section className="space-y-6">
+      <SectionHeading
+        title="Tenants"
+        action={
+          <button
+            onClick={() => setShowCreate(!showCreate)}
+            className="text-xs tracking-wider uppercase px-5 py-2.5 rounded-lg bg-gold/[0.08] text-gold/80 border border-gold/[0.12] hover:bg-gold/[0.15] hover:text-gold hover:border-gold/25 transition-all duration-300"
+          >
+            {showCreate ? "Cancel" : "New Tenant"}
+          </button>
+        }
+      />
 
       {showCreate && <CreateTenantForm onDone={() => setShowCreate(false)} />}
 
-      <div className="space-y-2">
+      <div className="space-y-px rounded-xl overflow-hidden border border-white/[0.06]">
         {data?.data?.length === 0 && (
-          <p className="text-white/30 text-sm text-center py-8">
-            No tenants yet. Create one to get started.
-          </p>
+          <div className="bg-[#0c0b08] py-16 text-center">
+            <p className="text-white/20 text-sm font-display italic">
+              No tenants yet
+            </p>
+            <p className="text-white/10 text-xs mt-1">
+              Create one to get started
+            </p>
+          </div>
         )}
         {data?.data?.map((t) => (
           <div
             key={t.id}
-            className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between"
+            className="bg-[#0c0b08] p-5 flex items-center justify-between group hover:bg-[#0e0d0a] transition-colors duration-300"
           >
-            <div>
-              <p className="font-semibold text-sm">{t.name}</p>
-              <p className="text-white/40 text-xs">
-                {t.slug} &middot; {t.plan} &middot;{" "}
-                <span
-                  className={
-                    t.status === "active" ? "text-success" : "text-warning"
-                  }
-                >
-                  {t.status}
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-gold/[0.08] border border-gold/[0.12] flex items-center justify-center shrink-0">
+                <span className="text-gold/60 font-display text-sm font-semibold">
+                  {t.name.charAt(0).toUpperCase()}
                 </span>
-              </p>
+              </div>
+              <div>
+                <p className="font-medium text-sm text-white/80 group-hover:text-white/95 transition-colors">
+                  {t.name}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-white/25 text-xs font-mono">{t.slug}</span>
+                  <span className="text-white/10">|</span>
+                  <span className="text-white/30 text-xs capitalize">{t.plan}</span>
+                  <span className="text-white/10">|</span>
+                  <span className={`text-xs ${
+                    t.status === "active" ? "text-emerald-400/70" : "text-amber-400/70"
+                  }`}>
+                    {t.status}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-4 text-xs text-white/50">
-              <span>{t.user_count} users</span>
-              <span>{t.vehicle_count} vehicles</span>
-              <span>{t.bay_count} bays</span>
+            <div className="flex items-center gap-6">
+              <StatPill value={t.user_count} label="users" />
+              <StatPill value={t.vehicle_count} label="vehicles" />
+              <StatPill value={t.bay_count} label="bays" />
             </div>
           </div>
         ))}
@@ -150,6 +219,20 @@ function TenantsSection() {
     </section>
   );
 }
+
+function StatPill({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="text-right">
+      <p className="text-sm font-display text-white/60 tabular-nums">{value}</p>
+      <p className="text-[10px] text-white/20 tracking-wider uppercase">{label}</p>
+    </div>
+  );
+}
+
+const inputClass =
+  "w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white/90 text-sm placeholder:text-white/20 focus:outline-none focus:border-gold/30 focus:bg-white/[0.05] transition-all duration-200";
+
+const labelClass = "block text-[10px] tracking-[0.15em] uppercase text-white/30 mb-1.5";
 
 function CreateTenantForm({ onDone }: { onDone: () => void }) {
   const [name, setName] = useState("");
@@ -176,81 +259,97 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
     }
   }
 
-  const inputClass =
-    "w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm";
-
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4 space-y-3"
+      className="bg-[#0c0b08] border border-white/[0.06] rounded-xl p-6 space-y-5"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <input
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            setSlug(
-              e.target.value
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-|-$/g, "")
-            );
-          }}
-          placeholder="Facility name"
-          required
-          className={inputClass}
-        />
-        <input
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
-          placeholder="slug"
-          required
-          pattern="[a-z0-9-]+"
-          className={inputClass}
-        />
-        <select
-          value={plan}
-          onChange={(e) => setPlan(e.target.value)}
-          className={inputClass}
-        >
-          <option value="starter">Starter (25v/5u/20b)</option>
-          <option value="pro">Pro (100v/20u/100b)</option>
-          <option value="enterprise">Enterprise (unlimited)</option>
-        </select>
+      <p className="text-[10px] tracking-[0.15em] uppercase text-gold/50 font-medium">
+        New Tenant
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className={labelClass}>Facility name</label>
+          <input
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              setSlug(
+                e.target.value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/^-|-$/g, "")
+              );
+            }}
+            placeholder="e.g. Monte Carlo Motors"
+            required
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Slug</label>
+          <input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="monte-carlo-motors"
+            required
+            pattern="[a-z0-9-]+"
+            className={`${inputClass} font-mono`}
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Plan</label>
+          <select value={plan} onChange={(e) => setPlan(e.target.value)} className={inputClass}>
+            <option value="starter">Starter — 25 vehicles, 5 users, 20 bays</option>
+            <option value="pro">Pro — 100 vehicles, 20 users, 100 bays</option>
+            <option value="enterprise">Enterprise — unlimited</option>
+          </select>
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <input
-          value={country}
-          onChange={(e) => setCountry(e.target.value.toUpperCase())}
-          placeholder="Country code (FR)"
-          required
-          pattern="[A-Z]{2}"
-          maxLength={2}
-          className={inputClass}
-        />
-        <select
-          value={timezone}
-          onChange={(e) => setTimezone(e.target.value)}
-          className={inputClass}
-        >
-          <option value="Europe/Paris">Europe/Paris</option>
-          <option value="Europe/London">Europe/London</option>
-          <option value="Europe/Berlin">Europe/Berlin</option>
-          <option value="Europe/Zurich">Europe/Zurich</option>
-          <option value="Europe/Brussels">Europe/Brussels</option>
-          <option value="America/New_York">America/New_York</option>
-          <option value="America/Los_Angeles">America/Los_Angeles</option>
-          <option value="Asia/Dubai">Asia/Dubai</option>
-        </select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className={labelClass}>Country</label>
+          <input
+            value={country}
+            onChange={(e) => setCountry(e.target.value.toUpperCase())}
+            placeholder="FR"
+            required
+            pattern="[A-Z]{2}"
+            maxLength={2}
+            className={`${inputClass} font-mono uppercase tracking-widest`}
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Timezone</label>
+          <select value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass}>
+            <option value="Europe/Paris">Europe / Paris</option>
+            <option value="Europe/London">Europe / London</option>
+            <option value="Europe/Berlin">Europe / Berlin</option>
+            <option value="Europe/Zurich">Europe / Zurich</option>
+            <option value="Europe/Brussels">Europe / Brussels</option>
+            <option value="America/New_York">America / New York</option>
+            <option value="America/Los_Angeles">America / Los Angeles</option>
+            <option value="Asia/Dubai">Asia / Dubai</option>
+          </select>
+        </div>
       </div>
-      {error && <p className="text-danger text-xs">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="px-4 py-2 rounded-lg bg-gold text-white text-sm font-semibold hover:bg-[#a07d48] disabled:opacity-40 transition-colors"
-      >
-        {loading ? "Creating..." : "Create Tenant"}
-      </button>
+      {error && <p className="text-red-400/80 text-xs">{error}</p>}
+      <div className="flex items-center gap-4 pt-1">
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-6 py-2.5 rounded-lg bg-gold text-[#080704] text-xs font-semibold tracking-wider uppercase hover:bg-gold/90 disabled:opacity-40 transition-all duration-300"
+        >
+          {loading ? "Creating..." : "Create Tenant"}
+        </button>
+        <button
+          type="button"
+          onClick={onDone}
+          className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }
@@ -291,75 +390,95 @@ function InviteSection() {
     }
   }
 
-  const inputClass =
-    "w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm";
-
   return (
-    <section>
-      <h2 className="text-lg font-display font-semibold text-gold mb-4">
-        Invite User
-      </h2>
+    <section className="space-y-6">
+      <SectionHeading title="Invite User" />
+
       <form
         onSubmit={handleSubmit}
-        className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3"
+        className="bg-[#0c0b08] border border-white/[0.06] rounded-xl p-6 space-y-5"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <select
-            value={tenantId}
-            onChange={(e) => setTenantId(e.target.value)}
-            required
-            className={inputClass}
-          >
-            <option value="">Select tenant...</option>
-            {tenants?.data?.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className={inputClass}
-          >
-            <option value="admin">Admin</option>
-            <option value="operator">Operator</option>
-            <option value="technician">Technician</option>
-            <option value="viewer">Viewer</option>
-          </select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Tenant</label>
+            <select
+              value={tenantId}
+              onChange={(e) => setTenantId(e.target.value)}
+              required
+              className={inputClass}
+            >
+              <option value="">Select tenant...</option>
+              {tenants?.data?.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Role</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className={inputClass}
+            >
+              <option value="admin">Admin</option>
+              <option value="operator">Operator</option>
+              <option value="technician">Technician</option>
+              <option value="viewer">Viewer</option>
+            </select>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="First name"
-            required
-            className={inputClass}
-          />
-          <input
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Last name"
-            required
-            className={inputClass}
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            className={inputClass}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className={labelClass}>First name</label>
+            <input
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="John"
+              required
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Last name</label>
+            <input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Doe"
+              required
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="john@example.com"
+              required
+              className={inputClass}
+            />
+          </div>
         </div>
 
-        {error && <p className="text-danger text-xs">{error}</p>}
-        {result && <p className="text-success text-xs">{result}</p>}
+        {error && <p className="text-red-400/80 text-xs">{error}</p>}
+        {result && (
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg className="w-2.5 h-2.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-emerald-400/80 text-xs">{result}</p>
+          </div>
+        )}
 
         <button
           type="submit"
           disabled={loading || !tenantId}
-          className="px-4 py-2 rounded-lg bg-gold text-white text-sm font-semibold hover:bg-[#a07d48] disabled:opacity-40 transition-colors"
+          className="px-6 py-2.5 rounded-lg bg-gold text-[#080704] text-xs font-semibold tracking-wider uppercase hover:bg-gold/90 disabled:opacity-40 transition-all duration-300"
         >
           {loading ? "Sending..." : "Send Invitation"}
         </button>
