@@ -264,10 +264,11 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 ### Auth — BFF pattern (Backend-For-Frontend)
 - Refresh token stocké en cookie `httpOnly` (inaccessible au JS client)
 - Routes API Next.js comme proxy vers le backend Go :
-  - `pwa/app/api/auth/refresh/route.ts` — lit le cookie, forwarde au backend, retourne l'access token
+  - `pwa/app/api/auth/refresh/route.ts` — lit le cookie, forwarde au backend, retourne l'access token + user
   - `pwa/app/api/auth/logout/route.ts` — lit le cookie, forwarde au backend, supprime le cookie
   - `pwa/app/api/auth/set-token/route.ts` — stocke le refresh token en cookie httpOnly après login
 - **Next.js middleware** (`pwa/middleware.ts`) : redirige vers `/login` si le cookie `refresh_token` est absent
+- **AuthBootstrap** (`pwa/components/AuthBootstrap.tsx`) : au montage de l'app, appelle `/api/auth/refresh` pour restaurer la session depuis le cookie httpOnly. Hydrate le Zustand store (`accessToken` + `user`) avant le rendu des enfants. Affiche un spinner pendant le chargement.
 
 ### Offline queue (IndexedDB)
 - `pwa/lib/offline-queue.ts` — CRUD IndexedDB (`pushAction`, `getAllActions`, `removeAction`, etc.)
@@ -279,9 +280,10 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - `pwa/components/ui/SyncBadge.tsx` — badge animé dans la nav, affiche le nombre d'actions en attente
 
 ### State management
-- Zustand store (`pwa/store/app.store.ts`) : `accessToken`, `pendingCount`, `logout()`
+- Zustand store (`pwa/store/app.store.ts`) : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
 - SWR pour le data fetching (stale-while-revalidate)
-- `pwa/lib/api.ts` : client API avec auto-refresh token sur 401
+- `pwa/lib/api.ts` : client API avec auto-refresh token sur 401 (sans condition sur `token` — fonctionne même quand le store est vide après refresh)
+- **Cycle de vie auth** : Login → store + cookie httpOnly → refresh page → AuthBootstrap restaure depuis cookie → store hydraté → SWR fetchers fonctionnent
 
 ## Optimisations performance
 
@@ -390,12 +392,31 @@ Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVide
 - **Fix** : Toujours hasher avec bcrypt cost 12. Le hash doit commencer par `$2a$12$` et faire 60 caractères
 - **Règle** : Ne JAMAIS modifier `password_hash` directement en SQL sans passer par `bcrypt.GenerateFromPassword()`
 
+### Session perdue après refresh (auth bootstrap)
+- **Symptôme** : toutes les pages auth affichent une page blanche ou "Failed to load" après F5
+- **Cause** : Zustand store est in-memory → `accessToken = null` après refresh → requêtes sans Authorization → 401 → le handler ne tentait pas de refresh car `&& token` bloquait
+- **Fix** : `AuthBootstrap` dans le layout racine restaure la session au montage + condition 401 sans `&& token`
+- **Fichiers** : `pwa/components/AuthBootstrap.tsx`, `pwa/app/layout.tsx`, `pwa/lib/api.ts`
+
+### Page 404 landing vide
+- **Symptôme** : `heritagemotor.app/page-inexistante` → page blanche (body vide)
+- **Cause** : Caddy retournait un 404 sans contenu, pas de page 404 custom
+- **Fix** : `web/static/404.html` (page brandée) + `handle_errors` dans le Caddyfile
+- **Fichiers** : `web/static/404.html`, `Caddyfile`
+
+### Performance mobile landing (79 → cible >90)
+- **Symptôme** : FCP 3.0s, LCP 4.5s sur mobile (Lighthouse 79/100)
+- **Cause** : Google Fonts render-blocking (750ms) + poster hero 550KB
+- **Fix** : `rel="preload" as="style"` avec `onload` swap (non-blocking) + poster réduit `w=1280&q=70`
+- **Fichier** : `web/static/index.html`
+
 ### Anti-patterns à éviter
 - **Email pas unique globalement** : email est unique par tenant (`UNIQUE(tenant_id, email)`), pas cross-tenant. Les queries par email doivent joindre le tenant.
 - **Toujours cascader les soft-deletes** : tenant → users, vehicle → events/tasks/documents
 - **Cookie `user_role` éphémère** : Le middleware Next.js vérifie le cookie `user_role` pour `/admin`. Ce cookie est posé au login uniquement — s'il expire, l'accès /admin est perdu jusqu'au re-login.
 - **Toujours normaliser les emails** : `TrimSpace + ToLower` côté backend ET `.trim()` côté frontend avant tout appel API
 - **Ne jamais écrire de password_hash en SQL brut** : utiliser exclusivement bcrypt cost 12 via le code Go
+- **Ne jamais conditionner le refresh token sur la présence du token en mémoire** : le Zustand store est in-memory, `token` est `null` après refresh. Le handler 401 doit toujours tenter un refresh via le cookie httpOnly.
 
 ## Références détaillées
 
