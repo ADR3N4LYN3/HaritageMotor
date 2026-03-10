@@ -78,7 +78,7 @@ heritage-motor/
 ├── pwa/                          # Next.js PWA frontend
 ├── video/                        # Remotion 4 hero video generator
 │   └── src/                      #   HeroVideoV2/V3/V4 (v1 removed)
-├── web/static/                   # Landing page, contact, privacy, legal (i18n EN/FR/DE)
+├── web/static/                   # Landing page, contact, privacy, legal, 404 (i18n EN/FR/DE)
 ├── docs/                         # Documentation (this folder)
 ├── Dockerfile                    # Go API Docker image
 ├── plausible/                    # Plausible Analytics config
@@ -157,7 +157,7 @@ docker compose up -d --build
 - **Background goroutines**: Pre-capture Fiber ctx values, add recovery + timeout
 - **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
 - **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
-- **Landing i18n**: All static pages (index, contact, privacy, legal) support EN/FR/DE via lang switcher, persisted in localStorage
+- **Landing i18n**: All static pages (index, contact, privacy, legal, 404) support EN/FR/DE via lang switcher, persisted in localStorage
 - **Typography**: Cormorant Garamond 300 (serif) for headings, DM Sans 400/500 (sans) for UI — consistent across all pages
 - **Email normalization**: TrimSpace + ToLower on both backend (Go) and frontend (TypeScript) before any auth/invite call
 

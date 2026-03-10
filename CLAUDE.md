@@ -70,6 +70,7 @@ web/static/
   contact.html                   — Page contact (formulaire POST /api/v1/contact, i18n EN/FR/DE)
   privacy.html                   — Politique de confidentialité (i18n EN/FR/DE)
   legal.html                     — Mentions légales (i18n EN/FR/DE)
+  404.html                       — Page 404 (dark luxury, i18n EN/FR/DE, fond route brumeuse)
   hero-bg.mp4                    — Vidéo hero (Remotion v2)
   logo.svg                       — Logo Heritage Motor
   logo-crest.svg                 — Shield crest logo (watermark vidéo + emails)
@@ -274,6 +275,7 @@ Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` pa
 - `contact.html` : `data-i18n` (nav, labels, placeholders) + détection auto de la langue navigateur
 - `privacy.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
 - `legal.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
+- `404.html` : `data-i18n` + fond route brumeuse (Unsplash), shield crest, CTA style landing
 
 ### Design System Landing (Dark Luxury)
 
