@@ -68,8 +68,9 @@ echo "-> Starting services..."
 docker compose up -d
 
 # Cleanup
-echo "-> Cleaning old images..."
-docker image prune -f
+echo "-> Cleaning old images and build cache..."
+docker image prune -a -f
+docker builder prune -f
 
 echo ""
 echo "=== Deploy complete ==="
