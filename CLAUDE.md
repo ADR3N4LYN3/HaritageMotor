@@ -65,8 +65,10 @@ internal/
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
   testutil/setup.go              — Infrastructure tests intégration (Env, Setup, helpers)
 web/static/
-  index.html                     — Landing page (SEO, hero video, CTA)
-  contact.html                   — Page contact (formulaire POST /api/v1/contact, lang auto)
+  index.html                     — Landing page (SEO, hero video, CTA, i18n EN/FR/DE)
+  contact.html                   — Page contact (formulaire POST /api/v1/contact, i18n EN/FR/DE)
+  privacy.html                   — Politique de confidentialité (i18n EN/FR/DE)
+  legal.html                     — Mentions légales (i18n EN/FR/DE)
   hero-bg.mp4                    — Vidéo hero (Remotion v2)
   logo.svg                       — Logo Heritage Motor
   logo-crest.svg                 — Shield crest logo (watermark vidéo + emails)
@@ -255,6 +257,55 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - IA / suggestions automatiques (v3)
 - Facturation et paiements intégrés (v2)
 - Gestion multi-sites (v2)
+
+## Landing Page & Pages Statiques (web/static/)
+
+### i18n (EN/FR/DE)
+
+Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` partagé entre les pages.
+
+**Deux patterns i18n :**
+- **`data-i18n`** : pour les éléments courts (nav, footer, tags). JS remplace `el.textContent` via un dict `i18n = { en: {}, fr: {...}, de: {...} }`. L'anglais est le HTML par défaut, pas besoin de clé `en`.
+- **`data-lang-block`** : pour le contenu long (legal, privacy). Blocs HTML complets par langue, toggle via `el.hidden = (lang !== block)`. Plus propre que traduire élément par élément.
+
+**Pages :**
+- `index.html` : `data-i18n` sur tous les éléments (nav, hero, pillars, features, pricing, CTA, footer)
+- `contact.html` : `data-i18n` (nav, labels, placeholders) + détection auto de la langue navigateur
+- `privacy.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
+- `legal.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
+
+### Design System Landing (Dark Luxury)
+
+**Polices :**
+- Serif : `Cormorant Garamond` (300, 400, 600, italic 400) — titres, accroches, prix
+- Sans : `DM Sans` (400, 500) — body, labels, nav, boutons
+
+**Typographie titres (Cormorant Garamond 300) :**
+- Hero h1 : `clamp(3.2rem, 7vw, 8rem)` / `<em>` = italic + opacité réduite
+- Section h2 : `clamp(2.8rem, 4.5vw, 4.5rem)`
+- Split h2 : `clamp(2.4rem, 3.5vw, 3.6rem)`
+- Pillar/Feat card h3 : `1.5rem`
+- Manifesto quote : `clamp(2.2rem, 3.8vw, 3.8rem)` italic
+- Price amount : `4.5rem`
+
+**Exception stats :** `.stat-val` utilise DM Sans 400 / 3.5rem (les caractères spéciaux €, <, "click" rendent mal en serif)
+
+**Typographie labels (DM Sans) :**
+- `0.78rem` : nav, footer, badges, attributions
+- `0.88rem` : section tags, feat tags, step labels, boutons, liens
+- `1rem` : hero tag, hero CTA
+
+**Body text :** `0.95rem / 300 / line-height 1.8-1.9` — cohérent partout
+
+**Règle FR :** Toujours sentence case (pas de Title Case anglais). Ex: "Registre véhicules", pas "Registre Véhicules".
+
+### Logo SVG
+
+Le logo (shield crest HM + "HERITAGE MOTOR") est inline SVG avec gradients dorés. Deux variantes :
+- **Header** : `height: 46px`, texte sur une ligne
+- **Footer** : `height: 32px`, même layout une ligne (pas deux lignes empilées)
+
+Les gradient IDs doivent être uniques entre header (`sGH`, `sDk`, `sGV`) et footer (`fGH`, `fDk`, `fGV`) pour éviter les conflits SVG.
 
 ## Hero Video (Remotion 4)
 
