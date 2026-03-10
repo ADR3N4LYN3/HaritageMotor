@@ -102,6 +102,7 @@ CONTACT_EMAIL_TO=welcome@heritagemotor.app
 
 # Cloudflare Turnstile (anti-bot on login + contact form)
 TURNSTILE_SECRET_KEY=<turnstile-secret-key>          # from Cloudflare Dashboard > Turnstile
+TURNSTILE_SITE_KEY=<turnstile-site-key>              # same key, used by Go to inject into contact.html
 
 # PWA
 NEXT_PUBLIC_API_URL=https://api.heritagemotor.app/api/v1

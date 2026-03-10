@@ -176,7 +176,13 @@ func main() {
 		return c.SendFile("./web/static/index.html")
 	})
 	app.Get("/contact", func(c *fiber.Ctx) error {
-		return c.SendFile("./web/static/contact.html")
+		data, err := os.ReadFile("./web/static/contact.html")
+		if err != nil {
+			return c.Status(500).SendString("internal error")
+		}
+		html := strings.Replace(string(data), "__TURNSTILE_SITE_KEY__", cfg.TurnstileSiteKey, 1)
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(html)
 	})
 
 	// API routes require database

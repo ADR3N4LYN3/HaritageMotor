@@ -286,8 +286,8 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
         <label for="website">Website</label>
         <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
       </div>
-      <!-- Cloudflare Turnstile — replace data-sitekey with your key from Cloudflare Dashboard > Turnstile -->
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAACoslwlsGYUiLXus" data-theme="dark"></div>
+      <!-- Cloudflare Turnstile — site key injected by Go server from TURNSTILE_SITE_KEY env var -->
+      <div class="cf-turnstile" data-sitekey="__TURNSTILE_SITE_KEY__" data-theme="dark"></div>
       <button type="submit" class="form-submit" data-i18n="form.submit">
         Send Message
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
