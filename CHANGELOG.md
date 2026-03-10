@@ -7,6 +7,10 @@ et ce projet adhere au [Versionnement Semantique](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Modifie
+
+- **Logo v2 (blason HM + laurier)** : remplacement du shield crest SVG inline par `logo-crest-v2.png` (PNG transparent, art deco + couronne de laurier). Mis a jour sur toutes les pages statiques (index, contact, privacy, legal), PWA (login, TopBar), emails transactionnels et watermark video Remotion — **web/static/logo-crest-v2.png**, **pwa/public/**, **video/public/**
+
 ### Ajoute
 
 - **Cloudflare Turnstile invisible sur login** : widget invisible cote PWA (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`), verification serveur via `internal/turnstile/` partage avec le formulaire contact — **internal/turnstile/**, **internal/handler/auth/**, **pwa/app/login/page.tsx**, **pwa/lib/auth.ts**

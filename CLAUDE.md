@@ -72,9 +72,10 @@ web/static/
   legal.html                     — Mentions légales (i18n EN/FR/DE)
   404.html                       — Page 404 (dark luxury, i18n EN/FR/DE, fond route brumeuse)
   hero-bg.mp4                    — Vidéo hero (Remotion v2)
-  logo.svg                       — Logo Heritage Motor
-  logo-crest.svg                 — Shield crest logo (watermark vidéo + emails)
-  logo-email.png / .svg          — Logo optimisé pour emails HTML
+  logo-crest-v2.png              — Logo principal (blason HM + laurier, PNG transparent)
+  logo.svg                       — (legacy) Ancien monogramme HM shield SVG
+  logo-crest.svg                 — (legacy) Ancien shield crest SVG complet
+  logo-email.png / .svg          — (legacy) Ancien logo emails
 video/                           — Projet Remotion 4 (génération hero-bg.mp4, v2/v3/v4)
 pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 ```
@@ -302,13 +303,19 @@ Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` pa
 
 **Règle FR :** Toujours sentence case (pas de Title Case anglais). Ex: "Registre véhicules", pas "Registre Véhicules".
 
-### Logo SVG
+### Logo
 
-Le logo (shield crest HM + "HERITAGE MOTOR") est inline SVG avec gradients dorés. Deux variantes :
-- **Header** : `height: 46px`, texte sur une ligne
-- **Footer** : `height: 32px`, même layout une ligne (pas deux lignes empilées)
+Logo principal : `logo-crest-v2.png` — blason HM art déco + couronne de laurier, PNG fond transparent, tons or (#b8955a / #c4a265).
 
-Les gradient IDs doivent être uniques entre header (`sGH`, `sDk`, `sGV`) et footer (`fGH`, `fDk`, `fGV`) pour éviter les conflits SVG.
+Utilisé comme `<img>` + texte "HERITAGE MOTOR" en Cormorant Garamond 600 à côté. Tailles :
+- **Landing nav** : 42px + texte 19px
+- **Landing footer** : 28px + texte 15px
+- **PWA TopBar** : 30px + texte 0.82rem
+- **PWA Login** : 88px (centré, texte en dessous)
+- **Emails** : 72px (via `https://heritagemotor.app/logo-crest-v2.png`)
+- **Vidéo watermark** : 52px (Remotion `staticFile`)
+
+Fichier présent dans 3 répertoires : `web/static/`, `pwa/public/`, `video/public/`.
 
 ## Hero Video (Remotion 4)
 
