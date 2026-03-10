@@ -136,7 +136,7 @@ func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword, lang stri
 
   <!-- Logo -->
   <tr><td align="center" style="padding:0 0 14px;">
-    <img src="https://heritagemotor.app/logo-email.png" alt="HM" width="72" height="88" style="display:block;width:72px;height:88px;" />
+    <img src="https://heritagemotor.app/logo-crest-v2.png" alt="HM" width="72" height="72" style="display:block;width:72px;height:72px;" />
   </td></tr>
 
   <!-- Brand name -->
