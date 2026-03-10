@@ -26,6 +26,15 @@ set -a; source "$ENV_FILE"; set +a
 
 echo "=== Heritage Motor — Deploy ==="
 
+# Pull LFS assets (hero video, etc.)
+if command -v git-lfs &>/dev/null || git lfs version &>/dev/null 2>&1; then
+    echo "-> Pulling Git LFS assets..."
+    git lfs pull
+else
+    echo "WARNING: git-lfs not installed. Large files (video) may be missing."
+    echo "         Install with: apt install git-lfs && git lfs install"
+fi
+
 # Build images
 echo "-> Building images..."
 docker compose build
