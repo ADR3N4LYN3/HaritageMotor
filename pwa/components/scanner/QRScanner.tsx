@@ -27,6 +27,13 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
 
     const startScanning = async () => {
       try {
+        // Request camera permission first — this triggers the browser prompt.
+        // Without this, enumerateDevices() returns empty on mobile.
+        const tempStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
+        tempStream.getTracks().forEach((track) => track.stop());
+
         const videoInputDevices = await BrowserQRCodeReader.listVideoInputDevices();
         // Prefer back camera
         const backCamera = videoInputDevices.find(

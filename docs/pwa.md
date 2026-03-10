@@ -236,11 +236,12 @@ interface PendingAction {
 
 Uses `@zxing/browser` for real-time QR code scanning:
 
-1. Lists video input devices
-2. Prefers back/rear camera
-3. Decodes continuously from video stream
-4. Haptic feedback on successful scan (`navigator.vibrate(100)`)
-5. Stops scanning after first result to prevent duplicate resolution
+1. Requests camera permission via `getUserMedia()` (triggers browser prompt on mobile)
+2. Lists video input devices (requires prior permission grant to enumerate)
+3. Prefers back/rear camera
+4. Decodes continuously from video stream
+5. Haptic feedback on successful scan (`navigator.vibrate(100)`)
+6. Stops scanning after first result to prevent duplicate resolution
 
 ### Scan Flow
 

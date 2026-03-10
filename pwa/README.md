@@ -76,7 +76,7 @@ pwa/
       CameraCapture.tsx           Capture photo (getUserMedia, 1920x1080 JPEG)
       PhotoGrid.tsx               Grille photos (3 colonnes)
     scanner/
-      QRScanner.tsx               Lecteur QR code (@zxing, camera arriere)
+      QRScanner.tsx               Lecteur QR code (@zxing, getUserMedia prompt + camera arriere)
     providers/
       SWRProvider.tsx              Config SWR (fetcher, retry, dedup)
   hooks/
