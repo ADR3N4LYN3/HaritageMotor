@@ -177,9 +177,10 @@ The PWA host additionally allows camera access (`Permissions-Policy: camera=(sel
 ### Initial Setup
 
 ```bash
-# Clone the repository
+# Clone the repository (includes Git LFS for hero-bg.mp4)
 git clone <repo-url>
 cd HaritageMotor
+git lfs pull
 
 # Create environment file
 cp .env.example .env

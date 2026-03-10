@@ -1,12 +1,16 @@
 bin/
 .env
 .env.local
+.env.test
 certs/
 *.exe
 *.test
 *.out
 tmp/
 vendor/
+
+# Design drafts
+heritage-motor-logo*.png
 
 # Next.js
 pwa/.next/

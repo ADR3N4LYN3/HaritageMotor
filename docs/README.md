@@ -84,6 +84,7 @@ heritage-motor/
 ├── plausible/                    # Plausible Analytics config
 │   ├── clickhouse-config.xml     #   ClickHouse logging config
 │   └── clickhouse-user-config.xml#   ClickHouse user config
+├── .gitattributes                # Git LFS tracking (hero-bg.mp4)
 ├── compose.yaml                  # Production orchestration
 ├── Caddyfile                     # Reverse proxy config
 └── deploy.sh                     # Deployment script
@@ -96,6 +97,7 @@ heritage-motor/
 - Go 1.22+
 - PostgreSQL 16
 - Node.js 20+ (for PWA)
+- Git LFS (large media files like `hero-bg.mp4` are tracked via LFS)
 
 ### Backend
 
