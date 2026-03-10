@@ -25,7 +25,7 @@ export const BrandWatermark: React.FC = () => {
       style={{
         justifyContent: "flex-start",
         alignItems: "center",
-        padding: "48px 0 0 0",
+        padding: "96px 0 0 0",
         opacity,
         transform: `translateY(${translateY}px)`,
         pointerEvents: "none",
