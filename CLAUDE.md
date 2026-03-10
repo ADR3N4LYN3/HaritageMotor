@@ -62,6 +62,7 @@ internal/
     contact/                     — Formulaire contact public + email confirmation i18n + anti-bot (honeypot + Turnstile)
     mailer/                      — Envoi emails via Resend API
     plan/                        — Limites par plan (starter/pro/enterprise)
+  turnstile/turnstile.go         — Cloudflare Turnstile token verification (shared auth + contact)
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
   testutil/setup.go              — Infrastructure tests intégration (Env, Setup, helpers)
 web/static/

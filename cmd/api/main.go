@@ -46,6 +46,7 @@ import (
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/chriis/heritage-motor/internal/storage"
+	"github.com/chriis/heritage-motor/internal/turnstile"
 )
 
 func main() {
@@ -193,8 +194,11 @@ func main() {
 		adminService := adminsvc.NewService(ownerPool, mailerService)
 		reportService := reportsvc.NewService(appPool)
 
+		// Turnstile verifier (shared between auth and contact)
+		turnstileVerifier := turnstile.NewVerifier(cfg.TurnstileSecretKey)
+
 		// Handlers
-		authHandler := authhandler.NewHandler(authService)
+		authHandler := authhandler.NewHandler(authService, turnstileVerifier)
 		vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService, reportService)
 		bayHandler := bayhandler.NewHandler(bayService, planService)
 		eventHandler := eventhandler.NewHandler(eventService)
@@ -207,7 +211,7 @@ func main() {
 		adminHandler := adminhandler.NewHandler(adminService)
 
 		// Contact service (public, uses ownerPool — no RLS needed)
-		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo, cfg.TurnstileSecretKey)
+		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo, turnstileVerifier)
 		contactHandler := contacthandler.NewHandler(contactService)
 
 		// Rate limiter for auth endpoints: 5 req per 15 min per IP

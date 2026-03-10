@@ -8,13 +8,14 @@ All authenticated endpoints require `Authorization: Bearer <access_token>`.
 
 ### POST /auth/login
 
-Login with email and password. Rate limited: 5 req / 15 min per IP.
+Login with email and password. Rate limited: 5 req / 15 min per IP. Cloudflare Turnstile verification (invisible) is required when `TURNSTILE_SECRET_KEY` is configured; `cf_turnstile_response` is optional in dev mode.
 
 **Request:**
 ```json
 {
   "email": "user@example.com",
-  "password": "password123"
+  "password": "password123",
+  "cf_turnstile_response": "0.turnstile-token..."
 }
 ```
 

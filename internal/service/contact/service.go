@@ -11,25 +11,27 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+
+	"github.com/chriis/heritage-motor/internal/turnstile"
 )
 
 type Service struct {
-	pool            *pgxpool.Pool
-	resendAPIKey    string
-	emailFrom       string
-	emailTo         string
-	httpClient      *http.Client
-	turnstileSecret string
+	pool         *pgxpool.Pool
+	resendAPIKey string
+	emailFrom    string
+	emailTo      string
+	httpClient   *http.Client
+	turnstile    *turnstile.Verifier
 }
 
-func NewService(pool *pgxpool.Pool, resendAPIKey, emailFrom, emailTo, turnstileSecret string) *Service {
+func NewService(pool *pgxpool.Pool, resendAPIKey, emailFrom, emailTo string, tv *turnstile.Verifier) *Service {
 	return &Service{
-		pool:            pool,
-		resendAPIKey:    resendAPIKey,
-		emailFrom:       emailFrom,
-		emailTo:         emailTo,
-		httpClient:      &http.Client{Timeout: 10 * time.Second},
-		turnstileSecret: turnstileSecret,
+		pool:         pool,
+		resendAPIKey: resendAPIKey,
+		emailFrom:    emailFrom,
+		emailTo:      emailTo,
+		httpClient:   &http.Client{Timeout: 10 * time.Second},
+		turnstile:    tv,
 	}
 }
 
@@ -94,10 +96,8 @@ var translations = map[string]emailStrings{
 
 func (s *Service) Submit(ctx context.Context, req Request) error {
 	// Verify Turnstile token (skip if not configured — dev mode)
-	if s.turnstileSecret != "" {
-		if err := s.verifyTurnstile(ctx, req.TurnstileResponse, req.IP); err != nil {
-			return err
-		}
+	if err := s.turnstile.Verify(ctx, req.TurnstileResponse, req.IP); err != nil {
+		return err
 	}
 
 	// Store in DB
@@ -438,46 +438,4 @@ func (s *Service) sendConfirmation(req Request) {
 	} else {
 		log.Info().Str("to", req.Email).Str("lang", req.Lang).Msg("confirmation email sent")
 	}
-}
-
-func (s *Service) verifyTurnstile(ctx context.Context, token, ip string) error {
-	if token == "" {
-		return fmt.Errorf("turnstile token missing")
-	}
-
-	payload := map[string]string{
-		"secret":   s.turnstileSecret,
-		"response": token,
-		"remoteip": ip,
-	}
-	body, _ := json.Marshal(payload) //nolint:errcheck // static map
-
-	req, err := http.NewRequestWithContext(ctx, "POST", "https://challenges.cloudflare.com/turnstile/v0/siteverify", bytes.NewReader(body))
-	if err != nil {
-		log.Error().Err(err).Msg("failed to create turnstile verify request")
-		return nil // fail-open on internal error
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := s.httpClient.Do(req)
-	if err != nil {
-		log.Error().Err(err).Msg("turnstile verification request failed")
-		return nil // fail-open on network error
-	}
-	defer resp.Body.Close() //nolint:errcheck // HTTP cleanup
-
-	var result struct {
-		Success bool `json:"success"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		log.Error().Err(err).Msg("failed to decode turnstile response")
-		return nil // fail-open on decode error
-	}
-
-	if !result.Success {
-		log.Warn().Str("ip", ip).Msg("turnstile verification failed — bot suspected")
-		return fmt.Errorf("turnstile verification failed")
-	}
-
-	return nil
 }

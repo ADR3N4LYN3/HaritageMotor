@@ -174,14 +174,25 @@ Endpoints are rate-limited to prevent brute-force and abuse:
 
 Exceeded limits return `429 Too Many Requests`.
 
-### Anti-Bot Protection (Contact Form)
+### Anti-Bot Protection (Cloudflare Turnstile)
 
-The contact form (`POST /contact`) uses 3 layers of bot protection:
+Cloudflare Turnstile is used on public-facing endpoints to prevent bot abuse. A shared `turnstile.Verifier` (`internal/turnstile/`) handles server-side token verification via the siteverify API.
+
+#### Login (`POST /auth/login`)
+
+| Layer | Mechanism | Behavior |
+|-------|-----------|----------|
+| Cloudflare Turnstile (invisible) | Token in `cf_turnstile_response`, verified server-side | If invalid → 403; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
+| Rate limiting | 5 req / 15 min per IP | If exceeded → 429 |
+
+The PWA login page loads the Turnstile script with `render=explicit` and `size: "invisible"`. The widget auto-challenges on page load and passes the token to the login request. Requires `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (PWA) and `TURNSTILE_SECRET_KEY` (backend).
+
+#### Contact Form (`POST /contact`)
 
 | Layer | Mechanism | Behavior |
 |-------|-----------|----------|
 | Honeypot | Hidden `website` field (CSS off-screen) | If filled → fake 201 (bot thinks it succeeded) |
-| Cloudflare Turnstile | Token in `cf_turnstile_response`, verified via siteverify API | If invalid → 500; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
+| Cloudflare Turnstile | Token in `cf_turnstile_response`, verified server-side | If invalid → 500; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
 | Rate limiting | 3 req / 15 min per IP | If exceeded → 429 |
 
 Turnstile verification is **fail-open** on network/decode errors (falls back to rate limiting).

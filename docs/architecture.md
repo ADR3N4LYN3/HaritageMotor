@@ -81,10 +81,10 @@ Client Request
 │  2. Route matching: /api/v1/...                        │
 │                                                        │
 │  Public routes:                                        │
-│    POST /auth/login → Rate limiter → AuthHandler       │
+│    POST /auth/login → Rate limiter → Turnstile → AuthHandler│
 │    POST /auth/mfa/verify → Rate limiter → AuthHandler  │
 │    POST /auth/refresh → Rate limiter → AuthHandler     │
-│    POST /contact → Rate limiter → ContactHandler       │
+│    POST /contact → Rate limiter → Turnstile → ContactHandler│
 │    GET /health → Health check                          │
 │                                                        │
 │  Authenticated routes (tenant-scoped):                  │

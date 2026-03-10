@@ -100,12 +100,13 @@ RESEND_API_KEY=<resend-api-key>
 EMAIL_FROM=noreply@heritagemotor.app
 CONTACT_EMAIL_TO=welcome@heritagemotor.app
 
-# Cloudflare Turnstile (anti-bot on contact form)
-TURNSTILE_SECRET_KEY=<turnstile-secret-key>   # from Cloudflare Dashboard > Turnstile
+# Cloudflare Turnstile (anti-bot on login + contact form)
+TURNSTILE_SECRET_KEY=<turnstile-secret-key>          # from Cloudflare Dashboard > Turnstile
 
 # PWA
 NEXT_PUBLIC_API_URL=https://api.heritagemotor.app/api/v1
 NEXT_PUBLIC_APP_URL=https://app.heritagemotor.app
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=<turnstile-site-key>  # from Cloudflare Dashboard > Turnstile
 
 # Plausible Analytics
 PLAUSIBLE_DB_PASSWORD=<strong-password>         # openssl rand -hex 32

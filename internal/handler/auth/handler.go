@@ -7,23 +7,26 @@ import (
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	authservice "github.com/chriis/heritage-motor/internal/service/auth"
+	"github.com/chriis/heritage-motor/internal/turnstile"
 )
 
 // Handler exposes HTTP endpoints for authentication and MFA.
 type Handler struct {
-	service *authservice.Service
+	service   *authservice.Service
+	turnstile *turnstile.Verifier
 }
 
 // NewHandler creates a new auth handler.
-func NewHandler(service *authservice.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(service *authservice.Service, tv *turnstile.Verifier) *Handler {
+	return &Handler{service: service, turnstile: tv}
 }
 
 // --- request DTOs ---
 
 type loginRequest struct {
-	Email    string `json:"email"    validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8"`
+	Email             string `json:"email"                validate:"required,email"`
+	Password          string `json:"password"             validate:"required,min=8"`
+	TurnstileResponse string `json:"cf_turnstile_response"`
 }
 
 type verifyMFARequest struct {
@@ -56,6 +59,11 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	}
 	if err := handler.Validate.Struct(req); err != nil {
 		return c.Status(422).JSON(handler.ValidationError(err))
+	}
+
+	// Verify Turnstile token (skip if not configured — dev mode)
+	if err := h.turnstile.Verify(c.UserContext(), req.TurnstileResponse, c.IP()); err != nil {
+		return c.Status(403).JSON(fiber.Map{"error": "bot verification failed"})
 	}
 
 	login, mfaPending, err := h.service.Login(c.UserContext(), req.Email, req.Password)

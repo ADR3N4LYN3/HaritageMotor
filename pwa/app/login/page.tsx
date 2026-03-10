@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useReducer, useRef, useEffect } from "react";
+import { useState, useReducer, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 import { login, verifyMFA } from "@/lib/auth";
 import { ApiError } from "@/lib/api";
 import type { User } from "@/lib/types";
@@ -10,6 +11,19 @@ function getRedirectPath(user: User): string {
   if (user.password_change_required) return "/change-password";
   if (user.role === "superadmin") return "/admin";
   return "/scan";
+}
+
+/* ---------- i18n (EN/FR/DE) — same pattern as landing pages ---------- */
+const loginI18n = {
+  en: { tagline: "Vehicle Custody Platform", email: "Email", password: "Password", signin: "Sign In", mfa: "Enter the 6-digit code from your authenticator app", back: "Back to login" },
+  fr: { tagline: "Plateforme de traçabilité véhicule", email: "E-mail", password: "Mot de passe", signin: "Connexion", mfa: "Entrez le code à 6 chiffres de votre application d'authentification", back: "Retour à la connexion" },
+  de: { tagline: "Fahrzeug-Dokumentationsplattform", email: "E-Mail", password: "Passwort", signin: "Anmelden", mfa: "Geben Sie den 6-stelligen Code Ihrer Authenticator-App ein", back: "Zurück zum Login" },
+} as const;
+type Lang = keyof typeof loginI18n;
+
+function getSavedLang(): Lang {
+  try { const l = localStorage.getItem("hm-lang"); if (l && l in loginI18n) return l as Lang; } catch {}
+  return "en";
 }
 
 /* ---------- Landing-style CTA button (outlined gold, hover fill) ---------- */
@@ -46,7 +60,34 @@ export default function LoginPage() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lang, setLang] = useState<Lang>("en");
   const mfaInputRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRendered = useRef(false);
+
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  const renderTurnstile = useCallback(() => {
+    if (!turnstileSiteKey || !turnstileRef.current || turnstileRendered.current) return;
+    const tw = window as unknown as { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => void } };
+    if (!tw.turnstile) return;
+    turnstileRendered.current = true;
+    tw.turnstile.render(turnstileRef.current, {
+      sitekey: turnstileSiteKey,
+      size: "invisible",
+      callback: (token: string) => setTurnstileToken(token),
+    });
+  }, [turnstileSiteKey]);
+
+  useEffect(() => { setLang(getSavedLang()); }, []);
+
+  const switchLang = useCallback((l: Lang) => {
+    setLang(l);
+    try { localStorage.setItem("hm-lang", l); } catch {}
+  }, []);
+
+  const t = loginI18n[lang];
 
   useEffect(() => {
     if (step === "mfa" && mfaInputRef.current) {
@@ -66,7 +107,7 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const result = await login(email.trim(), password);
+      const result = await login(email.trim(), password, turnstileToken);
       if (result.step === "mfa") {
         setMfa({ mfaToken: result.mfa_token, step: "mfa" });
       } else {
@@ -108,10 +149,19 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen bg-[#0e0d0b] flex flex-col items-center justify-center px-6 overflow-hidden">
+      {/* Cloudflare Turnstile (invisible) */}
+      {turnstileSiteKey && (
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+          strategy="afterInteractive"
+          onReady={renderTurnstile}
+        />
+      )}
+      <div ref={turnstileRef} />
       {/* Background photo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=60&auto=format&fit=crop"
+        src="https://images.unsplash.com/photo-1767907571229-01cf4ba03590?w=1920&q=60&auto=format&fit=crop"
         alt=""
         className="pointer-events-none fixed inset-0 w-full h-full object-cover object-center scale-105"
       />
@@ -150,21 +200,18 @@ export default function LoginPage() {
           <h1 className="font-display text-xl font-semibold tracking-[0.25em] uppercase text-[#b8955a]">
             Heritage Motor
           </h1>
-          <p className="text-white/30 text-[11px] font-sans uppercase tracking-[0.25em] mt-3">
-            Vehicle Custody Platform
-          </p>
           {/* Gold gradient separator */}
           <div className="w-16 h-px mx-auto mt-10" style={{ background: "linear-gradient(90deg, transparent, #b8955a, transparent)" }} />
         </div>
 
         {step === "login" ? (
-          <form onSubmit={handleLogin} className="w-full bg-white/[0.03] border border-white/[0.06] rounded-2xl p-8 space-y-5">
+          <form onSubmit={handleLogin} className="w-full bg-[rgba(14,13,11,0.65)] border border-white/[0.10] rounded-2xl p-8 backdrop-blur-md space-y-5">
             <div>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setForm({ email: e.target.value })}
-                placeholder="Email"
+                placeholder={t.email}
                 required
                 className={inputCls}
                 autoComplete="email"
@@ -175,7 +222,7 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setForm({ password: e.target.value })}
-                placeholder="Password"
+                placeholder={t.password}
                 required
                 minLength={8}
                 className={`${inputCls} pr-12`}
@@ -205,13 +252,13 @@ export default function LoginPage() {
             )}
 
             <LoginButton type="submit" loading={loading}>
-              Sign In
+              {t.signin}
             </LoginButton>
           </form>
         ) : (
-          <div className="w-full bg-white/[0.03] border border-white/[0.06] rounded-2xl p-8 space-y-6">
+          <div className="w-full bg-[rgba(14,13,11,0.65)] border border-white/[0.10] rounded-2xl p-8 backdrop-blur-md space-y-6">
             <div className="text-center">
-              <p className="text-white/40 text-sm">Enter the 6-digit code from your authenticator app</p>
+              <p className="text-white/40 text-sm">{t.mfa}</p>
             </div>
             <input
               ref={mfaInputRef}
@@ -239,10 +286,25 @@ export default function LoginPage() {
               onClick={() => { setMfa({ step: "login", mfaCode: "" }); setError(null); }}
               className="w-full text-[#b8955a]/60 text-xs uppercase tracking-widest hover:text-[#b8955a] transition-colors"
             >
-              Back to login
+              {t.back}
             </button>
           </div>
         )}
+
+        {/* Language switcher */}
+        <div className="flex items-center gap-4 mt-8">
+          {(["en", "fr", "de"] as const).map((l) => (
+            <button
+              key={l}
+              onClick={() => switchLang(l)}
+              className={`text-[0.7rem] font-sans font-medium uppercase tracking-[0.15em] transition-colors ${
+                lang === l ? "text-[#b8955a]" : "text-white/30 hover:text-white/50"
+              }`}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

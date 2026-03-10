@@ -46,6 +46,7 @@ import (
 	tasksvc "github.com/chriis/heritage-motor/internal/service/task"
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
+	"github.com/chriis/heritage-motor/internal/turnstile"
 )
 
 // Env holds all test dependencies.
@@ -156,10 +157,11 @@ func buildApp(ownerPool, appPool *pgxpool.Pool, jwtManager *auth.JWTManager) *fi
 	planService := plansvc.NewService(ownerPool)
 	mailerService := mailersvc.NewService("", "", "http://localhost:3000") // no-op mailer in tests
 	adminService := adminsvc.NewService(ownerPool, mailerService)
-	contactService := contactsvc.NewService(ownerPool, "", "", "", "")
+	noopTurnstile := turnstile.NewVerifier("") // no-op in tests
+	contactService := contactsvc.NewService(ownerPool, "", "", "", noopTurnstile)
 
 	// Handlers
-	authHandler := authhandler.NewHandler(authService)
+	authHandler := authhandler.NewHandler(authService, noopTurnstile)
 	reportService := reportsvc.NewService(appPool)
 	vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService, reportService)
 	bayHandler := bayhandler.NewHandler(bayService, planService)

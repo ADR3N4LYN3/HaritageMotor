@@ -5,6 +5,18 @@ Toutes les modifications notables de ce projet sont documentees dans ce fichier.
 Le format est base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhere au [Versionnement Semantique](https://semver.org/lang/fr/).
 
+## [Unreleased]
+
+### Ajoute
+
+- **Cloudflare Turnstile invisible sur login** : widget invisible cote PWA (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`), verification serveur via `internal/turnstile/` partage avec le formulaire contact — **internal/turnstile/**, **internal/handler/auth/**, **pwa/app/login/page.tsx**, **pwa/lib/auth.ts**
+
+### Modifie
+
+- **Refactoring Turnstile** : extraction de la logique de verification dans un package partage `internal/turnstile/Verifier`, reutilise par auth handler et contact service — **internal/service/contact/**, **internal/turnstile/**
+- **Dockerfile PWA** : ajout build arg `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — **pwa/Dockerfile**, **compose.yaml**
+- **Documentation** : mise a jour security.md, api-reference.md, architecture.md, deployment.md, .env.example, CLAUDE.md pour Turnstile login
+
 ## [1.0.0] - 2025-03-10
 
 Premiere release officielle. Plateforme SaaS multi-tenant B2B pour la gestion
