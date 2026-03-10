@@ -122,6 +122,21 @@ export interface ScanResult {
   actions: string[];
 }
 
+export interface Document {
+  id: string;
+  tenant_id: string;
+  vehicle_id: string;
+  uploaded_by: string;
+  doc_type: string;
+  filename: string;
+  s3_key: string;
+  mime_type: string;
+  size_bytes: number;
+  expires_at?: string;
+  notes?: string;
+  created_at: string;
+}
+
 export interface PendingAction {
   id: string;
   type: "move" | "task" | "photo" | "exit";

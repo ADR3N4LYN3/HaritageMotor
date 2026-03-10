@@ -1,6 +1,9 @@
 package bay
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
@@ -110,6 +113,49 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(bay)
+}
+
+// QRSheet GET /bays/qr-sheet — returns all bays with QR token URLs (admin only)
+func (h *Handler) QRSheet(c *fiber.Ctx) error {
+	tenantID := middleware.TenantIDFromCtx(c)
+
+	// Fetch all bays (high per_page, no filter)
+	bays, _, err := h.service.List(c.UserContext(), tenantID, "", "", 1, 100)
+	if err != nil {
+		return handler.HandleServiceError(c, err)
+	}
+
+	baseURL := os.Getenv("APP_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://app.heritagemotor.app"
+	}
+
+	type bayQR struct {
+		ID      uuid.UUID `json:"id"`
+		Code    string    `json:"code"`
+		Zone    *string   `json:"zone,omitempty"`
+		Status  string    `json:"status"`
+		QRToken *string   `json:"qr_token,omitempty"`
+		QRURL   string    `json:"qr_url"`
+	}
+
+	result := make([]bayQR, 0, len(bays))
+	for _, b := range bays {
+		qrURL := ""
+		if b.QRToken != nil {
+			qrURL = fmt.Sprintf("%s/scan/%s", baseURL, *b.QRToken)
+		}
+		result = append(result, bayQR{
+			ID:      b.ID,
+			Code:    b.Code,
+			Zone:    b.Zone,
+			Status:  b.Status,
+			QRToken: b.QRToken,
+			QRURL:   qrURL,
+		})
+	}
+
+	return c.JSON(fiber.Map{"bays": result})
 }
 
 func (h *Handler) Delete(c *fiber.Ctx) error {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -7,6 +8,9 @@ import { EventItem } from "@/components/ui/EventItem";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle, useVehicleTimeline } from "@/hooks/useVehicle";
 import { useAppStore } from "@/store/app.store";
+import { api } from "@/lib/api";
+import type { Document, PaginatedResponse } from "@/lib/types";
+import useSWR from "swr";
 
 export default function VehiclePage() {
   const params = useParams();
@@ -17,9 +21,55 @@ export default function VehiclePage() {
 
   const { vehicle, isLoading } = useVehicle(id);
   const { events, isLoading: eventsLoading } = useVehicleTimeline(id);
+  const { data: docsData } = useSWR<PaginatedResponse<Document>>(
+    id ? `/vehicles/${id}/documents` : null
+  );
+  const documents = docsData?.data || [];
+
+  const [downloadingDoc, setDownloadingDoc] = useState<string | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
 
   const canOperate = role === "admin" || role === "operator";
   const canTechnician = canOperate || role === "technician";
+
+  async function handleDownload(docId: string) {
+    setDownloadingDoc(docId);
+    try {
+      const res = await api.get<{ document: Document; signed_url: string }>(
+        `/vehicles/${id}/documents/${docId}`
+      );
+      if (res.signed_url) {
+        window.open(res.signed_url, "_blank");
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setDownloadingDoc(null);
+    }
+  }
+
+  async function handleReport() {
+    setReportLoading(true);
+    try {
+      const token = useAppStore.getState().accessToken;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
+      const res = await fetch(`${apiUrl}/vehicles/${id}/report`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Report generation failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `HeritageMotor_${vehicle?.make}_${vehicle?.model}_report.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silently fail
+    } finally {
+      setReportLoading(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -51,12 +101,24 @@ export default function VehiclePage() {
       <div className="space-y-6">
         {/* Vehicle Header */}
         <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/[0.06]">
-          <h1 className="font-display text-2xl font-light tracking-wide text-white">
-            {displayName}
-          </h1>
-          {subtitle && (
-            <p className="text-white/50 mt-1">{subtitle}</p>
-          )}
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="font-display text-2xl font-light tracking-wide text-white">
+                {displayName}
+              </h1>
+              {subtitle && (
+                <p className="text-white/50 mt-1">{subtitle}</p>
+              )}
+            </div>
+            {canOperate && (
+              <button
+                onClick={() => router.push(`/vehicle/${id}/edit`)}
+                className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors"
+              >
+                Edit
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-3 mt-3">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
               vehicle.status === "stored"
@@ -110,6 +172,45 @@ export default function VehiclePage() {
                 Exit Vehicle
               </ActionButton>
             )}
+          </div>
+        )}
+
+        {/* PDF Report */}
+        {canOperate && (
+          <ActionButton
+            variant="secondary"
+            onClick={handleReport}
+            loading={reportLoading}
+          >
+            {reportLoading ? "Generating report..." : "Generate PDF Report"}
+          </ActionButton>
+        )}
+
+        {/* Documents */}
+        {documents.length > 0 && (
+          <div>
+            <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
+              Documents
+            </h2>
+            <div className="bg-white/[0.03] rounded-2xl border border-white/[0.06] divide-y divide-white/[0.06]">
+              {documents.map((doc) => (
+                <div key={doc.id} className="px-4 py-3 flex items-center justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-white truncate">{doc.filename}</p>
+                    <p className="text-xs text-white/30 mt-0.5">
+                      {doc.doc_type} · {(doc.size_bytes / 1024).toFixed(0)} KB
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDownload(doc.id)}
+                    disabled={downloadingDoc === doc.id}
+                    className="ml-3 px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors disabled:opacity-50"
+                  >
+                    {downloadingDoc === doc.id ? "..." : "Download"}
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { VehicleCard } from "@/components/ui/VehicleCard";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
+import { useAppStore } from "@/store/app.store";
 import type { Vehicle } from "@/lib/types";
 import useSWR from "swr";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const user = useAppStore((s) => s.user);
+  const canCreate = user?.role === "admin" || user?.role === "operator";
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -43,7 +46,18 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        <h1 className="font-display text-2xl font-light tracking-wide text-white">Vehicles</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="font-display text-2xl font-light tracking-wide text-white">Vehicles</h1>
+          {canCreate && (
+            <button
+              onClick={() => router.push("/vehicle/new")}
+              className="w-10 h-10 rounded-full bg-gold flex items-center justify-center text-white text-xl font-light hover:bg-[#a07d48] transition-colors active:scale-95"
+              aria-label="Add vehicle"
+            >
+              +
+            </button>
+          )}
+        </div>
 
         {/* Search */}
         <input

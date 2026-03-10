@@ -72,7 +72,19 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return handler.HandleServiceError(c, err)
 	}
 
-	return c.JSON(doc)
+	// Generate signed URL for download (60 min for documents)
+	var signedURL string
+	if h.s3 != nil && h.s3.IsConfigured() && doc.S3Key != "" {
+		signedURL, err = h.s3.GetSignedURL(c.UserContext(), doc.S3Key, 60*time.Minute)
+		if err != nil {
+			log.Warn().Err(err).Str("s3_key", doc.S3Key).Msg("failed to generate signed URL for document")
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"document":   doc,
+		"signed_url": signedURL,
+	})
 }
 
 // Create POST /vehicles/:id/documents (multipart/form-data)

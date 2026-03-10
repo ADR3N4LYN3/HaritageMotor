@@ -37,6 +37,7 @@ export default function AdminPage() {
       <Header />
       <main className="relative max-w-6xl mx-auto px-6 lg:px-8 py-12 space-y-16">
         <StatsSection />
+        <QuickLinks />
         <TenantsSection />
         <InviteSection />
       </main>
@@ -141,6 +142,30 @@ function StatsSection() {
             </div>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function QuickLinks() {
+  const router = useRouter();
+  return (
+    <section>
+      <div className="flex gap-3">
+        <button
+          onClick={() => router.push("/admin/qr-codes")}
+          className="flex-1 bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] hover:bg-white/[0.06] transition-colors text-left"
+        >
+          <p className="text-sm font-medium text-white/80">QR Codes</p>
+          <p className="text-xs text-white/30 mt-0.5">Print bay & vehicle QR codes</p>
+        </button>
+        <button
+          onClick={() => router.push("/bays")}
+          className="flex-1 bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] hover:bg-white/[0.06] transition-colors text-left"
+        >
+          <p className="text-sm font-medium text-white/80">Bays</p>
+          <p className="text-xs text-white/30 mt-0.5">Manage facility bays</p>
+        </button>
       </div>
     </section>
   );

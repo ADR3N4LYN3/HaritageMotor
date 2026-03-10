@@ -62,3 +62,39 @@ body {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
+
+/* QR code print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .qr-print-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .qr-print-card {
+    border: 1px dashed #ccc;
+    padding: 16px;
+    text-align: center;
+    page-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .qr-print-label {
+    font-size: 14pt;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  .qr-print-sub {
+    font-size: 10pt;
+    color: #666;
+  }
+}

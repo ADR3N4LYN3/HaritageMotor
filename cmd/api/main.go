@@ -27,6 +27,7 @@ import (
 	contacthandler "github.com/chriis/heritage-motor/internal/handler/contact"
 	dochandler "github.com/chriis/heritage-motor/internal/handler/document"
 	eventhandler "github.com/chriis/heritage-motor/internal/handler/event"
+	photohandler "github.com/chriis/heritage-motor/internal/handler/photo"
 	scanhandler "github.com/chriis/heritage-motor/internal/handler/scan"
 	taskhandler "github.com/chriis/heritage-motor/internal/handler/task"
 	userhandler "github.com/chriis/heritage-motor/internal/handler/user"
@@ -40,6 +41,7 @@ import (
 	eventsvc "github.com/chriis/heritage-motor/internal/service/event"
 	mailersvc "github.com/chriis/heritage-motor/internal/service/mailer"
 	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
+	reportsvc "github.com/chriis/heritage-motor/internal/service/report"
 	tasksvc "github.com/chriis/heritage-motor/internal/service/task"
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
@@ -189,16 +191,18 @@ func main() {
 		planService := plansvc.NewService(ownerPool)
 		mailerService := mailersvc.NewService(cfg.ResendAPIKey, cfg.EmailFrom, cfg.AppBaseURL)
 		adminService := adminsvc.NewService(ownerPool, mailerService)
+		reportService := reportsvc.NewService(appPool)
 
 		// Handlers
 		authHandler := authhandler.NewHandler(authService)
-		vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService)
+		vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService, reportService)
 		bayHandler := bayhandler.NewHandler(bayService, planService)
 		eventHandler := eventhandler.NewHandler(eventService)
 		taskHandler := taskhandler.NewHandler(taskService)
 		docHandler := dochandler.NewHandler(docService, s3Client)
 		userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry(), planService)
 		auditHandler := auditloghandler.NewHandler(appPool)
+		photoHandler := photohandler.NewHandler(s3Client)
 		scanHandler := scanhandler.NewHandler(appPool)
 		adminHandler := adminhandler.NewHandler(adminService)
 
@@ -277,6 +281,7 @@ func main() {
 
 		// Vehicles
 		vehicles := authed.Group("/vehicles")
+		vehicles.Get("/qr-sheet", middleware.RequireAdmin(), vehicleHandler.QRSheet)
 		vehicles.Get("/", vehicleHandler.List)
 		vehicles.Get("/:id", vehicleHandler.GetByID)
 		vehicles.Post("/", middleware.RequireOperatorOrAbove(), vehicleHandler.Create)
@@ -285,6 +290,7 @@ func main() {
 		vehicles.Post("/:id/move", middleware.RequireOperatorOrAbove(), vehicleHandler.Move)
 		vehicles.Post("/:id/exit", middleware.RequireOperatorOrAbove(), vehicleHandler.Exit)
 		vehicles.Get("/:id/timeline", vehicleHandler.GetTimeline)
+		vehicles.Get("/:id/report", middleware.RequireOperatorOrAbove(), vehicleHandler.GetReport)
 
 		// Upload bandwidth limiter: 200MB cumulative per user per 10 minutes.
 		uploadLimiter := middleware.UploadLimiter(middleware.UploadLimiterConfig{
@@ -306,6 +312,7 @@ func main() {
 
 		// Bays
 		bays := authed.Group("/bays")
+		bays.Get("/qr-sheet", middleware.RequireAdmin(), bayHandler.QRSheet)
 		bays.Get("/", bayHandler.List)
 		bays.Get("/:id", bayHandler.GetByID)
 		bays.Post("/", middleware.RequireOperatorOrAbove(), bayHandler.Create)
@@ -330,6 +337,9 @@ func main() {
 
 		// Scan
 		authed.Get("/scan/:token", scanHandler.Resolve)
+
+		// Photos (signed URL for download)
+		authed.Get("/photos/:key/signed-url", photoHandler.GetSignedURL)
 
 		// Audit log (admin only)
 		authed.Get("/audit", middleware.RequireAdmin(), auditHandler.List)

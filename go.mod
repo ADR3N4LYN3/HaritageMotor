@@ -30,8 +30,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.19 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
-	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
+	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-pdf/fpdf v0.9.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

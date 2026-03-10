@@ -1,6 +1,9 @@
 package vehicle
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
@@ -8,18 +11,20 @@ import (
 	"github.com/chriis/heritage-motor/internal/handler"
 	"github.com/chriis/heritage-motor/internal/middleware"
 	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
+	reportsvc "github.com/chriis/heritage-motor/internal/service/report"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 )
 
 // Handler holds the HTTP handlers for vehicle endpoints.
 type Handler struct {
-	svc     *vehiclesvc.Service
-	planSvc *plansvc.Service
+	svc       *vehiclesvc.Service
+	planSvc   *plansvc.Service
+	reportSvc *reportsvc.Service
 }
 
 // NewHandler creates a new vehicle handler.
-func NewHandler(svc *vehiclesvc.Service, planSvc *plansvc.Service) *Handler {
-	return &Handler{svc: svc, planSvc: planSvc}
+func NewHandler(svc *vehiclesvc.Service, planSvc *plansvc.Service, reportSvc *reportsvc.Service) *Handler {
+	return &Handler{svc: svc, planSvc: planSvc, reportSvc: reportSvc}
 }
 
 // listQuery maps query parameters for the List endpoint.
@@ -285,6 +290,77 @@ func (h *Handler) Exit(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"status": "exited"})
+}
+
+// QRSheet handles GET /vehicles/qr-sheet — returns active vehicles with QR token URLs (admin only)
+func (h *Handler) QRSheet(c *fiber.Ctx) error {
+	tenantID := middleware.TenantIDFromCtx(c)
+
+	// Fetch active vehicles (not exited, not deleted)
+	filters := vehiclesvc.VehicleFilters{Page: 1, PerPage: 100}
+	vehicles, _, err := h.svc.List(c.UserContext(), tenantID, filters)
+	if err != nil {
+		return handler.HandleServiceError(c, err)
+	}
+
+	baseURL := os.Getenv("APP_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://app.heritagemotor.app"
+	}
+
+	type vehicleQR struct {
+		ID        uuid.UUID `json:"id"`
+		Make      string    `json:"make"`
+		Model     string    `json:"model"`
+		Year      *int      `json:"year,omitempty"`
+		OwnerName string    `json:"owner_name"`
+		QRToken   *string   `json:"qr_token,omitempty"`
+		QRURL     string    `json:"qr_url"`
+	}
+
+	result := make([]vehicleQR, 0, len(vehicles))
+	for _, v := range vehicles {
+		if v.Status == "out" {
+			continue
+		}
+		qrURL := ""
+		if v.QRToken != nil {
+			qrURL = fmt.Sprintf("%s/scan/%s", baseURL, *v.QRToken)
+		}
+		result = append(result, vehicleQR{
+			ID:        v.ID,
+			Make:      v.Make,
+			Model:     v.Model,
+			Year:      v.Year,
+			OwnerName: v.OwnerName,
+			QRToken:   v.QRToken,
+			QRURL:     qrURL,
+		})
+	}
+
+	return c.JSON(fiber.Map{"vehicles": result})
+}
+
+// GetReport handles GET /vehicles/:id/report — generates a PDF report
+func (h *Handler) GetReport(c *fiber.Ctx) error {
+	tenantID := middleware.TenantIDFromCtx(c)
+	vehicleID, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid vehicle id"})
+	}
+
+	if h.reportSvc == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "report service not available"})
+	}
+
+	pdfBytes, filename, err := h.reportSvc.GenerateVehicleReport(c.UserContext(), tenantID, vehicleID)
+	if err != nil {
+		return handler.HandleServiceError(c, err)
+	}
+
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+	return c.Send(pdfBytes)
 }
 
 // GetTimeline handles GET /vehicles/:id/timeline

@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { useBay } from "@/hooks/useBay";
+import { useAppStore } from "@/store/app.store";
 import type { Vehicle } from "@/lib/types";
 import useSWR from "swr";
 
@@ -10,6 +11,8 @@ export default function BayPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  const user = useAppStore((s) => s.user);
+  const canEdit = user?.role === "admin" || user?.role === "operator";
 
   const { bay, isLoading } = useBay(id);
 
@@ -50,12 +53,24 @@ export default function BayPage() {
       <div className="space-y-6">
         {/* Bay Header */}
         <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/[0.06]">
-          <h1 className="font-display text-2xl font-light tracking-wide text-white">
-            {bay.code}
-          </h1>
-          {bay.zone && (
-            <p className="text-white/50 mt-1">Zone: {bay.zone}</p>
-          )}
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="font-display text-2xl font-light tracking-wide text-white">
+                {bay.code}
+              </h1>
+              {bay.zone && (
+                <p className="text-white/50 mt-1">Zone: {bay.zone}</p>
+              )}
+            </div>
+            {canEdit && (
+              <button
+                onClick={() => router.push(`/bay/${id}/edit`)}
+                className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors"
+              >
+                Edit
+              </button>
+            )}
+          </div>
           <div className="mt-3">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[bay.status] || statusColors.free}`}>
               {bay.status}
@@ -68,7 +83,7 @@ export default function BayPage() {
                   key={feature}
                   className="text-xs bg-white/[0.06] text-white/50 px-2 py-0.5 rounded"
                 >
-                  {feature}
+                  {feature.replace(/_/g, " ")}
                 </span>
               ))}
             </div>
