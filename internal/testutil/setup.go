@@ -42,6 +42,7 @@ import (
 	eventsvc "github.com/chriis/heritage-motor/internal/service/event"
 	mailersvc "github.com/chriis/heritage-motor/internal/service/mailer"
 	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
+	reportsvc "github.com/chriis/heritage-motor/internal/service/report"
 	tasksvc "github.com/chriis/heritage-motor/internal/service/task"
 	usersvc "github.com/chriis/heritage-motor/internal/service/user"
 	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
@@ -159,7 +160,8 @@ func buildApp(ownerPool, appPool *pgxpool.Pool, jwtManager *auth.JWTManager) *fi
 
 	// Handlers
 	authHandler := authhandler.NewHandler(authService)
-	vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService)
+	reportService := reportsvc.NewService(appPool)
+	vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService, reportService)
 	bayHandler := bayhandler.NewHandler(bayService, planService)
 	eventHandler := eventhandler.NewHandler(eventService)
 	taskHandler := taskhandler.NewHandler(taskService)
