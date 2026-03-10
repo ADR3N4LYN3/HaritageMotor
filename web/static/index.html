@@ -81,11 +81,11 @@ nav.nav-hidden { transform: translateY(-100%); }
 .logo-svg { height: 46px; width: auto; }
 .nav-right { display: flex; align-items: center; gap: 2rem; }
 .nav-links { display: flex; gap: 2rem; list-style: none; }
-.nav-links a { font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.92); transition: color 0.3s ease-out; font-weight: 500; }
+.nav-links a { font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.92); transition: color 0.3s ease-out; font-weight: 500; text-align: center; display: inline-block; }
 .nav-links a:hover { color: var(--gold); }
-.nav-sign-in { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 500; color: rgba(255,255,255,0.85); transition: color 0.3s ease-out; display: flex; align-items: center; line-height: 1; }
+.nav-sign-in { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 500; color: rgba(255,255,255,0.85); transition: color 0.3s ease-out; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
 .nav-sign-in:hover { color: var(--gold); }
-.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.65rem 1.8rem; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); position: relative; overflow: hidden; border-radius: 4px; white-space: nowrap; }
+.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.65rem 1.8rem; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); position: relative; overflow: hidden; border-radius: 4px; white-space: nowrap; text-align: center; display: inline-flex; justify-content: center; }
 .nav-cta::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: -1; }
 .nav-cta:hover { color: var(--black); border-color: var(--gold); }
 .nav-cta:hover::after { transform: scaleX(1); }
@@ -313,7 +313,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   .nav-links { display: none; }
   .nav-sign-in { display: none; }
   .nav-right { gap: 1.5rem; }
-  .nav-cta { font-size: 0.68rem; padding: 0.5rem 1.1rem; white-space: nowrap; }
+  .nav-cta { font-size: 0.68rem; padding: 0.5rem 1.1rem; white-space: nowrap; min-width: auto !important; }
   .hero h1 { font-size: clamp(2.8rem, 8vw, 4rem); }
   .trusted-items { gap: 1.2rem; }
   .trusted-item { font-size: 0.95rem; }
@@ -966,6 +966,28 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     try { localStorage.setItem('hm-lang', lang); } catch(e) {}
   }
 
+  /* --- Restore saved language immediately ------------------------------ */
+  try { var savedLang = localStorage.getItem('hm-lang'); if (savedLang && i18n[savedLang]) setLang(savedLang); } catch(e) {}
+
+  /* --- Lock nav widths across languages (prevent layout shift) --------- */
+  /* Deferred to document.fonts.ready so measurements use actual web fonts */
+  document.fonts.ready.then(function() {
+    var navEls = Array.from(document.querySelectorAll('.nav-links a, .nav-sign-in, .nav-cta'));
+    if (!navEls.length || window.innerWidth <= 960) return;
+    var curLang = document.documentElement.lang || 'en';
+    var langs = Object.keys(i18n).concat('en');
+    var maxW = navEls.map(function() { return 0; });
+    langs.forEach(function(lang) {
+      setLang(lang);
+      navEls.forEach(function(el, i) {
+        var w = el.getBoundingClientRect().width;
+        if (w > maxW[i]) maxW[i] = w;
+      });
+    });
+    navEls.forEach(function(el, i) { el.style.minWidth = Math.ceil(maxW[i]) + 'px'; });
+    setLang(curLang);
+  });
+
   var langBtn = document.getElementById('langSwitch').querySelector('.lang-btn');
   function closeLangDrop() {
     document.getElementById('langSwitch').classList.remove('open');
@@ -982,7 +1004,6 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   });
   document.addEventListener('click', closeLangDrop);
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
-  try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
 
   /* --- Scroll Reveal ------------------------------------------------- */
   var io = new IntersectionObserver(function(entries) {
