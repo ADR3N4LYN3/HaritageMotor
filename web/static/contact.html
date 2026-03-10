@@ -88,18 +88,31 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
   font-size: 0.85rem;
   font-weight: 300;
   padding: 0.95rem 1rem;
-  border-radius: 0;
+  border-radius: 4px;
   outline: none;
   transition: border-color 0.25s;
   width: 100%;
 }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(255,255,255,0.2); }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--gold); }
-.contact-form select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23b8955a' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
-.contact-form select option { background: var(--dark); color: #fff; }
+.contact-form select { display: none; }
 .contact-form textarea { resize: vertical; min-height: 100px; }
 
-.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: none; color: var(--gold); padding: 1rem 2.2rem; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid rgba(184,149,90,0.4); cursor: pointer; transition: all 0.4s var(--ease-lux); align-self: flex-start; font-family: var(--sans); position: relative; overflow: hidden; }
+/* CUSTOM DROPDOWN (dark theme) */
+.custom-select { position: relative; width: 100%; }
+.custom-select-trigger { background: var(--dark-2); border: 1px solid rgba(184,149,90,0.12); color: rgba(255,255,255,0.2); font-family: var(--sans); font-size: 0.85rem; font-weight: 300; padding: 0.95rem 1rem; border-radius: 4px; cursor: pointer; transition: border-color 0.25s; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; user-select: none; }
+.custom-select-trigger.has-value { color: #fff; }
+.custom-select-trigger:hover { border-color: var(--gold); }
+.custom-select.open .custom-select-trigger { border-color: var(--gold); }
+.custom-select-arrow { width: 12px; height: 12px; transition: transform 0.25s; flex-shrink: 0; }
+.custom-select.open .custom-select-arrow { transform: rotate(180deg); }
+.custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--dark); border: 1px solid rgba(184,149,90,0.15); border-radius: 6px; box-shadow: 0 12px 36px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 50; overflow: hidden; }
+.custom-select.open .custom-select-options { display: block; }
+.custom-select-option { padding: 0.75rem 1rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 300; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.15s; }
+.custom-select-option:hover { background: rgba(184,149,90,0.08); color: #fff; }
+.custom-select-option.selected { color: var(--gold); font-weight: 400; }
+
+.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: none; color: var(--gold); padding: 1rem 2.2rem; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid rgba(184,149,90,0.4); border-radius: 4px; cursor: pointer; transition: all 0.4s var(--ease-lux); align-self: flex-start; font-family: var(--sans); position: relative; overflow: hidden; }
 .form-submit::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: -1; }
 .form-submit:hover { color: var(--black); border-color: var(--gold); }
 .form-submit:hover::after { transform: scaleX(1); }
@@ -221,7 +234,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
           <div class="custom-select" id="custom-vehicles">
             <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
               <span>Select range</span>
-              <svg class="custom-select-arrow" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="#8a8880" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg class="custom-select-arrow" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="#b8955a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="custom-select-options" role="listbox">
               <div class="custom-select-option" data-value="1-25" role="option">1 – 25 vehicles</div>
