@@ -103,7 +103,8 @@ nav.nav-hidden { transform: translateY(-100%); }
 
 /* HERO — Cinematic centered */
 .hero { position: relative; height: 100vh; min-height: 750px; overflow: hidden; }
-.hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; transform: scale(1.05); }
+.hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; transform: scale(1.05); opacity: 0; transition: opacity 0.8s ease; }
+.hero-photo.playing { opacity: 1; }
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,13,11,0.4) 0%, rgba(14,13,11,0.15) 30%, rgba(14,13,11,0.15) 50%, rgba(14,13,11,0.55) 75%, rgba(14,13,11,0.92) 100%); }
 .hero::after { content: ''; position: absolute; inset: 0; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; }
 .hero-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 2; padding: 0 var(--h-pad); }
@@ -393,9 +394,8 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
 
 <!-- HERO -->
 <section class="hero" id="hero" aria-label="Hero">
-  <video class="hero-photo" autoplay muted loop playsinline preload="metadata"
-    poster="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1280&q=70&auto=format&fit=crop">
-    <source src="/hero-bg.mp4?v=5" type="video/mp4">
+  <video class="hero-photo" id="heroVideo" autoplay muted loop playsinline preload="auto">
+    <source src="/hero-bg.mp4?v=6" type="video/mp4">
   </video>
   <div class="hero-overlay"></div>
   <div class="hero-content">
@@ -1091,6 +1091,12 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     btt.addEventListener('click', function() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  }
+
+  /* Hero video fade-in once playing */
+  var hv = document.getElementById('heroVideo');
+  if (hv) {
+    hv.addEventListener('playing', function() { hv.classList.add('playing'); }, { once: true });
   }
 </script>
 </body>
