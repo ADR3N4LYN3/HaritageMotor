@@ -83,7 +83,7 @@ nav.nav-hidden { transform: translateY(-100%); }
 .nav-links { display: flex; gap: 3rem; list-style: none; }
 .nav-links a { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.92); transition: color 0.3s ease-out; font-weight: 500; }
 .nav-links a:hover { color: var(--gold); }
-.nav-sign-in { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 500; color: rgba(255,255,255,0.85); transition: color 0.3s ease-out; }
+.nav-sign-in { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 500; color: rgba(255,255,255,0.85); transition: color 0.3s ease-out; display: flex; align-items: center; line-height: 1; }
 .nav-sign-in:hover { color: var(--gold); }
 .nav-cta { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.65rem 1.8rem; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); position: relative; overflow: hidden; }
 .nav-cta::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: -1; }
@@ -399,7 +399,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     <h1 data-i18n="hero.title">The operating<br> system for<br> <em>premium storage.</em></h1>
     <div class="hero-sep"></div>
     <a href="/contact" class="hero-cta">
-      <span data-i18n="hero.cta">Request a Demo</span>
+      <span data-i18n="hero.cta">Schedule a Tour</span>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
@@ -508,7 +508,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     <h2 data-i18n="split1.title">The complete<br> story of every<br> <em>vehicle you touch.</em></h2>
     <p data-i18n="split1.text1">A chronological, immutable log of every intake photo, every bay move, every maintenance task, every incident — with timestamp and operator identity. The chain of custody, made visual and exportable.</p>
     <p data-i18n="split1.text2">At exit, one click generates the full Vehicle History Export: intake photos, exit photos, all events, all tasks completed. Your legal protection — and your client's provenance document.</p>
-    <a href="/contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
+    <a href="/contact" class="split-link" data-i18n="cta.timeline">See it in action &#x2192;</a>
   </div>
 </section>
 
@@ -523,7 +523,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     <h2 data-i18n="split2.title">You manage<br> <em>million-euro</em><br> assets with Excel.</h2>
     <p data-i18n="split2.text1">When an owner disputes the condition of their Porsche at exit, you have no timestamped photos, no movement history, no proof. A single incident can cost more than a year of software fees.</p>
     <p data-i18n="split2.text2">Heritage Motor exists to make that scenario impossible — permanently.</p>
-    <a href="/contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
+    <a href="/contact" class="split-link" data-i18n="cta.solution">Discover the solution &#x2192;</a>
   </div>
 </section>
 
@@ -572,11 +572,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       <p data-i18n="feat6.text">Append-only record of every action by every operator. Nobody can alter history — and that's the point.</p>
     </div>
   </div>
-  <div class="features-cta reveal">
-    <a href="/contact" class="btn-gold">
-      <span data-i18n="cta.demo">Request a demo &#x2192;</span>
-    </a>
-  </div>
+  <!-- CTA removed — features speak for themselves -->
 </section>
 
 <!-- MANIFESTO -->
@@ -689,7 +685,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     <h2 data-i18n="cta.title">Your facility deserves<br> an <em>operating system.</em></h2>
     <p data-i18n="cta.text">20-minute demo, no commitment. Just a conversation about how your facility operates — and whether Heritage Motor is the right fit.</p>
     <a href="/contact" class="btn-gold">
-      <span data-i18n="nav.cta">Request a Demo</span>
+      <span data-i18n="cta.conversation">Start a Conversation</span>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
@@ -727,14 +723,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     if (inHero) { nav.classList.remove('nav-hidden'); navHidden = false; }
   }, { rootMargin: '-80px 0px 0px 0px' });
   navObserver.observe(hero);
-  window.addEventListener('scroll', function() {
-    var currentY = window.pageYOffset;
-    if (inHero) { lastScrollY = currentY; return; }
-    var diff = currentY - lastScrollY;
-    if (diff > 0) { scrollDelta += diff; if (scrollDelta > 60 && !navHidden) { nav.classList.add('nav-hidden'); navHidden = true; } }
-    else { scrollDelta = 0; if (navHidden) { nav.classList.remove('nav-hidden'); navHidden = false; } }
-    lastScrollY = currentY;
-  }, { passive: true });
+  /* nav stays visible — no hide on scroll */
 
   /* --- PARALLAX ------------------------------------------------------ */
   (function() {
@@ -765,7 +754,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'nav.signin': 'Connexion', 'nav.cta': 'Demander une D\u00e9mo',
       'hero.tag': 'Cha\u00eene de Tra\u00e7abilit\u00e9 V\u00e9hicule',
       'hero.title': 'Le syst\u00e8me<br> d\'exploitation du<br> <em>stockage premium.</em>',
-      'hero.cta': 'Demander une D\u00e9mo',
+      'hero.cta': 'Planifier une visite',
       'trusted.label': 'La confiance des meilleurs \u00e9tablissements',
       'trusted.1': 'Collections Classiques', 'trusted.2': 'Participants Concours',
       'trusted.3': 'Portefeuilles d\'Investissement', 'trusted.4': 'Collectionneurs Priv\u00e9s',
@@ -792,7 +781,8 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'split1.title': 'L\'histoire<br> compl\u00e8te de chaque<br> <em>v\u00e9hicule que vous touchez.</em>',
       'split1.text1': 'Un journal chronologique et immuable de chaque photo d\'entr\u00e9e, chaque d\u00e9placement, chaque t\u00e2che de maintenance, chaque incident \u2014 avec horodatage et identit\u00e9 de l\'op\u00e9rateur. La cha\u00eene de tra\u00e7abilit\u00e9, visuelle et exportable.',
       'split1.text2': '\u00c0 la sortie, un clic g\u00e9n\u00e8re l\'Export Historique complet : photos d\'entr\u00e9e, photos de sortie, tous les \u00e9v\u00e9nements, toutes les t\u00e2ches compl\u00e9t\u00e9es. Votre protection juridique \u2014 et le document de provenance de votre client.',
-      'cta.demo': 'Demander une d\u00e9mo \u2192',
+      'cta.timeline': 'Voir en action \u2192',
+      'cta.solution': 'D\u00e9couvrir la solution \u2192',
       'split2.tag': 'Le Probl\u00e8me',
       'split2.title': 'Vous g\u00e9rez des<br> actifs \u00e0 <em>un million</em><br> d\'euros avec Excel.',
       'split2.text1': 'Quand un propri\u00e9taire conteste l\'\u00e9tat de sa Porsche \u00e0 la sortie, vous n\'avez pas de photos horodat\u00e9es, pas d\'historique de mouvements, pas de preuve. Un seul incident peut co\u00fbter plus qu\'un an de licence logicielle.',
@@ -841,14 +831,15 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'price3.period': 'multi-site \u00b7 v\u00e9hicules illimit\u00e9s',
       'cta.tag': 'Commencer',
       'cta.title': 'Votre site m\u00e9rite<br> un <em>syst\u00e8me d\'exploitation.</em>',
-      'cta.text': '20 minutes de d\u00e9mo, sans engagement. Juste une conversation sur le fonctionnement de votre site \u2014 et si Heritage Motor est le bon choix.'
+      'cta.text': '20 minutes de d\u00e9mo, sans engagement. Juste une conversation sur le fonctionnement de votre site \u2014 et si Heritage Motor est le bon choix.',
+      'cta.conversation': 'D\u00e9marrer une conversation'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.timeline': 'Zeitleiste', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
       'nav.signin': 'Anmelden', 'nav.cta': 'Demo Anfragen',
       'hero.tag': 'Fahrzeug-Dokumentationskette',
       'hero.title': 'Das Betriebs-<br>system f\u00fcr<br> <em>Premium-Einlagerung.</em>',
-      'hero.cta': 'Demo Anfragen',
+      'hero.cta': 'Besichtigung planen',
       'trusted.label': 'Vertrauen f\u00fchrender Einrichtungen',
       'trusted.1': 'Klassische Sammlungen', 'trusted.2': 'Concours-Teilnehmer',
       'trusted.3': 'Investment-Portfolios', 'trusted.4': 'Privatsammler', 'trusted.5': 'Motorsport-Erbe',
@@ -874,7 +865,8 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'split1.title': 'Die vollst\u00e4ndige<br> Geschichte jedes<br> <em>Fahrzeugs in Ihrer Obhut.</em>',
       'split1.text1': 'Ein chronologisches, unver\u00e4nderliches Protokoll jedes Einlagerungsfotos, jeder Stellplatz\u00e4nderung, jeder Wartungsaufgabe, jedes Vorfalls \u2014 mit Zeitstempel und Identit\u00e4t des Bedieners. Die Dokumentationskette, visuell und exportierbar.',
       'split1.text2': 'Bei der Auslieferung generiert ein Klick den vollst\u00e4ndigen Fahrzeughistorie-Export: Einlagerungsfotos, Auslieferungsfotos, alle Ereignisse, alle erledigten Aufgaben. Ihr Rechtsschutz \u2014 und das Herkunftsdokument Ihres Kunden.',
-      'cta.demo': 'Demo anfragen \u2192',
+      'cta.timeline': 'In Aktion sehen \u2192',
+      'cta.solution': 'L\u00f6sung entdecken \u2192',
       'split2.tag': 'Das Problem',
       'split2.title': 'Sie verwalten<br> <em>Millionen-Euro</em>-Werte<br> mit Excel.',
       'split2.text1': 'Wenn ein Eigent\u00fcmer den Zustand seines Porsche bei der Auslieferung beanstandet, haben Sie keine zeitgestempelten Fotos, keine Bewegungshistorie, keinen Beweis. Ein einziger Vorfall kann mehr kosten als ein Jahr Softwarelizenz.',
@@ -923,7 +915,8 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'price3.period': 'Multi-Standort \u00b7 unbegrenzte Fahrzeuge',
       'cta.tag': 'Loslegen',
       'cta.title': 'Ihr Standort verdient<br> ein <em>Betriebssystem.</em>',
-      'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespr\u00e4ch dar\u00fcber, wie Ihr Standort arbeitet \u2014 und ob Heritage Motor die richtige L\u00f6sung ist.'
+      'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespr\u00e4ch dar\u00fcber, wie Ihr Standort arbeitet \u2014 und ob Heritage Motor die richtige L\u00f6sung ist.',
+      'cta.conversation': 'Gespr\u00e4ch starten'
     }
   };
 
