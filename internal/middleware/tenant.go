@@ -95,7 +95,9 @@ func TenantMiddleware(ownerPool, appPool *pgxpool.Pool) fiber.Handler {
 		}
 
 		// Set the tenant ID for RLS policies within this transaction.
-		_, err = tx.Exec(c.UserContext(), "SET LOCAL app.current_tenant_id = $1", tenantID.String())
+		// Use set_config() instead of SET LOCAL because SET doesn't support
+		// parameterized queries ($1) in PostgreSQL's extended query protocol.
+		_, err = tx.Exec(c.UserContext(), "SELECT set_config('app.current_tenant_id', $1, true)", tenantID.String())
 		if err != nil {
 			_ = tx.Rollback(c.UserContext())
 			log.Error().Err(err).Msg("failed to set tenant context for RLS")

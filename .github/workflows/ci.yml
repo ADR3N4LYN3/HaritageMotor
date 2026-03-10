@@ -25,6 +25,7 @@ jobs:
       - uses: golangci/golangci-lint-action@v7
         with:
           version: v2.1.6
+          install-mode: goinstall
 
   go-test:
     name: Go Tests
@@ -52,13 +53,25 @@ jobs:
           go-version: "1.25"
           cache: true
 
-      - name: Create heritage_app role for RLS dual pool
+      - name: Setup heritage_app role and run migrations
+        env:
+          DATABASE_URL_TEST: postgres://postgres:testpassword@localhost:5432/heritage_motor_test?sslmode=disable
+          DATABASE_APP_URL_TEST: postgres://heritage_app:testapppassword@localhost:5432/heritage_motor_test?sslmode=disable
+          JWT_SECRET: test-jwt-secret-for-ci-minimum-32-chars-long
+          APP_ENV: test
         run: |
+          # Create role before migrations
           PGPASSWORD=testpassword psql -h localhost -U postgres -d heritage_motor_test -c "
             CREATE ROLE heritage_app WITH LOGIN PASSWORD 'testapppassword';
             GRANT CONNECT ON DATABASE heritage_motor_test TO heritage_app;
             GRANT USAGE ON SCHEMA public TO heritage_app;
-            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO heritage_app;
+            ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO heritage_app;
+            ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO heritage_app;
+          "
+          # Run migrations (creates tables + RLS policies)
+          go test -run "^$" -count=1 ./internal/db/... 2>/dev/null || true
+          # Grant on all tables/sequences created by migrations
+          PGPASSWORD=testpassword psql -h localhost -U postgres -d heritage_motor_test -c "
             GRANT ALL ON ALL TABLES IN SCHEMA public TO heritage_app;
             GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO heritage_app;
           "
