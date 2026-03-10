@@ -9,25 +9,25 @@ interface VehicleCardProps {
 
 const statusColors: Record<string, string> = {
   stored: "bg-success/10 text-success",
-  out: "bg-black/10 text-black/60",
+  out: "bg-white/10 text-white/50",
   maintenance: "bg-warning/10 text-warning",
   transit: "bg-[#3b82f6]/10 text-[#3b82f6]",
-  sold: "bg-black/10 text-black/40",
+  sold: "bg-white/10 text-white/30",
 };
 
 export const VehicleCard = memo(function VehicleCard({ vehicle, bayName, onClick }: VehicleCardProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left bg-white rounded-2xl p-4 shadow-sm border border-black/5 active:scale-[0.99] transition-transform touch-target"
+      className="w-full text-left bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] active:scale-[0.99] transition-transform touch-target"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="font-display text-lg font-semibold text-black truncate">
+          <h3 className="font-display text-lg font-semibold text-white truncate">
             {vehicle.make} {vehicle.model}
           </h3>
           {vehicle.color && (
-            <p className="text-sm text-black/50 mt-0.5">
+            <p className="text-sm text-white/40 mt-0.5">
               {vehicle.color}
               {vehicle.year ? ` · ${vehicle.year}` : ""}
             </p>
@@ -37,7 +37,7 @@ export const VehicleCard = memo(function VehicleCard({ vehicle, bayName, onClick
           {vehicle.status}
         </span>
       </div>
-      <div className="flex items-center gap-3 mt-3 text-sm text-black/60">
+      <div className="flex items-center gap-3 mt-3 text-sm text-white/50">
         {bayName && (
           <span className="flex items-center gap-1">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>

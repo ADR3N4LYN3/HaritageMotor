@@ -39,7 +39,7 @@ Hetzner VPS
 | `postgres` | `postgres:16-alpine` | 5432 (internal) | internal |
 | `api` | Go build (multi-stage) | 8080 (internal) | internal + web |
 | `app` | Next.js standalone | 3000 (internal) | internal + web |
-| `plausible` | `ghcr.io/plausible/community-edition:v2.1` | 8000 (internal) | internal + web |
+| `plausible` | `ghcr.io/plausible/community-edition:v2.1.4` | 8000 (internal) | internal + web |
 | `plausible_db` | `postgres:16-alpine` | 5432 (internal) | internal |
 | `plausible_events_db` | `clickhouse/clickhouse-server:24.3-alpine` | 8123 (internal) | internal |
 | `caddy` | `caddy:2-alpine` | 80, 443 (TCP+UDP) | web |
@@ -202,9 +202,11 @@ chmod +x deploy.sh
 
 It performs:
 1. `docker compose build` - Rebuilds images
-2. Database migration (if applicable)
-3. `docker compose up -d` - Starts/restarts services
-4. `docker image prune -f` - Cleans dangling images
+2. Configures `heritage_app` PostgreSQL role
+3. `docker compose run --rm api ./api migrate` - Runs database migrations
+4. `docker compose up -d` - Starts/restarts services
+5. `docker image prune -a -f` - Removes all unused images
+6. `docker builder prune -f` - Cleans Docker build cache
 
 ### Updating
 

@@ -5,7 +5,7 @@ import { BottomNav } from "./BottomNav";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-black">
       <TopBar />
       <main className="pt-14 pb-20 px-4">
         {children}

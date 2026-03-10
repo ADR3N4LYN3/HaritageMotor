@@ -34,11 +34,11 @@ export function BaySelector({ bays, selectedBayId, onSelect, loading }: BaySelec
         placeholder="Search bay..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
+        className="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
       />
       <div className="space-y-2 max-h-60 overflow-y-auto">
         {freeBays.length === 0 ? (
-          <p className="text-center text-sm text-black/40 py-4">No available bays</p>
+          <p className="text-center text-sm text-white/40 py-4">No available bays</p>
         ) : (
           freeBays.map((bay) => (
             <button
@@ -47,13 +47,13 @@ export function BaySelector({ bays, selectedBayId, onSelect, loading }: BaySelec
               className={`w-full text-left px-4 py-3 rounded-xl border transition-all touch-target ${
                 selectedBayId === bay.id
                   ? "border-gold bg-gold/10 ring-2 ring-gold/20"
-                  : "border-black/10 bg-white hover:bg-black/5"
+                  : "border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium text-black">{bay.code}</span>
+                <span className="font-medium text-white">{bay.code}</span>
                 {bay.zone && (
-                  <span className="text-xs text-black/40">{bay.zone}</span>
+                  <span className="text-xs text-white/40">{bay.zone}</span>
                 )}
               </div>
             </button>

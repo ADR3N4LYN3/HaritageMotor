@@ -126,18 +126,29 @@ Les actions move/task/exit peuvent fonctionner hors ligne :
 - **api.ts** pour les mutations (POST/PATCH/DELETE)
 - `SWRProvider` configure le fetcher global (`api.get`)
 
-### Design System
+### Design System (Dark Luxury)
+
+Theme entierement sombre, inspire de la landing page (Ferrari/Porsche aesthetic).
 
 | Token | Valeur |
 |---|---|
-| black | `#0e0d0b` (charbon) |
+| black | `#0e0d0b` (background principal) |
 | gold | `#b8955a` (accent luxe) |
-| white | `#faf9f7` (creme) |
+| white | `#faf9f7` (texte primaire) |
 | success | `#22c55e` |
 | warning | `#f59e0b` |
 | danger | `#ef4444` |
-| Font display | Cormorant Garamond (serif) |
+| Font display | Cormorant Garamond (serif, font-light pour headings) |
 | Font body | DM Sans (sans-serif) |
+
+| Element | Classes Tailwind |
+|---|---|
+| Glass card | `bg-white/[0.03] border border-white/[0.06] rounded-2xl` |
+| Input | `bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40` |
+| Section label | `text-sm font-semibold text-white/30 uppercase tracking-wider` |
+| Heading | `font-display font-light tracking-wide text-white` |
+| Status pill actif | `bg-gold/15 text-gold border-gold/30` |
+| Status pill inactif | `bg-white/[0.04] text-white/50 border-white/[0.06]` |
 
 Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 

@@ -142,58 +142,7 @@ pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 
 Préfixe : `/api/v1`. Toutes sauf `/auth/*` et `/contact` requièrent JWT. `tenant_id` toujours du JWT.
 
-```
-# Public (pas de JWT)
-POST   /contact                 — Formulaire contact (3 req/15min/IP, lang=en|fr|de)
-
-# Auth
-POST   /auth/login              POST   /auth/mfa/verify
-POST   /auth/refresh            POST   /auth/logout
-GET    /auth/me                 POST   /auth/mfa/setup
-POST   /auth/mfa/enable         DELETE /auth/mfa
-POST   /auth/change-password    — Accessible même avec password_change_required
-
-# Superadmin (JWT + superadmin role, pas de tenant)
-GET    /admin/dashboard          — Stats globales plateforme
-GET    /admin/tenants            POST   /admin/tenants
-GET    /admin/tenants/:id        PATCH  /admin/tenants/:id
-DELETE /admin/tenants/:id        POST   /admin/invitations
-
-# Vehicles
-GET    /vehicles                POST   /vehicles
-GET    /vehicles/:id            PATCH  /vehicles/:id
-DELETE /vehicles/:id            GET    /vehicles/:id/timeline
-POST   /vehicles/:id/move       POST   /vehicles/:id/exit
-GET    /vehicles/:id/report
-
-# Events
-GET    /events                  POST   /events
-GET    /events/:id
-
-# Bays
-GET    /bays                    POST   /bays
-GET    /bays/:id                PATCH  /bays/:id
-DELETE /bays/:id
-
-# Tasks
-GET    /tasks                   POST   /tasks
-GET    /tasks/:id               PATCH  /tasks/:id
-POST   /tasks/:id/complete      DELETE /tasks/:id
-
-# Documents
-GET    /vehicles/:id/documents           POST   /vehicles/:id/documents
-GET    /vehicles/:id/documents/:docId    DELETE /vehicles/:id/documents/:docId
-
-# Photos
-POST   /events/:id/photos       GET    /photos/:key/signed-url
-
-# Users (admin only)
-GET    /users                   POST   /users
-PATCH  /users/:id               DELETE /users/:id
-
-# Audit (admin only)
-GET    /audit
-```
+→ **Référence complète** : [`docs/api-reference.md`](docs/api-reference.md)
 
 ## Conventions de code Go
 
@@ -255,75 +204,37 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 ### Emails transactionnels (Resend API)
 
-7 templates email, tous en design dark luxury cohérent (fond #0a0908, accents or #b8955a, logo shield PNG) :
-
-| Template | Service | i18n | Envoyé quand |
-|----------|---------|------|--------------|
-| Confirmation contact (×3) | `contact/service.go` | FR/EN/DE | Soumission formulaire contact |
-| Notification admin | `contact/service.go` | — | Soumission formulaire contact (→ admin) |
-| Welcome (×3) | `mailer/service.go` | FR/EN/DE | Invitation utilisateur |
-
-- Champ `lang` (en|fr|de) : depuis `localStorage('hm-lang')` (contact) ou `InviteUserRequest.Lang` (welcome)
-- Logo : `web/static/logo-email.png` généré via Playwright depuis `logo.svg` (fond noir intégré)
-- Hébergé à `https://heritagemotor.app/logo-email.png`
-- Nom du tenant affiché en or (#b8955a) dans le welcome email
-- Expéditeurs : `welcome@` (confirmation/welcome), `noreply@` (notification admin)
-- Cloudflare Email Routing : `welcome@` et `noreply@` redirigent vers admin
+7 templates (confirmation contact FR/EN/DE, notification admin, welcome FR/EN/DE) dans `contact/service.go` et `mailer/service.go`. Design dark luxury, i18n via champ `lang` (en|fr|de).
 
 ## Architecture PWA (pwa/)
 
-### Auth — BFF pattern (Backend-For-Frontend)
-- Refresh token stocké en cookie `httpOnly` (inaccessible au JS client)
-- Routes API Next.js comme proxy vers le backend Go :
-  - `pwa/app/api/auth/refresh/route.ts` — lit le cookie, forwarde au backend, retourne l'access token + user
-  - `pwa/app/api/auth/logout/route.ts` — lit le cookie, forwarde au backend, supprime le cookie
-  - `pwa/app/api/auth/set-token/route.ts` — stocke le refresh token en cookie httpOnly après login
-- **Next.js middleware** (`pwa/middleware.ts`) : redirige vers `/login` si le cookie `refresh_token` est absent
-- **AuthBootstrap** (`pwa/components/AuthBootstrap.tsx`) : utilise `useSWR` pour restaurer la session depuis le cookie httpOnly au montage. Hydrate le Zustand store (`accessToken` + `user`) via `onSuccess` callback. Affiche un spinner pendant le chargement.
+→ **Référence complète** : [`docs/pwa.md`](docs/pwa.md) et [`pwa/README.md`](pwa/README.md)
 
-### Offline queue (IndexedDB)
-- `pwa/lib/offline-queue.ts` — CRUD IndexedDB (`pushAction`, `getAllActions`, `removeAction`, etc.)
-- `pwa/hooks/useOfflineQueue.ts` — hook React : sync listeners (`online` event + polling 30s), retourne `{ syncAll, refreshCount }`
-- `pwa/lib/types.ts` → `PendingAction` : type `move | task | photo | exit`, sérialisé en IndexedDB
-- **Pages d'action intégrées** : `move`, `task`, `exit` — offline fallback via `pushAction()` sur erreur réseau
-  - Pattern : check `navigator.onLine` upfront + catch non-`ApiError` dans le try/catch
-  - Photos non sérialisables en IndexedDB → `photo/page.tsx` n'a que les sync listeners
-- `pwa/components/ui/SyncBadge.tsx` — badge animé dans la nav, affiche le nombre d'actions en attente
+### Règles critiques PWA
+- **BFF pattern** : refresh token en cookie `httpOnly`, routes Next.js `/api/auth/*` comme proxy vers le backend Go
+- **AuthBootstrap obligatoire** dans `layout.tsx` : restaure session au montage via `useSWR` + cookie httpOnly → Zustand. Sans lui, toute page auth est blanche après F5
+- **Handler 401** : ne JAMAIS conditionner le refresh sur `token` en mémoire (Zustand est in-memory, `token = null` après refresh). Toujours tenter le refresh via cookie httpOnly
+- **Offline queue** : `pushAction()` en IndexedDB sur erreur réseau (move/task/exit). Photos non sérialisables → upload uniquement en ligne
+- **Zustand** : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
 
-### State management
-- Zustand store (`pwa/store/app.store.ts`) : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
-- SWR pour le data fetching (stale-while-revalidate)
-- `pwa/lib/api.ts` : client API avec auto-refresh token sur 401 (sans condition sur `token` — fonctionne même quand le store est vide après refresh)
-- **Cycle de vie auth** : Login → store + cookie httpOnly → refresh page → AuthBootstrap restaure depuis cookie → store hydraté → SWR fetchers fonctionnent
+### Design System Dark Luxury (PWA)
+- **Background** : `bg-black` (#0e0d0b) sur AppShell et toutes les pages
+- **Glass cards** : `bg-white/[0.03] border border-white/[0.06] rounded-2xl` (pas de shadow)
+- **Inputs** : `bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40 focus:ring-1 focus:ring-gold/20`
+- **Texte** : `text-white` (primaire), `text-white/50` (secondaire), `text-white/30` (muted)
+- **Headings** : `font-display font-light tracking-wide text-white` (serif, léger — PAS bold)
+- **Section labels** : `text-sm font-semibold text-white/30 uppercase tracking-wider`
+- **Status pills** : actif `bg-gold/15 text-gold border-gold/30`, inactif `bg-white/[0.04] text-white/50 border-white/[0.06]`
+- **Séparateurs** : `border-gold/10` (TopBar, BottomNav)
+- **Login** : shield crest SVG, glass form card, séparateur or
 
-## Optimisations performance
+## Patterns performance à respecter
 
-### Backend (Go)
-- **Blacklist cache** : `sync.Map` avec TTL 30s dans `internal/middleware/auth.go` — évite un SELECT par requête authentifiée. `InvalidateBlacklistCache(jti, userID)` : invalidation O(1) via `Delete()` direct (pas de `Range()` scan)
-- **Tenant cache** : `sync.Map` avec TTL 5min dans le TenantMiddleware. `InvalidateTenantCache(tenantID)` : invalidation immédiate sur update/delete tenant (évite données stales pendant 5min)
-- **Upload limiter** : `sync.RWMutex` (pas `sync.Mutex`) avec cleanup 2-pass (RLock collect → Lock delete) pour ne pas bloquer les uploads pendant le nettoyage
-- **Admin GetTenant** : LEFT JOIN subqueries (comme ListTenants) au lieu de 3 subqueries corrélées
-- **PresignClient S3** : créé une seule fois dans `NewS3Client()`, réutilisé dans `GetSignedURL()`
-- **COUNT(*) OVER()** : toutes les requêtes list en single query (pas de COUNT séparé)
-
-### Frontend (PWA)
-- **react-doctor 100/100** : score parfait (60+ lint rules + dead code detection)
-- **useReducer consolidation** : pages login, move, task, change-password, admin — réduit le nombre de hooks (ex: login 8→4)
-- **AuthBootstrap SWR** : remplace fetch-in-useEffect par useSWR (onSuccess callback, shouldRetryOnError: false)
-- **next/image partout** : `<Image fill unoptimized sizes="33vw">` pour les blob URLs camera (PhotoGrid, move page)
-- **Labels accessibilité** : wrapping `<label>` natif + `htmlFor`/`id` pour composants custom (Select)
-- **VehicleCard** : `React.memo()` pour éviter re-renders sur changement de filtre/recherche
-- **Dashboard** : `useCallback` pour `handleVehicleClick` (référence stable pour les VehicleCard mémoïsés)
-- **useCamera** : `URL.revokeObjectURL()` sur toutes les previews au unmount (empêche memory leaks sur sessions longues)
-- **useOfflineQueue** : effets séparés avec dépendances minimales (initial count runs once, listeners/polling séparés)
-
-### Landing page (web/static/)
-- **Navigation** : nav fixe (toujours visible, pas de hide-on-scroll), `IntersectionObserver` pour `.scrolled` background change
-- **CTAs variés** : 5 CTAs distincts (Schedule a Tour, See it in action, Discover the solution, Start a Conversation, Request a Demo) — évite le répétitif
-- **Nav mobile** : `white-space: nowrap` sur `.nav-cta` pour éviter le wrap sur 2 lignes
-- **Google Fonts** : 6 variantes au lieu de 11 (removed unused weights)
-- **SEO** : `og:image`, `twitter:image`, `preconnect` vers `fonts.gstatic.com`
-- **Smooth scroll** : cubic-bezier luxury easing (1200ms) pour les ancres `#contact`, clean URL via `replaceState`
+- **Caches sync.Map** : blacklist (TTL 30s) + tenant (TTL 5min) — appeler `InvalidateBlacklistCache()` / `InvalidateTenantCache()` lors de mutations
+- **COUNT(*) OVER()** : toujours utiliser en single query pour les listes paginées
+- **VehicleCard memo** : ne pas retirer `React.memo()` ni `useCallback` dashboard
+- **URL.revokeObjectURL()** : toujours cleanup les previews au unmount (useCamera)
+- **react-doctor 100/100** : maintenir le score (`npm run doctor` dans pwa/)
 
 ## Contraintes UX (non-négociables)
 
@@ -347,112 +258,36 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 ## Hero Video (Remotion 4)
 
-Le dossier `video/` contient un projet Remotion 4 qui génère la vidéo de fond du hero de la landing page.
+Dossier `video/` — Remotion 4, 3 versions (v2/v3/v4). Clips Pexels (licence commerciale).
 
-```
-video/
-  src/
-    index.ts           — registerRoot
-    Root.tsx            — Compositions v2 + v3 + v4 (1920×1080 30fps)
-    HeroVideoV2.tsx     — v2 : 8 scènes dont 2 garage indoor (25s, 750 frames)
-    HeroVideoV3.tsx     — v3 "Night & Mood" : 12 scènes, tonalité sombre (37s, 1110 frames)
-    HeroVideoV4.tsx     — v4 "Detail & Drive" : 12 scènes, alternance détail/conduite (37s, 1110 frames)
-    CarScene.tsx        — Scène individuelle (Ken Burns + vignette)
-    BrandWatermark.tsx  — Shield crest watermark semi-transparent (12% opacity)
-  package.json          — dépendances Remotion
-  remotion.config.ts    — Config (overwrite output)
-```
-
-**Commandes** :
 ```bash
-cd video
-npm install
-npm run dev              # Ouvre Remotion Studio (preview v2 + v3 + v4)
-npm run render:v2        # Render v2 → ../web/static/hero-bg.mp4
-npm run render:v3        # Render v3 → ../web/static/hero-bg.mp4
-npm run render:v4        # Render v4 → ../web/static/hero-bg.mp4
-npm run render:preview:v2 # Preview v2 → out/preview-v2.mp4
-npm run render:preview:v3 # Preview v3 → out/preview-v3.mp4
-npm run render:preview:v4 # Preview v4 → out/preview-v4.mp4
+cd video && npm install
+npm run dev           # Remotion Studio
+npm run render:v4     # → ../web/static/hero-bg.mp4
 ```
 
-**Clips** : tous issus de Pexels (licence commerciale gratuite, pas d'attribution requise).
-Pour changer un clip, modifier l'URL dans le tableau `CLIPS` du fichier HeroVideo correspondant et re-render.
+## Anti-patterns à éviter
 
-## Bugs connus et corrections
-
-### Login : exclure les users de tenants supprimés
-- **Symptôme** : "unauthorized" au login malgré bon mot de passe
-- **Cause** : `SELECT FROM users WHERE email = $1` retournait un user d'un tenant soft-deleted (même email, ancien tenant)
-- **Fix** : La query login filtre via `EXISTS (SELECT 1 FROM tenants t WHERE t.id = u.tenant_id AND t.deleted_at IS NULL)`, superadmin exempté
-- **Fichier** : `internal/service/auth/service.go` Login()
-
-### DeleteTenant : cascade soft-delete users
-- **Symptôme** : Users orphelins après suppression tenant → bloquent le login (email dupliqué)
-- **Cause** : `DeleteTenant` ne supprimait que le tenant, pas ses users
-- **Fix** : Ajout `UPDATE users SET deleted_at = NOW() WHERE tenant_id = $1` dans DeleteTenant
-- **Fichier** : `internal/service/admin/service.go` DeleteTenant()
-
-### APP_BASE_URL : doit pointer vers la PWA
-- **Symptôme** : Lien "Se connecter" dans l'email d'invitation mène vers l'API (404)
-- **Cause** : `APP_BASE_URL=https://api.heritagemotor.app` au lieu de `https://app.heritagemotor.app`
-- **Fix** : Variable d'env corrigée sur le VPS
-- **Règle** : `APP_BASE_URL` est utilisé **uniquement** par le mailer pour les liens email → toujours `app.heritagemotor.app`
-
-### Login : normaliser l'email (trim + lowercase)
-- **Symptôme** : Espace accidentel avant l'email → "unauthorized"
-- **Cause** : Le service Login ne normalisait pas l'email reçu
-- **Fix** : `strings.TrimSpace(strings.ToLower(email))` en début de Login(), + `email.trim()` côté frontend
-- **Fichiers** : `internal/service/auth/service.go` Login(), `pwa/app/login/page.tsx`, `pwa/app/admin/page.tsx`
-
-### Password hash : toujours utiliser bcrypt
-- **Symptôme** : "unauthorized" au login malgré password correct
-- **Cause** : Mot de passe mis à jour directement en SQL sans bcrypt (`UPDATE SET password_hash = 'plaintext'`)
-- **Fix** : Toujours hasher avec bcrypt cost 12. Le hash doit commencer par `$2a$12$` et faire 60 caractères
-- **Règle** : Ne JAMAIS modifier `password_hash` directement en SQL sans passer par `bcrypt.GenerateFromPassword()`
-
-### Session perdue après refresh (auth bootstrap)
-- **Symptôme** : toutes les pages auth affichent une page blanche ou "Failed to load" après F5
-- **Cause** : Zustand store est in-memory → `accessToken = null` après refresh → requêtes sans Authorization → 401 → le handler ne tentait pas de refresh car `&& token` bloquait
-- **Fix** : `AuthBootstrap` dans le layout racine restaure la session au montage + condition 401 sans `&& token`
-- **Fichiers** : `pwa/components/AuthBootstrap.tsx`, `pwa/app/layout.tsx`, `pwa/lib/api.ts`
-
-### Page 404 landing vide
-- **Symptôme** : `heritagemotor.app/page-inexistante` → page blanche (body vide)
-- **Cause** : Caddy retournait un 404 sans contenu, pas de page 404 custom
-- **Fix** : `web/static/404.html` (page brandée) + `handle_errors` dans le Caddyfile
-- **Fichiers** : `web/static/404.html`, `Caddyfile`
-
-### Performance mobile landing (79 → cible >90)
-- **Symptôme** : FCP 3.0s, LCP 4.5s sur mobile (Lighthouse 79/100)
-- **Cause** : Google Fonts render-blocking (750ms) + poster hero 550KB
-- **Fix** : `rel="preload" as="style"` avec `onload` swap (non-blocking) + poster réduit `w=1280&q=70`
-- **Fichier** : `web/static/index.html`
-
-### Plausible CE hang (v2.1 → v2.1.4)
-- **Symptôme** : `stats.heritagemotor.app` retourne 503, Plausible bloqué à "Starting repos..."
-- **Cause** : Bug connu du driver ClickHouse dans v2.1 — le process BEAM se bloque à la connexion
-- **Fix** : Upgrade vers `v2.1.4` dans `compose.yaml`
-- **Fichier** : `compose.yaml` ligne 95
-
-### Admin page blanche au refresh
-- **Symptôme** : F5 sur `/admin` → page blanche pendant hydratation
-- **Cause** : `if (!authorized) return null` rendait un DOM vide pendant qu'AuthBootstrap restaure la session
-- **Fix** : Remplacé `return null` par un spinner gold cohérent
-- **Fichier** : `pwa/app/admin/page.tsx`
-
-### Anti-patterns à éviter
-- **Email pas unique globalement** : email est unique par tenant (`UNIQUE(tenant_id, email)`), pas cross-tenant. Les queries par email doivent joindre le tenant.
+- **Email pas unique globalement** : email est unique par tenant (`UNIQUE(tenant_id, email)`), pas cross-tenant. Les queries par email doivent joindre le tenant. Le login filtre `EXISTS(... WHERE t.deleted_at IS NULL)`
 - **Toujours cascader les soft-deletes** : tenant → users, vehicle → events/tasks/documents
-- **Cookie `user_role` éphémère** : Le middleware Next.js vérifie le cookie `user_role` pour `/admin`. Ce cookie est posé au login uniquement — s'il expire, l'accès /admin est perdu jusqu'au re-login.
+- **APP_BASE_URL = domaine PWA** : utilisé uniquement par le mailer pour les liens email → toujours `app.heritagemotor.app`
 - **Toujours normaliser les emails** : `TrimSpace + ToLower` côté backend ET `.trim()` côté frontend avant tout appel API
-- **Ne jamais écrire de password_hash en SQL brut** : utiliser exclusivement bcrypt cost 12 via le code Go
-- **Ne jamais conditionner le refresh token sur la présence du token en mémoire** : le Zustand store est in-memory, `token` est `null` après refresh. Le handler 401 doit toujours tenter un refresh via le cookie httpOnly.
+- **Ne jamais écrire de password_hash en SQL brut** : utiliser exclusivement bcrypt cost 12 via le code Go (`$2a$12$`, 60 chars)
+- **Ne jamais conditionner le refresh sur token en mémoire** : Zustand est in-memory, le handler 401 doit toujours tenter le refresh via cookie httpOnly
+- **Cookie `user_role` éphémère** : posé au login uniquement, s'il expire → perte accès /admin jusqu'au re-login
 
-## Références détaillées
+## Documentation détaillée
+
+Toute la documentation technique est dans [`docs/`](docs/) :
 
 | Document | Contenu |
 |---|---|
-| `memory/spec-backend.md` | Schéma SQL complet, services Go, variables d'env, déploiement, tests |
-| `memory/spec-business.md` | Vision produit, MVP scope, pricing, roadmap, KPIs |
-| `pwa/README.md` | Architecture PWA, patterns frontend, design system, composants |
+| [`docs/README.md`](docs/README.md) | Vue d'ensemble projet, quick start, structure |
+| [`docs/architecture.md`](docs/architecture.md) | Layers, middleware pipeline, request flow, multi-tenant |
+| [`docs/api-reference.md`](docs/api-reference.md) | Endpoints REST complets avec exemples |
+| [`docs/database.md`](docs/database.md) | Schéma SQL, migrations 001-018, RLS, index |
+| [`docs/security.md`](docs/security.md) | Auth, RBAC, token blacklist, rate limiting, headers |
+| [`docs/deployment.md`](docs/deployment.md) | Docker, Caddy, Cloudflare, variables d'env |
+| [`docs/pwa.md`](docs/pwa.md) | Frontend PWA complet |
+| [`docs/pitch.md`](docs/pitch.md) | Vision produit, business model, go-to-market |
+| [`pwa/README.md`](pwa/README.md) | Architecture PWA détaillée, patterns, design system |

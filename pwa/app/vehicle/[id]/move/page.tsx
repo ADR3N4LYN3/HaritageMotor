@@ -22,7 +22,7 @@ const CameraCapture = dynamic(
     import("@/components/camera/CameraCapture").then((mod) => ({
       default: mod.CameraCapture,
     })),
-  { ssr: false, loading: () => <div className="h-12 bg-neutral-100 animate-pulse rounded-xl" /> }
+  { ssr: false, loading: () => <div className="h-12 bg-white/[0.04] animate-pulse rounded-xl" /> }
 );
 
 export default function MoveVehiclePage() {
@@ -121,7 +121,7 @@ export default function MoveVehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-black/50 py-12">Vehicle not found</p>
+        <p className="text-center text-white/50 py-12">Vehicle not found</p>
       </AppShell>
     );
   }
@@ -130,11 +130,11 @@ export default function MoveVehiclePage() {
     <AppShell>
       <div className="space-y-6">
         {/* Vehicle Info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
-          <h2 className="font-display text-xl font-semibold text-black">
+        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
+          <h2 className="font-display text-xl font-light tracking-wide text-white">
             {vehicle.make} {vehicle.model}
           </h2>
-          <p className="text-sm text-black/50 mt-0.5">
+          <p className="text-sm text-white/50 mt-0.5">
             {vehicle.color}
             {vehicle.year ? ` · ${vehicle.year}` : ""}
           </p>
@@ -142,7 +142,7 @@ export default function MoveVehiclePage() {
 
         {/* Bay Selection */}
         <div>
-          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
             Select Destination Bay
           </h3>
           <BaySelector
@@ -155,7 +155,7 @@ export default function MoveVehiclePage() {
 
         {/* Photo (optional) */}
         <div>
-          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
             Photo (optional)
           </h3>
           <CameraCapture
@@ -190,7 +190,7 @@ export default function MoveVehiclePage() {
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes (optional)"
             rows={2}
-            className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm resize-none transition-colors"
           />
         </div>
 

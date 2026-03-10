@@ -10,8 +10,8 @@
 
 body {
   font-family: var(--font-sans), 'DM Sans', sans-serif;
-  background-color: var(--white);
-  color: var(--black);
+  background-color: var(--black);
+  color: var(--white);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
@@ -29,7 +29,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #e5e5e5 25%, #f0f0f0 50%, #e5e5e5 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.06) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 4px;

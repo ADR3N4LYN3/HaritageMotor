@@ -17,7 +17,7 @@ const CameraCapture = dynamic(
     import("@/components/camera/CameraCapture").then((mod) => ({
       default: mod.CameraCapture,
     })),
-  { ssr: false, loading: () => <div className="h-12 bg-neutral-100 animate-pulse rounded-xl" /> }
+  { ssr: false, loading: () => <div className="h-12 bg-white/[0.04] animate-pulse rounded-xl" /> }
 );
 
 export default function PhotoPage() {
@@ -69,11 +69,11 @@ export default function PhotoPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
-          <h2 className="font-display text-xl font-semibold text-black">
+        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
+          <h2 className="font-display text-xl font-light tracking-wide text-white">
             {vehicle ? `${vehicle.make} ${vehicle.model}` : "..."}
           </h2>
-          <p className="text-sm text-black/50 mt-1">Add Photos</p>
+          <p className="text-sm text-white/50 mt-1">Add Photos</p>
         </div>
 
         <CameraCapture onCapture={addPhoto} multiple label="Take photo" />

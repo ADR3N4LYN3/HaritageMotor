@@ -19,7 +19,7 @@ const CameraCapture = dynamic(
     import("@/components/camera/CameraCapture").then((mod) => ({
       default: mod.CameraCapture,
     })),
-  { ssr: false, loading: () => <div className="h-12 bg-neutral-100 animate-pulse rounded-xl" /> }
+  { ssr: false, loading: () => <div className="h-12 bg-white/[0.04] animate-pulse rounded-xl" /> }
 );
 
 const REQUIRED_PHOTOS = 2;
@@ -133,7 +133,7 @@ export default function ExitVehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-black/50 py-12">Vehicle not found</p>
+        <p className="text-center text-white/50 py-12">Vehicle not found</p>
       </AppShell>
     );
   }
@@ -149,18 +149,18 @@ export default function ExitVehiclePage() {
             </svg>
           </div>
           <div className="text-center">
-            <h2 className="font-display text-2xl font-bold text-black">
+            <h2 className="font-display text-2xl font-light tracking-wide text-white">
               Vehicle Exit
             </h2>
-            <p className="text-black/50 mt-2 text-sm">
+            <p className="text-white/50 mt-2 text-sm">
               This action is irreversible. The vehicle will be marked as exited.
             </p>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5 w-full">
-            <h3 className="font-display text-lg font-semibold">
+          <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] w-full">
+            <h3 className="font-display text-lg font-light text-white">
               {vehicle.make} {vehicle.model}
             </h3>
-            <p className="text-sm text-black/50 mt-0.5">
+            <p className="text-sm text-white/50 mt-0.5">
               {vehicle.color}{vehicle.year ? ` · ${vehicle.year}` : ""}
             </p>
           </div>
@@ -181,8 +181,8 @@ export default function ExitVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
-          <h2 className="font-display text-xl font-semibold text-black">
+        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
+          <h2 className="font-display text-xl font-light tracking-wide text-white">
             {vehicle.make} {vehicle.model}
           </h2>
           <p className="text-sm text-danger font-medium mt-1">Exit Procedure</p>
@@ -190,7 +190,7 @@ export default function ExitVehiclePage() {
 
         {/* Exit Photos */}
         <div>
-          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
             Exit Photos
           </h3>
           <CameraCapture onCapture={addPhoto} multiple label="Take exit photo" />
@@ -203,7 +203,7 @@ export default function ExitVehiclePage() {
 
         {/* Checklist */}
         <div>
-          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
             Checklist
           </h3>
           <div className="space-y-2">
@@ -211,12 +211,12 @@ export default function ExitVehiclePage() {
               <button
                 key={item.id}
                 onClick={() => setChecklist((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-black/5 touch-target"
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] touch-target"
               >
                 <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
                   checklist[item.id]
                     ? "bg-success border-success"
-                    : "border-black/20"
+                    : "border-white/20"
                 }`}>
                   {checklist[item.id] && (
                     <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
@@ -224,7 +224,7 @@ export default function ExitVehiclePage() {
                     </svg>
                   )}
                 </div>
-                <span className="text-sm text-black">{item.label}</span>
+                <span className="text-sm text-white">{item.label}</span>
               </button>
             ))}
           </div>
@@ -232,7 +232,7 @@ export default function ExitVehiclePage() {
 
         {/* Recipient */}
         <div>
-          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
             Recipient
           </h3>
           <input
@@ -240,7 +240,7 @@ export default function ExitVehiclePage() {
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
             placeholder="Transporter / owner name"
-            className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
+            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm transition-colors"
           />
         </div>
 
@@ -250,7 +250,7 @@ export default function ExitVehiclePage() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Notes (optional)"
           rows={2}
-          className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm resize-none"
+          className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm resize-none transition-colors"
         />
 
         {error && (
@@ -268,7 +268,7 @@ export default function ExitVehiclePage() {
             Confirm Exit
           </ActionButton>
           {!canConfirm && (
-            <p className="text-xs text-black/40 text-center mt-2">
+            <p className="text-xs text-white/40 text-center mt-2">
               {photos.length < REQUIRED_PHOTOS && `${REQUIRED_PHOTOS - photos.length} more photo${REQUIRED_PHOTOS - photos.length > 1 ? "s" : ""} needed · `}
               {!allChecked && "Complete checklist · "}
               {!recipient.trim() && "Enter recipient"}

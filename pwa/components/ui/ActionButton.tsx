@@ -23,7 +23,7 @@ export function ActionButton({
   const variants = {
     primary: "bg-gold text-white hover:bg-[#a07d48] disabled:bg-gold/40",
     danger: "bg-danger text-white hover:bg-[#dc2626] disabled:bg-danger/40",
-    secondary: "bg-black/10 text-black hover:bg-black/20 disabled:bg-black/5 disabled:text-black/30",
+    secondary: "bg-white/10 text-white hover:bg-white/15 disabled:bg-white/5 disabled:text-white/30",
   };
 
   return (

@@ -33,7 +33,7 @@ export default function BayPage() {
   if (!bay) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-black/50">Bay not found</div>
+        <div className="text-center py-12 text-white/50">Bay not found</div>
       </AppShell>
     );
   }
@@ -49,12 +49,12 @@ export default function BayPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Bay Header */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-black/5">
-          <h1 className="font-display text-2xl font-bold text-black">
+        <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/[0.06]">
+          <h1 className="font-display text-2xl font-light tracking-wide text-white">
             {bay.code}
           </h1>
           {bay.zone && (
-            <p className="text-black/50 mt-1">Zone: {bay.zone}</p>
+            <p className="text-white/50 mt-1">Zone: {bay.zone}</p>
           )}
           <div className="mt-3">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[bay.status] || statusColors.free}`}>
@@ -66,7 +66,7 @@ export default function BayPage() {
               {bay.features.map((feature) => (
                 <span
                   key={feature}
-                  className="text-xs bg-black/5 text-black/60 px-2 py-0.5 rounded"
+                  className="text-xs bg-white/[0.06] text-white/50 px-2 py-0.5 rounded"
                 >
                   {feature}
                 </span>
@@ -83,19 +83,19 @@ export default function BayPage() {
         )}
         {!vehiclesError && vehicles.length > 0 && (
           <div>
-            <h2 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+            <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
               Vehicle in Bay
             </h2>
             {vehicles.map((v) => (
               <button
                 key={v.id}
                 onClick={() => router.push(`/vehicle/${v.id}`)}
-                className="w-full text-left bg-white rounded-2xl p-4 shadow-sm border border-black/5 active:scale-[0.99] transition-transform"
+                className="w-full text-left bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] active:scale-[0.99] transition-transform"
               >
-                <h3 className="font-display text-lg font-semibold">
+                <h3 className="font-display text-lg font-light text-white">
                   {v.make} {v.model}
                 </h3>
-                <p className="text-sm text-black/50 mt-0.5">
+                <p className="text-sm text-white/50 mt-0.5">
                   {v.color} · {v.owner_name}
                 </p>
               </button>
@@ -104,7 +104,7 @@ export default function BayPage() {
         )}
 
         {bay.status === "free" && (
-          <div className="text-center py-8 text-black/30 text-sm">
+          <div className="text-center py-8 text-white/30 text-sm">
             This bay is available
           </div>
         )}

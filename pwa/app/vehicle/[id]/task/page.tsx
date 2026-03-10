@@ -109,7 +109,7 @@ export default function TaskPage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-black/50 py-12">Vehicle not found</p>
+        <p className="text-center text-white/50 py-12">Vehicle not found</p>
       </AppShell>
     );
   }
@@ -118,18 +118,18 @@ export default function TaskPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Vehicle Info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
-          <h2 className="font-display text-xl font-semibold text-black">
+        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
+          <h2 className="font-display text-xl font-light tracking-wide text-white">
             {vehicle.make} {vehicle.model}
           </h2>
-          <p className="text-sm text-black/50 mt-0.5">
+          <p className="text-sm text-white/50 mt-0.5">
             {vehicle.color}{vehicle.year ? ` · ${vehicle.year}` : ""}
           </p>
         </div>
 
         {/* Task List */}
         <div>
-          <h3 className="text-sm font-semibold text-black/40 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
             Pending Tasks
           </h3>
           {tasksLoading ? (
@@ -144,7 +144,7 @@ export default function TaskPage() {
             </div>
           ) : tasks.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-black/40 text-sm">No pending tasks</p>
+              <p className="text-white/30 text-sm">No pending tasks</p>
               <ActionButton
                 variant="secondary"
                 onClick={() => router.push(`/vehicle/${id}`)}
@@ -162,7 +162,7 @@ export default function TaskPage() {
                 return (
                   <div
                     key={task.id}
-                    className="bg-white rounded-2xl shadow-sm border border-black/5 overflow-hidden"
+                    className="bg-white/[0.03] rounded-2xl border border-white/[0.06] overflow-hidden"
                   >
                     <button
                       onClick={() => setCompleting(isExpanded ? null : task.id)}
@@ -174,7 +174,7 @@ export default function TaskPage() {
                       </span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-black text-sm truncate">
+                          <span className="font-medium text-white text-sm truncate">
                             {task.title}
                           </span>
                           {isOverdue && (
@@ -184,14 +184,14 @@ export default function TaskPage() {
                           )}
                         </div>
                         {task.due_date && (
-                          <p className="text-xs text-black/40 mt-0.5">
+                          <p className="text-xs text-white/40 mt-0.5">
                             Due: {new Date(task.due_date).toLocaleDateString()}
                           </p>
                         )}
                       </div>
                       <svg
                         aria-hidden="true"
-                        className={`w-5 h-5 text-black/30 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                        className={`w-5 h-5 text-white/30 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -202,13 +202,13 @@ export default function TaskPage() {
                     </button>
 
                     {isExpanded && (
-                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-black/5">
+                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-white/[0.06]">
                         <textarea
                           value={notes}
                           onChange={(e) => setNotes(e.target.value)}
                           placeholder="Notes (optional)"
                           rows={2}
-                          className="w-full px-3 py-2 rounded-lg border border-black/10 text-sm placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                          className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors"
                         />
                         {error && (
                           <p className="text-danger text-xs">{error}</p>

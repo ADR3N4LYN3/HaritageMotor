@@ -83,17 +83,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-[#0e0d0b] flex flex-col items-center justify-center px-6">
       {/* Logo */}
-      <div className="mb-12 text-center">
-        <h1 className="text-3xl font-display font-bold text-gold tracking-wide">
+      <div className="mb-10 text-center flex flex-col items-center">
+        {/* Shield crest */}
+        <svg className="w-10 h-12 text-gold mb-4" viewBox="0 0 40 48" fill="none" stroke="currentColor" strokeWidth={1.2}>
+          <path d="M20 2L4 10v14c0 12 16 20 16 20s16-8 16-20V10L20 2z" />
+          <path d="M20 8L10 13v9c0 8 10 14 10 14s10-6 10-14v-9L20 8z" strokeWidth={0.8} strokeOpacity={0.4} />
+        </svg>
+        <h1 className="font-display text-2xl font-light tracking-[0.15em] text-gold">
           Heritage Motor
         </h1>
-        <p className="text-white/40 text-sm mt-2">Vehicle Custody Platform</p>
+        <p className="text-white/30 text-[11px] font-sans uppercase tracking-[0.25em] mt-3">
+          Vehicle Custody Platform
+        </p>
+        {/* Gold separator */}
+        <div className="w-12 h-px bg-gold/40 mx-auto my-8" />
       </div>
 
       {step === "login" ? (
-        <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4">
+        <form onSubmit={handleLogin} className="w-full max-w-sm bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-4">
           <div>
             <input
               type="email"
@@ -101,7 +110,7 @@ export default function LoginPage() {
               onChange={(e) => setForm({ email: e.target.value })}
               placeholder="Email"
               required
-              className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
+              className="w-full px-4 py-3.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-colors"
               autoComplete="email"
             />
           </div>
@@ -113,7 +122,7 @@ export default function LoginPage() {
               placeholder="Password"
               required
               minLength={8}
-              className="w-full px-4 py-3.5 pr-12 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
+              className="w-full px-4 py-3.5 pr-12 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-colors"
               autoComplete="current-password"
             />
             <button
@@ -136,7 +145,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-danger text-sm text-center">{error}</p>
+            <p className="text-danger text-sm text-center font-light">{error}</p>
           )}
 
           <ActionButton type="submit" loading={loading}>
@@ -144,9 +153,9 @@ export default function LoginPage() {
           </ActionButton>
         </form>
       ) : (
-        <div className="w-full max-w-sm space-y-6">
+        <div className="w-full max-w-sm bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-6">
           <div className="text-center">
-            <p className="text-white/60 text-sm">Enter the 6-digit code from your authenticator app</p>
+            <p className="text-white/40 text-sm font-light">Enter the 6-digit code from your authenticator app</p>
           </div>
           <input
             ref={mfaInputRef}
@@ -157,11 +166,11 @@ export default function LoginPage() {
             value={mfaCode}
             onChange={(e) => setMfa({ mfaCode: e.target.value.replace(/\D/g, "") })}
             placeholder="000000"
-            className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-center text-2xl tracking-[0.5em] font-mono placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-gold/50"
+            className="w-full px-4 py-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-center text-2xl tracking-[0.5em] font-mono placeholder:text-white/15 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
           />
 
           {error && (
-            <p className="text-danger text-sm text-center">{error}</p>
+            <p className="text-danger text-sm text-center font-light">{error}</p>
           )}
 
           {loading && (
@@ -172,7 +181,7 @@ export default function LoginPage() {
 
           <button
             onClick={() => { setMfa({ step: "login", mfaCode: "" }); setError(null); }}
-            className="w-full text-white/40 text-sm underline"
+            className="w-full text-gold/60 text-xs uppercase tracking-widest hover:text-gold transition-colors"
           >
             Back to login
           </button>

@@ -43,7 +43,7 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        <h1 className="font-display text-2xl font-bold text-black">Vehicles</h1>
+        <h1 className="font-display text-2xl font-light tracking-wide text-white">Vehicles</h1>
 
         {/* Search */}
         <input
@@ -51,7 +51,7 @@ export default function DashboardPage() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search vehicles..."
-          className="w-full px-4 py-3 rounded-xl border border-black/10 bg-white text-black placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
+          className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-colors"
         />
 
         {/* Status filter pills */}
@@ -60,10 +60,10 @@ export default function DashboardPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                 statusFilter === s
-                  ? "bg-gold text-white"
-                  : "bg-black/5 text-black/60"
+                  ? "bg-gold/15 text-gold border-gold/30"
+                  : "bg-white/[0.04] text-white/50 border-white/[0.06]"
               }`}
             >
               {s || "All"}
@@ -79,11 +79,11 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-danger text-sm">
+          <div className="text-center py-12 text-danger text-sm font-light">
             Failed to load vehicles
           </div>
         ) : vehicles.length === 0 ? (
-          <div className="text-center py-12 text-black/40 text-sm">
+          <div className="text-center py-12 text-white/30 text-sm font-light">
             No vehicles found
           </div>
         ) : (

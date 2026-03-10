@@ -7,9 +7,9 @@ export function TopBar() {
   const user = useAppStore((s) => s.user);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black text-white px-4 py-3 flex items-center justify-between safe-top">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black text-white px-4 py-3 flex items-center justify-between safe-top border-b border-gold/10">
       <div className="flex items-center gap-2">
-        <span className="text-gold font-display text-lg font-semibold tracking-wide">
+        <span className="font-display text-lg font-light tracking-[0.1em] text-gold">
           Heritage Motor
         </span>
       </div>

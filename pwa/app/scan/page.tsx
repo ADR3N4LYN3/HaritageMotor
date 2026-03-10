@@ -79,7 +79,7 @@ export default function ScanPage() {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center h-full px-6 gap-4">
-          <h2 className="text-white text-xl font-display font-semibold">
+          <h2 className="text-white text-xl font-display font-light tracking-wide">
             Enter Vehicle Code
           </h2>
           <input
@@ -87,7 +87,7 @@ export default function ScanPage() {
             value={manualCode}
             onChange={(e) => setManualCode(e.target.value)}
             placeholder="Enter QR token..."
-            className="w-full px-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-white/30 border border-white/20 focus:outline-none focus:ring-2 focus:ring-gold/50"
+            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] text-white placeholder:text-white/25 border border-white/[0.08] focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
           />
           {error && (
             <p className="text-danger text-sm">{error}</p>
@@ -95,7 +95,7 @@ export default function ScanPage() {
           <div className="w-full flex gap-2">
             <button
               onClick={() => { setShowManual(false); setError(null); }}
-              className="flex-1 py-3 rounded-xl border border-white/20 text-white/60 text-sm"
+              className="flex-1 py-3 rounded-xl border border-white/[0.08] text-white/50 text-sm"
             >
               Back to Scanner
             </button>

@@ -1,6 +1,6 @@
 export function VehicleCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
+    <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="skeleton h-5 w-40 mb-2" />
