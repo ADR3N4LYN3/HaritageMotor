@@ -30,6 +30,8 @@ type Config struct {
 	EmailFrom      string
 	ContactEmailTo string
 
+	TurnstileSecretKey string
+
 	LogLevel string
 }
 
@@ -55,6 +57,8 @@ func Load() (*Config, error) {
 		ResendAPIKey:   getEnv("RESEND_API_KEY", ""),
 		EmailFrom:      getEnv("EMAIL_FROM", "noreply@heritagemotor.app"),
 		ContactEmailTo: getEnv("CONTACT_EMAIL_TO", "welcome@heritagemotor.app"),
+
+		TurnstileSecretKey: getEnv("TURNSTILE_SECRET_KEY", ""),
 
 		LogLevel: getEnv("LOG_LEVEL", "info"),
 	}

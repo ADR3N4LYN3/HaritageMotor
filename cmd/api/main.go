@@ -203,7 +203,7 @@ func main() {
 		adminHandler := adminhandler.NewHandler(adminService)
 
 		// Contact service (public, uses ownerPool — no RLS needed)
-		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo)
+		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo, cfg.TurnstileSecretKey)
 		contactHandler := contacthandler.NewHandler(contactService)
 
 		// Rate limiter for auth endpoints: 5 req per 15 min per IP

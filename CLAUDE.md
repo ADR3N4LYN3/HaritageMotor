@@ -59,7 +59,7 @@ internal/
     admin/                       — Superadmin : tenants CRUD, invitations, dashboard
     auth/                        — Login, logout, refresh, MFA, change-password
     bay/ event/ task/ document/ user/ vehicle/   — CRUD + logique métier
-    contact/                     — Formulaire contact public + email confirmation i18n (EN/FR/DE)
+    contact/                     — Formulaire contact public + email confirmation i18n + anti-bot (honeypot + Turnstile)
     mailer/                      — Envoi emails via Resend API
     plan/                        — Limites par plan (starter/pro/enterprise)
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)

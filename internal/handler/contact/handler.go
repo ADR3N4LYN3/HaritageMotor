@@ -16,12 +16,14 @@ func NewHandler(service *contactsvc.Service) *Handler {
 }
 
 type submitRequest struct {
-	Name     string `json:"name"     validate:"required,min=2,max=100"`
-	Email    string `json:"email"    validate:"required,email,max=255"`
-	Company  string `json:"company"  validate:"omitempty,max=200"`
-	Vehicles string `json:"vehicles" validate:"omitempty,max=50"`
-	Message  string `json:"message"  validate:"omitempty,max=5000"`
-	Lang     string `json:"lang"     validate:"omitempty,oneof=en fr de"`
+	Name              string `json:"name"                 validate:"required,min=2,max=100"`
+	Email             string `json:"email"                validate:"required,email,max=255"`
+	Company           string `json:"company"              validate:"omitempty,max=200"`
+	Vehicles          string `json:"vehicles"             validate:"omitempty,max=50"`
+	Message           string `json:"message"              validate:"omitempty,max=5000"`
+	Lang              string `json:"lang"                 validate:"omitempty,oneof=en fr de"`
+	Website           string `json:"website"`               // Honeypot — must stay empty
+	TurnstileResponse string `json:"cf_turnstile_response"` // Cloudflare Turnstile token
 }
 
 func (h *Handler) Submit(c *fiber.Ctx) error {
@@ -29,6 +31,12 @@ func (h *Handler) Submit(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
+
+	// Honeypot — bots fill hidden fields, humans don't. Fake success to not tip off the bot.
+	if req.Website != "" {
+		return c.Status(201).JSON(fiber.Map{"message": "request received"})
+	}
+
 	if err := handler.Validate.Struct(req); err != nil {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
@@ -39,13 +47,14 @@ func (h *Handler) Submit(c *fiber.Ctx) error {
 	}
 
 	err := h.service.Submit(c.UserContext(), contactsvc.Request{
-		Name:     req.Name,
-		Email:    req.Email,
-		Company:  req.Company,
-		Vehicles: req.Vehicles,
-		Message:  req.Message,
-		IP:       c.IP(),
-		Lang:     lang,
+		Name:              req.Name,
+		Email:             req.Email,
+		Company:           req.Company,
+		Vehicles:          req.Vehicles,
+		Message:           req.Message,
+		IP:                c.IP(),
+		Lang:              lang,
+		TurnstileResponse: req.TurnstileResponse,
 	})
 	if err != nil {
 		return handler.HandleServiceError(c, err)

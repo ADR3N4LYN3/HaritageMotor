@@ -15,6 +15,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap"></noscript>
 <script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.outbound-links.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -43,12 +44,12 @@ body { background: var(--black); color: rgba(255,255,255,0.7); font-family: var(
 nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2); border-bottom: 1px solid rgba(184,149,90,0.1); display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 4rem; position: sticky; top: 0; z-index: 100; }
 .nav-logo { display: flex; align-items: center; text-decoration: none; color: #fff; transition: opacity 0.3s; }
 .nav-logo:hover { opacity: 0.8; }
-.logo-svg { height: 30px; width: auto; }
+.logo-svg { height: 46px; width: auto; }
 .nav-right { display: flex; align-items: center; gap: 2.5rem; }
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-.nav-links a { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
+.nav-links a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
 .nav-links a:hover { color: var(--gold); }
-.nav-cta { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
+.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
 .nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
 
 /* MAIN */
@@ -56,7 +57,7 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 
 /* LEFT: INFO */
 .contact-info { padding-top: 1rem; }
-.section-tag { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 500; }
+.section-tag { font-size: 0.82rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 500; }
 .section-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
 .contact-info h1 { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 4rem); font-weight: 300; color: #fff; line-height: 1.08; margin-bottom: 1.5rem; }
 .contact-info h1 em { font-style: italic; color: rgba(255,255,255,0.4); }
@@ -66,7 +67,7 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 .contact-item { display: flex; gap: 1.25rem; align-items: flex-start; }
 .contact-icon { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .contact-icon svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.contact-item-label { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
+.contact-item-label { font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
 .contact-item-value { font-size: 0.88rem; color: rgba(255,255,255,0.5); font-weight: 300; line-height: 1.6; }
 .contact-item-value a { color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
 .contact-item-value a:hover { color: var(--gold); }
@@ -79,7 +80,7 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 .contact-form { display: flex; flex-direction: column; gap: 1.25rem; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-.form-group label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 500; }
+.form-group label { font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 500; }
 .contact-form input, .contact-form select, .contact-form textarea {
   background: var(--dark-2);
   border: 1px solid rgba(184,149,90,0.12);
@@ -112,13 +113,14 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 .custom-select-option:hover { background: rgba(184,149,90,0.08); color: #fff; }
 .custom-select-option.selected { color: var(--gold); font-weight: 400; }
 
-.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: none; color: var(--gold); padding: 1rem 2.2rem; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid rgba(184,149,90,0.4); border-radius: 4px; cursor: pointer; transition: all 0.4s var(--ease-lux); align-self: flex-start; font-family: var(--sans); position: relative; overflow: hidden; }
+.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: none; color: var(--gold); padding: 1rem 2.2rem; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid rgba(184,149,90,0.4); border-radius: 4px; cursor: pointer; transition: all 0.4s var(--ease-lux); align-self: flex-start; font-family: var(--sans); position: relative; overflow: hidden; }
 .form-submit::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: -1; }
 .form-submit:hover { color: var(--black); border-color: var(--gold); }
 .form-submit:hover::after { transform: scaleX(1); }
 .form-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 .form-submit:disabled::after { display: none; }
 
+.form-hp { position: absolute; left: -9999px; height: 0; width: 0; overflow: hidden; opacity: 0; }
 .form-success { color: var(--gold); font-family: var(--serif); font-size: 1.4rem; font-weight: 300; line-height: 1.4; padding: 2rem 0; }
 
 /* FOOTER */
@@ -127,9 +129,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 .footer-logo:hover { opacity: 0.7; }
 .footer-logo .logo-svg { height: 22px; width: auto; }
 .footer-links { display: flex; gap: 2.5rem; list-style: none; justify-content: center; flex-wrap: wrap; }
-.footer-links a { font-size: 0.68rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s; }
+.footer-links a { font-size: 0.78rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s; }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy { font-size: 0.70rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
+.footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
 
 /* RESPONSIVE */
 @media (max-width: 960px) {
@@ -143,7 +145,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 }
 
 @media (max-width: 480px) {
-  .nav-cta { font-size: 0.62rem; padding: 0.55rem 1rem; letter-spacing: 0.1em; }
+  .nav-cta { font-size: 0.68rem; padding: 0.55rem 1rem; letter-spacing: 0.1em; }
   .contact-info h1 { font-size: clamp(1.6rem, 7vw, 2.5rem); }
   .contact-form-wrap { padding: 1.5rem 1rem; }
   .form-submit { width: 100%; justify-content: center; }
@@ -154,7 +156,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 <body>
 
 <nav role="navigation" aria-label="Main navigation">
-  <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text><text x="60" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text></svg></a>
+  <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <div class="nav-right">
     <ul class="nav-links">
       <li><a href="/#platform">Platform</a></li>
@@ -250,6 +252,13 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
         <label for="message">Message</label>
         <textarea id="message" name="message" placeholder="Tell us about your facility, current workflow, and what you're looking for..." rows="4"></textarea>
       </div>
+      <!-- Honeypot — hidden from humans, bots fill it -->
+      <div class="form-hp" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+      <!-- Cloudflare Turnstile — replace data-sitekey with your key from Cloudflare Dashboard > Turnstile -->
+      <div class="cf-turnstile" data-sitekey="REPLACE_WITH_YOUR_TURNSTILE_SITE_KEY" data-theme="dark"></div>
       <button type="submit" class="form-submit">
         Send Message
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -259,7 +268,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 </main>
 
 <footer role="contentinfo">
-  <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text><text x="60" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text></svg></a>
+  <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <ul class="footer-links">
     <li><a href="/">Home</a></li>
     <li><a href="/#platform">Platform</a></li>
@@ -318,13 +327,16 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     var lang = 'en';
     try { lang = localStorage.getItem('hm-lang') || 'en'; } catch(e) {}
 
+    var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
     var data = {
       name: form.name.value,
       email: form.email.value,
       company: form.company.value,
       vehicles: form.vehicles.value,
       message: form.message.value,
-      lang: lang
+      lang: lang,
+      website: form.website.value,
+      cf_turnstile_response: turnstileInput ? turnstileInput.value : ''
     };
 
     fetch('/api/v1/contact', {
@@ -348,6 +360,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     }).catch(function(err) {
       btn.disabled = false;
       btn.textContent = 'Send Message';
+      if (typeof turnstile !== 'undefined') { turnstile.reset(); }
       if (err.message === 'too many requests, try again later') {
         alert('Too many requests. Please try again in a few minutes.');
       } else {

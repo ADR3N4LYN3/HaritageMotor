@@ -155,7 +155,7 @@ func buildApp(ownerPool, appPool *pgxpool.Pool, jwtManager *auth.JWTManager) *fi
 	planService := plansvc.NewService(ownerPool)
 	mailerService := mailersvc.NewService("", "", "http://localhost:3000") // no-op mailer in tests
 	adminService := adminsvc.NewService(ownerPool, mailerService)
-	contactService := contactsvc.NewService(ownerPool, "", "", "")
+	contactService := contactsvc.NewService(ownerPool, "", "", "", "")
 
 	// Handlers
 	authHandler := authhandler.NewHandler(authService)

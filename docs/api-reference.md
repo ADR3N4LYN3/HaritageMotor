@@ -510,6 +510,11 @@ Soft delete.
 
 Submit a contact/demo request from the landing page. No authentication required. Rate limited: 3 req / 15 min per IP.
 
+**Anti-bot protection (3 layers):**
+1. **Honeypot** — hidden `website` field; if filled, returns fake `201` (bots don't notice)
+2. **Cloudflare Turnstile** — `cf_turnstile_response` token verified server-side via siteverify API; skipped if `TURNSTILE_SECRET_KEY` is empty (dev mode)
+3. **Rate limiting** — 3 req / 15 min per IP
+
 **Request:**
 ```json
 {
@@ -518,11 +523,12 @@ Submit a contact/demo request from the landing page. No authentication required.
   "company": "Luxury Storage Inc.",
   "vehicles": "26-50",
   "message": "Interested in a demo for our facility.",
-  "lang": "en"
+  "lang": "en",
+  "cf_turnstile_response": "<token from Turnstile widget>"
 }
 ```
 
-Required: `name` (2-100 chars), `email`. Optional: `company` (max 200), `vehicles` (max 50), `message` (max 5000), `lang` (en|fr|de, default: en).
+Required: `name` (2-100 chars), `email`. Optional: `company` (max 200), `vehicles` (max 50), `message` (max 5000), `lang` (en|fr|de, default: en), `cf_turnstile_response` (Turnstile token).
 
 A confirmation email is sent in the specified language (EN/FR/DE) using a branded dark luxury template.
 

@@ -174,6 +174,18 @@ Endpoints are rate-limited to prevent brute-force and abuse:
 
 Exceeded limits return `429 Too Many Requests`.
 
+### Anti-Bot Protection (Contact Form)
+
+The contact form (`POST /contact`) uses 3 layers of bot protection:
+
+| Layer | Mechanism | Behavior |
+|-------|-----------|----------|
+| Honeypot | Hidden `website` field (CSS off-screen) | If filled → fake 201 (bot thinks it succeeded) |
+| Cloudflare Turnstile | Token in `cf_turnstile_response`, verified via siteverify API | If invalid → 500; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
+| Rate limiting | 3 req / 15 min per IP | If exceeded → 429 |
+
+Turnstile verification is **fail-open** on network/decode errors (falls back to rate limiting).
+
 ### Upload Limiter
 
 Per-user bandwidth rate limiting for file uploads (`internal/middleware/upload_limiter.go`):
