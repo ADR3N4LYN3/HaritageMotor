@@ -272,8 +272,8 @@ Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` pa
 - **`data-lang-block`** : pour le contenu long (legal, privacy). Blocs HTML complets par langue, toggle via `el.hidden = (lang !== block)`. Plus propre que traduire élément par élément.
 
 **Pages :**
-- `index.html` : `data-i18n` sur tous les éléments (nav, hero, pillars, features, pricing, CTA, footer)
-- `contact.html` : `data-i18n` (nav, labels, placeholders) + détection auto de la langue navigateur
+- `index.html` : `data-i18n` sur tous les éléments (nav, hero, pillars, features, pricing, CTA, footer) + toggle EUR/USD sur les prix (`localStorage('hm-currency')`, compatible i18n)
+- `contact.html` : `data-i18n` (nav, labels, placeholders) + détection auto de la langue navigateur. Nav simplifié (pas de lien "Contact" redondant avec le CTA)
 - `privacy.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
 - `legal.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
 - `404.html` : `data-i18n` + fond route brumeuse (Unsplash), shield crest, CTA style landing

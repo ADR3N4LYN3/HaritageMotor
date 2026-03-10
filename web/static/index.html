@@ -229,6 +229,10 @@ nav.nav-hidden { transform: translateY(-100%); }
 .pricing { padding: var(--section-pad) var(--h-pad); background: var(--dark-2); position: relative; }
 .pricing::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 60px; background: linear-gradient(to bottom, rgba(184,149,90,0.3), transparent); }
 .pricing-header { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: end; margin-bottom: 5rem; }
+.currency-toggle { display: inline-flex; align-items: center; border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; padding: 3px; margin-top: 1.5rem; background: rgba(255,255,255,0.02); }
+.currency-toggle button { font-family: var(--sans); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.4rem 1rem; border: none; border-radius: 100px; cursor: pointer; transition: all 0.3s var(--ease-lux); background: transparent; color: rgba(255,255,255,0.35); }
+.currency-toggle button.active { background: rgba(184,149,90,0.15); color: var(--gold); }
+.currency-toggle button:hover:not(.active) { color: rgba(255,255,255,0.6); }
 .pricing-header h2 { font-family: var(--serif); font-size: clamp(2.8rem, 4.5vw, 4.5rem); font-weight: 300; line-height: 1.05; color: #fff; }
 .pricing-header h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
 .pricing-header p { font-size: 0.95rem; color: rgba(255,255,255,0.42); line-height: 1.9; font-weight: 300; }
@@ -605,7 +609,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
 <!-- STATS -->
 <div class="stats" role="region" aria-label="Key metrics">
   <div class="stat reveal">
-    <div class="stat-val">&euro;<span>2M</span>+</div>
+    <div class="stat-val" data-stat-eur="&euro;<span>2M</span>+" data-stat-usd="$<span>2.2M</span>+">&euro;<span>2M</span>+</div>
     <div class="stat-label" data-i18n="stat1.label">Average assets under management per facility</div>
   </div>
   <div class="stat reveal reveal-d1">
@@ -631,12 +635,16 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     </div>
     <div class="reveal reveal-d1">
       <p data-i18n="pricing.text">A flat monthly rate per site — no per-vehicle fees, no surprises. Setup and onboarding included for the first three months.</p>
+      <div class="currency-toggle" role="radiogroup" aria-label="Currency">
+        <button class="active" data-currency="eur" role="radio" aria-checked="true">EUR &euro;</button>
+        <button data-currency="usd" role="radio" aria-checked="false">USD $</button>
+      </div>
     </div>
   </div>
   <div class="pricing-grid reveal">
     <div class="price-card">
       <div class="price-tier">Starter</div>
-      <div class="price-amount">&euro;800</div>
+      <div class="price-amount" data-price-eur="&euro;800" data-price-usd="$880">&euro;800</div>
       <div class="price-period" data-i18n="price1.period">per site / month &middot; up to 50 vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
@@ -654,7 +662,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     <div class="price-card featured">
       <div class="price-badge" data-i18n="price.badge">Most popular</div>
       <div class="price-tier">Pro</div>
-      <div class="price-amount">&euro;1,400</div>
+      <div class="price-amount" data-price-eur="&euro;1,400" data-price-usd="$1,540">&euro;1,400</div>
       <div class="price-period" data-i18n="price2.period">per site / month &middot; up to 200 vehicles</div>
       <div class="price-sep"></div>
       <ul class="price-list">
@@ -667,7 +675,7 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       <div class="price-sep"></div>
       <div style="font-size:0.75rem;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-top:-0.5rem;font-weight:500;" data-i18n="price.addon">Optional add-on</div>
       <ul class="price-list" style="margin-top:0.75rem;">
-        <li data-i18n="price.feat.climateaddon">Climate monitoring — +&euro;350/mo</li>
+        <li data-i18n="price.feat.climateaddon" data-addon-eur="Climate monitoring — +&euro;350/mo" data-addon-usd="Climate monitoring — +$385/mo">Climate monitoring — +&euro;350/mo</li>
       </ul>
       <a href="/contact" class="price-btn"><span data-i18n="nav.cta">Request a Demo</span></a>
     </div>
@@ -1006,6 +1014,62 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   });
   document.addEventListener('click', closeLangDrop);
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
+
+  /* --- Currency Toggle ------------------------------------------------ */
+  var currentCurrency = 'eur';
+  var currencyI18n = {
+    fr: { climateaddon_eur: 'Monitoring climatique \u2014 +350\u20ac/mois', climateaddon_usd: 'Monitoring climatique \u2014 +$385/mois' },
+    de: { climateaddon_eur: 'Klima\u00fcberwachung \u2014 +350\u20ac/Monat', climateaddon_usd: 'Klima\u00fcberwachung \u2014 +$385/Monat' }
+  };
+  /* Stat amounts per currency (€2M+ vs $2.2M+) */
+  var statAmounts = { eur: ['\u20ac', '2M'], usd: ['$', '2.2M'] };
+
+  function setCurrency(cur) {
+    currentCurrency = cur;
+    document.querySelectorAll('.currency-toggle button').forEach(function(btn) {
+      var active = btn.getAttribute('data-currency') === cur;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-checked', String(active));
+    });
+    document.querySelectorAll('[data-price-' + cur + ']').forEach(function(el) {
+      el.textContent = el.getAttribute('data-price-' + cur);
+    });
+    var statEl = document.querySelector('[data-stat-eur]');
+    if (statEl) {
+      var s = statAmounts[cur];
+      statEl.textContent = '';
+      statEl.appendChild(document.createTextNode(s[0]));
+      var span = document.createElement('span');
+      span.textContent = s[1];
+      statEl.appendChild(span);
+      statEl.appendChild(document.createTextNode('+'));
+    }
+    var addonEl = document.querySelector('[data-addon-eur]');
+    if (addonEl) {
+      var lang = document.documentElement.lang || 'en';
+      var ci = currencyI18n[lang];
+      if (ci) {
+        addonEl.textContent = ci['climateaddon_' + cur];
+      } else {
+        addonEl.textContent = addonEl.getAttribute('data-addon-' + cur);
+      }
+    }
+    try { localStorage.setItem('hm-currency', cur); } catch(e) {}
+  }
+
+  document.querySelectorAll('.currency-toggle button').forEach(function(btn) {
+    btn.addEventListener('click', function() { setCurrency(this.getAttribute('data-currency')); });
+  });
+
+  // Restore saved currency
+  try { var savedCur = localStorage.getItem('hm-currency'); if (savedCur === 'usd') setCurrency('usd'); } catch(e) {}
+
+  // Re-apply currency after language change
+  var origSetLang = setLang;
+  setLang = function(lang) {
+    origSetLang(lang);
+    if (currentCurrency !== 'eur') setCurrency(currentCurrency);
+  };
 
   /* --- Scroll Reveal ------------------------------------------------- */
   var io = new IntersectionObserver(function(entries) {
