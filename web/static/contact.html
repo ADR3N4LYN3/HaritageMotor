@@ -42,7 +42,7 @@ nav { background: var(--bg); border-bottom: 1px solid var(--border); display: fl
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
 .nav-links a { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--black); transition: opacity 0.25s; opacity: 0.75; }
 .nav-links a:hover { opacity: 1; }
-.nav-cta { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 0.6rem 1.6rem; border-radius: 1px; font-weight: 500; transition: all 0.25s; background: var(--black); color: #fff; border: 1px solid var(--black); }
+.nav-cta { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 0.6rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.25s; background: var(--black); color: #fff; border: 1px solid var(--black); }
 .nav-cta:hover { background: var(--gold); border-color: var(--gold); }
 
 /* ─── MAIN ───────────────────────────────────────────────────────── */
@@ -58,7 +58,7 @@ main { flex: 1; padding: 5rem 3.5rem; display: grid; grid-template-columns: 1fr 
 
 .contact-details { display: flex; flex-direction: column; gap: 2rem; }
 .contact-item { display: flex; gap: 1.25rem; align-items: flex-start; }
-.contact-icon { width: 40px; height: 40px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.contact-icon { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .contact-icon svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .contact-item-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
 .contact-item-value { font-size: 0.88rem; color: var(--mid); font-weight: 300; line-height: 1.6; }
@@ -66,7 +66,7 @@ main { flex: 1; padding: 5rem 3.5rem; display: grid; grid-template-columns: 1fr 
 .contact-item-value a:hover { color: var(--gold); }
 
 /* ─── RIGHT: FORM ────────────────────────────────────────────────── */
-.contact-form-wrap { background: var(--white); border: 1px solid var(--border); padding: 3rem; }
+.contact-form-wrap { background: var(--white); border: 1px solid var(--border); padding: 3rem; border-radius: 8px; }
 .form-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; color: var(--black); margin-bottom: 0.5rem; }
 .form-subtitle { font-size: 0.82rem; color: var(--muted); font-weight: 300; margin-bottom: 2rem; }
 
@@ -82,17 +82,31 @@ main { flex: 1; padding: 5rem 3.5rem; display: grid; grid-template-columns: 1fr 
   font-size: 0.85rem;
   font-weight: 300;
   padding: 0.85rem 1rem;
-  border-radius: 1px;
+  border-radius: 4px;
   outline: none;
   transition: border-color 0.25s;
   width: 100%;
 }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted); }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--gold); }
-.contact-form select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%238a8880' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+.contact-form select { display: none; }
 .contact-form textarea { resize: vertical; min-height: 100px; }
 
-.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--black); color: #fff; padding: 1rem 2.2rem; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 1px; border: none; cursor: pointer; transition: background 0.25s; align-self: flex-start; font-family: var(--sans); }
+/* ─── CUSTOM DROPDOWN ───────────────────────────────────────────── */
+.custom-select { position: relative; width: 100%; }
+.custom-select-trigger { background: var(--bg); border: 1px solid var(--border); color: var(--muted); font-family: var(--sans); font-size: 0.85rem; font-weight: 300; padding: 0.85rem 1rem; border-radius: 4px; cursor: pointer; transition: border-color 0.25s; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; user-select: none; }
+.custom-select-trigger.has-value { color: var(--black); }
+.custom-select-trigger:hover { border-color: var(--gold); }
+.custom-select.open .custom-select-trigger { border-color: var(--gold); }
+.custom-select-arrow { width: 12px; height: 12px; transition: transform 0.25s; flex-shrink: 0; }
+.custom-select.open .custom-select-arrow { transform: rotate(180deg); }
+.custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 12px 36px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04); display: none; z-index: 50; overflow: hidden; }
+.custom-select.open .custom-select-options { display: block; }
+.custom-select-option { padding: 0.75rem 1rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 300; color: var(--mid); cursor: pointer; transition: all 0.15s; }
+.custom-select-option:hover { background: var(--bg); color: var(--black); }
+.custom-select-option.selected { color: var(--gold); font-weight: 400; }
+
+.form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--black); color: #fff; padding: 1rem 2.2rem; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 4px; border: none; cursor: pointer; transition: background 0.25s; align-self: flex-start; font-family: var(--sans); }
 .form-submit:hover { background: var(--gold); }
 .form-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -191,7 +205,7 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
         </div>
         <div class="form-group">
           <label for="vehicles">Fleet size</label>
-          <select id="vehicles" name="vehicles">
+          <select id="vehicles" name="vehicles" aria-hidden="true" tabindex="-1">
             <option value="" selected>Select range</option>
             <option value="1-25">1 – 25 vehicles</option>
             <option value="26-50">26 – 50 vehicles</option>
@@ -199,6 +213,19 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
             <option value="101-200">101 – 200 vehicles</option>
             <option value="200+">200+ vehicles</option>
           </select>
+          <div class="custom-select" id="custom-vehicles">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+              <span>Select range</span>
+              <svg class="custom-select-arrow" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="#8a8880" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option" data-value="1-25" role="option">1 – 25 vehicles</div>
+              <div class="custom-select-option" data-value="26-50" role="option">26 – 50 vehicles</div>
+              <div class="custom-select-option" data-value="51-100" role="option">51 – 100 vehicles</div>
+              <div class="custom-select-option" data-value="101-200" role="option">101 – 200 vehicles</div>
+              <div class="custom-select-option" data-value="200+" role="option">200+ vehicles</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group">
@@ -225,6 +252,42 @@ footer { background: var(--black); padding: 3rem 3.5rem; display: grid; grid-tem
 </footer>
 
 <script>
+  /* --- Custom dropdown ------------------------------------------------- */
+  (function() {
+    var wrap = document.getElementById('custom-vehicles');
+    if (!wrap) return;
+    var trigger = wrap.querySelector('.custom-select-trigger');
+    var label = trigger.querySelector('span');
+    var opts = wrap.querySelectorAll('.custom-select-option');
+    var native = document.getElementById('vehicles');
+
+    trigger.addEventListener('click', function() {
+      var isOpen = wrap.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', isOpen);
+    });
+
+    opts.forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        opts.forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        label.textContent = opt.textContent;
+        trigger.classList.add('has-value');
+        native.value = opt.getAttribute('data-value');
+        wrap.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    trigger.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger.click(); }
+      if (e.key === 'Escape') { wrap.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrap.contains(e.target)) { wrap.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+
   document.getElementById('contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = e.target;

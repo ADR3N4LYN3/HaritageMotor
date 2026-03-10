@@ -312,7 +312,9 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **useOfflineQueue** : effets séparés avec dépendances minimales (initial count runs once, listeners/polling séparés)
 
 ### Landing page (web/static/)
-- **Navigation** : `IntersectionObserver` au lieu de `scroll` event listener (1 callback/intersection vs ~60/sec)
+- **Navigation** : nav fixe (toujours visible, pas de hide-on-scroll), `IntersectionObserver` pour `.scrolled` background change
+- **CTAs variés** : 5 CTAs distincts (Schedule a Tour, See it in action, Discover the solution, Start a Conversation, Request a Demo) — évite le répétitif
+- **Nav mobile** : `white-space: nowrap` sur `.nav-cta` pour éviter le wrap sur 2 lignes
 - **Google Fonts** : 6 variantes au lieu de 11 (removed unused weights)
 - **SEO** : `og:image`, `twitter:image`, `preconnect` vers `fonts.gstatic.com`
 - **Smooth scroll** : cubic-bezier luxury easing (1200ms) pour les ancres `#contact`, clean URL via `replaceState`
