@@ -61,6 +61,8 @@
   --sans:  'DM Sans', system-ui, sans-serif;
   --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --section-pad: clamp(6rem, 10vw, 12rem);
+  --h-pad: clamp(1.5rem, 4vw, 4rem);
 }
 
 html { scroll-behavior: smooth; }
@@ -68,12 +70,10 @@ body { background: var(--black); color: #fff; font-family: var(--sans); font-siz
 
 ::selection { background: rgba(184,149,90,0.25); color: #fff; }
 
-/* =================================================================
-   NAV — Lamborghini style
-   ================================================================= */
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 1.6rem 4rem; transition: transform 0.8s var(--ease-lux), background 0.5s ease, padding 0.5s ease, border-color 0.5s ease; }
+/* NAV */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 1.6rem var(--h-pad); transition: transform 0.8s var(--ease-lux), background 0.5s ease, padding 0.5s ease, border-color 0.5s ease; }
 nav::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,13,11,0.85) 0%, rgba(14,13,11,0.45) 60%, transparent 100%); z-index: -1; pointer-events: none; transition: opacity 0.5s ease; }
-nav.scrolled { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2); padding: 0.9rem 4rem; border-bottom: 1px solid rgba(184,149,90,0.1); }
+nav.scrolled { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2); padding: 0.9rem var(--h-pad); border-bottom: 1px solid rgba(184,149,90,0.1); }
 nav.scrolled::before { opacity: 0; }
 nav.nav-hidden { transform: translateY(-100%); }
 .nav-logo { display: flex; align-items: center; text-decoration: none; color: #fff; transition: opacity 0.3s; }
@@ -89,7 +89,6 @@ nav.nav-hidden { transform: translateY(-100%); }
 .nav-cta::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: -1; }
 .nav-cta:hover { color: var(--black); border-color: var(--gold); }
 .nav-cta:hover::after { transform: scaleX(1); }
-
 .lang-switch { position: relative; }
 .lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: color 0.3s ease-out; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 0.35rem; }
 .lang-btn:hover { color: var(--gold); }
@@ -101,167 +100,158 @@ nav.nav-hidden { transform: translateY(-100%); }
 .lang-opt:hover { background: rgba(184,149,90,0.08); color: var(--gold); }
 .lang-opt.active { color: var(--gold); font-weight: 500; }
 
-/* =================================================================
-   HERO — Cinematic fullscreen
-   ================================================================= */
+/* HERO — Cinematic centered */
 .hero { position: relative; height: 100vh; min-height: 750px; overflow: hidden; }
 .hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; transform: scale(1.05); }
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,13,11,0.3) 0%, rgba(14,13,11,0.05) 25%, rgba(14,13,11,0.05) 45%, rgba(14,13,11,0.5) 70%, rgba(14,13,11,0.88) 100%); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,13,11,0.4) 0%, rgba(14,13,11,0.15) 30%, rgba(14,13,11,0.15) 50%, rgba(14,13,11,0.55) 75%, rgba(14,13,11,0.92) 100%); }
 .hero::after { content: ''; position: absolute; inset: 0; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; }
-
-.hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 4rem 6rem; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: end; z-index: 2; }
-.hero-tag { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 2rem; opacity: 0; animation: fadeUp 1s 0.3s var(--ease-lux) forwards; }
+.hero-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 2; padding: 0 var(--h-pad); }
+.hero-tag { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 1s 0.3s var(--ease-lux) forwards; }
 .hero-tag-line { width: 40px; height: 1px; background: var(--gold); }
-.hero-tag-text { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); font-weight: 500; }
-.hero h1 { font-family: var(--serif); font-size: clamp(3.8rem, 6.5vw, 7.5rem); font-weight: 300; line-height: 0.92; letter-spacing: -0.02em; color: #fff; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 1.2s 0.5s var(--ease-lux) forwards; }
-.hero h1 em { font-style: italic; font-weight: 300; color: rgba(255,255,255,0.55); }
-.hero-cta { display: inline-flex; align-items: center; gap: 1rem; color: #fff; text-decoration: none; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0; animation: fadeUp 1s 0.8s var(--ease-lux) forwards; padding-bottom: 0.5rem; position: relative; }
+.hero-tag-text { font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); font-weight: 500; }
+.hero h1 { font-family: var(--serif); font-size: clamp(3.2rem, 7vw, 8rem); font-weight: 300; line-height: 0.92; letter-spacing: -0.02em; color: #fff; max-width: 900px; opacity: 0; animation: fadeUp 1.2s 0.5s var(--ease-lux) forwards; }
+.hero h1 em { font-style: italic; font-weight: 300; color: rgba(255,255,255,0.5); }
+.hero-sep { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 2.5rem auto; opacity: 0; animation: fadeUp 1s 0.7s var(--ease-lux) forwards; }
+.hero-cta { display: inline-flex; align-items: center; gap: 1rem; color: #fff; text-decoration: none; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0; animation: fadeUp 1s 0.9s var(--ease-lux) forwards; padding-bottom: 0.5rem; position: relative; }
 .hero-cta::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--gold); transform: scaleX(0.3); transform-origin: left; transition: transform 0.6s var(--ease-lux); }
 .hero-cta:hover::after { transform: scaleX(1); }
 .hero-cta svg { transition: transform 0.4s var(--ease-lux); }
 .hero-cta:hover svg { transform: translateX(4px); }
-
-.hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2rem; opacity: 0; animation: fadeUp 1s 0.9s var(--ease-lux) forwards; }
-.hero-stat { text-align: right; padding-right: 1.5rem; position: relative; }
-.hero-stat::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, var(--gold), transparent); opacity: 0.3; }
-.hero-stat-val { font-family: var(--serif); font-size: 2.8rem; font-weight: 300; color: #fff; line-height: 1; }
-.hero-stat-label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 0.4rem; line-height: 1.5; }
-
 .hero-scroll { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.75rem; opacity: 0; animation: fadeUp 0.8s 1.4s var(--ease-lux) forwards; z-index: 2; }
 .hero-scroll-line { width: 1px; height: 56px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2.2s ease-in-out infinite; }
 .hero-scroll-label { font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.3); writing-mode: vertical-rl; }
 @keyframes scrollPulse { 0%, 100% { opacity: 0.3; transform: scaleY(1); } 50% { opacity: 0.8; transform: scaleY(0.6); } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
-/* =================================================================
-   INTRO BAND
-   ================================================================= */
-.intro-band { background: var(--dark-2); padding: 2.5rem 4rem; display: flex; align-items: center; justify-content: space-between; gap: 3rem; border-top: 1px solid rgba(184,149,90,0.15); border-bottom: 1px solid rgba(184,149,90,0.15); }
-.intro-band-text { font-family: var(--serif); font-size: 1.3rem; font-weight: 300; color: rgba(255,255,255,0.6); font-style: italic; max-width: 720px; line-height: 1.7; }
+/* TRUSTED BY */
+.trusted { background: var(--dark-2); padding: 3.5rem var(--h-pad); text-align: center; border-top: 1px solid rgba(184,149,90,0.12); border-bottom: 1px solid rgba(184,149,90,0.12); }
+.trusted-label { font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.8rem; font-weight: 500; opacity: 0.7; }
+.trusted-items { display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+.trusted-item { font-family: var(--serif); font-size: 1.1rem; font-weight: 300; font-style: italic; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; transition: color 0.4s; }
+.trusted-item:hover { color: rgba(255,255,255,0.55); }
+.trusted-sep { width: 4px; height: 4px; background: var(--gold); opacity: 0.25; transform: rotate(45deg); flex-shrink: 0; }
+
+/* INTRO BAND */
+.intro-band { background: var(--black); padding: 3rem var(--h-pad); display: flex; align-items: center; justify-content: space-between; gap: 3rem; }
+.intro-band-text { font-family: var(--serif); font-size: 1.3rem; font-weight: 300; color: rgba(255,255,255,0.55); font-style: italic; max-width: 720px; line-height: 1.7; }
 .intro-band-link { display: inline-flex; align-items: center; gap: 0.7rem; color: var(--gold); text-decoration: none; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; transition: gap 0.4s var(--ease-lux); font-weight: 500; }
 .intro-band-link:hover { gap: 1.1rem; }
 
-/* =================================================================
-   SECTION UTILITIES
-   ================================================================= */
-.section-tag { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-weight: 500; }
+/* SECTION UTILITIES */
+.section-tag { font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-weight: 500; }
 .section-tag-center { justify-content: center; }
-.section-tag-center::before, .section-tag-center::after { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
-.gold-sep { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto; opacity: 0.4; }
+.section-tag-center::before, .section-tag-center::after { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.4; }
+.gold-sep { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto; opacity: 0.35; }
 
-/* =================================================================
-   PILLARS — Full-width cinematic bands
-   ================================================================= */
-.pillars-header { text-align: center; padding: 10rem 4rem 4rem; background: var(--black); }
-.pillars-header h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 300; color: #fff; line-height: 1.12; }
-.pillars-header h2 em { font-style: italic; color: rgba(255,255,255,0.45); }
+/* PILLARS */
+.pillars-header { text-align: center; padding: var(--section-pad) var(--h-pad) 4rem; background: var(--black); }
+.pillars-header h2 { font-family: var(--serif); font-size: clamp(2.8rem, 4.5vw, 4.5rem); font-weight: 300; color: #fff; line-height: 1.1; }
+.pillars-header h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
+.pillar-band { position: relative; height: 80vh; min-height: 520px; overflow: hidden; }
+.pillar-band-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(20%) brightness(0.65); transition: filter 1.2s var(--ease-lux); will-change: transform; }
+.pillar-band:hover .pillar-band-img { filter: grayscale(0%) brightness(0.55); }
+.pillar-band-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,13,11,0.15) 0%, rgba(14,13,11,0.1) 30%, rgba(14,13,11,0.65) 65%, rgba(14,13,11,0.95) 100%); }
+.pillar-band-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 5rem 6rem; z-index: 2; max-width: 720px; }
+.pillar-num { font-family: var(--serif); font-size: 0.75rem; color: var(--gold); letter-spacing: 0.3em; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; text-transform: uppercase; font-weight: 500; }
+.pillar-num::after { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.4; }
+.pillar-band h3 { font-family: var(--serif); font-size: clamp(2.2rem, 3.8vw, 3.5rem); font-weight: 300; color: #fff; margin-bottom: 1.4rem; line-height: 1.08; }
+.pillar-band p { font-size: 0.88rem; color: rgba(255,255,255,0.45); line-height: 1.9; font-weight: 300; max-width: 540px; }
 
-.pillar-band { position: relative; height: 75vh; min-height: 500px; overflow: hidden; }
-.pillar-band-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(20%) brightness(0.7); transition: filter 1.2s var(--ease-lux); will-change: transform; }
-.pillar-band:hover .pillar-band-img { filter: grayscale(0%) brightness(0.6); }
-.pillar-band-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,13,11,0.1) 0%, rgba(14,13,11,0.15) 30%, rgba(14,13,11,0.7) 70%, rgba(14,13,11,0.92) 100%); }
-.pillar-band-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 4rem 6rem; z-index: 2; max-width: 680px; }
-.pillar-num { font-family: var(--sans); font-size: 0.62rem; color: var(--gold); letter-spacing: 0.3em; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.8rem; text-transform: uppercase; font-weight: 500; }
-.pillar-num::after { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
-.pillar-band h3 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 300; color: #fff; margin-bottom: 1.2rem; line-height: 1.1; }
-.pillar-band p { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.9; font-weight: 300; max-width: 520px; }
+/* HOW IT WORKS */
+.how-it-works { background: var(--black); padding: var(--section-pad) var(--h-pad); text-align: center; position: relative; }
+.how-it-works::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 60px; background: linear-gradient(to bottom, rgba(184,149,90,0.3), transparent); }
+.how-it-works > h2 { font-family: var(--serif); font-size: clamp(2.8rem, 4.5vw, 4.5rem); font-weight: 300; color: #fff; line-height: 1.1; margin-bottom: 5rem; }
+.how-it-works > h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto; text-align: left; }
+.step { padding: 3rem 2.5rem; border-top: 2px solid rgba(184,149,90,0.2); transition: border-color 0.5s var(--ease-lux); }
+.step:hover { border-color: var(--gold); }
+.step-num { font-family: var(--serif); font-size: 3.5rem; font-weight: 300; color: var(--gold); opacity: 0.3; line-height: 1; margin-bottom: 1.5rem; }
+.step-label { font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; font-weight: 500; }
+.step h3 { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; color: #fff; margin-bottom: 1rem; line-height: 1.2; }
+.step p { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.85; font-weight: 300; }
 
-/* =================================================================
-   SPLIT SECTIONS — Floating glass panel
-   ================================================================= */
+/* SPLIT SECTIONS */
 .split-section { position: relative; min-height: 80vh; overflow: hidden; display: flex; align-items: center; }
 .split-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-lux); will-change: transform; }
 .split-section:hover .split-bg { transform: scale(1.03); }
 .split-bg-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,13,11,0.3) 0%, rgba(14,13,11,0.5) 50%, rgba(14,13,11,0.8) 100%); }
 .split-section.reverse .split-bg-overlay { background: linear-gradient(270deg, rgba(14,13,11,0.3) 0%, rgba(14,13,11,0.5) 50%, rgba(14,13,11,0.8) 100%); }
-.split-panel { position: relative; z-index: 2; width: 42%; margin-left: auto; margin-right: 5%; padding: 4rem; background: rgba(14,13,11,0.85); backdrop-filter: blur(24px) saturate(1.1); border-top: 2px solid var(--gold); }
+.split-panel { position: relative; z-index: 2; width: 42%; margin-left: auto; margin-right: 5%; padding: 4.5rem; background: rgba(14,13,11,0.85); backdrop-filter: blur(24px) saturate(1.1); border-top: 2px solid var(--gold); }
 .split-section.reverse .split-panel { margin-left: 5%; margin-right: auto; }
-
 .split-panel .section-tag-wrap { position: relative; }
 .split-panel .section-tag-wrap::before { content: ''; display: block; width: 1px; height: 40px; background: linear-gradient(to bottom, transparent, var(--gold)); margin-bottom: 1.5rem; opacity: 0.4; }
 .split-panel .section-tag { justify-content: flex-start; }
-.split-panel h2 { font-family: var(--serif); font-size: clamp(2.2rem, 3.2vw, 3.4rem); font-weight: 300; color: #fff; line-height: 1.08; margin-bottom: 2rem; }
-.split-panel h2 em { font-style: italic; color: rgba(255,255,255,0.45); }
-.split-panel p { font-size: 0.88rem; color: rgba(255,255,255,0.45); line-height: 1.9; font-weight: 300; margin-bottom: 1.5rem; }
+.split-panel h2 { font-family: var(--serif); font-size: clamp(2.4rem, 3.5vw, 3.6rem); font-weight: 300; color: #fff; line-height: 1.08; margin-bottom: 2rem; }
+.split-panel h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
+.split-panel p { font-size: 0.88rem; color: rgba(255,255,255,0.42); line-height: 1.9; font-weight: 300; margin-bottom: 1.5rem; }
 .split-link { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; color: var(--gold-lt); font-weight: 500; margin-top: 1rem; position: relative; padding-bottom: 0.4rem; }
 .split-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--gold-lt); transform: scaleX(0.3); transform-origin: left; transition: transform 0.5s var(--ease-lux); opacity: 0.5; }
 .split-link:hover::after { transform: scaleX(1); opacity: 1; }
 
-/* =================================================================
-   FEATURES — Spec sheet
-   ================================================================= */
-.features { background: var(--dark); padding: 10rem 4rem; position: relative; }
+/* FEATURES — Card grid */
+.features { background: var(--dark); padding: var(--section-pad) var(--h-pad); position: relative; }
 .features::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 60px; background: linear-gradient(to bottom, rgba(184,149,90,0.3), transparent); }
-.features-layout { display: grid; grid-template-columns: 0.4fr 0.6fr; gap: 6rem; align-items: start; }
-.features-left h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 300; line-height: 1.05; color: #fff; margin-bottom: 2rem; }
-.features-left h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
-.features-left p { font-size: 0.88rem; color: rgba(255,255,255,0.4); line-height: 1.9; font-weight: 300; margin-bottom: 2rem; }
-.features-list { display: flex; flex-direction: column; }
-.feat-row { display: grid; grid-template-columns: 40px 1fr; gap: 2rem; padding: 2.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); align-items: start; }
-.feat-row:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
-.feat-icon { width: 32px; height: 32px; display: block; color: var(--gold); margin-top: 0.2rem; }
-.feat-body { }
-.feat-tag { display: inline-block; margin-bottom: 0.5rem; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-.feat-row h3 { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; color: #fff; margin-bottom: 0.6rem; line-height: 1.2; }
-.feat-row p { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.8; font-weight: 300; }
+.features-header { text-align: center; margin-bottom: 5rem; }
+.features-header h2 { font-family: var(--serif); font-size: clamp(2.8rem, 4.5vw, 4.5rem); font-weight: 300; line-height: 1.08; color: #fff; margin-bottom: 2rem; }
+.features-header h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
+.features-header p { font-size: 0.9rem; color: rgba(255,255,255,0.38); line-height: 1.9; font-weight: 300; max-width: 560px; margin: 0 auto; }
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+.feat-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-top: 2px solid rgba(184,149,90,0.4); padding: 2.8rem 2.2rem; transition: all 0.5s var(--ease-lux); }
+.feat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 40px rgba(184,149,90,0.06); border-color: rgba(184,149,90,0.12); border-top-color: var(--gold); }
+.feat-icon { width: 30px; height: 30px; display: block; color: var(--gold); margin-bottom: 1.8rem; opacity: 0.7; }
+.feat-tag { display: inline-block; margin-bottom: 0.6rem; font-size: 0.68rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+.feat-card h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; color: #fff; margin-bottom: 0.8rem; line-height: 1.2; }
+.feat-card p { font-size: 0.82rem; color: rgba(255,255,255,0.38); line-height: 1.85; font-weight: 300; }
+.features-cta { text-align: center; margin-top: 4rem; }
 
-/* =================================================================
-   MANIFESTO — Full immersion
-   ================================================================= */
+/* MANIFESTO */
 .manifesto { padding: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--dark-2); position: relative; overflow: hidden; text-align: center; }
 .manifesto::before { content: ''; position: absolute; inset: 0; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; }
-.manifesto-inner { position: relative; max-width: 900px; padding: 6rem 4rem; }
-.manifesto-label { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 3rem; opacity: 0.6; font-weight: 500; display: block; }
-.manifesto-quote { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3.5rem); font-weight: 300; line-height: 1.35; color: rgba(255,255,255,0.85); font-style: italic; }
+.manifesto-inner { position: relative; max-width: 900px; padding: 6rem var(--h-pad); }
+.manifesto-label { font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); margin-bottom: 3.5rem; opacity: 0.6; font-weight: 500; display: block; }
+.manifesto-quote { font-family: var(--serif); font-size: clamp(2.2rem, 3.8vw, 3.8rem); font-weight: 300; line-height: 1.35; color: rgba(255,255,255,0.85); font-style: italic; }
 .manifesto-quote em { font-style: italic; color: var(--gold-lt); }
-.manifesto-attr { margin-top: 3rem; font-size: 0.72rem; color: rgba(255,255,255,0.3); letter-spacing: 0.15em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 1rem; font-weight: 500; }
-.manifesto-attr::before { content: ''; width: 30px; height: 1px; background: var(--gold); opacity: 0.4; }
-.manifesto-attr::after { content: ''; width: 30px; height: 1px; background: var(--gold); opacity: 0.4; }
+.manifesto-attr { margin-top: 3.5rem; font-size: 0.72rem; color: rgba(255,255,255,0.25); letter-spacing: 0.18em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 1rem; font-weight: 500; }
+.manifesto-attr::before, .manifesto-attr::after { content: ''; width: 30px; height: 1px; background: var(--gold); opacity: 0.35; }
 
-/* =================================================================
-   STATS — Horizontal luxury bar
-   ================================================================= */
+/* STATS */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--black); border-top: 1px solid rgba(184,149,90,0.1); }
 .stat { padding: 5rem 3rem; position: relative; transition: background 0.4s; }
-.stat + .stat::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 1px; background: linear-gradient(to bottom, transparent, rgba(184,149,90,0.25), transparent); }
+.stat + .stat::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 1px; background: linear-gradient(to bottom, transparent, rgba(184,149,90,0.2), transparent); }
 .stat:hover { background: var(--dark-2); }
 .stat-val { font-family: var(--serif); font-size: 4rem; font-weight: 300; color: #fff; line-height: 1; margin-bottom: 0.75rem; }
 .stat-val span { color: var(--gold); }
-.stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.35); font-weight: 300; line-height: 1.6; max-width: 180px; }
+.stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.32); font-weight: 300; line-height: 1.6; max-width: 180px; }
 
-/* =================================================================
-   PRICING — Dark & elegant
-   ================================================================= */
-.pricing { padding: 10rem 4rem; background: var(--dark-2); position: relative; }
+/* PRICING */
+.pricing { padding: var(--section-pad) var(--h-pad); background: var(--dark-2); position: relative; }
 .pricing::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 60px; background: linear-gradient(to bottom, rgba(184,149,90,0.3), transparent); }
-.pricing-header { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: end; margin-bottom: 6rem; }
-.pricing-header h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.2rem); font-weight: 300; line-height: 1.05; color: #fff; }
+.pricing-header { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: end; margin-bottom: 5rem; }
+.pricing-header h2 { font-family: var(--serif); font-size: clamp(2.8rem, 4.5vw, 4.5rem); font-weight: 300; line-height: 1.05; color: #fff; }
 .pricing-header h2 em { font-style: italic; color: rgba(255,255,255,0.4); }
-.pricing-header p { font-size: 0.88rem; color: rgba(255,255,255,0.4); line-height: 1.9; font-weight: 300; }
+.pricing-header p { font-size: 0.9rem; color: rgba(255,255,255,0.38); line-height: 1.9; font-weight: 300; }
 .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-
-.price-card { background: rgba(255,255,255,0.03); padding: 3.5rem 3rem; position: relative; transition: all 0.5s var(--ease-lux); border: 1px solid rgba(255,255,255,0.06); }
-.price-card:hover { box-shadow: 0 24px 64px rgba(0,0,0,0.3); transform: translateY(-6px); border-color: rgba(184,149,90,0.2); }
-.price-card.featured { border-color: rgba(184,149,90,0.3); background: rgba(184,149,90,0.06); border-top: 3px solid var(--gold); box-shadow: 0 0 60px rgba(184,149,90,0.06); }
-.price-card.featured:hover { box-shadow: 0 24px 64px rgba(184,149,90,0.15); }
+.price-card { background: rgba(255,255,255,0.025); padding: 3.5rem 3rem; position: relative; transition: all 0.5s var(--ease-lux); border: 1px solid rgba(255,255,255,0.05); }
+.price-card:hover { box-shadow: 0 24px 64px rgba(0,0,0,0.3); transform: translateY(-6px); border-color: rgba(184,149,90,0.15); }
+.price-card.featured { border-color: rgba(184,149,90,0.25); background: rgba(184,149,90,0.05); border-top: 3px solid var(--gold); box-shadow: 0 0 60px rgba(184,149,90,0.05); }
+.price-card.featured:hover { box-shadow: 0 24px 64px rgba(184,149,90,0.12); }
 .price-badge { position: absolute; top: -1px; right: 2.5rem; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--gold); color: #fff; padding: 0.35rem 0.9rem; font-weight: 600; }
-.price-tier { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 2rem; font-weight: 600; }
+.price-tier { font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 2rem; font-weight: 600; }
 .price-card.featured .price-tier { color: var(--gold-lt); }
 .price-amount { font-family: var(--serif); font-size: 4.5rem; font-weight: 300; color: #fff; line-height: 1; margin-bottom: 0.4rem; }
 .price-card.featured .price-amount { color: var(--gold); }
-.price-period { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-bottom: 2.5rem; letter-spacing: 0.02em; }
+.price-period { font-size: 0.72rem; color: rgba(255,255,255,0.32); margin-bottom: 2.5rem; letter-spacing: 0.02em; }
 .price-card.featured .price-period { color: rgba(255,255,255,0.4); }
 .price-sep { height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 2rem; }
-.price-card.featured .price-sep { background: rgba(184,149,90,0.15); }
+.price-card.featured .price-sep { background: rgba(184,149,90,0.12); }
 .price-list { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
-.price-list li { font-size: 0.82rem; color: rgba(255,255,255,0.45); display: flex; gap: 0.75rem; align-items: flex-start; line-height: 1.5; }
-.price-card.featured .price-list li { color: rgba(255,255,255,0.6); }
+.price-list li { font-size: 0.82rem; color: rgba(255,255,255,0.42); display: flex; gap: 0.75rem; align-items: flex-start; line-height: 1.5; }
+.price-card.featured .price-list li { color: rgba(255,255,255,0.58); }
 .price-list li::before { content: ''; width: 12px; height: 1px; background: var(--gold); flex-shrink: 0; margin-top: 0.6rem; }
-.price-list li.off { color: rgba(255,255,255,0.2); opacity: 0.6; }
+.price-list li.off { color: rgba(255,255,255,0.18); opacity: 0.6; }
 .price-card.featured .price-list li.off { color: rgba(255,255,255,0.15); }
 .price-list li.off::before { background: var(--muted); opacity: 0.5; }
-
-.price-btn { display: block; margin-top: 3rem; padding: 1rem; text-align: center; text-decoration: none; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); transition: all 0.4s var(--ease-lux); position: relative; overflow: hidden; }
+.price-btn { display: block; margin-top: 3rem; padding: 1rem; text-align: center; text-decoration: none; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.65); transition: all 0.4s var(--ease-lux); position: relative; overflow: hidden; }
 .price-btn::after { content: ''; position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: 0; }
 .price-btn span { position: relative; z-index: 1; }
 .price-btn:hover { color: var(--black); border-color: #fff; }
@@ -270,22 +260,20 @@ nav.nav-hidden { transform: translateY(-100%); }
 .price-card.featured .price-btn::after { background: var(--gold); }
 .price-card.featured .price-btn:hover { color: var(--black); }
 
-/* =================================================================
-   FINAL CTA — Full-bleed
-   ================================================================= */
+/* FINAL CTA */
 .final-cta { position: relative; min-height: 600px; display: flex; align-items: center; justify-content: center; overflow: hidden; text-align: center; }
 .final-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: grayscale(30%); }
 .final-overlay { position: absolute; inset: 0; background: rgba(14,13,11,0.78); }
-.final-content { position: relative; z-index: 2; padding: 5rem 4rem; max-width: 720px; }
-.final-content .section-tag { color: rgba(255,255,255,0.4); justify-content: center; }
+.final-content { position: relative; z-index: 2; padding: 5rem var(--h-pad); max-width: 720px; }
+.final-content .section-tag { color: rgba(255,255,255,0.35); justify-content: center; }
 .final-content .section-tag::before, .final-content .section-tag::after { content: ''; width: 40px; height: 1px; background: rgba(184,149,90,0.3); }
 .final-ornament { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-bottom: 3rem; }
 .final-ornament::before, .final-ornament::after { content: ''; width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); opacity: 0.3; }
 .final-ornament::after { background: linear-gradient(90deg, var(--gold), transparent); }
 .final-ornament-diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); opacity: 0.5; flex-shrink: 0; }
-.final-content h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4.5vw, 5rem); font-weight: 300; color: #fff; line-height: 1.05; margin-bottom: 1.5rem; }
-.final-content h2 em { font-style: italic; color: rgba(255,255,255,0.5); }
-.final-content p { font-size: 0.9rem; color: rgba(255,255,255,0.4); line-height: 1.9; font-weight: 300; margin-bottom: 3rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+.final-content h2 { font-family: var(--serif); font-size: clamp(2.8rem, 5vw, 5.2rem); font-weight: 300; color: #fff; line-height: 1.05; margin-bottom: 1.5rem; }
+.final-content h2 em { font-style: italic; color: rgba(255,255,255,0.45); }
+.final-content p { font-size: 0.9rem; color: rgba(255,255,255,0.38); line-height: 1.9; font-weight: 300; margin-bottom: 3rem; max-width: 480px; margin-left: auto; margin-right: auto; }
 .btn-gold { display: inline-flex; align-items: center; gap: 0.8rem; text-decoration: none; padding: 1rem 2.8rem; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--gold); color: var(--gold); transition: all 0.4s var(--ease-lux); position: relative; overflow: hidden; }
 .btn-gold::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-lux); z-index: 0; }
 .btn-gold span, .btn-gold svg { position: relative; z-index: 1; }
@@ -294,80 +282,66 @@ nav.nav-hidden { transform: translateY(-100%); }
 .btn-gold:hover svg { transform: translateX(3px); }
 .btn-gold svg { transition: transform 0.4s var(--ease-lux); }
 
-/* =================================================================
-   FOOTER — Ultra minimal
-   ================================================================= */
-footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2rem; border-top: 1px solid rgba(184,149,90,0.08); }
+/* FOOTER */
+footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2rem; border-top: 1px solid rgba(184,149,90,0.08); }
 .footer-logo { display: flex; align-items: center; color: rgba(255,255,255,0.5); text-decoration: none; transition: opacity 0.3s; }
 .footer-logo:hover { opacity: 0.7; }
 .footer-logo .logo-svg { height: 22px; width: auto; }
 .footer-links { display: flex; gap: 3rem; list-style: none; justify-content: center; }
-.footer-links a { font-size: 0.62rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.3s; }
+.footer-links a { font-size: 0.65rem; color: rgba(255,255,255,0.22); text-decoration: none; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.3s; }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy { font-size: 0.70rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
+.footer-copy { font-size: 0.70rem; color: rgba(255,255,255,0.15); letter-spacing: 0.08em; text-align: right; }
 
-/* =================================================================
-   BACK TO TOP
-   ================================================================= */
+/* BACK TO TOP */
 .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; border-radius: 0; background: var(--black); border: 1px solid rgba(184,149,90,0.2); color: var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: all 0.4s var(--ease-lux); z-index: 90; }
 .back-to-top.visible { opacity: 1; pointer-events: auto; }
 .back-to-top:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
 
-/* =================================================================
-   REVEAL ANIMATIONS
-   ================================================================= */
+/* REVEAL ANIMATIONS */
 .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.1s var(--ease-lux), transform 1.1s var(--ease-lux); }
 .reveal.visible { opacity: 1; transform: none; }
 .reveal-d1 { transition-delay: 0.15s; }
 .reveal-d2 { transition-delay: 0.3s; }
 .reveal-d3 { transition-delay: 0.45s; }
-.reveal-img { clip-path: inset(100% 0 0 0); transition: clip-path 1.2s var(--ease-out); }
-.reveal-img.visible { clip-path: inset(0); }
 
-/* =================================================================
-   RESPONSIVE
-   ================================================================= */
+/* RESPONSIVE */
 @media (max-width: 960px) {
   nav { padding: 1.25rem 1.5rem; }
   nav.scrolled { padding: 0.9rem 1.5rem; }
   .nav-links { display: none; }
+  .nav-sign-in { display: none; }
+  .nav-right { gap: 1.5rem; }
   .nav-cta { font-size: 0.62rem; padding: 0.5rem 1.1rem; }
-
-  .hero-content { bottom: 8%; padding: 0 1.5rem; grid-template-columns: 1fr; gap: 2rem; }
-  .hero-right { display: none; }
   .hero h1 { font-size: clamp(2.8rem, 8vw, 4rem); }
-
-  .intro-band { flex-direction: column; gap: 1.5rem; padding: 2rem 1.5rem; }
-
-  .pillars-header { padding: 6rem 1.5rem 3rem; }
-  .pillar-band { height: 60vh; min-height: 400px; }
+  .trusted-items { gap: 1.2rem; }
+  .trusted-item { font-size: 0.95rem; }
+  .trusted-sep { display: none; }
+  .intro-band { flex-direction: column; gap: 1.5rem; }
+  .pillars-header h2 { font-size: clamp(2.2rem, 5vw, 3rem); }
+  .pillar-band { height: 65vh; min-height: 420px; }
   .pillar-band-content { padding: 3rem 1.5rem; }
   .pillar-band h3 { font-size: clamp(1.8rem, 5vw, 2.4rem); }
-
+  .how-it-works > h2 { font-size: clamp(2.2rem, 5vw, 3rem); margin-bottom: 3rem; }
+  .steps-grid { grid-template-columns: 1fr; max-width: 480px; gap: 0; }
+  .step { padding: 2.5rem 0; }
   .split-section { min-height: auto; flex-direction: column; }
   .split-bg { position: relative; height: 50vh; min-height: 300px; }
   .split-bg-overlay { display: none; }
   .split-panel { width: 100%; margin: 0; padding: 3.5rem 1.5rem; background: var(--dark-2); backdrop-filter: none; border-top: 2px solid var(--gold); }
   .split-section.reverse .split-panel { margin: 0; }
-
-  .features { padding: 6rem 1.5rem; }
-  .features-layout { grid-template-columns: 1fr; gap: 3rem; }
-
+  .features-header h2 { font-size: clamp(2.2rem, 5vw, 3rem); }
+  .feat-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
   .manifesto { min-height: auto; padding: 6rem 0; }
   .manifesto-inner { padding: 4rem 1.5rem; }
-
   .stats { grid-template-columns: 1fr 1fr; }
   .stat { padding: 3rem 2rem; }
   .stat-val { font-size: 3rem; }
   .stat + .stat::before { display: none; }
-
-  .pricing { padding: 6rem 1.5rem; }
   .pricing-header { grid-template-columns: 1fr; gap: 2rem; }
+  .pricing-header h2 { font-size: clamp(2.2rem, 5vw, 3rem); }
   .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
-
-  .final-content { padding: 4rem 1.5rem; }
-
-  footer { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding: 2.5rem 1.5rem; }
+  .final-content h2 { font-size: clamp(2.2rem, 5vw, 3.2rem); }
+  footer { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
   .footer-links { flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
   .footer-copy { text-align: center; }
 }
@@ -380,8 +354,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   .stat-val { font-size: 2.2rem; }
   .stat { padding: 2.5rem 1.5rem; }
   .stats { grid-template-columns: 1fr; }
-  .feat-row { grid-template-columns: 1fr; gap: 0.5rem; }
-  .feat-icon { display: none; }
+  .feat-card { padding: 2rem 1.5rem; }
 }
 
 </style>
@@ -418,37 +391,39 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   </video>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-left">
-      <div class="hero-tag">
-        <div class="hero-tag-line"></div>
-        <span class="hero-tag-text" data-i18n="hero.tag">Vehicle Chain of Custody</span>
-      </div>
-      <h1 data-i18n="hero.title">The operating<br> system for<br> <em>premium storage.</em></h1>
-      <a href="/contact" class="hero-cta">
-        <span data-i18n="hero.cta">Request a Demo</span>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+    <div class="hero-tag">
+      <div class="hero-tag-line"></div>
+      <span class="hero-tag-text" data-i18n="hero.tag">Vehicle Chain of Custody</span>
+      <div class="hero-tag-line"></div>
     </div>
-    <div class="hero-right">
-      <div class="hero-stat">
-        <div class="hero-stat-val">&euro;2M+</div>
-        <div class="hero-stat-label">Average assets under<br> management per facility</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">&lt;30s</div>
-        <div class="hero-stat-label">To log any vehicle<br> movement or event</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">1-click</div>
-        <div class="hero-stat-label">Full Chain of Custody<br> PDF at exit</div>
-      </div>
-    </div>
+    <h1 data-i18n="hero.title">The operating<br> system for<br> <em>premium storage.</em></h1>
+    <div class="hero-sep"></div>
+    <a href="/contact" class="hero-cta">
+      <span data-i18n="hero.cta">Request a Demo</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
     <span class="hero-scroll-label">Scroll</span>
   </div>
 </section>
+
+<!-- TRUSTED BY -->
+<div class="trusted reveal" aria-label="Trusted by">
+  <div class="trusted-label" data-i18n="trusted.label">Trusted by leading facilities</div>
+  <div class="trusted-items">
+    <span class="trusted-item" data-i18n="trusted.1">Classic Collections</span>
+    <span class="trusted-sep"></span>
+    <span class="trusted-item" data-i18n="trusted.2">Concours Entrants</span>
+    <span class="trusted-sep"></span>
+    <span class="trusted-item" data-i18n="trusted.3">Investment Portfolios</span>
+    <span class="trusted-sep"></span>
+    <span class="trusted-item" data-i18n="trusted.4">Private Collectors</span>
+    <span class="trusted-sep"></span>
+    <span class="trusted-item" data-i18n="trusted.5">Motorsport Heritage</span>
+  </div>
+</div>
 
 <!-- INTRO BAND -->
 <div class="intro-band">
@@ -459,14 +434,12 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   </a>
 </div>
 
-<!-- PILLARS — Full-width cinematic bands -->
+<!-- PILLARS -->
 <section id="platform" aria-label="Why Heritage Motor">
   <div class="pillars-header reveal">
     <div class="section-tag section-tag-center" data-i18n="pillars.tag">Why Heritage Motor</div>
     <h2 data-i18n="pillars.title">Protection.<br> Transparency.<br> <em>Excellence.</em></h2>
   </div>
-
-  <!-- Pillar 01 -->
   <div class="pillar-band reveal">
     <img class="pillar-band-img" loading="lazy" src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80&auto=format&fit=crop&crop=center" alt="Vehicle documentation" data-parallax="0.08">
     <div class="pillar-band-overlay"></div>
@@ -476,10 +449,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       <p data-i18n="pillar1.text">From intake to exit, every movement, task and event is timestamped, attributed and permanent. When an owner disputes a scratch, you have proof — down to the minute and the person.</p>
     </div>
   </div>
-
   <div class="gold-sep"></div>
-
-  <!-- Pillar 02 -->
   <div class="pillar-band reveal">
     <img class="pillar-band-img" loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80&auto=format&fit=crop&crop=center" alt="Operational excellence" data-parallax="0.08">
     <div class="pillar-band-overlay"></div>
@@ -489,10 +459,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       <p data-i18n="pillar2.text">Battery starts, tyre pressure, storage checks — assigned, reminded, completed and logged. Bay management in three taps. Nothing slips through, nothing is forgotten.</p>
     </div>
   </div>
-
   <div class="gold-sep"></div>
-
-  <!-- Pillar 03 -->
   <div class="pillar-band reveal">
     <img class="pillar-band-img" loading="lazy" src="https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=1600&q=80&auto=format&fit=crop&crop=top" alt="Owner transparency" data-parallax="0.08">
     <div class="pillar-band-overlay"></div>
@@ -504,7 +471,33 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   </div>
 </section>
 
-<!-- SPLIT 1 — Timeline (floating glass panel, right side) -->
+<!-- HOW IT WORKS -->
+<section class="how-it-works" aria-label="How It Works">
+  <div class="section-tag section-tag-center reveal" data-i18n="howitworks.tag">How It Works</div>
+  <h2 class="reveal" data-i18n="howitworks.title">Three steps to<br> operational <em>excellence.</em></h2>
+  <div class="steps-grid">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-label" data-i18n="step1.label">Onboard</div>
+      <h3 data-i18n="step1.title">Register Your Fleet</h3>
+      <p data-i18n="step1.text">Intake every vehicle with photos, VIN, owner details and documentation. Your digital registry, always current.</p>
+    </div>
+    <div class="step reveal reveal-d1">
+      <div class="step-num">02</div>
+      <div class="step-label" data-i18n="step2.label">Operate</div>
+      <h3 data-i18n="step2.title">Log Everything</h3>
+      <p data-i18n="step2.text">Movements, tasks, maintenance, incidents — timestamped and attributed. Bay management in three taps.</p>
+    </div>
+    <div class="step reveal reveal-d2">
+      <div class="step-num">03</div>
+      <div class="step-label" data-i18n="step3.label">Protect</div>
+      <h3 data-i18n="step3.title">Prove Chain of Custody</h3>
+      <p data-i18n="step3.text">One-click exit reports with full timeline, photos and completed tasks. Your legal protection, generated in seconds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 1 — Timeline -->
 <section class="split-section" id="timeline" aria-label="Vehicle Timeline">
   <img class="split-bg" loading="lazy" src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=85&auto=format&fit=crop&crop=center" alt="Ferrari in premium storage" data-parallax="0.15">
   <div class="split-bg-overlay"></div>
@@ -515,11 +508,11 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <h2 data-i18n="split1.title">The complete<br> story of every<br> <em>vehicle you touch.</em></h2>
     <p data-i18n="split1.text1">A chronological, immutable log of every intake photo, every bay move, every maintenance task, every incident — with timestamp and operator identity. The chain of custody, made visual and exportable.</p>
     <p data-i18n="split1.text2">At exit, one click generates the full Vehicle History Export: intake photos, exit photos, all events, all tasks completed. Your legal protection — and your client's provenance document.</p>
-    <a href="#contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
+    <a href="/contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
   </div>
 </section>
 
-<!-- SPLIT 2 — Problem (floating glass panel, left side) -->
+<!-- SPLIT 2 — Problem -->
 <section class="split-section reverse" aria-label="The Problem">
   <img class="split-bg" loading="lazy" src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=1600&q=85&auto=format&fit=crop&crop=right" alt="Premium garage interior" data-parallax="0.15">
   <div class="split-bg-overlay"></div>
@@ -530,69 +523,59 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <h2 data-i18n="split2.title">You manage<br> <em>million-euro</em><br> assets with Excel.</h2>
     <p data-i18n="split2.text1">When an owner disputes the condition of their Porsche at exit, you have no timestamped photos, no movement history, no proof. A single incident can cost more than a year of software fees.</p>
     <p data-i18n="split2.text2">Heritage Motor exists to make that scenario impossible — permanently.</p>
-    <a href="#contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
+    <a href="/contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
   </div>
 </section>
 
-<!-- FEATURES — Spec sheet layout -->
+<!-- FEATURES — Card grid -->
 <section class="features" aria-label="Platform Features">
-  <div class="features-layout">
-    <div class="features-left reveal">
-      <div class="section-tag"><span data-i18n="features.tag">Platform Features</span></div>
-      <h2 data-i18n="features.title">Everything<br> your facility<br> <em>needs.</em></h2>
-      <p data-i18n="features.text">Built specifically for premium collection vehicle storage — not adapted from generic self-storage software. Every feature was designed around real operational workflows.</p>
-      <a href="#contact" class="split-link" data-i18n="cta.demo">Request a demo &#x2192;</a>
+  <div class="features-header reveal">
+    <div class="section-tag section-tag-center"><span data-i18n="features.tag">Platform Features</span></div>
+    <h2 data-i18n="features.title">Everything<br> your facility<br> <em>needs.</em></h2>
+    <p data-i18n="features.text">Built specifically for premium collection vehicle storage — not adapted from generic self-storage software. Every feature was designed around real operational workflows.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal">
+      <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="2"/><path d="M4 12h24"/><path d="M12 12v14"/><circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/></svg>
+      <span class="feat-tag" data-i18n="feat1.tag">Registry</span>
+      <h3 data-i18n="feat1.title">Vehicle Registry</h3>
+      <p data-i18n="feat1.text">Structured records with intake photos, VIN, owner details, documents and current status — all in one place, always current.</p>
     </div>
-    <div class="features-list">
-      <div class="feat-row reveal">
-        <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="2"/><path d="M4 12h24"/><path d="M12 12v14"/><circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/></svg>
-        <div class="feat-body">
-          <span class="feat-tag" data-i18n="feat1.tag">Registry</span>
-          <h3 data-i18n="feat1.title">Vehicle Registry</h3>
-          <p data-i18n="feat1.text">Structured records with intake photos, VIN, owner details, documents and current status — all in one place, always current.</p>
-        </div>
-      </div>
-      <div class="feat-row reveal reveal-d1">
-        <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v24"/><path d="M4 16h24"/><circle cx="16" cy="16" r="10"/><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none" opacity="0.3"/><path d="M16 6v4M16 22v4M6 16h4M22 16h4"/></svg>
-        <div class="feat-body">
-          <span class="feat-tag" data-i18n="feat2.tag">Logistics</span>
-          <h3 data-i18n="feat2.title">Bay Management</h3>
-          <p data-i18n="feat2.text">Real-time map showing which car is where. Move a vehicle in 3 taps — log and photo created automatically.</p>
-        </div>
-      </div>
-      <div class="feat-row reveal reveal-d2">
-        <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v24"/><circle cx="12" cy="10" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="12" cy="26" r="2.5"/><path d="M17 10h9M17 18h7M17 26h5"/></svg>
-        <div class="feat-body">
-          <span class="feat-tag" data-i18n="feat3.tag">History</span>
-          <h3 data-i18n="feat3.title">Vehicle Timeline</h3>
-          <p data-i18n="feat3.text">Complete chronological history of every event with photos and operator identity. The chain of custody, made visual.</p>
-        </div>
-      </div>
-      <div class="feat-row reveal">
-        <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="22" height="22" rx="3"/><path d="M11 16l3 3 7-7"/></svg>
-        <div class="feat-body">
-          <span class="feat-tag" data-i18n="feat4.tag">Operations</span>
-          <h3 data-i18n="feat4.title">Recurring Tasks</h3>
-          <p data-i18n="feat4.text">Battery starts, tyre pressure, washes — assigned, reminded, completed and logged. Nothing slips through.</p>
-        </div>
-      </div>
-      <div class="feat-row reveal reveal-d1">
-        <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h16v20L16 28 8 24V4z"/><path d="M8 4h16" stroke-width="1.5"/><path d="M12 14l3 3 5-6"/></svg>
-        <div class="feat-body">
-          <span class="feat-tag" data-i18n="feat5.tag">Protection</span>
-          <h3 data-i18n="feat5.title">Exit Report PDF</h3>
-          <p data-i18n="feat5.text">One-click PDF with intake photos, exit photos, full timeline and completed tasks. Generated in seconds.</p>
-        </div>
-      </div>
-      <div class="feat-row reveal reveal-d2">
-        <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="10" width="18" height="16" rx="2"/><path d="M12 10V7a4 4 0 018 0v3"/><circle cx="16" cy="19" r="2"/><path d="M16 21v3"/></svg>
-        <div class="feat-body">
-          <span class="feat-tag" data-i18n="feat6.tag">Compliance</span>
-          <h3 data-i18n="feat6.title">Immutable Audit Log</h3>
-          <p data-i18n="feat6.text">Append-only record of every action by every operator. Nobody can alter history — and that's the point.</p>
-        </div>
-      </div>
+    <div class="feat-card reveal reveal-d1">
+      <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v24"/><path d="M4 16h24"/><circle cx="16" cy="16" r="10"/><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none" opacity="0.3"/><path d="M16 6v4M16 22v4M6 16h4M22 16h4"/></svg>
+      <span class="feat-tag" data-i18n="feat2.tag">Logistics</span>
+      <h3 data-i18n="feat2.title">Bay Management</h3>
+      <p data-i18n="feat2.text">Real-time map showing which car is where. Move a vehicle in 3 taps — log and photo created automatically.</p>
     </div>
+    <div class="feat-card reveal reveal-d2">
+      <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v24"/><circle cx="12" cy="10" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="12" cy="26" r="2.5"/><path d="M17 10h9M17 18h7M17 26h5"/></svg>
+      <span class="feat-tag" data-i18n="feat3.tag">History</span>
+      <h3 data-i18n="feat3.title">Vehicle Timeline</h3>
+      <p data-i18n="feat3.text">Complete chronological history of every event with photos and operator identity. The chain of custody, made visual.</p>
+    </div>
+    <div class="feat-card reveal">
+      <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="22" height="22" rx="3"/><path d="M11 16l3 3 7-7"/></svg>
+      <span class="feat-tag" data-i18n="feat4.tag">Operations</span>
+      <h3 data-i18n="feat4.title">Recurring Tasks</h3>
+      <p data-i18n="feat4.text">Battery starts, tyre pressure, washes — assigned, reminded, completed and logged. Nothing slips through.</p>
+    </div>
+    <div class="feat-card reveal reveal-d1">
+      <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h16v20L16 28 8 24V4z"/><path d="M8 4h16" stroke-width="1.5"/><path d="M12 14l3 3 5-6"/></svg>
+      <span class="feat-tag" data-i18n="feat5.tag">Protection</span>
+      <h3 data-i18n="feat5.title">Exit Report PDF</h3>
+      <p data-i18n="feat5.text">One-click PDF with intake photos, exit photos, full timeline and completed tasks. Generated in seconds.</p>
+    </div>
+    <div class="feat-card reveal reveal-d2">
+      <svg class="feat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="10" width="18" height="16" rx="2"/><path d="M12 10V7a4 4 0 018 0v3"/><circle cx="16" cy="19" r="2"/><path d="M16 21v3"/></svg>
+      <span class="feat-tag" data-i18n="feat6.tag">Compliance</span>
+      <h3 data-i18n="feat6.title">Immutable Audit Log</h3>
+      <p data-i18n="feat6.text">Append-only record of every action by every operator. Nobody can alter history — and that's the point.</p>
+    </div>
+  </div>
+  <div class="features-cta reveal">
+    <a href="/contact" class="btn-gold">
+      <span data-i18n="cta.demo">Request a demo &#x2192;</span>
+    </a>
   </div>
 </section>
 
@@ -729,7 +712,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 </footer>
 
 <script>
-  /* --- NAV SCROLL (Lamborghini-style hide/show) -------------------- */
+  /* --- NAV SCROLL ---------------------------------------------------- */
   var nav = document.getElementById('nav');
   var hero = document.getElementById('hero');
   var lastScrollY = 0;
@@ -759,7 +742,6 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     window.addEventListener('scroll', function() {
       if (!ticking) {
         requestAnimationFrame(function() {
-          var scrollY = window.pageYOffset;
           imgs.forEach(function(img) {
             var rect = img.parentElement ? img.parentElement.getBoundingClientRect() : img.getBoundingClientRect();
             var speed = parseFloat(img.getAttribute('data-parallax')) || 0.15;
@@ -773,16 +755,19 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     }, { passive: true });
   })();
 
-  /* --- i18n ----------------------------------------------------------- */
+  /* --- i18n ---------------------------------------------------------- */
   var i18n = {
     en: {},
     fr: {
       'nav.platform': 'Plateforme', 'nav.timeline': 'Chronologie', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
-      'nav.signin': 'Connexion',
-      'nav.cta': 'Demander une D\u00e9mo',
+      'nav.signin': 'Connexion', 'nav.cta': 'Demander une D\u00e9mo',
       'hero.tag': 'Cha\u00eene de Tra\u00e7abilit\u00e9 V\u00e9hicule',
       'hero.title': 'Le syst\u00e8me<br> d\'exploitation du<br> <em>stockage premium.</em>',
       'hero.cta': 'Demander une D\u00e9mo',
+      'trusted.label': 'La confiance des meilleurs \u00e9tablissements',
+      'trusted.1': 'Collections Classiques', 'trusted.2': 'Participants Concours',
+      'trusted.3': 'Portefeuilles d\'Investissement', 'trusted.4': 'Collectionneurs Priv\u00e9s',
+      'trusted.5': 'H\u00e9ritage Motorsport',
       'intro.text': 'Heritage Motor remplace Excel, WhatsApp et le papier \u2014 par un registre unique et immuable de tout ce qui arrive \u00e0 chaque v\u00e9hicule confi\u00e9 \u00e0 vos soins.',
       'intro.link': 'Explorer la plateforme',
       'pillars.tag': 'Pourquoi Heritage Motor',
@@ -793,6 +778,14 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'pillar2.text': 'D\u00e9marrages batterie, pression pneus, contr\u00f4les de stockage \u2014 assign\u00e9s, rappel\u00e9s, compl\u00e9t\u00e9s et enregistr\u00e9s. Gestion des emplacements en trois clics. Rien ne passe \u00e0 travers les mailles du filet.',
       'pillar3.title': 'Confiance Propri\u00e9taire',
       'pillar3.text': 'L\'Export Historique V\u00e9hicule devient un document de provenance \u2014 utile en salle des ventes, chez l\'assureur, \u00e0 la revente. Votre service ajoute une valeur d\u00e9montrable \u00e0 l\'actif lui-m\u00eame.',
+      'howitworks.tag': 'Comment \u00e7a marche',
+      'howitworks.title': 'Trois \u00e9tapes vers<br> l\'excellence <em>op\u00e9rationnelle.</em>',
+      'step1.label': 'Int\u00e9grer', 'step1.title': 'Enregistrez votre flotte',
+      'step1.text': 'Enregistrez chaque v\u00e9hicule avec photos, VIN, coordonn\u00e9es propri\u00e9taire et documentation. Votre registre num\u00e9rique, toujours \u00e0 jour.',
+      'step2.label': 'Op\u00e9rer', 'step2.title': 'Tout enregistrer',
+      'step2.text': 'Mouvements, t\u00e2ches, maintenance, incidents \u2014 horodat\u00e9s et attribu\u00e9s. Gestion des emplacements en trois clics.',
+      'step3.label': 'Prot\u00e9ger', 'step3.title': 'Prouvez la tra\u00e7abilit\u00e9',
+      'step3.text': 'Rapports de sortie en un clic avec chronologie compl\u00e8te, photos et t\u00e2ches r\u00e9alis\u00e9es. Votre protection juridique, g\u00e9n\u00e9r\u00e9e en secondes.',
       'split1.tag': 'Chronologie V\u00e9hicule',
       'split1.title': 'L\'histoire<br> compl\u00e8te de chaque<br> <em>v\u00e9hicule que vous touchez.</em>',
       'split1.text1': 'Un journal chronologique et immuable de chaque photo d\'entr\u00e9e, chaque d\u00e9placement, chaque t\u00e2che de maintenance, chaque incident \u2014 avec horodatage et identit\u00e9 de l\'op\u00e9rateur. La cha\u00eene de tra\u00e7abilit\u00e9, visuelle et exportable.',
@@ -805,38 +798,38 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'features.tag': 'Fonctionnalit\u00e9s',
       'features.title': 'Tout ce dont<br> votre site<br> <em>a besoin.</em>',
       'features.text': 'Con\u00e7u sp\u00e9cifiquement pour le stockage de v\u00e9hicules de collection premium \u2014 pas adapt\u00e9 d\'un logiciel de self-storage g\u00e9n\u00e9rique. Chaque fonctionnalit\u00e9 a \u00e9t\u00e9 pens\u00e9e autour de workflows op\u00e9rationnels r\u00e9els.',
-      'feat1.tag': 'Registre', 'feat1.title': 'Registre V\u00e9hicules', 'feat1.text': 'Fiches structur\u00e9es avec photos d\'entr\u00e9e, VIN, coordonn\u00e9es propri\u00e9taire, documents et statut actuel \u2014 tout au m\u00eame endroit, toujours \u00e0 jour.',
-      'feat2.tag': 'Logistique', 'feat2.title': 'Gestion des Emplacements', 'feat2.text': 'Carte temps r\u00e9el de l\'emplacement de chaque v\u00e9hicule. D\u00e9placez en 3 clics \u2014 journal et photo cr\u00e9\u00e9s automatiquement.',
-      'feat3.tag': 'Historique', 'feat3.title': 'Chronologie V\u00e9hicule', 'feat3.text': 'Historique chronologique complet de chaque \u00e9v\u00e9nement avec photos et identit\u00e9 de l\'op\u00e9rateur. La cha\u00eene de tra\u00e7abilit\u00e9, visuelle.',
-      'feat4.tag': 'Op\u00e9rations', 'feat4.title': 'T\u00e2ches R\u00e9currentes', 'feat4.text': 'D\u00e9marrages batterie, pression pneus, lavages \u2014 assign\u00e9s, rappel\u00e9s, compl\u00e9t\u00e9s et enregistr\u00e9s. Rien ne passe entre les mailles.',
-      'feat5.tag': 'Protection', 'feat5.title': 'Rapport de Sortie PDF', 'feat5.text': 'PDF en un clic avec photos d\'entr\u00e9e, photos de sortie, chronologie compl\u00e8te et t\u00e2ches r\u00e9alis\u00e9es. G\u00e9n\u00e9r\u00e9 en secondes.',
-      'feat6.tag': 'Conformit\u00e9', 'feat6.title': 'Journal d\'Audit Immuable', 'feat6.text': 'Registre en ajout seul de chaque action de chaque op\u00e9rateur. Personne ne peut alt\u00e9rer l\'historique \u2014 c\'est tout l\'int\u00e9r\u00eat.',
+      'feat1.tag': 'Registre', 'feat1.title': 'Registre V\u00e9hicules',
+      'feat1.text': 'Fiches structur\u00e9es avec photos d\'entr\u00e9e, VIN, coordonn\u00e9es propri\u00e9taire, documents et statut actuel \u2014 tout au m\u00eame endroit, toujours \u00e0 jour.',
+      'feat2.tag': 'Logistique', 'feat2.title': 'Gestion des Emplacements',
+      'feat2.text': 'Carte temps r\u00e9el de l\'emplacement de chaque v\u00e9hicule. D\u00e9placez en 3 clics \u2014 journal et photo cr\u00e9\u00e9s automatiquement.',
+      'feat3.tag': 'Historique', 'feat3.title': 'Chronologie V\u00e9hicule',
+      'feat3.text': 'Historique chronologique complet de chaque \u00e9v\u00e9nement avec photos et identit\u00e9 de l\'op\u00e9rateur. La cha\u00eene de tra\u00e7abilit\u00e9, visuelle.',
+      'feat4.tag': 'Op\u00e9rations', 'feat4.title': 'T\u00e2ches R\u00e9currentes',
+      'feat4.text': 'D\u00e9marrages batterie, pression pneus, lavages \u2014 assign\u00e9s, rappel\u00e9s, compl\u00e9t\u00e9s et enregistr\u00e9s. Rien ne passe entre les mailles.',
+      'feat5.tag': 'Protection', 'feat5.title': 'Rapport de Sortie PDF',
+      'feat5.text': 'PDF en un clic avec photos d\'entr\u00e9e, photos de sortie, chronologie compl\u00e8te et t\u00e2ches r\u00e9alis\u00e9es. G\u00e9n\u00e9r\u00e9 en secondes.',
+      'feat6.tag': 'Conformit\u00e9', 'feat6.title': 'Journal d\'Audit Immuable',
+      'feat6.text': 'Registre en ajout seul de chaque action de chaque op\u00e9rateur. Personne ne peut alt\u00e9rer l\'historique \u2014 c\'est tout l\'int\u00e9r\u00eat.',
       'manifesto.quote': 'Les sites qui survivront \u00e0 la prochaine d\u00e9cennie seront ceux capables de prouver \u2014 noir sur blanc, \u00e0 n\'importe quel propri\u00e9taire, \u00e0 n\'importe quel moment \u2014 <em>exactement ce qui est arriv\u00e9 \u00e0 leur voiture.</em>',
       'manifesto.attr': 'Le Manifeste Heritage Motor',
       'stat1.label': 'Actifs moyens sous gestion par site',
       'stat2.label': 'Pour enregistrer tout mouvement ou \u00e9v\u00e9nement',
       'stat3.label': 'Rapport de tra\u00e7abilit\u00e9 PDF complet \u00e0 la sortie',
       'stat4.label': 'D\u00e9pendances d\'authentification externes \u2014 vos donn\u00e9es restent les v\u00f4tres',
-      'pricing.tag': 'Tarifs', 'pricing.title': 'Tarif\u00e9 \u00e0 la hauteur<br> de la valeur<br> <em>que vous prot\u00e9gez.</em>',
+      'pricing.tag': 'Tarifs',
+      'pricing.title': 'Tarif\u00e9 \u00e0 la hauteur<br> de la valeur<br> <em>que vous prot\u00e9gez.</em>',
       'pricing.text': 'Un tarif mensuel fixe par site \u2014 pas de frais par v\u00e9hicule, pas de surprises. Installation et accompagnement inclus les trois premiers mois.',
-      'price.badge': 'Le plus populaire',
-      'price.contact': 'Nous Contacter',
-      'price.addon': 'Option suppl\u00e9mentaire',
+      'price.badge': 'Le plus populaire', 'price.contact': 'Nous Contacter', 'price.addon': 'Option suppl\u00e9mentaire',
       'price.feat.registry': 'Registre v\u00e9hicules & gestion emplacements',
       'price.feat.movement': 'Journal des mouvements avec photos horodat\u00e9es',
       'price.feat.tasks': 'T\u00e2ches r\u00e9currentes & rappels',
-      'price.feat.audit': 'Journal d\'audit immuable',
-      'price.feat.exitpdf': 'Rapport de sortie PDF',
-      'price.feat.5ops': '5 comptes op\u00e9rateurs',
-      'price.feat.portal': 'Portail Propri\u00e9taire',
-      'price.feat.climate': 'Monitoring climatique',
-      'price.feat.allstarter': 'Tout le plan Starter',
-      'price.feat.histexport': 'Export Historique V\u00e9hicule',
-      'price.feat.15ops': '15 comptes op\u00e9rateurs',
+      'price.feat.audit': 'Journal d\'audit immuable', 'price.feat.exitpdf': 'Rapport de sortie PDF',
+      'price.feat.5ops': '5 comptes op\u00e9rateurs', 'price.feat.portal': 'Portail Propri\u00e9taire',
+      'price.feat.climate': 'Monitoring climatique', 'price.feat.allstarter': 'Tout le plan Starter',
+      'price.feat.histexport': 'Export Historique V\u00e9hicule', 'price.feat.15ops': '15 comptes op\u00e9rateurs',
       'price.feat.priority': 'Support prioritaire',
       'price.feat.climateaddon': 'Monitoring climatique \u2014 +350\u20ac/mois',
-      'price.feat.allpro': 'Tout le plan Pro',
-      'price.feat.api': 'Acc\u00e8s API & int\u00e9grations',
+      'price.feat.allpro': 'Tout le plan Pro', 'price.feat.api': 'Acc\u00e8s API & int\u00e9grations',
       'price.feat.certified': 'Export Historique V\u00e9hicule certifi\u00e9',
       'price.feat.onboarding': 'Responsable d\'onboarding d\u00e9di\u00e9',
       'price.feat.climateincl': 'Monitoring climatique inclus',
@@ -850,11 +843,13 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     },
     de: {
       'nav.platform': 'Plattform', 'nav.timeline': 'Zeitleiste', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
-      'nav.signin': 'Anmelden',
-      'nav.cta': 'Demo Anfragen',
+      'nav.signin': 'Anmelden', 'nav.cta': 'Demo Anfragen',
       'hero.tag': 'Fahrzeug-Dokumentationskette',
       'hero.title': 'Das Betriebs-<br>system f\u00fcr<br> <em>Premium-Einlagerung.</em>',
       'hero.cta': 'Demo Anfragen',
+      'trusted.label': 'Vertrauen f\u00fchrender Einrichtungen',
+      'trusted.1': 'Klassische Sammlungen', 'trusted.2': 'Concours-Teilnehmer',
+      'trusted.3': 'Investment-Portfolios', 'trusted.4': 'Privatsammler', 'trusted.5': 'Motorsport-Erbe',
       'intro.text': 'Heritage Motor ersetzt Excel, WhatsApp und Papier \u2014 durch ein einziges, unver\u00e4nderliches Protokoll \u00fcber alles, was mit jedem Fahrzeug in Ihrer Obhut geschieht.',
       'intro.link': 'Plattform entdecken',
       'pillars.tag': 'Warum Heritage Motor',
@@ -865,6 +860,14 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'pillar2.text': 'Batterie-Starts, Reifendruck, Lagerkontrollen \u2014 zugewiesen, erinnert, erledigt und protokolliert. Stellplatzverwaltung in drei Klicks. Nichts geht verloren.',
       'pillar3.title': 'Vertrauen der Eigent\u00fcmer',
       'pillar3.text': 'Der Fahrzeughistorie-Export wird zum Herkunftsnachweis \u2014 n\u00fctzlich bei Auktionen, beim Versicherer, beim Verkauf. Ihr Service steigert den nachweisbaren Wert des Fahrzeugs.',
+      'howitworks.tag': 'So funktioniert es',
+      'howitworks.title': 'Drei Schritte zur<br> operativen <em>Exzellenz.</em>',
+      'step1.label': 'Aufnehmen', 'step1.title': 'Registrieren Sie Ihre Flotte',
+      'step1.text': 'Erfassen Sie jedes Fahrzeug mit Fotos, FIN, Eigent\u00fcmerangaben und Dokumentation. Ihr digitales Register, immer aktuell.',
+      'step2.label': 'Betreiben', 'step2.title': 'Alles protokollieren',
+      'step2.text': 'Bewegungen, Aufgaben, Wartung, Vorf\u00e4lle \u2014 zeitgestempelt und zugeordnet. Stellplatzverwaltung in drei Klicks.',
+      'step3.label': 'Sch\u00fctzen', 'step3.title': 'Dokumentationskette beweisen',
+      'step3.text': 'Ein-Klick-Auslieferungsberichte mit vollst\u00e4ndiger Zeitleiste, Fotos und erledigten Aufgaben. Ihr Rechtsschutz, in Sekunden generiert.',
       'split1.tag': 'Fahrzeug-Zeitleiste',
       'split1.title': 'Die vollst\u00e4ndige<br> Geschichte jedes<br> <em>Fahrzeugs in Ihrer Obhut.</em>',
       'split1.text1': 'Ein chronologisches, unver\u00e4nderliches Protokoll jedes Einlagerungsfotos, jeder Stellplatz\u00e4nderung, jeder Wartungsaufgabe, jedes Vorfalls \u2014 mit Zeitstempel und Identit\u00e4t des Bedieners. Die Dokumentationskette, visuell und exportierbar.',
@@ -877,38 +880,38 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'features.tag': 'Funktionen',
       'features.title': 'Alles, was<br> Ihr Standort<br> <em>braucht.</em>',
       'features.text': 'Speziell f\u00fcr die Einlagerung von Premium-Sammlungsfahrzeugen entwickelt \u2014 nicht aus generischer Self-Storage-Software adaptiert. Jede Funktion wurde um reale operative Arbeitsabl\u00e4ufe herum konzipiert.',
-      'feat1.tag': 'Register', 'feat1.title': 'Fahrzeugregister', 'feat1.text': 'Strukturierte Datens\u00e4tze mit Einlagerungsfotos, FIN, Eigent\u00fcmerangaben, Dokumenten und aktuellem Status \u2014 alles an einem Ort, immer aktuell.',
-      'feat2.tag': 'Logistik', 'feat2.title': 'Stellplatzverwaltung', 'feat2.text': 'Echtzeit-Karte, die zeigt, welches Fahrzeug wo steht. Fahrzeug in 3 Klicks umstellen \u2014 Protokoll und Foto werden automatisch erstellt.',
-      'feat3.tag': 'Historie', 'feat3.title': 'Fahrzeug-Zeitleiste', 'feat3.text': 'Vollst\u00e4ndige chronologische Historie jedes Ereignisses mit Fotos und Bediener-Identit\u00e4t. Die Dokumentationskette, visuell dargestellt.',
-      'feat4.tag': 'Betrieb', 'feat4.title': 'Wiederkehrende Aufgaben', 'feat4.text': 'Batterie-Starts, Reifendruck, W\u00e4schen \u2014 zugewiesen, erinnert, erledigt und protokolliert. Nichts wird \u00fcbersehen.',
-      'feat5.tag': 'Schutz', 'feat5.title': 'Auslieferungsbericht PDF', 'feat5.text': 'Ein-Klick-PDF mit Einlagerungsfotos, Auslieferungsfotos, vollst\u00e4ndiger Zeitleiste und erledigten Aufgaben. In Sekunden generiert.',
-      'feat6.tag': 'Compliance', 'feat6.title': 'Unver\u00e4nderliches Audit-Log', 'feat6.text': 'Nur-Anh\u00e4ngen-Protokoll jeder Aktion jedes Bedieners. Niemand kann die Historie \u00e4ndern \u2014 und genau das ist der Punkt.',
+      'feat1.tag': 'Register', 'feat1.title': 'Fahrzeugregister',
+      'feat1.text': 'Strukturierte Datens\u00e4tze mit Einlagerungsfotos, FIN, Eigent\u00fcmerangaben, Dokumenten und aktuellem Status \u2014 alles an einem Ort, immer aktuell.',
+      'feat2.tag': 'Logistik', 'feat2.title': 'Stellplatzverwaltung',
+      'feat2.text': 'Echtzeit-Karte, die zeigt, welches Fahrzeug wo steht. Fahrzeug in 3 Klicks umstellen \u2014 Protokoll und Foto werden automatisch erstellt.',
+      'feat3.tag': 'Historie', 'feat3.title': 'Fahrzeug-Zeitleiste',
+      'feat3.text': 'Vollst\u00e4ndige chronologische Historie jedes Ereignisses mit Fotos und Bediener-Identit\u00e4t. Die Dokumentationskette, visuell dargestellt.',
+      'feat4.tag': 'Betrieb', 'feat4.title': 'Wiederkehrende Aufgaben',
+      'feat4.text': 'Batterie-Starts, Reifendruck, W\u00e4schen \u2014 zugewiesen, erinnert, erledigt und protokolliert. Nichts wird \u00fcbersehen.',
+      'feat5.tag': 'Schutz', 'feat5.title': 'Auslieferungsbericht PDF',
+      'feat5.text': 'Ein-Klick-PDF mit Einlagerungsfotos, Auslieferungsfotos, vollst\u00e4ndiger Zeitleiste und erledigten Aufgaben. In Sekunden generiert.',
+      'feat6.tag': 'Compliance', 'feat6.title': 'Unver\u00e4nderliches Audit-Log',
+      'feat6.text': 'Nur-Anh\u00e4ngen-Protokoll jeder Aktion jedes Bedieners. Niemand kann die Historie \u00e4ndern \u2014 und genau das ist der Punkt.',
       'manifesto.quote': 'Die Standorte, die das n\u00e4chste Jahrzehnt \u00fcberleben, werden diejenigen sein, die beweisen k\u00f6nnen \u2014 schwarz auf wei\u00df, jedem Eigent\u00fcmer, jederzeit \u2014 <em>was genau mit seinem Fahrzeug passiert ist.</em>',
       'manifesto.attr': 'Das Heritage Motor Manifest',
       'stat1.label': 'Durchschnittliche verwaltete Verm\u00f6genswerte pro Standort',
       'stat2.label': 'Um jede Fahrzeugbewegung oder jedes Ereignis zu erfassen',
       'stat3.label': 'Vollst\u00e4ndiger Dokumentationsketten-PDF bei Auslieferung',
       'stat4.label': 'Externe Auth-Abh\u00e4ngigkeiten \u2014 Ihre Daten bleiben Ihre',
-      'pricing.tag': 'Preise', 'pricing.title': 'Bepreist nach<br> dem Wert, den<br> <em>Sie sch\u00fctzen.</em>',
+      'pricing.tag': 'Preise',
+      'pricing.title': 'Bepreist nach<br> dem Wert, den<br> <em>Sie sch\u00fctzen.</em>',
       'pricing.text': 'Ein fester Monatstarif pro Standort \u2014 keine Geb\u00fchren pro Fahrzeug, keine \u00dcberraschungen. Einrichtung und Onboarding in den ersten drei Monaten inklusive.',
-      'price.badge': 'Am beliebtesten',
-      'price.contact': 'Kontaktieren Sie uns',
-      'price.addon': 'Optionales Add-on',
+      'price.badge': 'Am beliebtesten', 'price.contact': 'Kontaktieren Sie uns', 'price.addon': 'Optionales Add-on',
       'price.feat.registry': 'Fahrzeugregister & Stellplatzverwaltung',
       'price.feat.movement': 'Bewegungsprotokoll mit zeitgestempelten Fotos',
       'price.feat.tasks': 'Wiederkehrende Aufgaben & Erinnerungen',
-      'price.feat.audit': 'Unver\u00e4nderliches Audit-Log',
-      'price.feat.exitpdf': 'Auslieferungsbericht PDF',
-      'price.feat.5ops': '5 Bediener-Konten',
-      'price.feat.portal': 'Eigent\u00fcmer-Portal',
-      'price.feat.climate': 'Klima\u00fcberwachung',
-      'price.feat.allstarter': 'Alles aus Starter',
-      'price.feat.histexport': 'Fahrzeughistorie-Export',
-      'price.feat.15ops': '15 Bediener-Konten',
+      'price.feat.audit': 'Unver\u00e4nderliches Audit-Log', 'price.feat.exitpdf': 'Auslieferungsbericht PDF',
+      'price.feat.5ops': '5 Bediener-Konten', 'price.feat.portal': 'Eigent\u00fcmer-Portal',
+      'price.feat.climate': 'Klima\u00fcberwachung', 'price.feat.allstarter': 'Alles aus Starter',
+      'price.feat.histexport': 'Fahrzeughistorie-Export', 'price.feat.15ops': '15 Bediener-Konten',
       'price.feat.priority': 'Priorit\u00e4ts-Support',
       'price.feat.climateaddon': 'Klima\u00fcberwachung \u2014 +350\u20ac/Monat',
-      'price.feat.allpro': 'Alles aus Pro',
-      'price.feat.api': 'API-Zugang & Integrationen',
+      'price.feat.allpro': 'Alles aus Pro', 'price.feat.api': 'API-Zugang & Integrationen',
       'price.feat.certified': 'Zertifizierter Fahrzeughistorie-Export',
       'price.feat.onboarding': 'Dedizierter Onboarding-Manager',
       'price.feat.climateincl': 'Klima\u00fcberwachung inklusive',
@@ -935,7 +938,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       if (dict[key]) {
         // Safe: values come from hardcoded i18n dict above, not user input
         var temp = document.createElement('template');
-        temp.innerHTML = dict[key]; // eslint-disable-line no-unsanitized/property -- trusted hardcoded dict
+        temp.innerHTML = dict[key]; // eslint-disable-line no-unsanitized/property -- trusted hardcoded i18n dict, not user input
         el.replaceChildren(temp.content);
       } else if (el._origHTML) {
         el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
@@ -967,7 +970,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
   try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
 
-  /* --- Scroll Reveal -------------------------------------------------- */
+  /* --- Scroll Reveal ------------------------------------------------- */
   var io = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
       if (e.isIntersecting) {
@@ -978,7 +981,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal, .reveal-img').forEach(function(el) { io.observe(el); });
 
-  /* --- Back to top ----------------------------------------------------- */
+  /* --- Back to top --------------------------------------------------- */
   var btt = document.getElementById('backToTop');
   if (btt) {
     window.addEventListener('scroll', function() {
