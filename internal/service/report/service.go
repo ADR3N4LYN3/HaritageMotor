@@ -347,14 +347,16 @@ func (s *Service) loadReportData(ctx context.Context, tenantID, vehicleID uuid.U
 	var events []domain.Event
 	for rows.Next() {
 		var e domain.Event
-		if err := rows.Scan(&e.ID, &e.TenantID, &e.VehicleID, &e.UserID,
+		err = rows.Scan(&e.ID, &e.TenantID, &e.VehicleID, &e.UserID,
 			&e.EventType, &e.Metadata, &e.PhotoKeys, &e.Notes,
-			&e.OccurredAt, &e.Source); err != nil {
+			&e.OccurredAt, &e.Source)
+		if err != nil {
 			return nil, fmt.Errorf("scan event: %w", err)
 		}
 		events = append(events, e)
 	}
-	if err := rows.Err(); err != nil {
+	err = rows.Err()
+	if err != nil {
 		return nil, fmt.Errorf("iterate events: %w", err)
 	}
 
@@ -376,15 +378,17 @@ func (s *Service) loadReportData(ctx context.Context, tenantID, vehicleID uuid.U
 	var tasks []domain.Task
 	for taskRows.Next() {
 		var t domain.Task
-		if err := taskRows.Scan(&t.ID, &t.TenantID, &t.VehicleID, &t.AssignedTo,
+		err = taskRows.Scan(&t.ID, &t.TenantID, &t.VehicleID, &t.AssignedTo,
 			&t.TaskType, &t.Title, &t.Description, &t.Status, &t.DueDate,
 			&t.CompletedAt, &t.CompletedBy, &t.RecurrenceDays, &t.NextDueDate,
-			&t.CreatedAt, &t.UpdatedAt); err != nil {
+			&t.CreatedAt, &t.UpdatedAt)
+		if err != nil {
 			return nil, fmt.Errorf("scan task: %w", err)
 		}
 		tasks = append(tasks, t)
 	}
-	if err := taskRows.Err(); err != nil {
+	err = taskRows.Err()
+	if err != nil {
 		return nil, fmt.Errorf("iterate tasks: %w", err)
 	}
 
@@ -405,14 +409,16 @@ func (s *Service) loadReportData(ctx context.Context, tenantID, vehicleID uuid.U
 	var docs []domain.Document
 	for docRows.Next() {
 		var d domain.Document
-		if err := docRows.Scan(&d.ID, &d.TenantID, &d.VehicleID, &d.UploadedBy,
+		err = docRows.Scan(&d.ID, &d.TenantID, &d.VehicleID, &d.UploadedBy,
 			&d.DocType, &d.Filename, &d.S3Key, &d.MimeType,
-			&d.SizeBytes, &d.ExpiresAt, &d.Notes, &d.CreatedAt); err != nil {
+			&d.SizeBytes, &d.ExpiresAt, &d.Notes, &d.CreatedAt)
+		if err != nil {
 			return nil, fmt.Errorf("scan document: %w", err)
 		}
 		docs = append(docs, d)
 	}
-	if err := docRows.Err(); err != nil {
+	err = docRows.Err()
+	if err != nil {
 		return nil, fmt.Errorf("iterate documents: %w", err)
 	}
 
