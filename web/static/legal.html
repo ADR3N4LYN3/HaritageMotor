@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,16 +42,29 @@ body { background: var(--black); color: rgba(255,255,255,0.7); font-family: var(
 nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2); border-bottom: 1px solid rgba(184,149,90,0.1); display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 4rem; position: sticky; top: 0; z-index: 100; }
 .nav-logo { display: flex; align-items: center; text-decoration: none; color: #fff; transition: opacity 0.3s; }
 .nav-logo:hover { opacity: 0.8; }
-.logo-svg { height: 30px; width: auto; }
+.logo-svg { height: 46px; width: auto; }
 .nav-right { display: flex; align-items: center; gap: 2.5rem; }
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-.nav-links a { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
+.nav-links a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
 .nav-links a:hover { color: var(--gold); }
-.nav-cta { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.6rem 1.6rem; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
+.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); white-space: nowrap; }
 .nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
 
+/* LANG SWITCH */
+.lang-switch { position: relative; }
+.lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: color 0.3s ease-out; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 0.35rem; }
+.lang-btn:hover { color: var(--gold); }
+.lang-btn svg { width: 9px; height: 9px; transition: transform 0.3s var(--ease-lux); }
+.lang-switch.open .lang-btn svg { transform: rotate(180deg); }
+.lang-drop { position: absolute; top: calc(100% + 8px); right: 0; background: var(--dark); border: 1px solid rgba(184,149,90,0.15); border-radius: 6px; box-shadow: 0 12px 36px rgba(0,0,0,0.3); padding: 0.3rem; display: none; min-width: 140px; z-index: 200; }
+.lang-switch.open .lang-drop { display: block; }
+.lang-opt { display: flex; align-items: center; gap: 0.5rem; width: 100%; background: none; border: none; padding: 0.55rem 0.75rem; font-family: var(--sans); font-size: 0.78rem; font-weight: 400; color: rgba(255,255,255,0.5); cursor: pointer; border-radius: 4px; transition: all 0.15s; text-align: left; }
+.lang-opt:hover { background: rgba(184,149,90,0.08); color: #fff; }
+.lang-opt.active { color: var(--gold); font-weight: 500; }
+.flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+
 .legal-hero { padding: 6rem 4rem 3rem; border-bottom: 1px solid rgba(184,149,90,0.1); }
-.legal-tag { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-weight: 500; }
+.legal-tag { font-size: 0.88rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-weight: 500; }
 .legal-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
 .legal-hero h1 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 300; color: #fff; line-height: 1.08; }
 .legal-hero h1 em { font-style: italic; color: rgba(255,255,255,0.4); }
@@ -61,9 +74,9 @@ nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2)
 .legal-body h2 { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; color: #fff; margin: 3rem 0 1rem; line-height: 1.2; }
 .legal-body h2:first-child { margin-top: 0; }
 .legal-body h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; color: rgba(255,255,255,0.85); margin: 2rem 0 0.75rem; }
-.legal-body p { margin-bottom: 1rem; font-weight: 300; font-size: 0.9rem; }
+.legal-body p { margin-bottom: 1rem; font-weight: 300; font-size: 0.95rem; }
 .legal-body ul { margin: 0.5rem 0 1.5rem 1.5rem; }
-.legal-body li { margin-bottom: 0.4rem; font-weight: 300; font-size: 0.9rem; }
+.legal-body li { margin-bottom: 0.4rem; font-weight: 300; font-size: 0.95rem; }
 .legal-body a { color: var(--gold); text-decoration: none; transition: opacity 0.2s; }
 .legal-body a:hover { opacity: 0.7; }
 .legal-body strong { color: rgba(255,255,255,0.9); font-weight: 500; }
@@ -73,9 +86,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 .footer-logo:hover { opacity: 0.7; }
 .footer-logo .logo-svg { height: 22px; width: auto; }
 .footer-links { display: flex; gap: 2.5rem; list-style: none; justify-content: center; flex-wrap: wrap; }
-.footer-links a { font-size: 0.68rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s; }
+.footer-links a { font-size: 0.78rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s; }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy { font-size: 0.70rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
+.footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
 
 @media (max-width: 960px) {
   nav { padding: 1rem 1.5rem; }
@@ -98,25 +111,74 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 <body>
 
 <nav role="navigation" aria-label="Main navigation">
-  <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text><text x="60" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text></svg></a>
+  <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <div class="nav-right">
     <ul class="nav-links">
-      <li><a href="/#platform">Platform</a></li>
-      <li><a href="/#pricing">Pricing</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/#platform" data-i18n="nav.platform">Platform</a></li>
+      <li><a href="/#pricing" data-i18n="nav.pricing">Pricing</a></li>
+      <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
     </ul>
-    <a href="/contact" class="nav-cta">Request a Demo</a>
+    <a href="/contact" class="nav-cta" data-i18n="nav.cta">Request a Demo</a>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn" aria-label="Change language" aria-expanded="false"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lang-drop">
+        <button class="lang-opt active" data-lang="en"><svg class="flag-icon" viewBox="0 0 60 30"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg> English</button>
+        <button class="lang-opt" data-lang="fr"><svg class="flag-icon" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg> Fran&ccedil;ais</button>
+        <button class="lang-opt" data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
+      </div>
+    </div>
   </div>
 </nav>
 
-<div class="legal-hero">
+<!-- EN -->
+<div class="legal-hero" data-lang-block="en">
+  <div class="legal-tag">Legal</div>
+  <h1>Legal <em>Notice</em></h1>
+  <p class="legal-updated">Last updated: March 9, 2026</p>
+</div>
+<div class="legal-body" data-lang-block="en">
+  <h2>1. Site publisher</h2>
+  <p>The website <strong>heritagemotor.app</strong> is published by:</p>
+  <ul>
+    <li><strong>Heritage Motor</strong></li>
+    <li>Legal form: SAS (Simplified Joint-Stock Company)</li>
+    <li>Registered office: France</li>
+    <li>Email: <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></li>
+    <li>Publication director: The company president</li>
+  </ul>
+  <h2>2. Hosting</h2>
+  <p>The website and platform are hosted by:</p>
+  <ul>
+    <li><strong>Hetzner Online GmbH</strong></li>
+    <li>Industriestr. 25, 91710 Gunzenhausen, Germany</li>
+    <li>Website: <a href="https://www.hetzner.com" target="_blank" rel="noopener">hetzner.com</a></li>
+  </ul>
+  <h2>3. Intellectual property</h2>
+  <p>All website content (texts, graphics, logo, icons, images, videos, software) is the exclusive property of Heritage Motor or its partners and is protected by French and international intellectual property laws.</p>
+  <p>Any reproduction, representation, modification, publication or adaptation of all or part of the website elements, by any means or process, is prohibited without prior written authorization.</p>
+  <h2>4. Personal data</h2>
+  <p>In accordance with the General Data Protection Regulation (GDPR) and the French Data Protection Act, you have the right to access, rectify, delete and object to the processing of your personal data.</p>
+  <p>For more information, see our <a href="/privacy">Privacy Policy</a>.</p>
+  <p>To exercise your rights: <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></p>
+  <h2>5. Cookies</h2>
+  <p>The marketing website <strong>does not use cookies</strong>. Plausible Analytics is entirely cookie-free and GDPR-compliant.</p>
+  <p>The SaaS platform uses a strictly necessary authentication cookie (<code>refresh_token</code>, httpOnly), exempt from consent under Article 82 of the French Data Protection Act.</p>
+  <h2>6. Limitation of liability</h2>
+  <p>Heritage Motor strives to provide information as accurate as possible. However, it cannot be held responsible for omissions, inaccuracies or deficiencies in updates, whether caused by itself or by third-party partners providing such information.</p>
+  <p>Heritage Motor cannot be held responsible for direct and indirect damages caused to the user's equipment when accessing the website.</p>
+  <h2>7. Hyperlinks</h2>
+  <p>The website may contain links to other sites. Heritage Motor has no control over the content of these third-party sites and disclaims all responsibility concerning them.</p>
+  <h2>8. Applicable law</h2>
+  <p>These legal notices are governed by French law. In case of dispute, and after failure of any attempt to find an amicable solution, French courts shall have exclusive jurisdiction.</p>
+</div>
+
+<!-- FR -->
+<div class="legal-hero" data-lang-block="fr" hidden>
   <div class="legal-tag">L&eacute;gal</div>
   <h1>Mentions <em>l&eacute;gales</em></h1>
   <p class="legal-updated">Derni&egrave;re mise &agrave; jour : 9 mars 2026</p>
 </div>
-
-<div class="legal-body">
-
+<div class="legal-body" data-lang-block="fr" hidden>
   <h2>1. &Eacute;diteur du site</h2>
   <p>Le site <strong>heritagemotor.app</strong> est &eacute;dit&eacute; par :</p>
   <ul>
@@ -126,7 +188,6 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <li>Email : <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></li>
     <li>Directeur de la publication : Le pr&eacute;sident de la soci&eacute;t&eacute;</li>
   </ul>
-
   <h2>2. H&eacute;bergement</h2>
   <p>Le site et la plateforme sont h&eacute;berg&eacute;s par :</p>
   <ul>
@@ -134,44 +195,135 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <li>Industriestr. 25, 91710 Gunzenhausen, Allemagne</li>
     <li>Site web : <a href="https://www.hetzner.com" target="_blank" rel="noopener">hetzner.com</a></li>
   </ul>
-
   <h2>3. Propri&eacute;t&eacute; intellectuelle</h2>
   <p>L'ensemble des contenus du site (textes, graphismes, logo, ic&ocirc;nes, images, vid&eacute;os, logiciels) est la propri&eacute;t&eacute; exclusive de Heritage Motor ou de ses partenaires et est prot&eacute;g&eacute; par les lois fran&ccedil;aises et internationales relatives &agrave; la propri&eacute;t&eacute; intellectuelle.</p>
   <p>Toute reproduction, repr&eacute;sentation, modification, publication ou adaptation de tout ou partie des &eacute;l&eacute;ments du site, quel que soit le moyen ou le proc&eacute;d&eacute; utilis&eacute;, est interdite sauf autorisation &eacute;crite pr&eacute;alable.</p>
-
   <h2>4. Donn&eacute;es personnelles</h2>
   <p>Conform&eacute;ment au R&egrave;glement G&eacute;n&eacute;ral sur la Protection des Donn&eacute;es (RGPD) et &agrave; la loi Informatique et Libert&eacute;s, vous disposez d'un droit d'acc&egrave;s, de rectification, de suppression et d'opposition concernant vos donn&eacute;es personnelles.</p>
   <p>Pour plus d'informations, consultez notre <a href="/privacy">Politique de Confidentialit&eacute;</a>.</p>
   <p>Pour exercer vos droits : <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></p>
-
   <h2>5. Cookies</h2>
   <p>Le site marketing <strong>n'utilise pas de cookies</strong>. L'outil d'analyse Plausible Analytics est enti&egrave;rement sans cookies et conforme au RGPD.</p>
   <p>La plateforme SaaS utilise un cookie strictement n&eacute;cessaire &agrave; l'authentification (<code>refresh_token</code>, httpOnly), exempt&eacute; de consentement au titre de l'article 82 de la loi Informatique et Libert&eacute;s.</p>
-
   <h2>6. Limitation de responsabilit&eacute;</h2>
   <p>Heritage Motor s'efforce de fournir des informations aussi pr&eacute;cises que possible. Toutefois, il ne pourra &ecirc;tre tenu responsable des omissions, inexactitudes ou carences dans la mise &agrave; jour, qu'elles soient de son fait ou du fait des tiers partenaires qui lui fournissent ces informations.</p>
   <p>Heritage Motor ne pourra &ecirc;tre tenu responsable des dommages directs et indirects caus&eacute;s au mat&eacute;riel de l'utilisateur lors de l'acc&egrave;s au site.</p>
-
   <h2>7. Liens hypertextes</h2>
   <p>Le site peut contenir des liens vers d'autres sites. Heritage Motor n'exerce aucun contr&ocirc;le sur le contenu de ces sites tiers et d&eacute;cline toute responsabilit&eacute; les concernant.</p>
-
   <h2>8. Droit applicable</h2>
   <p>Les pr&eacute;sentes mentions l&eacute;gales sont r&eacute;gies par le droit fran&ccedil;ais. En cas de litige, et apr&egrave;s &eacute;chec de toute tentative de recherche d'une solution amiable, les tribunaux fran&ccedil;ais seront seuls comp&eacute;tents.</p>
+</div>
 
+<!-- DE -->
+<div class="legal-hero" data-lang-block="de" hidden>
+  <div class="legal-tag">Rechtliches</div>
+  <h1>Impressum</h1>
+  <p class="legal-updated">Letzte Aktualisierung: 9. M&auml;rz 2026</p>
+</div>
+<div class="legal-body" data-lang-block="de" hidden>
+  <h2>1. Herausgeber der Website</h2>
+  <p>Die Website <strong>heritagemotor.app</strong> wird herausgegeben von:</p>
+  <ul>
+    <li><strong>Heritage Motor</strong></li>
+    <li>Rechtsform: SAS (Vereinfachte Aktiengesellschaft)</li>
+    <li>Firmensitz: Frankreich</li>
+    <li>E-Mail: <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></li>
+    <li>Verantwortlicher: Der Gesch&auml;ftsf&uuml;hrer</li>
+  </ul>
+  <h2>2. Hosting</h2>
+  <p>Die Website und die Plattform werden gehostet von:</p>
+  <ul>
+    <li><strong>Hetzner Online GmbH</strong></li>
+    <li>Industriestr. 25, 91710 Gunzenhausen, Deutschland</li>
+    <li>Website: <a href="https://www.hetzner.com" target="_blank" rel="noopener">hetzner.com</a></li>
+  </ul>
+  <h2>3. Geistiges Eigentum</h2>
+  <p>Alle Inhalte der Website (Texte, Grafiken, Logo, Icons, Bilder, Videos, Software) sind das ausschlie&szlig;liche Eigentum von Heritage Motor oder seinen Partnern und sind durch franz&ouml;sische und internationale Gesetze zum geistigen Eigentum gesch&uuml;tzt.</p>
+  <p>Jede Reproduktion, Darstellung, &Auml;nderung, Ver&ouml;ffentlichung oder Anpassung aller oder eines Teils der Website-Elemente ist ohne vorherige schriftliche Genehmigung untersagt.</p>
+  <h2>4. Personenbezogene Daten</h2>
+  <p>Gem&auml;&szlig; der Datenschutz-Grundverordnung (DSGVO) und dem franz&ouml;sischen Datenschutzgesetz haben Sie das Recht auf Zugang, Berichtigung, L&ouml;schung und Widerspruch bez&uuml;glich Ihrer personenbezogenen Daten.</p>
+  <p>Weitere Informationen finden Sie in unserer <a href="/privacy">Datenschutzerkl&auml;rung</a>.</p>
+  <p>Zur Aus&uuml;bung Ihrer Rechte: <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></p>
+  <h2>5. Cookies</h2>
+  <p>Die Marketing-Website <strong>verwendet keine Cookies</strong>. Plausible Analytics ist vollst&auml;ndig cookie-frei und DSGVO-konform.</p>
+  <p>Die SaaS-Plattform verwendet ein streng notwendiges Authentifizierungs-Cookie (<code>refresh_token</code>, httpOnly), das gem&auml;&szlig; Artikel 82 des franz&ouml;sischen Datenschutzgesetzes von der Einwilligung befreit ist.</p>
+  <h2>6. Haftungsbeschr&auml;nkung</h2>
+  <p>Heritage Motor bem&uuml;ht sich, m&ouml;glichst genaue Informationen bereitzustellen. Es kann jedoch nicht f&uuml;r Auslassungen, Ungenauigkeiten oder M&auml;ngel bei der Aktualisierung verantwortlich gemacht werden.</p>
+  <p>Heritage Motor kann nicht f&uuml;r direkte und indirekte Sch&auml;den verantwortlich gemacht werden, die beim Zugriff auf die Website an der Ausr&uuml;stung des Nutzers entstehen.</p>
+  <h2>7. Hyperlinks</h2>
+  <p>Die Website kann Links zu anderen Websites enthalten. Heritage Motor &uuml;bt keine Kontrolle &uuml;ber den Inhalt dieser Drittanbieter-Websites aus und lehnt jede Verantwortung diesbez&uuml;glich ab.</p>
+  <h2>8. Anwendbares Recht</h2>
+  <p>Diese rechtlichen Hinweise unterliegen franz&ouml;sischem Recht. Im Falle eines Rechtsstreits und nach Scheitern jedes Versuchs einer g&uuml;tlichen Einigung sind ausschlie&szlig;lich die franz&ouml;sischen Gerichte zust&auml;ndig.</p>
 </div>
 
 <footer role="contentinfo">
-  <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text><text x="60" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text></svg></a>
+  <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <ul class="footer-links">
-    <li><a href="/">Accueil</a></li>
-    <li><a href="/#platform">Plateforme</a></li>
-    <li><a href="/#pricing">Tarifs</a></li>
-    <li><a href="/contact">Contact</a></li>
-    <li><a href="/privacy">Confidentialit&eacute;</a></li>
-    <li><a href="/legal">Mentions l&eacute;gales</a></li>
+    <li><a href="/" data-i18n="nav.home">Home</a></li>
+    <li><a href="/#platform" data-i18n="nav.platform">Platform</a></li>
+    <li><a href="/#pricing" data-i18n="nav.pricing">Pricing</a></li>
+    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+    <li><a href="/privacy" data-i18n="nav.privacy">Privacy</a></li>
+    <li><a href="/legal" data-i18n="nav.legal">Legal</a></li>
   </ul>
   <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
 </footer>
 
+<script>
+  var i18n = {
+    fr: {
+      'nav.platform': 'Plateforme', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
+      'nav.cta': 'Demander une d\u00e9mo', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales'
+    },
+    de: {
+      'nav.platform': 'Plattform', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
+      'nav.cta': 'Demo anfragen', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum'
+    }
+  };
+
+  document.querySelectorAll('[data-i18n]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
+
+  var currentLang = 'en';
+  function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    var dict = i18n[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        el.textContent = dict[key];
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    document.querySelectorAll('[data-lang-block]').forEach(function(el) {
+      el.hidden = el.getAttribute('data-lang-block') !== lang;
+    });
+    document.getElementById('langCurrent').textContent = lang.toUpperCase();
+    document.querySelectorAll('.lang-opt').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+    document.getElementById('langSwitch').classList.remove('open');
+    try { localStorage.setItem('hm-lang', lang); } catch(e) {}
+  }
+
+  var langBtn = document.getElementById('langSwitch').querySelector('.lang-btn');
+  function closeLangDrop() {
+    document.getElementById('langSwitch').classList.remove('open');
+    langBtn.setAttribute('aria-expanded', 'false');
+  }
+  langBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var sw = document.getElementById('langSwitch');
+    var isOpen = sw.classList.toggle('open');
+    langBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.querySelectorAll('.lang-opt').forEach(function(btn) {
+    btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
+  });
+  document.addEventListener('click', closeLangDrop);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
+  try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
+</script>
 </body>
 </html>

@@ -49,15 +49,28 @@ nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2)
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
 .nav-links a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
 .nav-links a:hover { color: var(--gold); }
-.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
+.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); white-space: nowrap; }
 .nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+/* LANG SWITCH */
+.lang-switch { position: relative; }
+.lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: color 0.3s ease-out; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 0.35rem; }
+.lang-btn:hover { color: var(--gold); }
+.lang-btn svg { width: 9px; height: 9px; transition: transform 0.3s var(--ease-lux); }
+.lang-switch.open .lang-btn svg { transform: rotate(180deg); }
+.lang-drop { position: absolute; top: calc(100% + 8px); right: 0; background: var(--dark); border: 1px solid rgba(184,149,90,0.15); border-radius: 6px; box-shadow: 0 12px 36px rgba(0,0,0,0.3); padding: 0.3rem; display: none; min-width: 140px; z-index: 200; }
+.lang-switch.open .lang-drop { display: block; }
+.lang-opt { display: flex; align-items: center; gap: 0.5rem; width: 100%; background: none; border: none; padding: 0.55rem 0.75rem; font-family: var(--sans); font-size: 0.78rem; font-weight: 400; color: rgba(255,255,255,0.5); cursor: pointer; border-radius: 4px; transition: all 0.15s; text-align: left; }
+.lang-opt:hover { background: rgba(184,149,90,0.08); color: #fff; }
+.lang-opt.active { color: var(--gold); font-weight: 500; }
+.flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
 
 /* MAIN */
 main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; max-width: 1280px; margin: 0 auto; width: 100%; align-items: start; }
 
 /* LEFT: INFO */
 .contact-info { padding-top: 1rem; }
-.section-tag { font-size: 0.82rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 500; }
+.section-tag { font-size: 0.88rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 500; }
 .section-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
 .contact-info h1 { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 4rem); font-weight: 300; color: #fff; line-height: 1.08; margin-bottom: 1.5rem; }
 .contact-info h1 em { font-style: italic; color: rgba(255,255,255,0.4); }
@@ -123,6 +136,14 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 .form-hp { position: absolute; left: -9999px; height: 0; width: 0; overflow: hidden; opacity: 0; }
 .form-success { color: var(--gold); font-family: var(--serif); font-size: 1.4rem; font-weight: 300; line-height: 1.4; padding: 2rem 0; }
 
+/* REVEAL ANIMATIONS */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.9s var(--ease-lux), transform 0.9s var(--ease-lux); }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.12s; }
+.reveal-d2 { transition-delay: 0.24s; }
+.reveal-d3 { transition-delay: 0.36s; }
+
 /* FOOTER */
 footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2rem; border-top: 1px solid rgba(184,149,90,0.08); margin-top: auto; }
 .footer-logo { display: flex; align-items: center; color: rgba(255,255,255,0.5); text-decoration: none; transition: opacity 0.3s; }
@@ -159,27 +180,35 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <div class="nav-right">
     <ul class="nav-links">
-      <li><a href="/#platform">Platform</a></li>
-      <li><a href="/#pricing">Pricing</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/#platform" data-i18n="nav.platform">Platform</a></li>
+      <li><a href="/#pricing" data-i18n="nav.pricing">Pricing</a></li>
+      <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
     </ul>
-    <a href="/contact" class="nav-cta">Contact</a>
+    <a href="/contact" class="nav-cta" data-i18n="nav.cta">Contact</a>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn" aria-label="Change language" aria-expanded="false"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lang-drop">
+        <button class="lang-opt active" data-lang="en"><svg class="flag-icon" viewBox="0 0 60 30"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg> English</button>
+        <button class="lang-opt" data-lang="fr"><svg class="flag-icon" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg> Fran&ccedil;ais</button>
+        <button class="lang-opt" data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
+      </div>
+    </div>
   </div>
 </nav>
 
 <main>
   <div class="contact-info">
-    <div class="section-tag"><span>Contact</span></div>
-    <h1>Let's talk about<br> <em>your facility.</em></h1>
-    <p class="contact-intro">20-minute demo, no commitment. Tell us about your operations and we'll show you how Heritage Motor fits your workflow.</p>
+    <div class="section-tag reveal"><span data-i18n="contact.tag">Contact</span></div>
+    <h1 class="reveal reveal-d1" data-i18n="contact.title">Let's talk about<br> <em>your facility.</em></h1>
+    <p class="contact-intro reveal reveal-d2" data-i18n="contact.intro">20-minute demo, no commitment. Tell us about your operations and we'll show you how Heritage Motor fits your workflow.</p>
 
-    <div class="contact-details">
+    <div class="contact-details reveal reveal-d3">
       <div class="contact-item">
         <div class="contact-icon">
           <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
         </div>
         <div>
-          <div class="contact-item-label">Email</div>
+          <div class="contact-item-label" data-i18n="contact.email">Email</div>
           <div class="contact-item-value"><a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></div>
         </div>
       </div>
@@ -188,8 +217,8 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <div>
-          <div class="contact-item-label">Based in</div>
-          <div class="contact-item-value">France & Switzerland</div>
+          <div class="contact-item-label" data-i18n="contact.based">Based in</div>
+          <div class="contact-item-value" data-i18n="contact.location">France &amp; Switzerland</div>
         </div>
       </div>
       <div class="contact-item">
@@ -197,34 +226,34 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         </div>
         <div>
-          <div class="contact-item-label">Response time</div>
-          <div class="contact-item-value">Within 24 hours</div>
+          <div class="contact-item-label" data-i18n="contact.response">Response time</div>
+          <div class="contact-item-value" data-i18n="contact.response_val">Within 24 hours</div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="contact-form-wrap">
-    <div class="form-title">Request a Demo</div>
-    <div class="form-subtitle">Fill out the form and we'll be in touch shortly.</div>
+  <div class="contact-form-wrap reveal">
+    <div class="form-title" data-i18n="form.title">Request a Demo</div>
+    <div class="form-subtitle" data-i18n="form.subtitle">Fill out the form and we'll be in touch shortly.</div>
     <form class="contact-form" id="contact-form">
       <div class="form-row">
         <div class="form-group">
-          <label for="name">Name *</label>
-          <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name">
+          <label for="name" data-i18n="form.name">Name *</label>
+          <input type="text" id="name" name="name" placeholder="Your name" data-i18n-ph="form.name_ph" required autocomplete="name">
         </div>
         <div class="form-group">
-          <label for="email">Email *</label>
+          <label for="email" data-i18n="form.email">Email *</label>
           <input type="email" id="email" name="email" placeholder="you@company.com" required autocomplete="email">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label for="company">Company</label>
-          <input type="text" id="company" name="company" placeholder="Company / Facility name" autocomplete="organization">
+          <label for="company" data-i18n="form.company">Company</label>
+          <input type="text" id="company" name="company" placeholder="Company / Facility name" data-i18n-ph="form.company_ph" autocomplete="organization">
         </div>
         <div class="form-group">
-          <label for="vehicles">Fleet size</label>
+          <label for="vehicles" data-i18n="form.fleet">Fleet size</label>
           <select id="vehicles" name="vehicles" aria-hidden="true" tabindex="-1">
             <option value="" selected>Select range</option>
             <option value="1-25">1 – 25 vehicles</option>
@@ -235,22 +264,22 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
           </select>
           <div class="custom-select" id="custom-vehicles">
             <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
-              <span>Select range</span>
+              <span data-i18n="form.select_range">Select range</span>
               <svg class="custom-select-arrow" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="#b8955a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="custom-select-options" role="listbox">
-              <div class="custom-select-option" data-value="1-25" role="option">1 – 25 vehicles</div>
-              <div class="custom-select-option" data-value="26-50" role="option">26 – 50 vehicles</div>
-              <div class="custom-select-option" data-value="51-100" role="option">51 – 100 vehicles</div>
-              <div class="custom-select-option" data-value="101-200" role="option">101 – 200 vehicles</div>
-              <div class="custom-select-option" data-value="200+" role="option">200+ vehicles</div>
+              <div class="custom-select-option" data-value="1-25" role="option" data-i18n="form.v1">1 – 25 vehicles</div>
+              <div class="custom-select-option" data-value="26-50" role="option" data-i18n="form.v2">26 – 50 vehicles</div>
+              <div class="custom-select-option" data-value="51-100" role="option" data-i18n="form.v3">51 – 100 vehicles</div>
+              <div class="custom-select-option" data-value="101-200" role="option" data-i18n="form.v4">101 – 200 vehicles</div>
+              <div class="custom-select-option" data-value="200+" role="option" data-i18n="form.v5">200+ vehicles</div>
             </div>
           </div>
         </div>
       </div>
       <div class="form-group">
-        <label for="message">Message</label>
-        <textarea id="message" name="message" placeholder="Tell us about your facility, current workflow, and what you're looking for..." rows="4"></textarea>
+        <label for="message" data-i18n="form.message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell us about your facility, current workflow, and what you're looking for..." data-i18n-ph="form.message_ph" rows="4"></textarea>
       </div>
       <!-- Honeypot — hidden from humans, bots fill it -->
       <div class="form-hp" aria-hidden="true">
@@ -259,7 +288,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       </div>
       <!-- Cloudflare Turnstile — replace data-sitekey with your key from Cloudflare Dashboard > Turnstile -->
       <div class="cf-turnstile" data-sitekey="0x4AAAAAACoslwlsGYUiLXus" data-theme="dark"></div>
-      <button type="submit" class="form-submit">
+      <button type="submit" class="form-submit" data-i18n="form.submit">
         Send Message
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -270,17 +299,147 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 <footer role="contentinfo">
   <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <ul class="footer-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/#platform">Platform</a></li>
-    <li><a href="/#pricing">Pricing</a></li>
-    <li><a href="/contact">Contact</a></li>
-    <li><a href="/privacy">Privacy</a></li>
-    <li><a href="/legal">Legal</a></li>
+    <li><a href="/" data-i18n="nav.home">Home</a></li>
+    <li><a href="/#platform" data-i18n="nav.platform">Platform</a></li>
+    <li><a href="/#pricing" data-i18n="nav.pricing">Pricing</a></li>
+    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+    <li><a href="/privacy" data-i18n="nav.privacy">Privacy</a></li>
+    <li><a href="/legal" data-i18n="nav.legal">Legal</a></li>
   </ul>
   <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
 </footer>
 
 <script>
+  /* --- i18n translations ------------------------------------------------ */
+  var i18n = {
+    fr: {
+      'nav.platform': 'Plateforme', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
+      'nav.cta': 'Contact', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales',
+      'contact.tag': 'Contact',
+      'contact.title': 'Parlons de<br> <em>votre site.</em>',
+      'contact.intro': 'D\u00e9mo de 20 minutes, sans engagement. Parlez-nous de vos op\u00e9rations et nous vous montrerons comment Heritage Motor s\'int\u00e8gre \u00e0 votre workflow.',
+      'contact.email': 'Email',
+      'contact.based': 'Bas\u00e9 en',
+      'contact.location': 'France & Suisse',
+      'contact.response': 'D\u00e9lai de r\u00e9ponse',
+      'contact.response_val': 'Sous 24 heures',
+      'form.title': 'Demander une d\u00e9mo',
+      'form.subtitle': 'Remplissez le formulaire et nous vous recontacterons rapidement.',
+      'form.name': 'Nom *',
+      'form.name_ph': 'Votre nom',
+      'form.email': 'Email *',
+      'form.company': 'Entreprise',
+      'form.company_ph': 'Nom de l\'entreprise / du site',
+      'form.fleet': 'Taille de flotte',
+      'form.select_range': 'S\u00e9lectionner',
+      'form.v1': '1 \u2013 25 v\u00e9hicules',
+      'form.v2': '26 \u2013 50 v\u00e9hicules',
+      'form.v3': '51 \u2013 100 v\u00e9hicules',
+      'form.v4': '101 \u2013 200 v\u00e9hicules',
+      'form.v5': '200+ v\u00e9hicules',
+      'form.message': 'Message',
+      'form.message_ph': 'Parlez-nous de votre site, de votre workflow actuel et de vos besoins\u2026',
+      'form.submit': 'Envoyer',
+      'form.sending': 'Envoi en cours\u2026',
+      'form.success': 'Merci\u00a0! Nous vous recontacterons sous 24 heures.',
+      'form.error_rate': 'Trop de requ\u00eates. Veuillez r\u00e9essayer dans quelques minutes.',
+      'form.error_generic': 'Une erreur est survenue. Veuillez r\u00e9essayer ou nous \u00e9crire \u00e0 welcome@heritagemotor.app'
+    },
+    de: {
+      'nav.platform': 'Plattform', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
+      'nav.cta': 'Kontakt', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum',
+      'contact.tag': 'Kontakt',
+      'contact.title': 'Sprechen wir \u00fcber<br> <em>Ihren Standort.</em>',
+      'contact.intro': '20-Minuten-Demo, unverbindlich. Erz\u00e4hlen Sie uns von Ihrem Betrieb und wir zeigen Ihnen, wie Heritage Motor in Ihren Workflow passt.',
+      'contact.email': 'E-Mail',
+      'contact.based': 'Standort',
+      'contact.location': 'Frankreich & Schweiz',
+      'contact.response': 'Antwortzeit',
+      'contact.response_val': 'Innerhalb von 24 Stunden',
+      'form.title': 'Demo anfragen',
+      'form.subtitle': 'F\u00fcllen Sie das Formular aus und wir melden uns in K\u00fcrze.',
+      'form.name': 'Name *',
+      'form.name_ph': 'Ihr Name',
+      'form.email': 'E-Mail *',
+      'form.company': 'Unternehmen',
+      'form.company_ph': 'Unternehmen / Standort',
+      'form.fleet': 'Flottengr\u00f6\u00dfe',
+      'form.select_range': 'Ausw\u00e4hlen',
+      'form.v1': '1 \u2013 25 Fahrzeuge',
+      'form.v2': '26 \u2013 50 Fahrzeuge',
+      'form.v3': '51 \u2013 100 Fahrzeuge',
+      'form.v4': '101 \u2013 200 Fahrzeuge',
+      'form.v5': '200+ Fahrzeuge',
+      'form.message': 'Nachricht',
+      'form.message_ph': 'Erz\u00e4hlen Sie uns von Ihrem Standort, Ihrem Workflow und Ihren Anforderungen\u2026',
+      'form.submit': 'Nachricht senden',
+      'form.sending': 'Wird gesendet\u2026',
+      'form.success': 'Vielen Dank! Wir melden uns innerhalb von 24 Stunden.',
+      'form.error_rate': 'Zu viele Anfragen. Bitte versuchen Sie es in einigen Minuten erneut.',
+      'form.error_generic': 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns an welcome@heritagemotor.app'
+    }
+  };
+
+  // Store original EN content
+  document.querySelectorAll('[data-i18n]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) { el._origPH = el.placeholder; });
+
+  var currentLang = 'en';
+  function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    var dict = i18n[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        if (key === 'form.submit') {
+          // Keep the arrow SVG inside the button
+          var svg = el.querySelector('svg');
+          var textNodes = Array.from(el.childNodes).filter(function(n) { return n.nodeType === 3; });
+          textNodes.forEach(function(n) { n.remove(); });
+          var txt = document.createTextNode('\n        ' + dict[key] + '\n        ');
+          if (svg) el.insertBefore(txt, svg); else el.appendChild(txt);
+        } else {
+          // Safe: values come from hardcoded i18n dict above, not user input
+          var temp = document.createElement('template');
+          temp.innerHTML = dict[key]; // eslint-disable-line no-unsanitized/property -- trusted hardcoded i18n dict, not user input
+          el.replaceChildren(temp.content);
+        }
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n-ph');
+      el.placeholder = (dict[key]) || el._origPH || '';
+    });
+    document.getElementById('langCurrent').textContent = lang.toUpperCase();
+    document.querySelectorAll('.lang-opt').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+    document.getElementById('langSwitch').classList.remove('open');
+    try { localStorage.setItem('hm-lang', lang); } catch(e) {}
+  }
+
+  /* --- Language switcher ------------------------------------------------ */
+  var langBtn = document.getElementById('langSwitch').querySelector('.lang-btn');
+  function closeLangDrop() {
+    document.getElementById('langSwitch').classList.remove('open');
+    langBtn.setAttribute('aria-expanded', 'false');
+  }
+  langBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var sw = document.getElementById('langSwitch');
+    var isOpen = sw.classList.toggle('open');
+    langBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.querySelectorAll('.lang-opt').forEach(function(btn) {
+    btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
+  });
+  document.addEventListener('click', closeLangDrop);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
+  try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
+
   /* --- Custom dropdown ------------------------------------------------- */
   (function() {
     var wrap = document.getElementById('custom-vehicles');
@@ -317,14 +476,16 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     });
   })();
 
+  /* --- Form submit ------------------------------------------------------ */
   document.getElementById('contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = e.target;
     var btn = form.querySelector('button');
+    var dict = i18n[currentLang] || {};
     btn.disabled = true;
-    btn.textContent = 'Sending...';
+    btn.textContent = dict['form.sending'] || 'Sending...';
 
-    var lang = 'en';
+    var lang = currentLang;
     try { lang = localStorage.getItem('hm-lang') || 'en'; } catch(e) {}
 
     var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
@@ -355,19 +516,27 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       while (form.firstChild) { form.removeChild(form.firstChild); }
       var msg = document.createElement('p');
       msg.className = 'form-success';
-      msg.textContent = 'Thank you! We\u2019ll get back to you within 24 hours.';
+      msg.textContent = dict['form.success'] || 'Thank you! We\u2019ll get back to you within 24 hours.';
       form.appendChild(msg);
     }).catch(function(err) {
       btn.disabled = false;
-      btn.textContent = 'Send Message';
+      btn.textContent = dict['form.submit'] || 'Send Message';
       if (typeof turnstile !== 'undefined') { turnstile.reset(); }
       if (err.message === 'too many requests, try again later') {
-        alert('Too many requests. Please try again in a few minutes.');
+        alert(dict['form.error_rate'] || 'Too many requests. Please try again in a few minutes.');
       } else {
-        alert('Something went wrong. Please try again or email us at welcome@heritagemotor.app');
+        alert(dict['form.error_generic'] || 'Something went wrong. Please try again or email us at welcome@heritagemotor.app');
       }
     });
   });
+
+  /* --- Scroll Reveal ------------------------------------------------- */
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el) { io.observe(el); });
 </script>
 </body>
 </html>

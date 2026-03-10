@@ -43,17 +43,30 @@ body { background: var(--black); color: rgba(255,255,255,0.7); font-family: var(
 nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2); border-bottom: 1px solid rgba(184,149,90,0.1); display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 4rem; position: sticky; top: 0; z-index: 100; }
 .nav-logo { display: flex; align-items: center; text-decoration: none; color: #fff; transition: opacity 0.3s; }
 .nav-logo:hover { opacity: 0.8; }
-.logo-svg { height: 30px; width: auto; }
+.logo-svg { height: 46px; width: auto; }
 .nav-right { display: flex; align-items: center; gap: 2.5rem; }
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-.nav-links a { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
+.nav-links a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
 .nav-links a:hover { color: var(--gold); }
-.nav-cta { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.6rem 1.6rem; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
+.nav-cta { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); white-space: nowrap; }
 .nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+/* LANG SWITCH */
+.lang-switch { position: relative; }
+.lang-btn { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.35rem 0.5rem; transition: color 0.3s ease-out; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 0.35rem; }
+.lang-btn:hover { color: var(--gold); }
+.lang-btn svg { width: 9px; height: 9px; transition: transform 0.3s var(--ease-lux); }
+.lang-switch.open .lang-btn svg { transform: rotate(180deg); }
+.lang-drop { position: absolute; top: calc(100% + 8px); right: 0; background: var(--dark); border: 1px solid rgba(184,149,90,0.15); border-radius: 6px; box-shadow: 0 12px 36px rgba(0,0,0,0.3); padding: 0.3rem; display: none; min-width: 140px; z-index: 200; }
+.lang-switch.open .lang-drop { display: block; }
+.lang-opt { display: flex; align-items: center; gap: 0.5rem; width: 100%; background: none; border: none; padding: 0.55rem 0.75rem; font-family: var(--sans); font-size: 0.78rem; font-weight: 400; color: rgba(255,255,255,0.5); cursor: pointer; border-radius: 4px; transition: all 0.15s; text-align: left; }
+.lang-opt:hover { background: rgba(184,149,90,0.08); color: #fff; }
+.lang-opt.active { color: var(--gold); font-weight: 500; }
+.flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
 
 /* CONTENT */
 .legal-hero { padding: 6rem 4rem 3rem; border-bottom: 1px solid rgba(184,149,90,0.1); }
-.legal-tag { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-weight: 500; }
+.legal-tag { font-size: 0.88rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-weight: 500; }
 .legal-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
 .legal-hero h1 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 300; color: #fff; line-height: 1.08; }
 .legal-hero h1 em { font-style: italic; color: rgba(255,255,255,0.4); }
@@ -63,9 +76,9 @@ nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2)
 .legal-body h2 { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; color: #fff; margin: 3rem 0 1rem; line-height: 1.2; }
 .legal-body h2:first-child { margin-top: 0; }
 .legal-body h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; color: rgba(255,255,255,0.85); margin: 2rem 0 0.75rem; }
-.legal-body p { margin-bottom: 1rem; font-weight: 300; font-size: 0.9rem; }
+.legal-body p { margin-bottom: 1rem; font-weight: 300; font-size: 0.95rem; }
 .legal-body ul { margin: 0.5rem 0 1.5rem 1.5rem; }
-.legal-body li { margin-bottom: 0.4rem; font-weight: 300; font-size: 0.9rem; }
+.legal-body li { margin-bottom: 0.4rem; font-weight: 300; font-size: 0.95rem; }
 .legal-body a { color: var(--gold); text-decoration: none; transition: opacity 0.2s; }
 .legal-body a:hover { opacity: 0.7; }
 .legal-body strong { color: rgba(255,255,255,0.9); font-weight: 500; }
@@ -76,9 +89,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 .footer-logo:hover { opacity: 0.7; }
 .footer-logo .logo-svg { height: 22px; width: auto; }
 .footer-links { display: flex; gap: 2.5rem; list-style: none; justify-content: center; flex-wrap: wrap; }
-.footer-links a { font-size: 0.68rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s; }
+.footer-links a { font-size: 0.78rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s; }
 .footer-links a:hover { color: var(--gold); }
-.footer-copy { font-size: 0.70rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
+.footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.18); letter-spacing: 0.08em; text-align: right; }
 
 @media (max-width: 960px) {
   nav { padding: 1rem 1.5rem; }
@@ -101,38 +114,42 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 <body>
 
 <nav role="navigation" aria-label="Main navigation">
-  <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text><text x="60" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text></svg></a>
+  <a href="/" class="nav-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="sGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="sDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="sGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#sGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#sDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#sGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <div class="nav-right">
     <ul class="nav-links">
-      <li><a href="/#platform">Platform</a></li>
-      <li><a href="/#pricing">Pricing</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/#platform" data-i18n="nav.platform">Platform</a></li>
+      <li><a href="/#pricing" data-i18n="nav.pricing">Pricing</a></li>
+      <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
     </ul>
-    <a href="/contact" class="nav-cta">Request a Demo</a>
+    <a href="/contact" class="nav-cta" data-i18n="nav.cta">Request a Demo</a>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn" aria-label="Change language" aria-expanded="false"><span id="langCurrent">EN</span> <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lang-drop">
+        <button class="lang-opt active" data-lang="en"><svg class="flag-icon" viewBox="0 0 60 30"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg> English</button>
+        <button class="lang-opt" data-lang="fr"><svg class="flag-icon" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg> Fran&ccedil;ais</button>
+        <button class="lang-opt" data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
+      </div>
+    </div>
   </div>
 </nav>
 
-<div class="legal-hero">
-  <div class="legal-tag">Legal</div>
+<!-- EN -->
+<div class="legal-hero" data-lang-block="en">
+  <div class="legal-tag">Privacy</div>
   <h1>Privacy <em>Policy</em></h1>
   <p class="legal-updated">Last updated: March 9, 2026</p>
 </div>
-
-<div class="legal-body">
-
+<div class="legal-body" data-lang-block="en">
   <h2>1. Who we are</h2>
   <p>Heritage Motor ("we", "us", "our") operates the website <strong>heritagemotor.app</strong> and the Heritage Motor SaaS platform accessible at <strong>app.heritagemotor.app</strong>. We are a vehicle storage management platform based in France &amp; Switzerland.</p>
   <p>For any privacy-related question, contact us at <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>.</p>
-
   <h2>2. Data we collect</h2>
-
   <h3>2.1 Marketing website (heritagemotor.app)</h3>
   <ul>
     <li><strong>Analytics:</strong> We use <a href="https://plausible.io" target="_blank" rel="noopener">Plausible Analytics</a>, a privacy-focused, cookie-free analytics tool. It collects no personal data and does not track you across websites. Data is aggregated and never sold.</li>
     <li><strong>Language preference:</strong> Your chosen language (EN/FR/DE) is saved in your browser's localStorage. This is not a cookie and is never sent to our servers.</li>
     <li><strong>Contact form:</strong> When you submit the contact form, we collect your name, email address, company name, fleet size, and message. This data is used solely to respond to your inquiry.</li>
   </ul>
-
   <h3>2.2 SaaS platform (app.heritagemotor.app)</h3>
   <p>When using the Heritage Motor platform as an authenticated user, we process:</p>
   <ul>
@@ -142,7 +159,6 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <li><strong>Session data:</strong> JWT access tokens (15-minute expiry) and refresh tokens (7-day expiry, stored as hashed values).</li>
   </ul>
   <p>All platform data is isolated per tenant via PostgreSQL Row-Level Security. No tenant can access another tenant's data.</p>
-
   <h2>3. Cookies &amp; tracking</h2>
   <p>Our marketing website <strong>does not use cookies</strong>. Plausible Analytics is fully cookie-free and GDPR-compliant without consent.</p>
   <p>The SaaS platform uses:</p>
@@ -150,13 +166,11 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <li><strong>refresh_token</strong> (httpOnly cookie): Stores your session refresh token. This is strictly necessary for authentication and does not require consent under GDPR Article 6(1)(b).</li>
   </ul>
   <p>We do not use advertising cookies, third-party trackers, or fingerprinting of any kind.</p>
-
   <h2>4. Legal basis for processing</h2>
   <ul>
     <li><strong>Contract performance</strong> (Art. 6(1)(b) GDPR): Processing account and vehicle data to deliver the service you subscribed to.</li>
     <li><strong>Legitimate interest</strong> (Art. 6(1)(f) GDPR): Privacy-friendly analytics to improve our website; contact form processing to respond to inquiries.</li>
   </ul>
-
   <h2>5. Data hosting &amp; transfers</h2>
   <ul>
     <li><strong>Infrastructure:</strong> Hosted on Hetzner (Germany/Finland, EU). No data leaves the EU.</li>
@@ -164,14 +178,12 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     <li><strong>Email:</strong> Transactional emails are sent via <a href="https://resend.com" target="_blank" rel="noopener">Resend</a> (US-based, DPA in place).</li>
     <li><strong>Analytics:</strong> Plausible is EU-hosted and GDPR-compliant.</li>
   </ul>
-
   <h2>6. Data retention</h2>
   <ul>
     <li><strong>Contact form submissions:</strong> Retained for 12 months, then deleted.</li>
     <li><strong>Platform data:</strong> Retained for the duration of the contract. Upon account deletion, personal data is removed within 30 days. Audit logs and vehicle event histories are anonymized but retained as they constitute the chain of custody.</li>
     <li><strong>Analytics:</strong> Plausible retains aggregated statistics indefinitely (no personal data).</li>
   </ul>
-
   <h2>7. Your rights</h2>
   <p>Under the GDPR, you have the right to:</p>
   <ul>
@@ -184,27 +196,219 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   </ul>
   <p>To exercise any of these rights, email <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>. We will respond within 30 days.</p>
   <p>You also have the right to lodge a complaint with your local data protection authority (in France: <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>).</p>
-
   <h2>8. Security</h2>
   <p>We implement industry-standard security measures including: bcrypt password hashing, mandatory two-factor authentication (TOTP), encrypted connections (TLS), JWT token blacklisting, rate limiting, and row-level data isolation per tenant.</p>
-
   <h2>9. Changes to this policy</h2>
   <p>We may update this policy from time to time. Significant changes will be communicated via email to registered users. The "last updated" date at the top reflects the latest revision.</p>
+</div>
 
+<!-- FR -->
+<div class="legal-hero" data-lang-block="fr" hidden>
+  <div class="legal-tag">Confidentialit&eacute;</div>
+  <h1>Politique de <em>confidentialit&eacute;</em></h1>
+  <p class="legal-updated">Derni&egrave;re mise &agrave; jour : 9 mars 2026</p>
+</div>
+<div class="legal-body" data-lang-block="fr" hidden>
+  <h2>1. Qui sommes-nous</h2>
+  <p>Heritage Motor (&laquo; nous &raquo;, &laquo; notre &raquo;) exploite le site web <strong>heritagemotor.app</strong> et la plateforme SaaS Heritage Motor accessible &agrave; <strong>app.heritagemotor.app</strong>. Nous sommes une plateforme de gestion de stockage de v&eacute;hicules bas&eacute;e en France et en Suisse.</p>
+  <p>Pour toute question relative &agrave; la confidentialit&eacute;, contactez-nous &agrave; <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>.</p>
+  <h2>2. Donn&eacute;es collect&eacute;es</h2>
+  <h3>2.1 Site marketing (heritagemotor.app)</h3>
+  <ul>
+    <li><strong>Analyse :</strong> Nous utilisons <a href="https://plausible.io" target="_blank" rel="noopener">Plausible Analytics</a>, un outil d'analyse respectueux de la vie priv&eacute;e, sans cookies. Il ne collecte aucune donn&eacute;e personnelle et ne vous suit pas entre les sites. Les donn&eacute;es sont agr&eacute;g&eacute;es et jamais vendues.</li>
+    <li><strong>Pr&eacute;f&eacute;rence linguistique :</strong> Votre langue choisie (EN/FR/DE) est enregistr&eacute;e dans le localStorage de votre navigateur. Ce n'est pas un cookie et n'est jamais envoy&eacute; &agrave; nos serveurs.</li>
+    <li><strong>Formulaire de contact :</strong> Lorsque vous soumettez le formulaire de contact, nous collectons votre nom, adresse email, nom de soci&eacute;t&eacute;, taille de flotte et message. Ces donn&eacute;es sont utilis&eacute;es uniquement pour r&eacute;pondre &agrave; votre demande.</li>
+  </ul>
+  <h3>2.2 Plateforme SaaS (app.heritagemotor.app)</h3>
+  <p>En utilisant la plateforme Heritage Motor en tant qu'utilisateur authentifi&eacute;, nous traitons :</p>
+  <ul>
+    <li><strong>Donn&eacute;es de compte :</strong> Nom, adresse email, r&ocirc;le et identifiants d'authentification (mots de passe hach&eacute;s, secrets MFA).</li>
+    <li><strong>Donn&eacute;es v&eacute;hicules :</strong> Informations sur les v&eacute;hicules (marque, mod&egrave;le, VIN, photos, documents) saisies par les op&eacute;rateurs de votre facility.</li>
+    <li><strong>Donn&eacute;es op&eacute;rationnelles :</strong> &Eacute;v&eacute;nements, affectations de baies, t&acirc;ches, journaux de mouvements et pistes d'audit.</li>
+    <li><strong>Donn&eacute;es de session :</strong> Tokens d'acc&egrave;s JWT (expiration 15 minutes) et tokens de rafra&icirc;chissement (expiration 7 jours, stock&eacute;s sous forme hach&eacute;e).</li>
+  </ul>
+  <p>Toutes les donn&eacute;es de la plateforme sont isol&eacute;es par tenant via PostgreSQL Row-Level Security. Aucun tenant ne peut acc&eacute;der aux donn&eacute;es d'un autre tenant.</p>
+  <h2>3. Cookies et suivi</h2>
+  <p>Notre site marketing <strong>n'utilise pas de cookies</strong>. Plausible Analytics est enti&egrave;rement sans cookies et conforme au RGPD sans consentement.</p>
+  <p>La plateforme SaaS utilise :</p>
+  <ul>
+    <li><strong>refresh_token</strong> (cookie httpOnly) : Stocke votre token de rafra&icirc;chissement de session. Il est strictement n&eacute;cessaire &agrave; l'authentification et ne requiert pas de consentement en vertu de l'article 6(1)(b) du RGPD.</li>
+  </ul>
+  <p>Nous n'utilisons aucun cookie publicitaire, tracker tiers ou fingerprinting d'aucune sorte.</p>
+  <h2>4. Base juridique du traitement</h2>
+  <ul>
+    <li><strong>Ex&eacute;cution du contrat</strong> (Art. 6(1)(b) RGPD) : Traitement des donn&eacute;es de compte et de v&eacute;hicules pour fournir le service auquel vous avez souscrit.</li>
+    <li><strong>Int&eacute;r&ecirc;t l&eacute;gitime</strong> (Art. 6(1)(f) RGPD) : Analyse respectueuse de la vie priv&eacute;e pour am&eacute;liorer notre site ; traitement du formulaire de contact pour r&eacute;pondre aux demandes.</li>
+  </ul>
+  <h2>5. H&eacute;bergement et transferts de donn&eacute;es</h2>
+  <ul>
+    <li><strong>Infrastructure :</strong> H&eacute;berg&eacute; chez Hetzner (Allemagne/Finlande, UE). Aucune donn&eacute;e ne quitte l'UE.</li>
+    <li><strong>Stockage de fichiers :</strong> Documents et photos stock&eacute;s sur Hetzner Object Storage (compatible S3, UE).</li>
+    <li><strong>Email :</strong> Les emails transactionnels sont envoy&eacute;s via <a href="https://resend.com" target="_blank" rel="noopener">Resend</a> (bas&eacute; aux &Eacute;tats-Unis, DPA en place).</li>
+    <li><strong>Analyse :</strong> Plausible est h&eacute;berg&eacute; dans l'UE et conforme au RGPD.</li>
+  </ul>
+  <h2>6. Conservation des donn&eacute;es</h2>
+  <ul>
+    <li><strong>Soumissions du formulaire de contact :</strong> Conserv&eacute;es 12 mois, puis supprim&eacute;es.</li>
+    <li><strong>Donn&eacute;es de la plateforme :</strong> Conserv&eacute;es pendant la dur&eacute;e du contrat. Lors de la suppression du compte, les donn&eacute;es personnelles sont supprim&eacute;es sous 30 jours. Les journaux d'audit et les historiques d'&eacute;v&eacute;nements des v&eacute;hicules sont anonymis&eacute;s mais conserv&eacute;s car ils constituent la cha&icirc;ne de tra&ccedil;abilit&eacute;.</li>
+    <li><strong>Analyse :</strong> Plausible conserve des statistiques agr&eacute;g&eacute;es ind&eacute;finiment (aucune donn&eacute;e personnelle).</li>
+  </ul>
+  <h2>7. Vos droits</h2>
+  <p>En vertu du RGPD, vous avez le droit de :</p>
+  <ul>
+    <li><strong>Acc&eacute;der</strong> &agrave; vos donn&eacute;es personnelles</li>
+    <li><strong>Rectifier</strong> les donn&eacute;es inexactes</li>
+    <li><strong>Effacer</strong> vos donn&eacute;es (&laquo; droit &agrave; l'oubli &raquo;)</li>
+    <li><strong>Limiter</strong> le traitement</li>
+    <li><strong>Portabilit&eacute;</strong> des donn&eacute;es</li>
+    <li><strong>Vous opposer</strong> au traitement bas&eacute; sur l'int&eacute;r&ecirc;t l&eacute;gitime</li>
+  </ul>
+  <p>Pour exercer l'un de ces droits, envoyez un email &agrave; <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>. Nous r&eacute;pondrons sous 30 jours.</p>
+  <p>Vous avez &eacute;galement le droit de d&eacute;poser une plainte aupr&egrave;s de votre autorit&eacute; locale de protection des donn&eacute;es (en France : <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>).</p>
+  <h2>8. S&eacute;curit&eacute;</h2>
+  <p>Nous mettons en &oelig;uvre des mesures de s&eacute;curit&eacute; conformes aux standards de l'industrie, notamment : le hachage des mots de passe par bcrypt, l'authentification &agrave; deux facteurs obligatoire (TOTP), les connexions chiffr&eacute;es (TLS), la liste noire des tokens JWT, la limitation de d&eacute;bit et l'isolation des donn&eacute;es par tenant au niveau des lignes.</p>
+  <h2>9. Modifications de cette politique</h2>
+  <p>Nous pouvons mettre &agrave; jour cette politique de temps &agrave; autre. Les modifications significatives seront communiqu&eacute;es par email aux utilisateurs enregistr&eacute;s. La date de &laquo; derni&egrave;re mise &agrave; jour &raquo; en haut de page refl&egrave;te la derni&egrave;re r&eacute;vision.</p>
+</div>
+
+<!-- DE -->
+<div class="legal-hero" data-lang-block="de" hidden>
+  <div class="legal-tag">Datenschutz</div>
+  <h1>Datenschutz<em>erkl&auml;rung</em></h1>
+  <p class="legal-updated">Letzte Aktualisierung: 9. M&auml;rz 2026</p>
+</div>
+<div class="legal-body" data-lang-block="de" hidden>
+  <h2>1. Wer wir sind</h2>
+  <p>Heritage Motor (&bdquo;wir&ldquo;, &bdquo;uns&ldquo;, &bdquo;unser&ldquo;) betreibt die Website <strong>heritagemotor.app</strong> und die Heritage Motor SaaS-Plattform unter <strong>app.heritagemotor.app</strong>. Wir sind eine Plattform f&uuml;r die Verwaltung von Fahrzeuglagern mit Sitz in Frankreich und der Schweiz.</p>
+  <p>Bei datenschutzbezogenen Fragen kontaktieren Sie uns unter <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>.</p>
+  <h2>2. Daten, die wir erheben</h2>
+  <h3>2.1 Marketing-Website (heritagemotor.app)</h3>
+  <ul>
+    <li><strong>Analyse:</strong> Wir verwenden <a href="https://plausible.io" target="_blank" rel="noopener">Plausible Analytics</a>, ein datenschutzfreundliches, cookie-freies Analysetool. Es erhebt keine personenbezogenen Daten und verfolgt Sie nicht website&uuml;bergreifend. Die Daten sind aggregiert und werden nie verkauft.</li>
+    <li><strong>Sprachpr&auml;ferenz:</strong> Ihre gew&auml;hlte Sprache (EN/FR/DE) wird im localStorage Ihres Browsers gespeichert. Dies ist kein Cookie und wird nie an unsere Server gesendet.</li>
+    <li><strong>Kontaktformular:</strong> Wenn Sie das Kontaktformular absenden, erheben wir Ihren Namen, Ihre E-Mail-Adresse, Ihren Firmennamen, Ihre Flottengr&ouml;&szlig;e und Ihre Nachricht. Diese Daten werden ausschlie&szlig;lich zur Beantwortung Ihrer Anfrage verwendet.</li>
+  </ul>
+  <h3>2.2 SaaS-Plattform (app.heritagemotor.app)</h3>
+  <p>Bei der Nutzung der Heritage Motor Plattform als authentifizierter Benutzer verarbeiten wir:</p>
+  <ul>
+    <li><strong>Kontodaten:</strong> Name, E-Mail-Adresse, Rolle und Authentifizierungsdaten (gehashte Passw&ouml;rter, MFA-Geheimnisse).</li>
+    <li><strong>Fahrzeugdaten:</strong> Fahrzeuginformationen (Marke, Modell, VIN, Fotos, Dokumente), die von den Betreibern Ihrer Einrichtung eingegeben werden.</li>
+    <li><strong>Betriebsdaten:</strong> Ereignisse, Stellplatzzuweisungen, Aufgaben, Bewegungsprotokolle und Pr&uuml;fpfade.</li>
+    <li><strong>Sitzungsdaten:</strong> JWT-Zugriffstoken (15-Minuten-Ablauf) und Aktualisierungstoken (7-Tage-Ablauf, als gehashte Werte gespeichert).</li>
+  </ul>
+  <p>Alle Plattformdaten sind pro Mandant &uuml;ber PostgreSQL Row-Level Security isoliert. Kein Mandant kann auf die Daten eines anderen Mandanten zugreifen.</p>
+  <h2>3. Cookies und Tracking</h2>
+  <p>Unsere Marketing-Website <strong>verwendet keine Cookies</strong>. Plausible Analytics ist vollst&auml;ndig cookie-frei und DSGVO-konform ohne Einwilligung.</p>
+  <p>Die SaaS-Plattform verwendet:</p>
+  <ul>
+    <li><strong>refresh_token</strong> (httpOnly Cookie): Speichert Ihren Sitzungs-Aktualisierungstoken. Dieser ist f&uuml;r die Authentifizierung streng erforderlich und erfordert keine Einwilligung gem&auml;&szlig; Art. 6(1)(b) DSGVO.</li>
+  </ul>
+  <p>Wir verwenden keine Werbe-Cookies, Drittanbieter-Tracker oder Fingerprinting jeglicher Art.</p>
+  <h2>4. Rechtsgrundlage der Verarbeitung</h2>
+  <ul>
+    <li><strong>Vertragserf&uuml;llung</strong> (Art. 6(1)(b) DSGVO): Verarbeitung von Konto- und Fahrzeugdaten zur Erbringung des abonnierten Dienstes.</li>
+    <li><strong>Berechtigtes Interesse</strong> (Art. 6(1)(f) DSGVO): Datenschutzfreundliche Analyse zur Verbesserung unserer Website; Verarbeitung des Kontaktformulars zur Beantwortung von Anfragen.</li>
+  </ul>
+  <h2>5. Datenhosting und -&uuml;bertragungen</h2>
+  <ul>
+    <li><strong>Infrastruktur:</strong> Gehostet bei Hetzner (Deutschland/Finnland, EU). Keine Daten verlassen die EU.</li>
+    <li><strong>Dateispeicherung:</strong> Dokumente und Fotos werden auf Hetzner Object Storage (S3-kompatibel, EU) gespeichert.</li>
+    <li><strong>E-Mail:</strong> Transaktions-E-Mails werden &uuml;ber <a href="https://resend.com" target="_blank" rel="noopener">Resend</a> (US-basiert, DPA vorhanden) versendet.</li>
+    <li><strong>Analyse:</strong> Plausible wird in der EU gehostet und ist DSGVO-konform.</li>
+  </ul>
+  <h2>6. Datenaufbewahrung</h2>
+  <ul>
+    <li><strong>Kontaktformular-Einreichungen:</strong> 12 Monate aufbewahrt, dann gel&ouml;scht.</li>
+    <li><strong>Plattformdaten:</strong> F&uuml;r die Vertragsdauer aufbewahrt. Bei Kontol&ouml;schung werden personenbezogene Daten innerhalb von 30 Tagen entfernt. Pr&uuml;fprotokolle und Fahrzeugereignishistorien werden anonymisiert, aber aufbewahrt, da sie die Nachweiskette bilden.</li>
+    <li><strong>Analyse:</strong> Plausible bewahrt aggregierte Statistiken unbegrenzt auf (keine personenbezogenen Daten).</li>
+  </ul>
+  <h2>7. Ihre Rechte</h2>
+  <p>Gem&auml;&szlig; der DSGVO haben Sie das Recht auf:</p>
+  <ul>
+    <li><strong>Zugang</strong> zu Ihren personenbezogenen Daten</li>
+    <li><strong>Berichtigung</strong> ungenauer Daten</li>
+    <li><strong>L&ouml;schung</strong> Ihrer Daten (&bdquo;Recht auf Vergessenwerden&ldquo;)</li>
+    <li><strong>Einschr&auml;nkung</strong> der Verarbeitung</li>
+    <li><strong>Datenportabilit&auml;t</strong></li>
+    <li><strong>Widerspruch</strong> gegen die Verarbeitung auf Basis berechtigter Interessen</li>
+  </ul>
+  <p>Um eines dieser Rechte auszu&uuml;ben, senden Sie eine E-Mail an <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>. Wir antworten innerhalb von 30 Tagen.</p>
+  <p>Sie haben auch das Recht, eine Beschwerde bei Ihrer lokalen Datenschutzbeh&ouml;rde einzureichen (in Frankreich: <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>).</p>
+  <h2>8. Sicherheit</h2>
+  <p>Wir implementieren branchenstandard-konforme Sicherheitsma&szlig;nahmen, darunter: bcrypt-Passwort-Hashing, obligatorische Zwei-Faktor-Authentifizierung (TOTP), verschl&uuml;sselte Verbindungen (TLS), JWT-Token-Blacklisting, Rate Limiting und zeilenbasierte Datenisolation pro Mandant.</p>
+  <h2>9. &Auml;nderungen dieser Richtlinie</h2>
+  <p>Wir k&ouml;nnen diese Richtlinie von Zeit zu Zeit aktualisieren. Wesentliche &Auml;nderungen werden registrierten Benutzern per E-Mail mitgeteilt. Das Datum der &bdquo;letzten Aktualisierung&ldquo; oben auf der Seite gibt die letzte &Uuml;berarbeitung an.</p>
 </div>
 
 <footer role="contentinfo">
-  <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="20" font-family="'Cormorant Garamond','Georgia',serif" font-size="14.5" font-weight="600" letter-spacing="4.5" fill="currentColor">HERITAGE</text><text x="60" y="37" font-family="'Cormorant Garamond','Georgia',serif" font-size="13" font-weight="400" letter-spacing="7.5" fill="currentColor">MOTOR</text></svg></a>
+  <a href="/" class="footer-logo" aria-label="Heritage Motor"><svg viewBox="0 0 360 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg"><defs><linearGradient id="fsGH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#96783f"/><stop offset="50%" stop-color="#dcc28a"/><stop offset="100%" stop-color="#96783f"/></linearGradient><linearGradient id="fsDk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191816"/><stop offset="100%" stop-color="#0e0d0b"/></linearGradient><linearGradient id="fsGV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dcc28a"/><stop offset="45%" stop-color="#b8955a"/><stop offset="100%" stop-color="#96783f"/></linearGradient></defs><path d="M20,1 L38,1 Q40,1 40,3 L40,26 Q40,33 34,37 Q28,41 20,44 Q12,41 6,37 Q0,33 0,26 L0,3 Q0,1 2,1 Z" fill="url(#fsGH)"/><path d="M20,2.5 L37.5,2.5 Q39,2.5 39,4 L39,25.5 Q39,32 33.5,35.8 Q27.5,39.8 20,42.5 Q12.5,39.8 6.5,35.8 Q1,32 1,25.5 L1,4 Q1,2.5 2.5,2.5 Z" fill="url(#fsDk)"/><path d="M20,4.5 L36.5,4.5 Q37.5,4.5 37.5,5.5 L37.5,25 Q37.5,31 32.5,34.5 Q27,38 20,40.5 Q13,38 7.5,34.5 Q2.5,31 2.5,25 L2.5,5.5 Q2.5,4.5 3.5,4.5 Z" fill="none" stroke="#b8955a" stroke-width="0.4"/><text x="20" y="26" text-anchor="middle" font-family="'Cormorant Garamond','Georgia',serif" font-size="16" font-weight="700" letter-spacing="0.5" fill="url(#fsGV)">HM</text><line x1="50" y1="8" x2="50" y2="40" stroke="#b8955a" stroke-width="0.5" opacity="0.25"/><text x="60" y="30" font-family="'Cormorant Garamond','Georgia',serif" font-size="19" font-weight="600" letter-spacing="5" fill="currentColor">HERITAGE MOTOR</text></svg></a>
   <ul class="footer-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/#platform">Platform</a></li>
-    <li><a href="/#pricing">Pricing</a></li>
-    <li><a href="/contact">Contact</a></li>
-    <li><a href="/privacy">Privacy</a></li>
-    <li><a href="/legal">Legal</a></li>
+    <li><a href="/" data-i18n="nav.home">Home</a></li>
+    <li><a href="/#platform" data-i18n="nav.platform">Platform</a></li>
+    <li><a href="/#pricing" data-i18n="nav.pricing">Pricing</a></li>
+    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+    <li><a href="/privacy" data-i18n="nav.privacy">Privacy</a></li>
+    <li><a href="/legal" data-i18n="nav.legal">Legal</a></li>
   </ul>
   <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
 </footer>
 
+<script>
+  var i18n = {
+    fr: {
+      'nav.platform': 'Plateforme', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
+      'nav.cta': 'Demander une d\u00e9mo', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales'
+    },
+    de: {
+      'nav.platform': 'Plattform', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
+      'nav.cta': 'Demo anfragen', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum'
+    }
+  };
+
+  document.querySelectorAll('[data-i18n]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
+
+  var currentLang = 'en';
+  function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    var dict = i18n[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        // Safe: values come from hardcoded i18n dict above, not user input
+        el.textContent = dict[key];
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    document.querySelectorAll('[data-lang-block]').forEach(function(el) {
+      el.hidden = el.getAttribute('data-lang-block') !== lang;
+    });
+    document.getElementById('langCurrent').textContent = lang.toUpperCase();
+    document.querySelectorAll('.lang-opt').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+    document.getElementById('langSwitch').classList.remove('open');
+    try { localStorage.setItem('hm-lang', lang); } catch(e) {}
+  }
+
+  var langBtn = document.getElementById('langSwitch').querySelector('.lang-btn');
+  function closeLangDrop() {
+    document.getElementById('langSwitch').classList.remove('open');
+    langBtn.setAttribute('aria-expanded', 'false');
+  }
+  langBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var sw = document.getElementById('langSwitch');
+    var isOpen = sw.classList.toggle('open');
+    langBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.querySelectorAll('.lang-opt').forEach(function(btn) {
+    btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
+  });
+  document.addEventListener('click', closeLangDrop);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLangDrop(); });
+  try { var saved = localStorage.getItem('hm-lang'); if (saved && i18n[saved]) setLang(saved); } catch(e) {}
+</script>
 </body>
 </html>
