@@ -183,13 +183,13 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 		}
 	}
 
-	var metadataJSON []byte
-	if req.Metadata != nil {
-		var err error
-		metadataJSON, err = json.Marshal(req.Metadata)
-		if err != nil {
-			return nil, &domain.ErrValidation{Field: "metadata", Message: "invalid metadata"}
-		}
+	metadata := req.Metadata
+	if metadata == nil {
+		metadata = map[string]interface{}{}
+	}
+	metadataJSON, err := json.Marshal(metadata)
+	if err != nil {
+		return nil, &domain.ErrValidation{Field: "metadata", Message: "invalid metadata"}
 	}
 
 	if req.PhotoKeys == nil {
@@ -202,17 +202,14 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 		VehicleID:  req.VehicleID,
 		UserID:     userID,
 		EventType:  req.EventType,
-		Metadata:   req.Metadata,
+		Metadata:   metadata,
 		PhotoKeys:  req.PhotoKeys,
 		Notes:      req.Notes,
 		OccurredAt: time.Now().UTC(),
 		Source:     "manual",
 	}
-	if ev.Metadata == nil {
-		ev.Metadata = make(map[string]interface{})
-	}
 
-	_, err := db.Conn(ctx, s.pool).Exec(ctx,
+	_, err = db.Conn(ctx, s.pool).Exec(ctx,
 		`INSERT INTO events (id, tenant_id, vehicle_id, user_id, event_type, metadata, photo_keys, notes, occurred_at, source)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
 		ev.ID, ev.TenantID, ev.VehicleID, ev.UserID,

@@ -133,11 +133,15 @@ func (h *Handler) Logout(c *fiber.Ctx) error {
 
 	// Extract current access token's jti and expiry for blacklisting.
 	jti := middleware.JTIFromCtx(c)
+	userID := middleware.UserIDFromCtx(c)
 	expiresAt := middleware.TokenExpiresAtFromCtx(c)
 
 	if err := h.service.Logout(c.UserContext(), req.RefreshToken, jti, expiresAt); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
+
+	// Invalidate the blacklist cache so the next request sees the blacklisted token immediately.
+	middleware.InvalidateBlacklistCache(jti, userID)
 
 	return c.Status(200).JSON(fiber.Map{"message": "logged out"})
 }

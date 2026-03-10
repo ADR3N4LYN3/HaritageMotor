@@ -30,6 +30,10 @@ type docListResp struct {
 	PerPage    int       `json:"per_page"`
 }
 
+// validPDF is a minimal byte sequence with the %PDF magic header so that
+// mimetype.DetectReader recognizes it as application/pdf.
+var validPDF = []byte("%PDF-1.4 fake pdf content for testing")
+
 // doMultipart creates a multipart request to POST /vehicles/:id/documents.
 func doMultipart(t *testing.T, env *testutil.Env, vehicleID uuid.UUID, token, docType, filename, mimeType string, fileContent []byte) *http.Response {
 	t.Helper()
@@ -93,8 +97,7 @@ func TestCreateDocument_Success(t *testing.T) {
 	token := env.AuthToken(t, userID, tenantID, "technician")
 	vehicleID := env.CreateVehicle(t, tenantID, "Porsche", "911", "Owner Doc")
 
-	fileContent := []byte("%PDF-1.4 fake pdf content for testing")
-	resp := doMultipart(t, env, vehicleID, token, "insurance", "policy.pdf", "application/pdf", fileContent)
+	resp := doMultipart(t, env, vehicleID, token, "insurance", "policy.pdf", "application/pdf", validPDF)
 	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
@@ -105,7 +108,7 @@ func TestCreateDocument_Success(t *testing.T) {
 	assert.Equal(t, "insurance", doc.DocType)
 	assert.Equal(t, "policy.pdf", doc.Filename)
 	assert.Equal(t, "application/pdf", doc.MimeType)
-	assert.Equal(t, int64(len(fileContent)), doc.SizeBytes)
+	assert.Equal(t, int64(len(validPDF)), doc.SizeBytes)
 }
 
 func TestCreateDocument_ViewerForbidden(t *testing.T) {
@@ -116,7 +119,7 @@ func TestCreateDocument_ViewerForbidden(t *testing.T) {
 	token := env.AuthToken(t, userID, tenantID, "viewer")
 	vehicleID := env.CreateVehicle(t, tenantID, "BMW", "M3", "Owner")
 
-	resp := doMultipart(t, env, vehicleID, token, "insurance", "policy.pdf", "application/pdf", []byte("fake"))
+	resp := doMultipart(t, env, vehicleID, token, "insurance", "policy.pdf", "application/pdf", validPDF)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 }
@@ -129,7 +132,7 @@ func TestCreateDocument_InvalidDocType(t *testing.T) {
 	token := env.AuthToken(t, userID, tenantID, "operator")
 	vehicleID := env.CreateVehicle(t, tenantID, "Audi", "R8", "Owner")
 
-	resp := doMultipart(t, env, vehicleID, token, "nonexistent_type", "file.pdf", "application/pdf", []byte("fake"))
+	resp := doMultipart(t, env, vehicleID, token, "nonexistent_type", "file.pdf", "application/pdf", validPDF)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 }
@@ -147,7 +150,7 @@ func TestDeleteDocument_AdminOnly(t *testing.T) {
 	vehicleID := env.CreateVehicle(t, tenantID, "Mercedes", "SLS", "Owner")
 
 	// Create a document as technician
-	createResp := doMultipart(t, env, vehicleID, techToken, "storage_contract", "contract.pdf", "application/pdf", []byte("fake"))
+	createResp := doMultipart(t, env, vehicleID, techToken, "storage_contract", "contract.pdf", "application/pdf", validPDF)
 	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
@@ -180,7 +183,7 @@ func TestListDocuments_CrossTenant_Empty(t *testing.T) {
 	tokenB := env.AuthToken(t, userB, tenantB, "admin")
 
 	// Create doc in tenant A
-	createResp := doMultipart(t, env, vehicleA, tokenA, "insurance", "policy.pdf", "application/pdf", []byte("secret"))
+	createResp := doMultipart(t, env, vehicleA, tokenA, "insurance", "policy.pdf", "application/pdf", validPDF)
 	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 

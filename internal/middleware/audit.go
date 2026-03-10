@@ -53,14 +53,17 @@ func AuditMiddleware(pool *pgxpool.Pool) fiber.Handler {
 		}
 
 		// Capture ALL values from the context BEFORE launching the goroutine.
+		// strings.Clone() is critical: Fiber/fasthttp return strings backed by
+		// pooled byte buffers via unsafe casts. Without Clone, the goroutine
+		// reads recycled memory → data race. Clone allocates fresh backing arrays.
 		entry := auditEntry{
 			tenantID:  TenantIDFromCtx(c),
 			userID:    UserIDFromCtx(c),
-			method:    method,
-			path:      path,
-			ip:        c.IP(),
-			userAgent: c.Get("User-Agent"),
-			requestID: requestID,
+			method:    strings.Clone(method),
+			path:      strings.Clone(path),
+			ip:        strings.Clone(c.IP()),
+			userAgent: strings.Clone(c.Get("User-Agent")),
+			requestID: requestID, // already a uuid.New().String() — owned by us
 		}
 
 		go func() {
