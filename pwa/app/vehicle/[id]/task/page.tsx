@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -35,13 +35,13 @@ export default function TaskPage() {
 
   const [completing, setCompleting] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState<{ task: Task } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [{ loading, success, error }, setStatus] = useReducer(
+    (s: { loading: boolean; success: { task: Task } | null; error: string | null }, a: Partial<{ loading: boolean; success: { task: Task } | null; error: string | null }>) => ({ ...s, ...a }),
+    { loading: false, success: null as { task: Task } | null, error: null as string | null }
+  );
 
   async function handleComplete(task: Task) {
-    setLoading(true);
-    setError(null);
+    setStatus({ loading: true, error: null });
 
     const payload = { task_id: task.id, notes: notes || undefined };
 
@@ -51,11 +51,11 @@ export default function TaskPage() {
         await pushAction({ type: "task", vehicle_id: id, payload, photos: [] });
         await refreshCount();
         if (navigator.vibrate) navigator.vibrate(100);
-        setSuccess({ task });
+        setStatus({ success: { task } });
       } catch {
-        setError("Failed to queue action offline");
+        setStatus({ error: "Failed to queue action offline" });
       } finally {
-        setLoading(false);
+        setStatus({ loading: false });
       }
       return;
     }
@@ -65,7 +65,7 @@ export default function TaskPage() {
         notes: notes || undefined,
       });
       if (navigator.vibrate) navigator.vibrate(100);
-      setSuccess({ task });
+      setStatus({ success: { task } });
       mutate();
     } catch (err: unknown) {
       // Network error — queue for offline sync
@@ -74,13 +74,13 @@ export default function TaskPage() {
           await pushAction({ type: "task", vehicle_id: id, payload, photos: [] });
           await refreshCount();
           if (navigator.vibrate) navigator.vibrate(100);
-          setSuccess({ task });
+          setStatus({ success: { task } });
           return;
         } catch { /* fall through */ }
       }
-      setError(err instanceof Error ? err.message : "Failed to complete task");
+      setStatus({ error: err instanceof Error ? err.message : "Failed to complete task" });
     } finally {
-      setLoading(false);
+      setStatus({ loading: false });
     }
   }
 
@@ -90,7 +90,7 @@ export default function TaskPage() {
         title="Task Completed"
         subtitle={`${success.task.title} — ${vehicle.make} ${vehicle.model}`}
         onDone={() => {
-          setSuccess(null);
+          setStatus({ success: null });
           setCompleting(null);
           setNotes("");
         }}
@@ -134,8 +134,8 @@ export default function TaskPage() {
           </h3>
           {tasksLoading ? (
             <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton h-16 rounded-xl" />
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="skeleton h-16 rounded-xl" />
               ))}
             </div>
           ) : tasksError ? (

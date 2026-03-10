@@ -88,7 +88,6 @@ export default function ScanPage() {
             onChange={(e) => setManualCode(e.target.value)}
             placeholder="Enter QR token..."
             className="w-full px-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-white/30 border border-white/20 focus:outline-none focus:ring-2 focus:ring-gold/50"
-            autoFocus
           />
           {error && (
             <p className="text-danger text-sm">{error}</p>

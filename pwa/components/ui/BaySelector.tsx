@@ -20,8 +20,8 @@ export function BaySelector({ bays, selectedBayId, onSelect, loading }: BaySelec
   if (loading) {
     return (
       <div className="space-y-2">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="skeleton h-14 rounded-xl" />
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="skeleton h-14 rounded-xl" />
         ))}
       </div>
     );

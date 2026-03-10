@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { AppShell } from "@/components/layout/AppShell";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { BaySelector } from "@/components/ui/BaySelector";
@@ -36,14 +37,14 @@ export default function MoveVehiclePage() {
 
   const [selectedBay, setSelectedBay] = useState<Bay | null>(null);
   const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [{ loading, success, error }, setStatus] = useReducer(
+    (s: { loading: boolean; success: boolean; error: string | null }, a: Partial<{ loading: boolean; success: boolean; error: string | null }>) => ({ ...s, ...a }),
+    { loading: false, success: false, error: null as string | null }
+  );
 
   async function handleMove() {
     if (!selectedBay) return;
-    setLoading(true);
-    setError(null);
+    setStatus({ loading: true, error: null });
 
     const payload = { bay_id: selectedBay.id, notes: notes || undefined };
 
@@ -53,11 +54,11 @@ export default function MoveVehiclePage() {
         await pushAction({ type: "move", vehicle_id: id, payload, photos: [] });
         await refreshCount();
         if (navigator.vibrate) navigator.vibrate(100);
-        setSuccess(true);
+        setStatus({ success: true });
       } catch {
-        setError("Failed to queue action offline");
+        setStatus({ error: "Failed to queue action offline" });
       } finally {
-        setLoading(false);
+        setStatus({ loading: false });
       }
       return;
     }
@@ -81,7 +82,7 @@ export default function MoveVehiclePage() {
       }
 
       if (navigator.vibrate) navigator.vibrate(100);
-      setSuccess(true);
+      setStatus({ success: true });
     } catch (err: unknown) {
       // Network error — queue for offline sync
       if (!(err instanceof ApiError)) {
@@ -89,13 +90,13 @@ export default function MoveVehiclePage() {
           await pushAction({ type: "move", vehicle_id: id, payload, photos: [] });
           await refreshCount();
           if (navigator.vibrate) navigator.vibrate(100);
-          setSuccess(true);
+          setStatus({ success: true });
           return;
         } catch { /* fall through */ }
       }
-      setError(err instanceof Error ? err.message : "Move failed");
+      setStatus({ error: err instanceof Error ? err.message : "Move failed" });
     } finally {
-      setLoading(false);
+      setStatus({ loading: false });
     }
   }
 
@@ -166,9 +167,8 @@ export default function MoveVehiclePage() {
             <div className="mt-3">
               <div className="grid grid-cols-3 gap-2">
                 {photos.map((photo, i) => (
-                  <div key={i} className="relative aspect-square rounded-lg overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={photo.preview} alt="" className="w-full h-full object-cover" />
+                  <div key={photo.preview} className="relative aspect-square rounded-lg overflow-hidden">
+                    <Image src={photo.preview} alt="" fill unoptimized sizes="33vw" className="object-cover" />
                     <button
                       onClick={() => removePhoto(i)}
                       aria-label="Supprimer la photo"

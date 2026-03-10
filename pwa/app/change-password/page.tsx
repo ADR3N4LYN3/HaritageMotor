@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
@@ -70,8 +70,10 @@ export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [{ loading, error }, setStatus] = useReducer(
+    (s: { loading: boolean; error: string | null }, a: Partial<{ loading: boolean; error: string | null }>) => ({ ...s, ...a }),
+    { loading: false, error: null as string | null }
+  );
 
   const strength = getStrength(newPassword);
   const hasLower = /[a-z]/.test(newPassword);
@@ -82,14 +84,14 @@ export default function ChangePasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    setStatus({ error: null });
 
     if (newPassword !== confirm) {
-      setError("Passwords do not match");
+      setStatus({ error: "Passwords do not match" });
       return;
     }
 
-    setLoading(true);
+    setStatus({ loading: true });
     try {
       await api.post("/auth/change-password", {
         current_password: currentPassword,
@@ -102,12 +104,12 @@ export default function ChangePasswordPage() {
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message);
+        setStatus({ error: err.message });
       } else {
-        setError("Failed to change password");
+        setStatus({ error: "Failed to change password" });
       }
     } finally {
-      setLoading(false);
+      setStatus({ loading: false });
     }
   }
 
@@ -140,11 +142,11 @@ export default function ChangePasswordPage() {
         {newPassword.length > 0 && (
           <div className="space-y-2">
             <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((i) => (
+              {[1, 2, 3, 4, 5].map((n) => (
                 <div
-                  key={i}
+                  key={n}
                   className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                    i <= strength ? strengthColors[strength] : "bg-white/[0.06]"
+                    n <= strength ? strengthColors[strength] : "bg-white/[0.06]"
                   }`}
                 />
               ))}

@@ -1,0 +1,18 @@
+{
+  "ignore": {
+    "rules": [
+      "next/no-img-element",
+      "@next/next/no-img-element"
+    ],
+    "files": [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "public/sw.js",
+      "public/workbox-*.js"
+    ]
+  },
+  "lint": true,
+  "deadCode": true,
+  "verbose": false
+}

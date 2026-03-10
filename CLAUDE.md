@@ -21,7 +21,8 @@
 | Conteneurisation | Docker + Docker Compose |
 | Reverse proxy | Caddy |
 | Analytics | Plausible CE v2.1.4 (self-hosted) |
-| Linter | golangci-lint (govet, errcheck, misspell) |
+| Linter Go | golangci-lint (govet, errcheck, misspell) |
+| Linter React | react-doctor (60+ lint rules, dead code detection) |
 | Module Go | `github.com/chriis/heritage-motor` |
 
 ## Architecture des dossiers
@@ -278,7 +279,7 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
   - `pwa/app/api/auth/logout/route.ts` — lit le cookie, forwarde au backend, supprime le cookie
   - `pwa/app/api/auth/set-token/route.ts` — stocke le refresh token en cookie httpOnly après login
 - **Next.js middleware** (`pwa/middleware.ts`) : redirige vers `/login` si le cookie `refresh_token` est absent
-- **AuthBootstrap** (`pwa/components/AuthBootstrap.tsx`) : au montage de l'app, appelle `/api/auth/refresh` pour restaurer la session depuis le cookie httpOnly. Hydrate le Zustand store (`accessToken` + `user`) avant le rendu des enfants. Affiche un spinner pendant le chargement.
+- **AuthBootstrap** (`pwa/components/AuthBootstrap.tsx`) : utilise `useSWR` pour restaurer la session depuis le cookie httpOnly au montage. Hydrate le Zustand store (`accessToken` + `user`) via `onSuccess` callback. Affiche un spinner pendant le chargement.
 
 ### Offline queue (IndexedDB)
 - `pwa/lib/offline-queue.ts` — CRUD IndexedDB (`pushAction`, `getAllActions`, `removeAction`, etc.)
@@ -306,13 +307,20 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **COUNT(*) OVER()** : toutes les requêtes list en single query (pas de COUNT séparé)
 
 ### Frontend (PWA)
+- **react-doctor 100/100** : score parfait (60+ lint rules + dead code detection)
+- **useReducer consolidation** : pages login, move, task, change-password, admin — réduit le nombre de hooks (ex: login 8→4)
+- **AuthBootstrap SWR** : remplace fetch-in-useEffect par useSWR (onSuccess callback, shouldRetryOnError: false)
+- **next/image partout** : `<Image fill unoptimized sizes="33vw">` pour les blob URLs camera (PhotoGrid, move page)
+- **Labels accessibilité** : wrapping `<label>` natif + `htmlFor`/`id` pour composants custom (Select)
 - **VehicleCard** : `React.memo()` pour éviter re-renders sur changement de filtre/recherche
 - **Dashboard** : `useCallback` pour `handleVehicleClick` (référence stable pour les VehicleCard mémoïsés)
 - **useCamera** : `URL.revokeObjectURL()` sur toutes les previews au unmount (empêche memory leaks sur sessions longues)
 - **useOfflineQueue** : effets séparés avec dépendances minimales (initial count runs once, listeners/polling séparés)
 
 ### Landing page (web/static/)
-- **Navigation** : `IntersectionObserver` au lieu de `scroll` event listener (1 callback/intersection vs ~60/sec)
+- **Navigation** : nav fixe (toujours visible, pas de hide-on-scroll), `IntersectionObserver` pour `.scrolled` background change
+- **CTAs variés** : 5 CTAs distincts (Schedule a Tour, See it in action, Discover the solution, Start a Conversation, Request a Demo) — évite le répétitif
+- **Nav mobile** : `white-space: nowrap` sur `.nav-cta` pour éviter le wrap sur 2 lignes
 - **Google Fonts** : 6 variantes au lieu de 11 (removed unused weights)
 - **SEO** : `og:image`, `twitter:image`, `preconnect` vers `fonts.gstatic.com`
 - **Smooth scroll** : cubic-bezier luxury easing (1200ms) pour les ancres `#contact`, clean URL via `replaceState`

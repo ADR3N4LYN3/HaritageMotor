@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface PhotoGridProps {
   photos: Array<{ file: File; preview: string }>;
   required?: number;
@@ -16,9 +18,8 @@ export function PhotoGrid({ photos, required, onRemove }: PhotoGridProps) {
       )}
       <div className="grid grid-cols-3 gap-2">
         {photos.map((photo, index) => (
-          <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photo.preview} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
+          <div key={photo.preview} className="relative aspect-square rounded-lg overflow-hidden">
+            <Image src={photo.preview} alt={`Photo ${index + 1}`} fill unoptimized sizes="33vw" className="object-cover" />
             {onRemove && (
               <button
                 onClick={() => onRemove(index)}

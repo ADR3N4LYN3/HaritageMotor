@@ -48,7 +48,7 @@ nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2)
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
 .nav-links a { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.6); transition: color 0.3s; font-weight: 500; }
 .nav-links a:hover { color: var(--gold); }
-.nav-cta { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
+.nav-cta { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; padding: 0.7rem 1.6rem; border-radius: 4px; font-weight: 500; transition: all 0.4s var(--ease-lux); border: 1px solid rgba(184,149,90,0.4); color: var(--gold); }
 .nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
 
 /* MAIN */
@@ -64,7 +64,7 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 
 .contact-details { display: flex; flex-direction: column; gap: 2rem; }
 .contact-item { display: flex; gap: 1.25rem; align-items: flex-start; }
-.contact-icon { width: 40px; height: 40px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.contact-icon { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .contact-icon svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .contact-item-label { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
 .contact-item-value { font-size: 0.88rem; color: rgba(255,255,255,0.5); font-weight: 300; line-height: 1.6; }
@@ -72,7 +72,7 @@ main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1f
 .contact-item-value a:hover { color: var(--gold); }
 
 /* RIGHT: FORM */
-.contact-form-wrap { background: var(--dark); border: 1px solid var(--border); padding: 3rem; }
+.contact-form-wrap { background: var(--dark); border: 1px solid var(--border); padding: 3rem; border-radius: 8px; }
 .form-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 0.5rem; }
 .form-subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.35); font-weight: 300; margin-bottom: 2rem; }
 
@@ -210,7 +210,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
         </div>
         <div class="form-group">
           <label for="vehicles">Fleet size</label>
-          <select id="vehicles" name="vehicles">
+          <select id="vehicles" name="vehicles" aria-hidden="true" tabindex="-1">
             <option value="" selected>Select range</option>
             <option value="1-25">1 – 25 vehicles</option>
             <option value="26-50">26 – 50 vehicles</option>
@@ -218,6 +218,19 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
             <option value="101-200">101 – 200 vehicles</option>
             <option value="200+">200+ vehicles</option>
           </select>
+          <div class="custom-select" id="custom-vehicles">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+              <span>Select range</span>
+              <svg class="custom-select-arrow" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="#8a8880" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option" data-value="1-25" role="option">1 – 25 vehicles</div>
+              <div class="custom-select-option" data-value="26-50" role="option">26 – 50 vehicles</div>
+              <div class="custom-select-option" data-value="51-100" role="option">51 – 100 vehicles</div>
+              <div class="custom-select-option" data-value="101-200" role="option">101 – 200 vehicles</div>
+              <div class="custom-select-option" data-value="200+" role="option">200+ vehicles</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group">
@@ -246,6 +259,42 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 </footer>
 
 <script>
+  /* --- Custom dropdown ------------------------------------------------- */
+  (function() {
+    var wrap = document.getElementById('custom-vehicles');
+    if (!wrap) return;
+    var trigger = wrap.querySelector('.custom-select-trigger');
+    var label = trigger.querySelector('span');
+    var opts = wrap.querySelectorAll('.custom-select-option');
+    var native = document.getElementById('vehicles');
+
+    trigger.addEventListener('click', function() {
+      var isOpen = wrap.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', isOpen);
+    });
+
+    opts.forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        opts.forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        label.textContent = opt.textContent;
+        trigger.classList.add('has-value');
+        native.value = opt.getAttribute('data-value');
+        wrap.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    trigger.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger.click(); }
+      if (e.key === 'Escape') { wrap.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrap.contains(e.target)) { wrap.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+
   document.getElementById('contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = e.target;

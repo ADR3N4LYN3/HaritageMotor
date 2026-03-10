@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useReducer, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { login, verifyMFA } from "@/lib/auth";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -15,12 +15,14 @@ function getRedirectPath(user: User): string {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [step, setStep] = useState<"login" | "mfa">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [mfaToken, setMfaToken] = useState("");
-  const [mfaCode, setMfaCode] = useState("");
+  const [{ email, password, showPassword }, setForm] = useReducer(
+    (s: { email: string; password: string; showPassword: boolean }, a: Partial<{ email: string; password: string; showPassword: boolean }>) => ({ ...s, ...a }),
+    { email: "", password: "", showPassword: false }
+  );
+  const [{ step, mfaToken, mfaCode }, setMfa] = useReducer(
+    (s: { step: "login" | "mfa"; mfaToken: string; mfaCode: string }, a: Partial<{ step: "login" | "mfa"; mfaToken: string; mfaCode: string }>) => ({ ...s, ...a }),
+    { step: "login" as "login" | "mfa", mfaToken: "", mfaCode: "" }
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mfaInputRef = useRef<HTMLInputElement>(null);
@@ -47,8 +49,7 @@ export default function LoginPage() {
     try {
       const result = await login(email.trim(), password);
       if (result.step === "mfa") {
-        setMfaToken(result.mfa_token);
-        setStep("mfa");
+        setMfa({ mfaToken: result.mfa_token, step: "mfa" });
       } else {
         router.push(getRedirectPath(result.user));
       }
@@ -75,7 +76,7 @@ export default function LoginPage() {
       } else {
         setError("Verification failed");
       }
-      setMfaCode("");
+      setMfa({ mfaCode: "" });
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,7 @@ export default function LoginPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setForm({ email: e.target.value })}
               placeholder="Email"
               required
               className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm"
@@ -108,7 +109,7 @@ export default function LoginPage() {
             <input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setForm({ password: e.target.value })}
               placeholder="Password"
               required
               minLength={8}
@@ -117,7 +118,7 @@ export default function LoginPage() {
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setForm({ showPassword: !showPassword })}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
               tabIndex={-1}
             >
@@ -154,10 +155,9 @@ export default function LoginPage() {
             pattern="[0-9]*"
             maxLength={6}
             value={mfaCode}
-            onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) => setMfa({ mfaCode: e.target.value.replace(/\D/g, "") })}
             placeholder="000000"
             className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-center text-2xl tracking-[0.5em] font-mono placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-gold/50"
-            autoFocus
           />
 
           {error && (
@@ -171,7 +171,7 @@ export default function LoginPage() {
           )}
 
           <button
-            onClick={() => { setStep("login"); setError(null); setMfaCode(""); }}
+            onClick={() => { setMfa({ step: "login", mfaCode: "" }); setError(null); }}
             className="w-full text-white/40 text-sm underline"
           >
             Back to login

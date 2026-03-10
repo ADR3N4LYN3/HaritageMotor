@@ -15,6 +15,7 @@ Application mobile-first (Progressive Web App) pour les opérateurs de facilitie
 | idb | IndexedDB wrapper (offline queue) |
 | @zxing/browser | Scan QR code via camera |
 | react-hook-form | Gestion formulaires |
+| react-doctor | Diagnostic React (60+ lint rules, dead code) |
 
 ## Lancement
 
@@ -24,6 +25,7 @@ npm install
 npm run dev     # http://localhost:3000
 npm run build   # Production build (standalone)
 npm run lint    # ESLint
+npm run doctor  # react-doctor diagnostics (score 100/100)
 ```
 
 Variable d'environnement requise :
@@ -147,7 +149,29 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
 | `Select` | `admin/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
 | `TenantRow` | `admin/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
-| `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via cookie httpOnly → `/api/auth/refresh` → Zustand. Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
+| `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via useSWR + cookie httpOnly → `/api/auth/refresh` → Zustand (onSuccess callback). Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
+
+## react-doctor (100/100)
+
+Le projet maintient un score de 100/100 sur react-doctor. Config dans `react-doctor.config.json`.
+
+```bash
+npm run doctor           # Score rapide
+npm run doctor:verbose   # Detail par fichier
+```
+
+### Regles appliquees
+
+| Regle | Pattern applique |
+|---|---|
+| useReducer consolidation | `const [{ a, b }, set] = useReducer((s, a) => ({...s, ...a}), init)` — remplace 3+ useState |
+| next/image obligatoire | `<Image fill unoptimized sizes="33vw">` pour blob URLs camera |
+| Labels accessibilite | `<label>` wrapping natif, `htmlFor`+`id` pour composants custom |
+| Pas d'autoFocus | Supprime sur inputs MFA/scan (probleme accessibilite) |
+| Keys stables | `key={photo.preview}` ou `key={item.id}`, jamais `key={index}` sur listes dynamiques |
+| Pas de dead code | Exports non utilises supprimes (`clearCompleted`, `Tenant` rendu local) |
+| fetch → SWR | AuthBootstrap utilise useSWR au lieu de fetch-in-useEffect |
+| redirect() | Admin page utilise `redirect()` de next/navigation au lieu de useEffect+router.replace |
 
 ## Docker
 

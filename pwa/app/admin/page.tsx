@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, useReducer } from "react";
+import { redirect, useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
@@ -13,25 +13,18 @@ import type {
 } from "@/lib/types";
 
 export default function AdminPage() {
-  const router = useRouter();
   const user = useAppStore((s) => s.user);
-  const [authorized, setAuthorized] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    if (user.role !== "superadmin") {
-      router.replace("/scan");
-    } else {
-      setAuthorized(true);
-    }
-  }, [user, router]);
-
-  if (!authorized) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#080704]">
         <div className="w-8 h-8 border-2 border-[#b8955a]/30 border-t-[#b8955a] rounded-full animate-spin" />
       </div>
     );
+  }
+
+  if (user.role !== "superadmin") {
+    redirect("/scan");
   }
 
   return (
@@ -209,17 +202,18 @@ function TenantRow({
   isEditing: boolean;
   onToggleEdit: () => void;
 }) {
-  const [name, setName] = useState(t.name);
-  const [plan, setPlan] = useState(t.plan);
-  const [status, setStatus] = useState(t.status);
-  const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [{ name, plan, status }, setForm] = useReducer(
+    (s: { name: string; plan: string; status: string }, a: Partial<{ name: string; plan: string; status: string }>) => ({ ...s, ...a }),
+    { name: t.name, plan: t.plan, status: t.status }
+  );
+  const [{ saving, deleting, confirmDelete, error }, setUi] = useReducer(
+    (s: { saving: boolean; deleting: boolean; confirmDelete: boolean; error: string | null }, a: Partial<{ saving: boolean; deleting: boolean; confirmDelete: boolean; error: string | null }>) => ({ ...s, ...a }),
+    { saving: false, deleting: false, confirmDelete: false, error: null as string | null }
+  );
 
   async function handleSave() {
-    setSaving(true);
-    setError(null);
+    setUi({ saving: true });
+    setUi({ error: null });
     try {
       const body: Record<string, string> = {};
       if (name !== t.name) body.name = name;
@@ -231,22 +225,22 @@ function TenantRow({
       mutate("/admin/dashboard");
       onToggleEdit();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Failed to update");
+      setUi({ error: err instanceof ApiError ? err.message : "Failed to update" });
     } finally {
-      setSaving(false);
+      setUi({ saving: false });
     }
   }
 
   async function handleDelete() {
-    setDeleting(true);
-    setError(null);
+    setUi({ deleting: true });
+    setUi({ error: null });
     try {
       await api.delete(`/admin/tenants/${t.id}`);
       mutate("/admin/tenants");
       mutate("/admin/dashboard");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Failed to delete");
-      setDeleting(false);
+      setUi({ error: err instanceof ApiError ? err.message : "Failed to delete" });
+      setUi({ deleting: false });
     }
   }
 
@@ -254,7 +248,10 @@ function TenantRow({
     <div className="bg-[#0c0b08] group hover:bg-[#0e0d0a] transition-colors duration-300">
       <div
         className="p-5 flex items-center justify-between cursor-pointer"
+        role="button"
+        tabIndex={0}
         onClick={onToggleEdit}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleEdit(); } }}
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-lg bg-gold/[0.08] border border-gold/[0.12] flex items-center justify-center shrink-0">
@@ -295,25 +292,25 @@ function TenantRow({
       {isEditing && (
         <div className="px-5 pb-5 pt-1 border-t border-white/[0.04]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className={labelClass}>Name</label>
+            <label className="block">
+              <span className={labelClass}>Name</span>
               <input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setForm({ name: e.target.value })}
                 className={inputClass}
               />
-            </div>
+            </label>
             <div>
-              <label className={labelClass}>Plan</label>
-              <Select value={plan} onChange={setPlan} options={[
+              <label htmlFor={`plan-${t.id}`} className={labelClass}>Plan</label>
+              <Select id={`plan-${t.id}`} value={plan} onChange={(v) => setForm({ plan: v })} options={[
                 { value: "starter", label: "Starter" },
                 { value: "pro", label: "Pro" },
                 { value: "enterprise", label: "Enterprise" },
               ]} />
             </div>
             <div>
-              <label className={labelClass}>Status</label>
-              <Select value={status} onChange={setStatus} options={[
+              <label htmlFor={`status-${t.id}`} className={labelClass}>Status</label>
+              <Select id={`status-${t.id}`} value={status} onChange={(v) => setForm({ status: v })} options={[
                 { value: "active", label: "Active" },
                 { value: "trial", label: "Trial" },
                 { value: "suspended", label: "Suspended" },
@@ -342,7 +339,7 @@ function TenantRow({
 
             {!confirmDelete ? (
               <button
-                onClick={(e) => { e.stopPropagation(); setConfirmDelete(true); }}
+                onClick={(e) => { e.stopPropagation(); setUi({ confirmDelete: true }); }}
                 className="text-red-400/40 text-xs tracking-wider uppercase hover:text-red-400/70 transition-colors"
               >
                 Delete
@@ -358,7 +355,7 @@ function TenantRow({
                   {deleting ? "Deleting..." : "Yes, delete"}
                 </button>
                 <button
-                  onClick={() => setConfirmDelete(false)}
+                  onClick={() => setUi({ confirmDelete: false })}
                   className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
                 >
                   No
@@ -393,11 +390,13 @@ function Select({
   onChange,
   options,
   placeholder,
+  id,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: SelectOption[];
   placeholder?: string;
+  id?: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -415,6 +414,7 @@ function Select({
   return (
     <div ref={ref} className="relative">
       <button
+        id={id}
         type="button"
         onClick={() => setOpen(!open)}
         className={`${inputClass} text-left flex items-center justify-between`}
@@ -453,11 +453,10 @@ function Select({
 }
 
 function CreateTenantForm({ onDone }: { onDone: () => void }) {
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [country, setCountry] = useState("FR");
-  const [timezone, setTimezone] = useState("Europe/Paris");
-  const [plan, setPlan] = useState("starter");
+  const [{ name, slug, country, timezone, plan }, setForm] = useReducer(
+    (s: { name: string; slug: string; country: string; timezone: string; plan: string }, a: Partial<{ name: string; slug: string; country: string; timezone: string; plan: string }>) => ({ ...s, ...a }),
+    { name: "", slug: "", country: "FR", timezone: "Europe/Paris", plan: "starter" }
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -486,38 +485,36 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
         New Tenant
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className={labelClass}>Facility name</label>
+        <label className="block">
+          <span className={labelClass}>Facility name</span>
           <input
             value={name}
             onChange={(e) => {
-              setName(e.target.value);
-              setSlug(
-                e.target.value
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, "-")
-                  .replace(/^-|-$/g, "")
-              );
+              const val = e.target.value;
+              setForm({
+                name: val,
+                slug: val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+              });
             }}
             placeholder="e.g. Monte Carlo Motors"
             required
             className={inputClass}
           />
-        </div>
-        <div>
-          <label className={labelClass}>Slug</label>
+        </label>
+        <label className="block">
+          <span className={labelClass}>Slug</span>
           <input
             value={slug}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => setForm({ slug: e.target.value })}
             placeholder="monte-carlo-motors"
             required
             pattern="[a-z0-9-]+"
             className={`${inputClass} font-mono`}
           />
-        </div>
+        </label>
         <div>
-          <label className={labelClass}>Plan</label>
-          <Select value={plan} onChange={setPlan} options={[
+          <label htmlFor="create-plan" className={labelClass}>Plan</label>
+          <Select id="create-plan" value={plan} onChange={(v) => setForm({ plan: v })} options={[
             { value: "starter", label: "Starter — 25 vehicles, 5 users, 20 bays" },
             { value: "pro", label: "Pro — 100 vehicles, 20 users, 100 bays" },
             { value: "enterprise", label: "Enterprise — unlimited" },
@@ -525,21 +522,21 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className={labelClass}>Country</label>
+        <label className="block">
+          <span className={labelClass}>Country</span>
           <input
             value={country}
-            onChange={(e) => setCountry(e.target.value.toUpperCase())}
+            onChange={(e) => setForm({ country: e.target.value.toUpperCase() })}
             placeholder="FR"
             required
             pattern="[A-Z]{2}"
             maxLength={2}
             className={`${inputClass} font-mono uppercase tracking-widest`}
           />
-        </div>
+        </label>
         <div>
-          <label className={labelClass}>Timezone</label>
-          <Select value={timezone} onChange={setTimezone} options={[
+          <label htmlFor="create-timezone" className={labelClass}>Timezone</label>
+          <Select id="create-timezone" value={timezone} onChange={(v) => setForm({ timezone: v })} options={[
             { value: "Europe/Paris", label: "Europe / Paris" },
             { value: "Europe/London", label: "Europe / London" },
             { value: "Europe/Berlin", label: "Europe / Berlin" },
@@ -575,11 +572,10 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
 function InviteSection() {
   const { data: tenants } =
     useSWR<PaginatedResponse<TenantWithStats>>("/admin/tenants");
-  const [tenantId, setTenantId] = useState("");
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState("admin");
+  const [{ tenantId, email, firstName, lastName, role }, setForm] = useReducer(
+    (s: { tenantId: string; email: string; firstName: string; lastName: string; role: string }, a: Partial<{ tenantId: string; email: string; firstName: string; lastName: string; role: string }>) => ({ ...s, ...a }),
+    { tenantId: "", email: "", firstName: "", lastName: "", role: "admin" }
+  );
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -599,9 +595,7 @@ function InviteSection() {
         role,
       });
       setResult(`Invitation sent to ${trimmedEmail}`);
-      setEmail("");
-      setFirstName("");
-      setLastName("");
+      setForm({ email: "", firstName: "", lastName: "" });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to invite");
     } finally {
@@ -619,17 +613,18 @@ function InviteSection() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Tenant</label>
+            <label htmlFor="invite-tenant" className={labelClass}>Tenant</label>
             <Select
+              id="invite-tenant"
               value={tenantId}
-              onChange={setTenantId}
+              onChange={(v) => setForm({ tenantId: v })}
               placeholder="Select tenant..."
               options={tenants?.data?.map((t) => ({ value: t.id, label: t.name })) ?? []}
             />
           </div>
           <div>
-            <label className={labelClass}>Role</label>
-            <Select value={role} onChange={setRole} options={[
+            <label htmlFor="invite-role" className={labelClass}>Role</label>
+            <Select id="invite-role" value={role} onChange={(v) => setForm({ role: v })} options={[
               { value: "admin", label: "Admin" },
               { value: "operator", label: "Operator" },
               { value: "technician", label: "Technician" },
@@ -638,37 +633,37 @@ function InviteSection() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className={labelClass}>First name</label>
+          <label className="block">
+            <span className={labelClass}>First name</span>
             <input
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => setForm({ firstName: e.target.value })}
               placeholder="John"
               required
               className={inputClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Last name</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Last name</span>
             <input
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => setForm({ lastName: e.target.value })}
               placeholder="Doe"
               required
               className={inputClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Email</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Email</span>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setForm({ email: e.target.value })}
               placeholder="john@example.com"
               required
               className={inputClass}
             />
-          </div>
+          </label>
         </div>
 
         {error && <p className="text-red-400/80 text-xs">{error}</p>}

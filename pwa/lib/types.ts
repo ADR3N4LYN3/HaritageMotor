@@ -82,7 +82,7 @@ export interface User {
   updated_at: string;
 }
 
-export interface Tenant {
+interface Tenant {
   id: string;
   name: string;
   slug: string;

@@ -120,8 +120,8 @@ export default function VehiclePage() {
           </h2>
           {eventsLoading ? (
             <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton h-16 rounded-xl" />
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="skeleton h-16 rounded-xl" />
               ))}
             </div>
           ) : events.length === 0 ? (

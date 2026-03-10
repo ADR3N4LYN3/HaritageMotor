@@ -53,12 +53,3 @@ export async function removeAction(id: string): Promise<void> {
   await db.delete(STORE_NAME, id);
 }
 
-export async function clearCompleted(): Promise<void> {
-  const db = await getDB();
-  const all = await db.getAll(STORE_NAME);
-  for (const action of all) {
-    if (action.status !== "pending" && action.status !== "syncing") {
-      await db.delete(STORE_NAME, action.id);
-    }
-  }
-}

@@ -74,8 +74,8 @@ export default function DashboardPage() {
         {/* Vehicle List */}
         {isLoading ? (
           <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <VehicleCardSkeleton key={i} />
+            {[1, 2, 3, 4].map((n) => (
+              <VehicleCardSkeleton key={n} />
             ))}
           </div>
         ) : error ? (
