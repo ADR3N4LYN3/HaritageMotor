@@ -139,6 +139,24 @@ The login page handles TOTP-based MFA:
 4. Auto-submits when 6 digits are entered
 5. On success, stores tokens and redirects to `/scan`
 
+### Cloudflare Turnstile (Anti-Bot)
+
+The login page includes a Cloudflare Turnstile widget (compact, dark theme) to prevent bot login attempts. Uses **auto-rendering** via a `cf-turnstile` div with `data-callback` pointing to a global function (`__hmTurnstileCb`) that stores the token in React state. The token is sent as `cf_turnstile_response` in the login request body.
+
+If `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is not set, the widget is not rendered and the token is not sent (dev mode — backend skips verification when `TURNSTILE_SECRET_KEY` is empty).
+
+### Logo in Standalone Mode
+
+The logo (`logo-crest-v2.png`) uses a **static import** to work in Next.js standalone Docker mode:
+
+```tsx
+import logoCrest from "@/public/logo-crest-v2.png";
+// ...
+<img src={logoCrest.src} alt="Heritage Motor" className="h-[88px] w-auto" />
+```
+
+In standalone mode, Next.js does NOT serve `public/` files directly. Static imports are bundled by webpack into `/_next/static/media/` which IS included in the standalone output. This pattern is used in both `login/page.tsx` and `components/layout/TopBar.tsx`.
+
 ## API Client
 
 `lib/api.ts` provides a typed HTTP client with automatic token refresh:
@@ -409,6 +427,7 @@ docker compose up -d app
 |----------|----------|------------|-------------|
 | `NEXT_PUBLIC_API_URL` | Yes | Yes (ARG) | Backend API base URL (e.g., `https://api.heritagemotor.app/api/v1`) |
 | `NEXT_PUBLIC_APP_URL` | No | Yes (ARG) | Frontend app URL (e.g., `https://app.heritagemotor.app`) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | No | Yes (ARG) | Cloudflare Turnstile site key for login anti-bot widget (if empty, widget not rendered) |
 
 ### PWA Manifest
 

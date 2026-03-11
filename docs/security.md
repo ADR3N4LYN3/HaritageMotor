@@ -182,7 +182,7 @@ Cloudflare Turnstile is used on public-facing endpoints to prevent bot abuse. A 
 
 | Layer | Mechanism | Behavior |
 |-------|-----------|----------|
-| Cloudflare Turnstile (invisible) | Token in `cf_turnstile_response`, verified server-side | If invalid → 403; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
+| Cloudflare Turnstile (compact widget) | Token in `cf_turnstile_response`, verified server-side | If invalid → 403; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
 | Rate limiting | 5 req / 15 min per IP | If exceeded → 429 |
 
 The PWA login page uses Turnstile **auto-rendering** via a `cf-turnstile` div with `data-callback` pointing to a global function that stores the token in React state. The widget auto-challenges on page load and the token is passed in the login request body as `cf_turnstile_response`. Requires `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (PWA build arg) and `TURNSTILE_SECRET_KEY` (backend env var).

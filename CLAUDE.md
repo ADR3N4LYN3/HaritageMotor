@@ -317,6 +317,8 @@ Utilisé comme `<img>` + texte "HERITAGE MOTOR" en Cormorant Garamond 600 à cô
 
 Fichier présent dans 3 répertoires : `web/static/`, `pwa/public/`, `video/public/`.
 
+**PWA standalone** : En mode standalone Docker, Next.js ne sert PAS les fichiers `public/` directement. Le logo doit être importé en static import (`import logoCrest from "@/public/logo-crest-v2.png"`) puis utilisé via `logoCrest.src` — webpack le bundle dans `/_next/static/media/`. Pattern utilisé dans `login/page.tsx` et `TopBar.tsx`.
+
 ## Hero Video (Remotion 4)
 
 Dossier `video/` — Remotion 4, 3 versions (v2/v3/v4). Clips Pexels (licence commerciale).
@@ -336,6 +338,10 @@ npm run render:v4     # → ../web/static/hero-bg.mp4
 - **Ne jamais écrire de password_hash en SQL brut** : utiliser exclusivement bcrypt cost 12 via le code Go (`$2a$12$`, 60 chars)
 - **Ne jamais conditionner le refresh sur token en mémoire** : Zustand est in-memory, le handler 401 doit toujours tenter le refresh via cookie httpOnly
 - **Cookie `user_role` éphémère** : posé au login uniquement, s'il expire → perte accès /admin jusqu'au re-login
+- **Caddy clean URLs** : utiliser `rewrite /privacy /privacy.html` au niveau top-level dans le bloc landing, PAS dans un `handle` (directive ordering). Après modif Caddyfile, toujours `docker compose up -d --force-recreate caddy`
+- **Turnstile hostname** : dans Cloudflare Dashboard, TOUS les hostnames où le widget est rendu doivent être listés (`heritagemotor.app` + `app.heritagemotor.app`). Sinon → 403
+- **Turnstile auto-rendering** : utiliser `cf-turnstile` div + `data-callback`, PAS `render=explicit` (race conditions). Le widget login est `compact` (visible), pas invisible
+- **Git LFS** : `hero-bg.mp4` tracké via LFS. `deploy.sh` fait `git lfs pull` automatiquement. Sans LFS installé sur le serveur → fichier pointeur au lieu de la vidéo
 
 ## Documentation détaillée
 
