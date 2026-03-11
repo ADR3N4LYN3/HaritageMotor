@@ -172,6 +172,24 @@ The landing page host additionally has X-Frame-Options, Referrer-Policy, and a r
 
 The PWA host additionally allows camera access (`Permissions-Policy: camera=(self)`) for QR scanning.
 
+### Clean URLs (Landing)
+
+The landing page host uses top-level `rewrite` directives for clean URLs:
+
+```caddy
+rewrite /contact /contact.html
+rewrite /privacy /privacy.html
+rewrite /legal /legal.html
+```
+
+**Important**: These must be top-level `rewrite` directives, not inside a `handle` block. Caddy's directive ordering within `handle` blocks can cause `rewrite` + `file_server` to fail silently. Top-level rewrites run before route matching and work reliably.
+
+### Caddy Container Caveats
+
+- The `Caddyfile` is bind-mounted into the container (`./Caddyfile:/etc/caddy/Caddyfile:ro`)
+- After changing the Caddyfile, `caddy reload` inside the container may not pick up changes due to Docker bind mount caching
+- **Always recreate the container** after Caddyfile changes: `docker compose up -d --force-recreate caddy`
+
 ## Deployment Steps
 
 ### Initial Setup
@@ -207,12 +225,15 @@ chmod +x deploy.sh
 ```
 
 It performs:
-1. `docker compose build` - Rebuilds images
-2. Configures `heritage_app` PostgreSQL role
-3. `docker compose run --rm api ./api migrate` - Runs database migrations
-4. `docker compose up -d` - Starts/restarts services
-5. `docker image prune -a -f` - Removes all unused images
-6. `docker builder prune -f` - Cleans Docker build cache
+1. `git lfs pull` - Downloads LFS-tracked assets (hero video, etc.)
+2. `docker compose build` - Rebuilds images
+3. Configures `heritage_app` PostgreSQL role
+4. `docker compose run --rm api ./api migrate` - Runs database migrations
+5. `docker compose up -d` - Starts/restarts services
+6. `docker image prune -a -f` - Removes all unused images
+7. `docker builder prune -f` - Cleans Docker build cache
+
+**Git LFS requirement**: The hero video (`web/static/hero-bg.mp4`) is tracked via Git LFS. Without `git lfs pull`, the file will be a tiny pointer file instead of the actual video. Install LFS on the server: `apt install git-lfs && git lfs install`.
 
 ### Updating
 

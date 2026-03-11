@@ -185,7 +185,15 @@ Cloudflare Turnstile is used on public-facing endpoints to prevent bot abuse. A 
 | Cloudflare Turnstile (invisible) | Token in `cf_turnstile_response`, verified server-side | If invalid → 403; if `TURNSTILE_SECRET_KEY` empty → skipped (dev mode) |
 | Rate limiting | 5 req / 15 min per IP | If exceeded → 429 |
 
-The PWA login page loads the Turnstile script with `render=explicit` and `size: "invisible"`. The widget auto-challenges on page load and passes the token to the login request. Requires `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (PWA) and `TURNSTILE_SECRET_KEY` (backend).
+The PWA login page uses Turnstile **auto-rendering** via a `cf-turnstile` div with `data-callback` pointing to a global function that stores the token in React state. The widget auto-challenges on page load and the token is passed in the login request body as `cf_turnstile_response`. Requires `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (PWA build arg) and `TURNSTILE_SECRET_KEY` (backend env var).
+
+```tsx
+// Auto-rendering approach (pwa/app/login/page.tsx)
+<Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
+<div className="cf-turnstile" data-sitekey={siteKey} data-callback="__hmTurnstileCb" data-theme="dark" data-size="compact" />
+```
+
+> **Explicit render vs auto-rendering**: The original `render=explicit` + `turnstile.render()` approach was unreliable (race conditions with script loading). Auto-rendering via the `cf-turnstile` CSS class is simpler and more robust.
 
 #### Contact Form (`POST /contact`)
 
@@ -196,6 +204,27 @@ The PWA login page loads the Turnstile script with `render=explicit` and `size: 
 | Rate limiting | 3 req / 15 min per IP | If exceeded → 429 |
 
 Turnstile verification is **fail-open** on network/decode errors (falls back to rate limiting).
+
+#### Turnstile Hostname Configuration
+
+In the Cloudflare Dashboard (Turnstile > Widget settings), **all hostnames** where the widget renders must be listed:
+
+- `heritagemotor.app` — landing page contact form
+- `app.heritagemotor.app` — PWA login page
+
+If a hostname is missing, Turnstile returns an invalid token and the backend responds with `403 bot verification failed`.
+
+#### CSP Requirements for Turnstile
+
+Hosts that render the Turnstile widget need these CSP directives:
+
+```
+script-src: https://challenges.cloudflare.com
+frame-src: https://challenges.cloudflare.com
+connect-src: https://challenges.cloudflare.com
+```
+
+Both the landing page and PWA Caddy blocks include these in their `Content-Security-Policy` headers.
 
 ### Upload Limiter
 
