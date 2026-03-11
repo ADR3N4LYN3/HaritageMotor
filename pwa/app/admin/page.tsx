@@ -5,6 +5,7 @@ import { redirect, useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
+import { useReveal } from "@/hooks/useReveal";
 import { logout } from "@/lib/auth";
 import type {
   DashboardStats,
@@ -17,8 +18,8 @@ export default function AdminPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#080704]">
-        <div className="w-8 h-8 border-2 border-[#b8955a]/30 border-t-[#b8955a] rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
       </div>
     );
   }
@@ -28,14 +29,14 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080704]">
-      {/* Subtle cross-hatch texture */}
-      <div className="fixed inset-0 opacity-[0.012] pointer-events-none" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8955a' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+    <div className="min-h-screen bg-black">
+      {/* Noise texture (same as landing hero::after) */}
+      <div className="fixed inset-0 opacity-[0.025] pointer-events-none" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
       }} />
 
       <Header />
-      <main className="relative max-w-6xl mx-auto px-6 lg:px-8 py-12 space-y-16">
+      <main className="relative max-w-6xl mx-auto px-6 lg:px-8 py-14 space-y-16">
         <StatsSection />
         <QuickLinks />
         <TenantsSection />
@@ -45,21 +46,28 @@ export default function AdminPage() {
   );
 }
 
-/* ─── Gold separator ─── */
+/* ─── Gold separator (landing style) ─── */
 function GoldRule() {
   return (
-    <div className="h-px bg-gradient-to-r from-gold/25 via-gold/10 to-transparent" />
+    <div className="gold-sep" />
   );
 }
 
-/* ─── Section heading ─── */
-function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
+/* ─── Section heading (landing style with tag + serif heading) ─── */
+function SectionHeading({ tag, title, action }: { tag?: string; title: string; action?: React.ReactNode }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-end justify-between">
-        <h2 className="text-2xl font-display font-semibold text-white/90 tracking-wide">
-          {title}
-        </h2>
+        <div>
+          {tag && (
+            <div className="section-tag mb-3">
+              <span>{tag}</span>
+            </div>
+          )}
+          <h2 className="text-3xl lg:text-4xl font-display font-light text-white tracking-wide leading-tight">
+            {title}
+          </h2>
+        </div>
         {action}
       </div>
       <GoldRule />
@@ -77,30 +85,31 @@ function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#080704]/80 border-b border-white/[0.06]">
+    <header className="sticky top-0 z-50 backdrop-blur-xl bg-black/80 border-b border-gold/10">
       <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold/80 to-gold/40 flex items-center justify-center">
-            <span className="text-[#080704] font-display font-bold text-sm">H</span>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold/60 to-gold-dk/40 flex items-center justify-center border border-gold/20">
+            <span className="text-black font-display font-semibold text-sm">H</span>
           </div>
           <div>
-            <h1 className="text-sm font-display font-semibold text-white/90 tracking-wider uppercase">
+            <h1 className="text-sm font-display font-light text-white/90 tracking-[0.2em] uppercase">
               Heritage Motor
             </h1>
-            <p className="text-white/30 text-[10px] tracking-[0.2em] uppercase">
+            <p className="text-gold/50 text-[10px] tracking-[0.25em] uppercase font-medium">
               Platform Administration
             </p>
           </div>
         </div>
         <div className="flex items-center gap-6">
           {user && (
-            <span className="text-white/30 text-xs">
+            <span className="text-white/25 text-xs tracking-wider">
               {user.email}
             </span>
           )}
           <button
             onClick={handleLogout}
-            className="text-white/40 text-xs tracking-wider uppercase hover:text-gold transition-colors duration-300"
+            className="text-white/30 text-xs tracking-[0.15em] uppercase hover:text-gold transition-colors duration-500"
+            style={{ transitionTimingFunction: "var(--ease-lux)" }}
           >
             Sign out
           </button>
@@ -112,6 +121,7 @@ function Header() {
 
 function StatsSection() {
   const { data } = useSWR<DashboardStats>("/admin/dashboard");
+  const revealRef = useReveal();
 
   const stats = [
     { label: "Tenants", value: data?.total_tenants ?? "-", sub: "registered" },
@@ -121,22 +131,22 @@ function StatsSection() {
   ];
 
   return (
-    <section>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
-        {stats.map((s) => (
+    <section ref={revealRef}>
+      <div className="reveal-up grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-xl overflow-hidden border border-white/[0.06]">
+        {stats.map((s, i) => (
           <div
             key={s.label}
-            className="bg-[#0c0b08] p-6 lg:p-8 group relative overflow-hidden"
+            className={`bg-dark-2 p-6 lg:p-8 group relative overflow-hidden reveal-up reveal-d${i + 1}`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative">
-              <p className="text-3xl lg:text-4xl font-display font-semibold text-white/90 tabular-nums">
+              <p className="text-3xl lg:text-4xl font-display font-light text-white/90 tabular-nums">
                 {s.value}
               </p>
-              <p className="text-[11px] tracking-[0.15em] uppercase text-gold/70 mt-2 font-medium">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-gold/60 mt-2 font-medium">
                 {s.label}
               </p>
-              <p className="text-white/20 text-[10px] mt-0.5">
+              <p className="text-white/15 text-[10px] mt-0.5 font-light">
                 {s.sub}
               </p>
             </div>
@@ -149,23 +159,28 @@ function StatsSection() {
 
 function QuickLinks() {
   const router = useRouter();
+  const revealRef = useReveal();
+
   return (
-    <section>
-      <div className="flex gap-3">
-        <button
-          onClick={() => router.push("/admin/qr-codes")}
-          className="flex-1 bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] hover:bg-white/[0.06] transition-colors text-left"
-        >
-          <p className="text-sm font-medium text-white/80">QR Codes</p>
-          <p className="text-xs text-white/30 mt-0.5">Print bay & vehicle QR codes</p>
-        </button>
-        <button
-          onClick={() => router.push("/bays")}
-          className="flex-1 bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] hover:bg-white/[0.06] transition-colors text-left"
-        >
-          <p className="text-sm font-medium text-white/80">Bays</p>
-          <p className="text-xs text-white/30 mt-0.5">Manage facility bays</p>
-        </button>
+    <section ref={revealRef}>
+      <div className="reveal-up flex gap-3">
+        {[
+          { href: "/admin/qr-codes", title: "QR Codes", sub: "Print bay & vehicle QR codes", icon: "qr" },
+          { href: "/bays", title: "Bays", sub: "Manage facility bays", icon: "bay" },
+          { href: "/dashboard", title: "Vehicles", sub: "Vehicle registry & fleet", icon: "car" },
+          { href: "/scan", title: "Scan", sub: "QR code quick lookup", icon: "scan" },
+        ].map((link) => (
+          <button
+            key={link.href}
+            onClick={() => router.push(link.href)}
+            className="flex-1 bg-white/[0.025] rounded-xl p-5 border border-white/[0.05] gold-border-top card-lift text-left group"
+          >
+            <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">
+              {link.title}
+            </p>
+            <p className="text-xs text-white/25 mt-1 font-light">{link.sub}</p>
+          </button>
+        ))}
       </div>
     </section>
   );
@@ -177,30 +192,35 @@ function TenantsSection() {
   );
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const revealRef = useReveal();
 
   return (
-    <section className="space-y-6">
-      <SectionHeading
-        title="Tenants"
-        action={
-          <button
-            onClick={() => setShowCreate(!showCreate)}
-            className="text-xs tracking-wider uppercase px-5 py-2.5 rounded-lg bg-gold/[0.08] text-gold/80 border border-gold/[0.12] hover:bg-gold/[0.15] hover:text-gold hover:border-gold/25 transition-all duration-300"
-          >
-            {showCreate ? "Cancel" : "New Tenant"}
-          </button>
-        }
-      />
+    <section className="space-y-6" ref={revealRef}>
+      <div className="reveal-up">
+        <SectionHeading
+          tag="Management"
+          title="Tenants"
+          action={
+            <button
+              onClick={() => setShowCreate(!showCreate)}
+              className="text-xs tracking-[0.15em] uppercase px-5 py-2.5 rounded-lg border border-gold/20 text-gold/70 hover:bg-gold hover:text-black hover:border-gold transition-all duration-500 relative overflow-hidden"
+              style={{ transitionTimingFunction: "var(--ease-lux)" }}
+            >
+              {showCreate ? "Cancel" : "New Tenant"}
+            </button>
+          }
+        />
+      </div>
 
       {showCreate && <CreateTenantForm onDone={() => setShowCreate(false)} />}
 
-      <div className="space-y-px rounded-xl overflow-hidden border border-white/[0.06]">
+      <div className="reveal-up reveal-d1 space-y-px rounded-xl overflow-hidden border border-white/[0.06]">
         {data?.data?.length === 0 && (
-          <div className="bg-[#0c0b08] py-16 text-center">
-            <p className="text-white/20 text-sm font-display italic">
+          <div className="bg-dark-2 py-16 text-center">
+            <p className="text-white/20 text-sm font-display font-light italic">
               No tenants yet
             </p>
-            <p className="text-white/10 text-xs mt-1">
+            <p className="text-white/10 text-xs mt-1 font-light">
               Create one to get started
             </p>
           </div>
@@ -270,7 +290,7 @@ function TenantRow({
   }
 
   return (
-    <div className="bg-[#0c0b08] group hover:bg-[#0e0d0a] transition-colors duration-300">
+    <div className="bg-dark-2 group hover:bg-[#161512] transition-colors duration-500" style={{ transitionTimingFunction: "var(--ease-lux)" }}>
       <div
         className="p-5 flex items-center justify-between cursor-pointer"
         role="button"
@@ -279,22 +299,22 @@ function TenantRow({
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleEdit(); } }}
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-gold/[0.08] border border-gold/[0.12] flex items-center justify-center shrink-0">
-            <span className="text-gold/60 font-display text-sm font-semibold">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/15 flex items-center justify-center shrink-0">
+            <span className="text-gold/60 font-display text-sm font-light">
               {t.name.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="font-medium text-sm text-white/80 group-hover:text-white/95 transition-colors">
+            <p className="font-display font-light text-sm text-white/80 group-hover:text-white/95 transition-colors tracking-wide">
               {t.name}
             </p>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-white/25 text-xs font-mono">{t.slug}</span>
+              <span className="text-white/20 text-xs font-mono">{t.slug}</span>
               <span className="text-white/10">|</span>
-              <span className="text-white/30 text-xs capitalize">{t.plan}</span>
+              <span className="text-white/25 text-xs capitalize font-light">{t.plan}</span>
               <span className="text-white/10">|</span>
-              <span className={`text-xs ${
-                t.status === "active" ? "text-emerald-400/70" : "text-amber-400/70"
+              <span className={`text-xs font-light ${
+                t.status === "active" ? "text-emerald-400/60" : "text-amber-400/60"
               }`}>
                 {t.status}
               </span>
@@ -306,7 +326,8 @@ function TenantRow({
           <StatPill value={t.vehicle_count} label="vehicles" />
           <StatPill value={t.bay_count} label="bays" />
           <svg
-            className={`w-4 h-4 text-white/20 transition-transform duration-200 ${isEditing ? "rotate-180" : ""}`}
+            className={`w-4 h-4 text-white/15 transition-transform duration-300 ${isEditing ? "rotate-180" : ""}`}
+            style={{ transitionTimingFunction: "var(--ease-lux)" }}
             fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -343,20 +364,21 @@ function TenantRow({
             </div>
           </div>
 
-          {error && <p className="text-red-400/80 text-xs mt-3">{error}</p>}
+          {error && <p className="text-red-400/80 text-xs mt-3 font-light">{error}</p>}
 
           <div className="flex items-center justify-between mt-5">
             <div className="flex items-center gap-3">
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-5 py-2 rounded-lg bg-gold text-[#080704] text-xs font-semibold tracking-wider uppercase hover:bg-gold/90 disabled:opacity-40 transition-all duration-300"
+                className="px-5 py-2 rounded-lg bg-gold text-black text-xs font-semibold tracking-[0.15em] uppercase hover:bg-gold-lt disabled:opacity-40 transition-all duration-500"
+                style={{ transitionTimingFunction: "var(--ease-lux)" }}
               >
                 {saving ? "Saving..." : "Save"}
               </button>
               <button
                 onClick={onToggleEdit}
-                className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
+                className="text-white/25 text-xs tracking-[0.12em] uppercase hover:text-white/50 transition-colors duration-300"
               >
                 Cancel
               </button>
@@ -365,23 +387,23 @@ function TenantRow({
             {!confirmDelete ? (
               <button
                 onClick={(e) => { e.stopPropagation(); setUi({ confirmDelete: true }); }}
-                className="text-red-400/40 text-xs tracking-wider uppercase hover:text-red-400/70 transition-colors"
+                className="text-red-400/30 text-xs tracking-[0.12em] uppercase hover:text-red-400/60 transition-colors duration-300"
               >
                 Delete
               </button>
             ) : (
               <div className="flex items-center gap-3">
-                <span className="text-red-400/60 text-xs">Confirm?</span>
+                <span className="text-red-400/50 text-xs font-light">Confirm?</span>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-semibold tracking-wider uppercase border border-red-500/20 hover:bg-red-500/30 disabled:opacity-40 transition-all"
+                  className="px-4 py-1.5 rounded-lg bg-red-500/15 text-red-400/80 text-xs font-medium tracking-wider uppercase border border-red-500/15 hover:bg-red-500/25 disabled:opacity-40 transition-all duration-300"
                 >
                   {deleting ? "Deleting..." : "Yes, delete"}
                 </button>
                 <button
                   onClick={() => setUi({ confirmDelete: false })}
-                  className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
+                  className="text-white/25 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
                 >
                   No
                 </button>
@@ -397,16 +419,16 @@ function TenantRow({
 function StatPill({ value, label }: { value: number; label: string }) {
   return (
     <div className="text-right">
-      <p className="text-sm font-display text-white/60 tabular-nums">{value}</p>
-      <p className="text-[10px] text-white/20 tracking-wider uppercase">{label}</p>
+      <p className="text-sm font-display font-light text-white/50 tabular-nums">{value}</p>
+      <p className="text-[10px] text-white/15 tracking-[0.12em] uppercase">{label}</p>
     </div>
   );
 }
 
 const inputClass =
-  "w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white/90 text-sm placeholder:text-white/20 focus:outline-none focus:border-gold/30 focus:bg-white/[0.05] transition-all duration-200";
+  "w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06] text-white/90 text-sm font-light placeholder:text-white/15 focus:outline-none focus:border-gold/30 focus:bg-white/[0.05] transition-all duration-300";
 
-const labelClass = "block text-[10px] tracking-[0.15em] uppercase text-white/30 mb-1.5";
+const labelClass = "block text-[10px] tracking-[0.15em] uppercase text-gold/40 mb-1.5 font-medium";
 
 type SelectOption = { value: string; label: string };
 
@@ -444,11 +466,12 @@ function Select({
         onClick={() => setOpen(!open)}
         className={`${inputClass} text-left flex items-center justify-between`}
       >
-        <span className={selected ? "text-white/90" : "text-white/20"}>
+        <span className={selected ? "text-white/90" : "text-white/15"}>
           {selected?.label ?? placeholder ?? "Select..."}
         </span>
         <svg
-          className={`w-4 h-4 text-white/20 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-white/15 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          style={{ transitionTimingFunction: "var(--ease-lux)" }}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -456,16 +479,16 @@ function Select({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-white/[0.08] bg-[#0e0d0a] shadow-xl shadow-black/40 overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-white/[0.08] bg-dark shadow-xl shadow-black/50 overflow-hidden">
           {options.map((o) => (
             <button
               key={o.value}
               type="button"
               onClick={() => { onChange(o.value); setOpen(false); }}
-              className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-150 ${
+              className={`w-full text-left px-4 py-2.5 text-sm font-light transition-colors duration-200 ${
                 o.value === value
-                  ? "bg-gold/[0.1] text-gold"
-                  : "text-white/70 hover:bg-white/[0.04] hover:text-white/90"
+                  ? "bg-gold/[0.08] text-gold"
+                  : "text-white/60 hover:bg-white/[0.04] hover:text-white/90"
               }`}
             >
               {o.label}
@@ -504,9 +527,9 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[#0c0b08] border border-white/[0.06] rounded-xl p-6 space-y-5"
+      className="bg-dark-2 border border-white/[0.06] gold-border-top rounded-xl p-6 space-y-5"
     >
-      <p className="text-[10px] tracking-[0.15em] uppercase text-gold/50 font-medium">
+      <p className="text-[10px] tracking-[0.2em] uppercase text-gold/50 font-medium">
         New Tenant
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -573,19 +596,20 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
           ]} />
         </div>
       </div>
-      {error && <p className="text-red-400/80 text-xs">{error}</p>}
+      {error && <p className="text-red-400/80 text-xs font-light">{error}</p>}
       <div className="flex items-center gap-4 pt-1">
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-2.5 rounded-lg bg-gold text-[#080704] text-xs font-semibold tracking-wider uppercase hover:bg-gold/90 disabled:opacity-40 transition-all duration-300"
+          className="px-6 py-2.5 rounded-lg bg-gold text-black text-xs font-semibold tracking-[0.15em] uppercase hover:bg-gold-lt disabled:opacity-40 transition-all duration-500"
+          style={{ transitionTimingFunction: "var(--ease-lux)" }}
         >
           {loading ? "Creating..." : "Create Tenant"}
         </button>
         <button
           type="button"
           onClick={onDone}
-          className="text-white/30 text-xs tracking-wider uppercase hover:text-white/50 transition-colors"
+          className="text-white/25 text-xs tracking-[0.12em] uppercase hover:text-white/50 transition-colors duration-300"
         >
           Cancel
         </button>
@@ -604,6 +628,7 @@ function InviteSection() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const revealRef = useReveal();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -629,12 +654,14 @@ function InviteSection() {
   }
 
   return (
-    <section className="space-y-6">
-      <SectionHeading title="Invite User" />
+    <section className="space-y-6" ref={revealRef}>
+      <div className="reveal-up">
+        <SectionHeading tag="Onboarding" title="Invite User" />
+      </div>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-[#0c0b08] border border-white/[0.06] rounded-xl p-6 space-y-5"
+        className="reveal-up reveal-d1 bg-dark-2 border border-white/[0.06] gold-border-top rounded-xl p-6 space-y-5"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -691,22 +718,23 @@ function InviteSection() {
           </label>
         </div>
 
-        {error && <p className="text-red-400/80 text-xs">{error}</p>}
+        {error && <p className="text-red-400/80 text-xs font-light">{error}</p>}
         {result && (
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
-              <svg className="w-2.5 h-2.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <div className="w-4 h-4 rounded-full bg-emerald-500/15 flex items-center justify-center">
+              <svg className="w-2.5 h-2.5 text-emerald-400/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <p className="text-emerald-400/80 text-xs">{result}</p>
+            <p className="text-emerald-400/70 text-xs font-light">{result}</p>
           </div>
         )}
 
         <button
           type="submit"
           disabled={loading || !tenantId}
-          className="px-6 py-2.5 rounded-lg bg-gold text-[#080704] text-xs font-semibold tracking-wider uppercase hover:bg-gold/90 disabled:opacity-40 transition-all duration-300"
+          className="px-6 py-2.5 rounded-lg bg-gold text-black text-xs font-semibold tracking-[0.15em] uppercase hover:bg-gold-lt disabled:opacity-40 transition-all duration-500"
+          style={{ transitionTimingFunction: "var(--ease-lux)" }}
         >
           {loading ? "Sending..." : "Send Invitation"}
         </button>

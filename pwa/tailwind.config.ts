@@ -9,7 +9,11 @@ const config: Config = {
     extend: {
       colors: {
         black: "#0e0d0b",
+        dark: "#1a1916",
+        "dark-2": "#141310",
         gold: "#b8955a",
+        "gold-lt": "#d4b07a",
+        "gold-dk": "#96773e",
         white: "#faf9f7",
         success: "#22c55e",
         warning: "#f59e0b",

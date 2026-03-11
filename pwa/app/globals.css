@@ -4,8 +4,13 @@
 
 :root {
   --black: #0e0d0b;
+  --dark: #1a1916;
+  --dark-2: #141310;
   --gold: #b8955a;
+  --gold-lt: #d4b07a;
+  --gold-dk: #96773e;
   --white: #faf9f7;
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
@@ -61,6 +66,72 @@ body {
 
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Luxury transitions */
+.lux-transition {
+  transition-timing-function: var(--ease-lux);
+}
+
+/* Reveal animations (scroll-triggered via IntersectionObserver) */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s var(--ease-lux), transform 0.9s var(--ease-lux);
+}
+.reveal-up.visible {
+  opacity: 1;
+  transform: none;
+}
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
+.reveal-d6 { transition-delay: 0.6s; }
+
+/* Gold separator */
+.gold-sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.25;
+}
+
+/* Card lift on hover */
+.card-lift {
+  transition: transform 0.5s var(--ease-lux), box-shadow 0.5s var(--ease-lux), border-color 0.5s var(--ease-lux);
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 30px rgba(184,149,90,0.04);
+}
+
+/* Section tag with gold lines (like landing) */
+.section-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+.section-tag::before,
+.section-tag::after {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.35;
+}
+
+/* Gold top border accent */
+.gold-border-top {
+  border-top: 2px solid rgba(184,149,90,0.35);
+}
+.gold-border-top:hover {
+  border-top-color: var(--gold);
 }
 
 /* QR code print styles */
