@@ -61,9 +61,11 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return c.Status(422).JSON(handler.ValidationError(err))
 	}
 
-	// Verify Turnstile token (skip if not configured — dev mode)
-	if err := h.turnstile.Verify(c.UserContext(), req.TurnstileResponse, c.IP()); err != nil {
-		return c.Status(403).JSON(fiber.Map{"error": "bot verification failed"})
+	// Verify Turnstile token if provided (rate limiter protects login even without it)
+	if req.TurnstileResponse != "" {
+		if err := h.turnstile.Verify(c.UserContext(), req.TurnstileResponse, c.IP()); err != nil {
+			return c.Status(403).JSON(fiber.Map{"error": "bot verification failed"})
+		}
 	}
 
 	login, mfaPending, err := h.service.Login(c.UserContext(), req.Email, req.Password)

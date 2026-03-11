@@ -2,6 +2,7 @@
 
 import { useAppStore } from "@/store/app.store";
 import { SyncBadge } from "../ui/SyncBadge";
+import logoCrest from "@/public/logo-crest-v2.png";
 
 export function TopBar() {
   const user = useAppStore((s) => s.user);
@@ -11,7 +12,7 @@ export function TopBar() {
       <div className="flex items-center gap-3">
         {/* Mini crest */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-crest-v2.png" alt="HM" className="h-[30px] w-auto flex-shrink-0" />
+        <img src={logoCrest.src} alt="HM" className="h-[30px] w-auto flex-shrink-0" />
         <span className="font-display text-[13px] font-light tracking-[0.2em] uppercase text-gold">
           Heritage Motor
         </span>
