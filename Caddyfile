@@ -18,10 +18,14 @@ heritagemotor.app {
 		reverse_proxy api:8080
 	}
 
-	# Static landing files (clean URLs: /contact → /contact.html, etc.)
+	# Clean URLs: /contact → /contact.html, /privacy → /privacy.html, etc.
+	rewrite /contact /contact.html
+	rewrite /privacy /privacy.html
+	rewrite /legal /legal.html
+
+	# Static landing files
 	handle {
 		root * /srv/landing
-		try_files {path} {path}.html
 		file_server
 	}
 
