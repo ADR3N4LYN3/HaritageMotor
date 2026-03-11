@@ -125,6 +125,10 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 	return c.JSON(task)
 }
 
+type completeRequest struct {
+	Notes string `json:"notes,omitempty"`
+}
+
 func (h *Handler) Complete(c *fiber.Ctx) error {
 	tenantID := middleware.TenantIDFromCtx(c)
 	userID := middleware.UserIDFromCtx(c)
@@ -134,7 +138,11 @@ func (h *Handler) Complete(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid task id"})
 	}
 
-	if err := h.service.Complete(c.UserContext(), tenantID, userID, taskID); err != nil {
+	var req completeRequest
+	// Body is optional — ignore parse errors (empty body is valid)
+	_ = c.BodyParser(&req) //nolint:errcheck // body is optional
+
+	if err := h.service.Complete(c.UserContext(), tenantID, userID, taskID, req.Notes); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

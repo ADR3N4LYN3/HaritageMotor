@@ -335,7 +335,8 @@ func (s *Service) loadReportData(ctx context.Context, tenantID, vehicleID uuid.U
 	rows, err := conn.Query(ctx,
 		`SELECT id, tenant_id, vehicle_id, user_id, event_type, metadata, photo_keys, notes, occurred_at, source
 		 FROM events WHERE vehicle_id = $1 AND tenant_id = $2
-		 ORDER BY occurred_at ASC`,
+		 ORDER BY occurred_at ASC
+		 LIMIT 1000`,
 		vehicleID, tenantID,
 	)
 	if err != nil {
@@ -366,7 +367,8 @@ func (s *Service) loadReportData(ctx context.Context, tenantID, vehicleID uuid.U
 		 status, due_date, completed_at, completed_by, recurrence_days, next_due_date,
 		 created_at, updated_at
 		 FROM tasks WHERE vehicle_id = $1 AND tenant_id = $2 AND deleted_at IS NULL
-		 ORDER BY created_at ASC`,
+		 ORDER BY created_at ASC
+		 LIMIT 500`,
 		vehicleID, tenantID,
 	)
 	if err != nil {

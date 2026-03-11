@@ -34,7 +34,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false,
+  userScalable: true,
   themeColor: "#0e0d0b",
 };
 
@@ -45,7 +45,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} ${cormorant.variable} min-h-screen bg-white text-black antialiased`}>
+      <body className={`${dmSans.variable} ${cormorant.variable} min-h-screen bg-black text-white antialiased`}>
         <AppErrorBoundary>
           <AuthBootstrap>
             <SWRProvider>{children}</SWRProvider>

@@ -235,12 +235,15 @@ Applied by Caddy. Headers vary per host:
 |--------|:---:|:---:|:---:|
 | `Strict-Transport-Security` (HSTS) | `max-age=31536000; includeSubDomains; preload` | `max-age=31536000; includeSubDomains` | `max-age=31536000; includeSubDomains` |
 | `X-Content-Type-Options: nosniff` | Yes | Yes | Yes |
-| `X-Frame-Options: DENY` | Yes | — | — |
-| `Referrer-Policy: strict-origin-when-cross-origin` | Yes | — | — |
+| `X-Frame-Options: DENY` | Yes | Yes | Yes |
+| `Referrer-Policy: strict-origin-when-cross-origin` | Yes | Yes | Yes |
 | `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` | — | `camera=(self), microphone=()` |
+| `Content-Security-Policy` | Restrictive (self + Google Fonts + Turnstile + Plausible) | `default-src 'none'; frame-ancestors 'none'` | Restrictive (self + API) |
 | `-Server` (removed) | Yes | Yes | Yes |
 
 The PWA subdomain allows `camera=(self)` for QR scanning via the device camera.
+
+**Token Blacklist Cleanup**: A background goroutine runs every hour to purge expired entries from `token_blacklist` (`DELETE WHERE expires_at < NOW()`).
 
 ### Graceful Shutdown
 

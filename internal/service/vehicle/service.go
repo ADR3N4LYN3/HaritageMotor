@@ -431,7 +431,7 @@ func (s *Service) Move(ctx context.Context, tenantID, userID, vehicleID, toBayID
 }
 
 // Exit marks a vehicle as out, frees its bay, and records a vehicle_exit event.
-func (s *Service) Exit(ctx context.Context, tenantID, userID, vehicleID uuid.UUID, notes string) error {
+func (s *Service) Exit(ctx context.Context, tenantID, userID, vehicleID uuid.UUID, notes, recipientName string, checklist []string) error {
 	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
@@ -480,6 +480,12 @@ func (s *Service) Exit(ctx context.Context, tenantID, userID, vehicleID uuid.UUI
 	metadata := map[string]interface{}{}
 	if currentBayID != nil {
 		metadata["from_bay_id"] = currentBayID.String()
+	}
+	if recipientName != "" {
+		metadata["recipient_name"] = recipientName
+	}
+	if len(checklist) > 0 {
+		metadata["checklist"] = checklist
 	}
 	var eventNotes *string
 	if notes != "" {

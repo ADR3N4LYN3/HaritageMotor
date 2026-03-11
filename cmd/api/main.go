@@ -119,6 +119,24 @@ func main() {
 		}
 	}
 
+	// Start periodic cleanup of expired token blacklist entries.
+	if ownerPool != nil {
+		go func() {
+			ticker := time.NewTicker(1 * time.Hour)
+			defer ticker.Stop()
+			for range ticker.C {
+				ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+				tag, err := ownerPool.Exec(ctx, "DELETE FROM token_blacklist WHERE expires_at < NOW()")
+				cancel()
+				if err != nil {
+					log.Warn().Err(err).Msg("token blacklist cleanup failed")
+				} else if tag.RowsAffected() > 0 {
+					log.Info().Int64("deleted", tag.RowsAffected()).Msg("token blacklist cleanup")
+				}
+			}
+		}()
+	}
+
 	// S3 Storage
 	s3Client, err := storage.NewS3Client(
 		cfg.S3Endpoint, cfg.S3Bucket,

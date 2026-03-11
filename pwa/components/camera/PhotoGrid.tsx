@@ -23,7 +23,7 @@ export function PhotoGrid({ photos, required, onRemove }: PhotoGridProps) {
             {onRemove && (
               <button
                 onClick={() => onRemove(index)}
-                aria-label="Supprimer la photo"
+                aria-label="Remove photo"
                 className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs"
               >
                 ✕

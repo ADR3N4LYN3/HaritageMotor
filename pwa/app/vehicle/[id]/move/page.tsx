@@ -46,7 +46,7 @@ export default function MoveVehiclePage() {
     if (!selectedBay) return;
     setStatus({ loading: true, error: null });
 
-    const payload = { bay_id: selectedBay.id, notes: notes || undefined };
+    const payload = { bay_id: selectedBay.id, reason: notes || undefined };
 
     // Offline fallback — queue for later sync
     if (!navigator.onLine) {
@@ -171,7 +171,7 @@ export default function MoveVehiclePage() {
                     <Image src={photo.preview} alt="" fill unoptimized sizes="33vw" className="object-cover" />
                     <button
                       onClick={() => removePhoto(i)}
-                      aria-label="Supprimer la photo"
+                      aria-label="Remove photo"
                       className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs"
                     >
                       ✕

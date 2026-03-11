@@ -104,7 +104,7 @@ export function CameraCapture({ onCapture, multiple = false, label = "Take photo
           <img src={preview} alt="Captured" className="w-full aspect-video object-cover" />
           <button
             onClick={retake}
-            aria-label="Reprendre la photo"
+            aria-label="Retake photo"
             className="absolute top-2 right-2 bg-black/50 text-white p-2 rounded-full"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>

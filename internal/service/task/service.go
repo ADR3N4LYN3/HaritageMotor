@@ -256,7 +256,7 @@ func (s *Service) Update(ctx context.Context, tenantID, taskID uuid.UUID, req Up
 	return t, nil
 }
 
-func (s *Service) Complete(ctx context.Context, tenantID, userID, taskID uuid.UUID) error {
+func (s *Service) Complete(ctx context.Context, tenantID, userID, taskID uuid.UUID, notes string) error {
 	tx, err := db.Conn(ctx, s.pool).Begin(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to begin transaction")
@@ -313,10 +313,17 @@ func (s *Service) Complete(ctx context.Context, tenantID, userID, taskID uuid.UU
 		"task_id":   taskID.String(),
 		"task_name": t.Title,
 	}
+	if notes != "" {
+		metadata["notes"] = notes
+	}
+	var eventNotes *string
+	if notes != "" {
+		eventNotes = &notes
+	}
 	_, err = tx.Exec(ctx,
-		`INSERT INTO events (tenant_id, vehicle_id, user_id, event_type, metadata, source)
-		 VALUES ($1, $2, $3, $4, $5, $6)`,
-		tenantID, t.VehicleID, userID, domain.EventTypeTaskCompleted, metadata, "system")
+		`INSERT INTO events (tenant_id, vehicle_id, user_id, event_type, metadata, notes, source)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		tenantID, t.VehicleID, userID, domain.EventTypeTaskCompleted, metadata, eventNotes, "system")
 	if err != nil {
 		log.Error().Err(err).Str("task_id", taskID.String()).Msg("failed to create task completion event")
 		return fmt.Errorf("creating completion event: %w", err)

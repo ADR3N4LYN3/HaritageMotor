@@ -268,7 +268,9 @@ func (h *Handler) Move(c *fiber.Ctx) error {
 
 // exitRequest is the JSON body for exiting a vehicle.
 type exitRequest struct {
-	Notes string `json:"notes,omitempty"`
+	Notes         string   `json:"notes,omitempty"`
+	RecipientName string   `json:"recipient_name,omitempty"`
+	Checklist     []string `json:"checklist,omitempty"`
 }
 
 // Exit handles POST /vehicles/:id/exit
@@ -285,7 +287,7 @@ func (h *Handler) Exit(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	if err := h.svc.Exit(c.UserContext(), tenantID, userID, vehicleID, req.Notes); err != nil {
+	if err := h.svc.Exit(c.UserContext(), tenantID, userID, vehicleID, req.Notes, req.RecipientName, req.Checklist); err != nil {
 		return handler.HandleServiceError(c, err)
 	}
 

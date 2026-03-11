@@ -51,14 +51,14 @@ func (v *Verifier) Verify(ctx context.Context, token, ip string) error {
 
 	req, err := http.NewRequestWithContext(ctx, "POST", verifyURL, bytes.NewReader(body))
 	if err != nil {
-		log.Error().Err(err).Msg("failed to create turnstile verify request")
+		log.Error().Err(err).Msg("turnstile: failed to create verify request — failing open")
 		return nil // fail-open on internal error
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := v.httpClient.Do(req)
 	if err != nil {
-		log.Error().Err(err).Msg("turnstile verification request failed")
+		log.Warn().Err(err).Str("ip", ip).Msg("turnstile: verification request failed — failing open, monitor for abuse")
 		return nil // fail-open on network error
 	}
 	defer resp.Body.Close() //nolint:errcheck // HTTP cleanup
@@ -67,7 +67,7 @@ func (v *Verifier) Verify(ctx context.Context, token, ip string) error {
 		Success bool `json:"success"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		log.Error().Err(err).Msg("failed to decode turnstile response")
+		log.Warn().Err(err).Str("ip", ip).Msg("turnstile: response decode failed — failing open, monitor for abuse")
 		return nil // fail-open on decode error
 	}
 

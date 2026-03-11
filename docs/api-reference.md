@@ -206,11 +206,13 @@ Move vehicle to a different bay. Frees old bay, marks new bay as occupied, creat
 ### POST /vehicles/:id/exit
 **Operator+ required.**
 
-Mark vehicle as out, free its bay, create `vehicle_exit` event.
+Mark vehicle as out, free its bay, create `vehicle_exit` event. The `recipient_name` and `checklist` are stored in the event metadata for chain-of-custody traceability.
 
 ```json
 {
-  "notes": "Picked up by owner"
+  "notes": "Picked up by owner",
+  "recipient_name": "John Doe (transporter)",
+  "checklist": ["exterior", "no_damage", "docs_handed"]
 }
 ```
 
@@ -366,7 +368,14 @@ Partial update.
 ### POST /tasks/:id/complete
 **Technician+ required.**
 
-Marks task as completed, records `task_completed` event. If the task has `recurrence_days`, a new pending task is automatically created with the next due date.
+Marks task as completed, records `task_completed` event with optional notes. If the task has `recurrence_days`, a new pending task is automatically created with the next due date.
+
+**Request (optional body):**
+```json
+{
+  "notes": "Checked all fluid levels, topped up coolant"
+}
+```
 
 **Response:** `{"status": "completed"}`
 

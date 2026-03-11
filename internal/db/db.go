@@ -30,6 +30,8 @@ func newPool(databaseURL string, maxConns, minConns int32, label string) (*pgxpo
 	config.MinConns = minConns
 	config.MaxConnLifetime = 2 * time.Hour
 	config.MaxConnIdleTime = 5 * time.Minute
+	config.MaxConnLifetimeJitter = 10 * time.Minute
+	config.HealthCheckPeriod = time.Minute
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
