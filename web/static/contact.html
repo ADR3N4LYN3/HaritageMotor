@@ -36,7 +36,7 @@
   --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body { background: var(--black); color: rgba(255,255,255,0.7); font-family: var(--sans); font-size: 15px; line-height: 1.6; overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 ::selection { background: rgba(184,149,90,0.25); color: #fff; }
@@ -67,6 +67,25 @@ nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2)
 .lang-opt:hover { background: rgba(184,149,90,0.08); color: #fff; }
 .lang-opt.active { color: var(--gold); font-weight: 500; }
 .flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+
+/* HAMBURGER */
+.nav-burger { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; z-index: 310; position: relative; }
+.nav-burger span { display: block; width: 22px; height: 1.5px; background: rgba(255,255,255,0.9); transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.nav-burger span + span { margin-top: 6px; }
+.nav-burger.open span:first-child { transform: rotate(45deg) translate(4px, 4px); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:last-child { transform: rotate(-45deg) translate(5px, -5px); }
+.mobile-drawer { position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: rgba(14,13,11,0.97); backdrop-filter: blur(24px); z-index: 300; transform: translateX(100%); transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; padding: 6rem 2rem 2rem; border-left: 1px solid rgba(184,149,90,0.1); }
+.mobile-drawer.open { transform: translateX(0); }
+.mobile-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 299; opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+.mobile-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+.mobile-drawer a { font-family: var(--sans); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; color: rgba(255,255,255,0.8); padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); transition: color 0.3s; display: block; }
+.mobile-drawer a:hover { color: var(--gold); }
+.mobile-drawer .drawer-cta { display: block; text-align: center; margin-top: 1.5rem; padding: 0.75rem 1.5rem; border: 1px solid rgba(184,149,90,0.4); color: var(--gold); font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 500; border-radius: 4px; transition: all 0.3s; }
+.mobile-drawer .drawer-cta:hover { background: var(--gold); color: var(--black); }
+.mobile-drawer .drawer-lang { display: flex; gap: 1rem; margin-top: auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
+.mobile-drawer .drawer-lang button { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.78rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 0.5rem; transition: color 0.3s; }
+.mobile-drawer .drawer-lang button:hover, .mobile-drawer .drawer-lang button.active { color: var(--gold); font-weight: 500; }
 
 /* MAIN */
 main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; max-width: 1280px; margin: 0 auto; width: 100%; align-items: start; }
@@ -161,6 +180,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 @media (max-width: 960px) {
   nav { padding: 1rem 1.5rem; }
   .nav-links { display: none; }
+  .lang-switch { display: none; }
+  .nav-burger { display: flex; flex-direction: column; }
+  .nav-cta { font-size: 0.62rem; padding: 0.45rem 0.9rem; letter-spacing: 0.1em; }
   main { padding: 3rem 1.5rem; grid-template-columns: 1fr; gap: 3rem; }
   .contact-form-wrap { padding: 2rem 1.5rem; }
   .form-row { grid-template-columns: 1fr; }
@@ -195,8 +217,21 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
         <button class="lang-opt" data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
       </div>
     </div>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
+
+<div class="mobile-drawer-overlay" id="drawerOverlay"></div>
+<div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Mobile menu">
+  <a href="/#platform" data-i18n="nav.platform">Platform</a>
+  <a href="/#pricing" data-i18n="nav.pricing">Pricing</a>
+  <a href="/contact" data-i18n="nav.cta">Contact</a>
+  <div class="drawer-lang">
+    <button class="active" data-lang="en">EN</button>
+    <button data-lang="fr">FR</button>
+    <button data-lang="de">DE</button>
+  </div>
+</div>
 
 <main>
   <div class="contact-info">
@@ -420,6 +455,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
     document.getElementById('langSwitch').classList.remove('open');
+    document.querySelectorAll('.drawer-lang button').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
     try { localStorage.setItem('hm-lang', lang); } catch(e) {}
   }
 
@@ -539,6 +577,28 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     });
   }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(function(el) { io.observe(el); });
+
+  /* --- Mobile hamburger drawer ----------------------------------------- */
+  var burger = document.getElementById('navBurger');
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('drawerOverlay');
+  function toggleDrawer(open) {
+    var isOpen = typeof open === 'boolean' ? open : !drawer.classList.contains('open');
+    drawer.classList.toggle('open', isOpen);
+    overlay.classList.toggle('open', isOpen);
+    burger.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+  burger.addEventListener('click', function() { toggleDrawer(); });
+  overlay.addEventListener('click', function() { toggleDrawer(false); });
+  drawer.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() { toggleDrawer(false); });
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') toggleDrawer(false); });
+  drawer.querySelectorAll('.drawer-lang button').forEach(function(btn) {
+    btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
+  });
 </script>
 </body>
 </html>
