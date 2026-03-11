@@ -81,7 +81,7 @@ app.heritagemotor.app {
 		Referrer-Policy "strict-origin-when-cross-origin"
 		# PWA: allow camera for QR scanning
 		Permissions-Policy "camera=(self), microphone=()"
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.your-objectstorage.com; connect-src 'self' https://api.heritagemotor.app"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.your-objectstorage.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://api.heritagemotor.app https://challenges.cloudflare.com"
 		-Server
 	}
 }
