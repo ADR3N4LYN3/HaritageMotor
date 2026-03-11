@@ -125,11 +125,11 @@ func main() {
 			ticker := time.NewTicker(1 * time.Hour)
 			defer ticker.Stop()
 			for range ticker.C {
-				ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-				tag, err := ownerPool.Exec(ctx, "DELETE FROM token_blacklist WHERE expires_at < NOW()")
-				cancel()
-				if err != nil {
-					log.Warn().Err(err).Msg("token blacklist cleanup failed")
+				cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 10*time.Second)
+				tag, cleanupErr := ownerPool.Exec(cleanupCtx, "DELETE FROM token_blacklist WHERE expires_at < NOW()")
+				cleanupCancel()
+				if cleanupErr != nil {
+					log.Warn().Err(cleanupErr).Msg("token blacklist cleanup failed")
 				} else if tag.RowsAffected() > 0 {
 					log.Info().Int64("deleted", tag.RowsAffected()).Msg("token blacklist cleanup")
 				}
