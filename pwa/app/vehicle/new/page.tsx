@@ -3,6 +3,7 @@
 import { useState, useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { useBays } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
@@ -124,9 +125,7 @@ export default function NewVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <h1 className="font-display text-2xl font-light tracking-wide text-white">
-          New Vehicle
-        </h1>
+        <PageHeader title="New Vehicle" backHref="/dashboard" />
 
         {/* Vehicle section */}
         <div>

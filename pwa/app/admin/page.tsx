@@ -163,22 +163,22 @@ function QuickLinks() {
 
   return (
     <section ref={revealRef}>
-      <div className="reveal-up flex gap-3">
+      <div className="reveal-up grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { href: "/admin/qr-codes", title: "QR Codes", sub: "Print bay & vehicle QR codes", icon: "qr" },
-          { href: "/bays", title: "Bays", sub: "Manage facility bays", icon: "bay" },
-          { href: "/dashboard", title: "Vehicles", sub: "Vehicle registry & fleet", icon: "car" },
-          { href: "/scan", title: "Scan", sub: "QR code quick lookup", icon: "scan" },
+          { href: "/admin/qr-codes", title: "QR Codes", sub: "Print QR sheets" },
+          { href: "/bays", title: "Bays", sub: "Manage facility" },
+          { href: "/dashboard", title: "Vehicles", sub: "Fleet registry" },
+          { href: "/scan", title: "Scan", sub: "Quick lookup" },
         ].map((link) => (
           <button
             key={link.href}
             onClick={() => router.push(link.href)}
-            className="flex-1 bg-white/[0.025] rounded-xl p-5 border border-white/[0.05] gold-border-top card-lift text-left group"
+            className="bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift text-left group"
           >
             <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">
               {link.title}
             </p>
-            <p className="text-xs text-white/25 mt-1 font-light">{link.sub}</p>
+            <p className="text-[10px] text-white/25 mt-1 font-light">{link.sub}</p>
           </button>
         ))}
       </div>

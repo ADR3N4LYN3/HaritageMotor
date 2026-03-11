@@ -107,11 +107,49 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Quick actions */}
+        <div className="reveal-up reveal-d2 grid grid-cols-2 gap-3">
+          <button
+            onClick={() => router.push("/scan")}
+            className="bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift text-left group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+                  <line x1="7" y1="12" x2="17" y2="12" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">Scan QR</p>
+                <p className="text-[10px] text-white/25 mt-0.5">Quick lookup</p>
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => router.push("/bays")}
+            className="bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift text-left group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18M9 21V9" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">Bays</p>
+                <p className="text-[10px] text-white/25 mt-0.5">Manage facility</p>
+              </div>
+            </div>
+          </button>
+        </div>
+
         {/* Gold separator */}
-        <div className="reveal-up reveal-d2 gold-sep" />
+        <div className="reveal-up reveal-d3 gold-sep" />
 
         {/* Search */}
-        <div className="reveal-up reveal-d2">
+        <div className="reveal-up reveal-d3">
           <input
             type="text"
             value={searchInput}
@@ -123,7 +161,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Status filter pills */}
-        <div className="reveal-up reveal-d3 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
+        <div className="reveal-up reveal-d4 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
           {statuses.map((s) => (
             <button
               key={s}

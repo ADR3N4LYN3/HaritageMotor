@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useAppStore } from "@/store/app.store";
 import useSWR from "swr";
 
@@ -47,15 +48,19 @@ export default function QRCodesPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="font-display text-2xl font-light tracking-wide text-white">QR Codes</h1>
-          <button
-            onClick={() => window.print()}
-            className="px-4 py-2 rounded-lg bg-gold text-white text-sm font-medium hover:bg-[#a07d48] transition-colors print:hidden"
-          >
-            Print
-          </button>
-        </div>
+        <PageHeader
+          title="QR Codes"
+          backHref="/admin"
+          action={
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-2 rounded-lg border border-gold/30 text-gold text-xs tracking-wider uppercase hover:bg-gold hover:text-black transition-all duration-500 print:hidden"
+              style={{ transitionTimingFunction: "var(--ease-lux)" }}
+            >
+              Print
+            </button>
+          }
+        />
 
         {/* Tab toggle */}
         <div className="flex gap-2 print:hidden">

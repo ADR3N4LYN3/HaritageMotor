@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { EventItem } from "@/components/ui/EventItem";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
@@ -100,26 +101,22 @@ export default function VehiclePage() {
     <AppShell>
       <div className="space-y-6">
         {/* Vehicle Header */}
-        <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/[0.06]">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="font-display text-2xl font-light tracking-wide text-white">
-                {displayName}
-              </h1>
-              {subtitle && (
-                <p className="text-white/50 mt-1">{subtitle}</p>
-              )}
-            </div>
-            {canOperate && (
-              <button
-                onClick={() => router.push(`/vehicle/${id}/edit`)}
-                className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors"
-              >
-                Edit
-              </button>
-            )}
-          </div>
-          <div className="flex items-center gap-3 mt-3">
+        <PageHeader
+          title={displayName}
+          subtitle={subtitle}
+          backHref="/dashboard"
+          action={canOperate ? (
+            <button
+              onClick={() => router.push(`/vehicle/${id}/edit`)}
+              className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/50 text-xs hover:text-gold hover:border-gold/30 transition-all duration-300"
+              style={{ transitionTimingFunction: "var(--ease-lux)" }}
+            >
+              Edit
+            </button>
+          ) : undefined}
+        />
+        <div className="bg-white/[0.025] rounded-xl p-5 border border-white/[0.05] gold-border-top">
+          <div className="flex items-center gap-3">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
               vehicle.status === "stored"
                 ? "bg-success/10 text-success"

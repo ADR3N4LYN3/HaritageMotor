@@ -3,6 +3,7 @@
 import { useState, useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
@@ -78,9 +79,7 @@ export default function NewBayPage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <h1 className="font-display text-2xl font-light tracking-wide text-white">
-          New Bay
-        </h1>
+        <PageHeader title="New Bay" backHref="/bays" />
 
         <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
           <input

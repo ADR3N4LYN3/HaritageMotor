@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { BaySelector } from "@/components/ui/BaySelector";
 import { SuccessScreen } from "@/components/ui/SuccessScreen";
@@ -129,16 +130,11 @@ export default function MoveVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Vehicle Info */}
-        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-          <h2 className="font-display text-xl font-light tracking-wide text-white">
-            {vehicle.make} {vehicle.model}
-          </h2>
-          <p className="text-sm text-white/50 mt-0.5">
-            {vehicle.color}
-            {vehicle.year ? ` · ${vehicle.year}` : ""}
-          </p>
-        </div>
+        <PageHeader
+          title="Move Vehicle"
+          subtitle={`${vehicle.make} ${vehicle.model}`}
+          backHref={`/vehicle/${id}`}
+        />
 
         {/* Bay Selection */}
         <div>

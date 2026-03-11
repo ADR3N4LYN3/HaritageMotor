@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useAppStore } from "@/store/app.store";
 import type { Bay } from "@/lib/types";
 import useSWR from "swr";
@@ -38,18 +39,20 @@ export default function BaysPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="font-display text-2xl font-light tracking-wide text-white">Bays</h1>
-          {canCreate && (
+        <PageHeader
+          title="Bays"
+          backHref="/dashboard"
+          action={canCreate ? (
             <button
               onClick={() => router.push("/bay/new")}
-              className="w-10 h-10 rounded-full bg-gold flex items-center justify-center text-white text-xl font-light hover:bg-[#a07d48] transition-colors active:scale-95"
+              className="w-10 h-10 rounded-full border border-gold/40 bg-transparent flex items-center justify-center text-gold text-xl font-light hover:bg-gold hover:text-black transition-all duration-500 active:scale-95"
+              style={{ transitionTimingFunction: "var(--ease-lux)" }}
               aria-label="Add bay"
             >
               +
             </button>
-          )}
-        </div>
+          ) : undefined}
+        />
 
         {/* Stats */}
         {!isLoading && !statusFilter && (

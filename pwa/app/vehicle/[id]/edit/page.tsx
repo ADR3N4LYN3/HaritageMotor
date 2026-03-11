@@ -3,6 +3,7 @@
 import { useState, useEffect, useReducer } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
@@ -126,9 +127,11 @@ export default function EditVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <h1 className="font-display text-2xl font-light tracking-wide text-white">
-          Edit Vehicle
-        </h1>
+        <PageHeader
+          title="Edit Vehicle"
+          subtitle={vehicle ? `${vehicle.make} ${vehicle.model}` : undefined}
+          backHref={`/vehicle/${id}`}
+        />
 
         {/* Status + bay (read-only) */}
         <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">

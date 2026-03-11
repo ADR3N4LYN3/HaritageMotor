@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { PhotoGrid } from "@/components/camera/PhotoGrid";
 import { SuccessScreen } from "@/components/ui/SuccessScreen";
@@ -143,17 +144,19 @@ export default function ExitVehiclePage() {
     return (
       <AppShell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+          <PageHeader
+            title="Vehicle Exit"
+            subtitle="This action is irreversible"
+            backHref={`/vehicle/${id}`}
+          />
           <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center">
             <svg className="w-8 h-8 text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div className="text-center">
-            <h2 className="font-display text-2xl font-light tracking-wide text-white">
-              Vehicle Exit
-            </h2>
-            <p className="text-white/50 mt-2 text-sm">
-              This action is irreversible. The vehicle will be marked as exited.
+            <p className="text-white/50 text-sm">
+              The vehicle will be marked as exited permanently.
             </p>
           </div>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] w-full">
@@ -181,12 +184,11 @@ export default function ExitVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-          <h2 className="font-display text-xl font-light tracking-wide text-white">
-            {vehicle.make} {vehicle.model}
-          </h2>
-          <p className="text-sm text-danger font-medium mt-1">Exit Procedure</p>
-        </div>
+        <PageHeader
+          title="Exit Procedure"
+          subtitle={`${vehicle.make} ${vehicle.model}`}
+          backHref={`/vehicle/${id}`}
+        />
 
         {/* Exit Photos */}
         <div>

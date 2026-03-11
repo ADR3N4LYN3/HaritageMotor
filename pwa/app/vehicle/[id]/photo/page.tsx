@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { PhotoGrid } from "@/components/camera/PhotoGrid";
 import { SuccessScreen } from "@/components/ui/SuccessScreen";
@@ -69,12 +70,11 @@ export default function PhotoPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-          <h2 className="font-display text-xl font-light tracking-wide text-white">
-            {vehicle ? `${vehicle.make} ${vehicle.model}` : "..."}
-          </h2>
-          <p className="text-sm text-white/50 mt-1">Add Photos</p>
-        </div>
+        <PageHeader
+          title="Add Photos"
+          subtitle={vehicle ? `${vehicle.make} ${vehicle.model}` : undefined}
+          backHref={`/vehicle/${id}`}
+        />
 
         <CameraCapture onCapture={addPhoto} multiple label="Take photo" />
 

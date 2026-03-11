@@ -3,6 +3,7 @@
 import { useState, useEffect, useReducer } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { useBay } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
@@ -135,9 +136,7 @@ export default function EditBayPage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <h1 className="font-display text-2xl font-light tracking-wide text-white">
-          Edit Bay
-        </h1>
+        <PageHeader title="Edit Bay" subtitle={bay?.code} backHref={`/bay/${id}`} />
 
         <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
           <input
