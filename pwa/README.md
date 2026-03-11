@@ -45,14 +45,22 @@ pwa/
     change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
     dashboard/page.tsx            Liste vehicules (recherche, filtres)
     scan/page.tsx                 Scanner QR -> detail vehicule/bay
-    admin/page.tsx                Superadmin (tenants CRUD, invitations, custom Select)
+    admin/
+      page.tsx                    Superadmin (tenants CRUD, invitations, quick links grid)
+      qr-codes/page.tsx           Generation et impression QR codes
+    vehicle/new/page.tsx          Onboarding nouveau vehicule
     vehicle/[id]/
       page.tsx                    Detail vehicule + timeline
+      edit/page.tsx               Edition vehicule
       move/page.tsx               Deplacement vers un bay
       exit/page.tsx               Sortie vehicule (photos + checklist)
       task/page.tsx               Completion de tache
       photo/page.tsx              Upload photos
-    bay/[id]/page.tsx             Detail bay + vehicules
+    bays/page.tsx                 Liste bays (filtres statut, stats)
+    bay/new/page.tsx              Creation bay
+    bay/[id]/
+      page.tsx                    Detail bay + vehicules
+      edit/page.tsx               Edition bay
     api/auth/
       refresh/route.ts            BFF : cookie -> backend -> access token
       set-token/route.ts          BFF : stocke refresh token en cookie httpOnly
@@ -66,7 +74,8 @@ pwa/
       BottomNav.tsx               Navigation mobile (Scan, Vehicules)
     ui/
       ActionButton.tsx            Bouton CTA (primary/danger/secondary)
-      VehicleCard.tsx             Carte vehicule (memo)
+      PageHeader.tsx              Header reutilisable (bouton retour, titre, subtitle, action slot)
+      VehicleCard.tsx             Carte vehicule (memo, gold-border-top, card-lift)
       EventItem.tsx               Evenement timeline
       BaySelector.tsx             Selection de bay (recherche + liste)
       SuccessScreen.tsx           Ecran de confirmation
@@ -84,6 +93,7 @@ pwa/
     useBay.ts                     SWR : GET /bays, GET /bays/:id
     useCamera.ts                  State photos + cleanup URLs
     useOfflineQueue.ts            Sync IndexedDB (online event + poll 30s)
+    useReveal.ts                  Animations reveal au scroll (IntersectionObserver)
   lib/
     api.ts                        Client HTTP (auto-refresh 401, FormData)
     auth.ts                       Login, MFA verify, logout
@@ -133,12 +143,16 @@ Theme entierement sombre, inspire de la landing page (Ferrari/Porsche aesthetic)
 | Token | Valeur |
 |---|---|
 | black | `#0e0d0b` (background principal) |
+| dark | `#1a1916` (surfaces elevees) |
+| dark-2 | `#141310` (surfaces profondes, stats) |
 | gold | `#b8955a` (accent luxe) |
+| gold-lt | `#d4b07a` (gradients clairs) |
+| gold-dk | `#96773e` (gradients sombres) |
 | white | `#faf9f7` (texte primaire) |
 | success | `#22c55e` |
 | warning | `#f59e0b` |
 | danger | `#ef4444` |
-| Font display | Cormorant Garamond (serif, font-light pour headings) |
+| Font display | Cormorant Garamond (serif, font-light pour headings — jamais bold) |
 | Font body | DM Sans (sans-serif) |
 
 | Element | Classes Tailwind |
@@ -149,13 +163,35 @@ Theme entierement sombre, inspire de la landing page (Ferrari/Porsche aesthetic)
 | Heading | `font-display font-light tracking-wide text-white` |
 | Status pill actif | `bg-gold/15 text-gold border-gold/30` |
 | Status pill inactif | `bg-white/[0.04] text-white/50 border-white/[0.06]` |
+| Card accent | `gold-border-top` (bordure or en haut) |
+| Card hover | `card-lift` (translateY(-4px) + ombre or) |
+| Section tag | `section-tag` (uppercase, lignes or flanquantes) |
+| Separateur or | `gold-sep` (ligne gradient horizontale) |
+
+#### Animations reveal (scroll)
+
+Hook `useReveal` (IntersectionObserver) pour animations au scroll :
+- `reveal-up` : fade-in + slide-up (28px), 0.9s avec `--ease-lux`
+- `reveal-d1` a `reveal-d6` : delais progressifs (0.1s increments)
+- Utilise sur dashboard (vehicle cards) et admin (stats, quick links)
+
+#### PageHeader
+
+Composant reutilisable pour navigation retour + titre + action :
+
+```tsx
+<PageHeader title="Edit Bay" subtitle={bay.code} backHref={`/bay/${id}`} action={<button>Save</button>} />
+```
+
+Utilise sur toutes les sous-pages (vehicle detail, move, exit, task, photo, bay detail, edit, bays list, admin/qr-codes).
 
 Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 
-### Composants inline notables
+### Composants notables
 
 | Composant | Fichier | Description |
 |---|---|---|
+| `PageHeader` | `components/ui/PageHeader.tsx` | Header reutilisable : bouton retour (backHref ou router.back()), titre serif, subtitle, slot action. Utilise sur toutes les sous-pages. |
 | `PasswordInput` | `change-password/page.tsx` | Input mot de passe avec toggle show/hide (eye icon) |
 | `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
 | `Select` | `admin/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |

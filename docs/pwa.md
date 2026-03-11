@@ -31,20 +31,29 @@ pwa/
 │   │   ├── layout.tsx         # Scan layout (no AppShell)
 │   │   └── page.tsx           # QR scanner + manual code entry
 │   ├── admin/
-│   │   └── page.tsx           # Superadmin dashboard (tenants, stats, invitations)
+│   │   ├── page.tsx           # Superadmin dashboard (tenants, stats, invitations, quick links)
+│   │   └── qr-codes/page.tsx  # QR code generation and printing
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
-│   │   └── page.tsx           # Vehicle list with search & filters
+│   │   └── page.tsx           # Vehicle list with search, filters, quick action cards
+│   ├── vehicle/new/
+│   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
 │   │   ├── layout.tsx         # Vehicle detail layout
 │   │   ├── page.tsx           # Vehicle detail + timeline
+│   │   ├── edit/page.tsx      # Edit vehicle details
 │   │   ├── move/page.tsx      # Move vehicle to another bay
 │   │   ├── task/page.tsx      # Task completion
 │   │   ├── photo/page.tsx     # Photo capture and upload
 │   │   └── exit/page.tsx      # Vehicle exit confirmation
+│   ├── bays/
+│   │   └── page.tsx           # Bay list with status filters and stats
+│   ├── bay/new/
+│   │   └── page.tsx           # Create new bay
 │   ├── bay/[id]/
 │   │   ├── layout.tsx         # Bay detail layout
-│   │   └── page.tsx           # Bay detail view
+│   │   ├── page.tsx           # Bay detail view
+│   │   └── edit/page.tsx      # Edit bay details
 │   └── api/auth/
 │       ├── set-token/route.ts   # Store refresh token as httpOnly cookie
 │       ├── refresh/route.ts     # Proxy refresh through Next.js (cookie → API)
@@ -58,7 +67,8 @@ pwa/
 │   │   └── BottomNav.tsx      # Fixed bottom navigation (Scan, Vehicles)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
-│   │   ├── VehicleCard.tsx    # Vehicle summary card
+│   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot
+│   │   ├── VehicleCard.tsx    # Vehicle summary card (memo, gold-border-top, card-lift)
 │   │   ├── EventItem.tsx      # Timeline event display
 │   │   ├── BaySelector.tsx    # Bay picker for move actions
 │   │   ├── SyncBadge.tsx      # Pending offline actions indicator
@@ -73,7 +83,8 @@ pwa/
 │   ├── useVehicle.ts          # SWR hooks for vehicle data + timeline
 │   ├── useBay.ts              # SWR hooks for bay data
 │   ├── useCamera.ts           # Photo capture state management
-│   └── useOfflineQueue.ts     # Offline queue sync with retry
+│   ├── useOfflineQueue.ts     # Offline queue sync with retry
+│   └── useReveal.ts           # IntersectionObserver scroll-triggered reveal animations
 ├── lib/
 │   ├── api.ts                 # API client with auto-refresh
 │   ├── auth.ts                # Login, MFA, logout functions
@@ -262,15 +273,21 @@ Fallback: manual code entry for devices without camera access.
 |-------|------|-------------|
 | `/` | No | Redirects to `/scan` |
 | `/login` | No | Login form + MFA verification |
-| `/admin` | Yes (superadmin) | Platform administration (tenants, invitations) |
+| `/admin` | Yes (superadmin) | Platform administration (tenants, invitations, quick links) |
+| `/admin/qr-codes` | Yes (superadmin) | QR code generation and printing |
 | `/scan` | Yes | QR scanner (default landing page) |
-| `/dashboard` | Yes | Vehicle list with search and status filters |
+| `/dashboard` | Yes | Vehicle list with search, status filters, quick action cards |
+| `/vehicle/new` | Yes | New vehicle onboarding form |
 | `/vehicle/[id]` | Yes | Vehicle detail with timeline and actions |
+| `/vehicle/[id]/edit` | Yes | Edit vehicle details |
 | `/vehicle/[id]/move` | Yes | Bay selector for vehicle relocation |
 | `/vehicle/[id]/task` | Yes | Task completion form |
 | `/vehicle/[id]/photo` | Yes | Camera capture and photo upload |
 | `/vehicle/[id]/exit` | Yes | Vehicle exit confirmation |
+| `/bays` | Yes | Bay list with status filters and stats |
+| `/bay/new` | Yes | Create new bay |
 | `/bay/[id]` | Yes | Bay detail view |
+| `/bay/[id]/edit` | Yes | Edit bay details |
 
 ## Role-Based UI
 
@@ -309,30 +326,64 @@ Bottom navigation bar with two tabs:
 - **Scan** — QR scanner (primary workflow entry)
 - **Vehicles** — Dashboard with search and filters
 
-## Design System
+## Design System (Dark Luxury)
+
+Fully dark theme inspired by the landing page (Ferrari/Porsche aesthetic). Consistent across all pages.
+
+### Colors
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| Brand gold | `#b8955a` | Primary actions, active states, accents |
-| Dark background | `#0e0d0b` | Login, TopBar, BottomNav |
-| Light background | `#faf9f7` | Main content area |
-| Text primary | `#0e0d0b` | Body text on light backgrounds |
-| Text on dark | `#faf9f7` | Text on dark backgrounds |
-| Error red | `#ef4444` | Error messages |
-| Success green | `#22c55e` | "Stored" status badge |
-| Warning amber | `#f59e0b` | "Maintenance" status badge |
+| black | `#0e0d0b` | Background principal (AppShell, all pages) |
+| dark | `#1a1916` | Card backgrounds, elevated surfaces |
+| dark-2 | `#141310` | Deeper surfaces (stats cards) |
+| gold | `#b8955a` | Primary accent, active states, borders |
+| gold-lt | `#d4b07a` | Light gold gradients |
+| gold-dk | `#96773e` | Dark gold gradients |
+| white | `#faf9f7` | Primary text |
+| success | `#22c55e` | "Stored" / "Free" status |
+| warning | `#f59e0b` | "Occupied" / "Maintenance" status |
+| danger | `#ef4444` | Errors, destructive actions |
 
 ### Typography
 
-- Display font: `font-display` (headings, branding)
-- Body: `DM Sans` (Google Font loaded in `globals.css`, configured in `tailwind.config.ts`)
+- Display font: `Cormorant Garamond` (serif, `font-display font-light` for headings — never bold)
+- Body font: `DM Sans` (sans-serif, body text, labels, buttons)
 
 ### Component Patterns
 
-- Rounded corners: `rounded-xl` (inputs), `rounded-2xl` (cards)
-- Borders: `border-[#0e0d0b]/5` (light), `border-white/10` (dark)
+- Glass cards: `bg-white/[0.03] border border-white/[0.06] rounded-2xl`
+- Inputs: `bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40 focus:ring-1 focus:ring-gold/20`
+- Section labels: `text-sm font-semibold text-white/30 uppercase tracking-wider`
+- Status pills active: `bg-gold/15 text-gold border-gold/30`
+- Status pills inactive: `bg-white/[0.04] text-white/50 border-white/[0.06]`
 - Loading: skeleton placeholders with `skeleton` class
-- Status badges: colored pill with `rounded-full`
+- Gold top border accent: `gold-border-top` class on cards
+- Card hover lift: `card-lift` class (translateY(-4px) + gold glow on hover)
+
+### Reveal Animations
+
+Scroll-triggered animations via `useReveal` hook (IntersectionObserver):
+
+- `reveal-up` — fade-in + slide-up (28px), 0.9s with `--ease-lux` timing
+- `reveal-d1` through `reveal-d6` — staggered delays (0.1s increments)
+- Section tags: `section-tag` class (uppercase, gold flanking lines)
+- Gold separators: `gold-sep` class (horizontal gradient line)
+
+### PageHeader Component
+
+Reusable header used across all sub-pages:
+
+```tsx
+<PageHeader
+  title="Edit Bay"
+  subtitle={bay.code}
+  backHref={`/bay/${id}`}
+  action={<button>Save</button>}
+/>
+```
+
+Props: `title` (string), `subtitle?` (string), `backHref?` (string, defaults to router.back()), `action?` (ReactNode)
 
 ## Build & Deployment
 
