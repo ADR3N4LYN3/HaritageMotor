@@ -63,23 +63,15 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>("en");
   const mfaInputRef = useRef<HTMLInputElement>(null);
-  const turnstileRef = useRef<HTMLDivElement>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const turnstileRendered = useRef(false);
 
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-  const renderTurnstile = useCallback(() => {
-    if (!turnstileSiteKey || !turnstileRef.current || turnstileRendered.current) return;
-    const tw = window as unknown as { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => void } };
-    if (!tw.turnstile) return;
-    turnstileRendered.current = true;
-    tw.turnstile.render(turnstileRef.current, {
-      sitekey: turnstileSiteKey,
-      size: "invisible",
-      callback: (token: string) => setTurnstileToken(token),
-    });
-  }, [turnstileSiteKey]);
+  // Expose callback for Turnstile auto-rendering
+  useEffect(() => {
+    (window as unknown as Record<string, unknown>).__hmTurnstileCb = (token: string) => setTurnstileToken(token);
+    return () => { delete (window as unknown as Record<string, unknown>).__hmTurnstileCb; };
+  }, []);
 
   useEffect(() => { setLang(getSavedLang()); }, []);
 
@@ -150,15 +142,22 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen bg-[#0e0d0b] flex flex-col items-center justify-center px-6 overflow-hidden">
-      {/* Cloudflare Turnstile (invisible) */}
+      {/* Cloudflare Turnstile */}
       {turnstileSiteKey && (
         <Script
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
           strategy="afterInteractive"
-          onReady={renderTurnstile}
         />
       )}
-      <div ref={turnstileRef} />
+      {turnstileSiteKey && (
+        <div
+          className="cf-turnstile"
+          data-sitekey={turnstileSiteKey}
+          data-callback="__hmTurnstileCb"
+          data-theme="dark"
+          data-size="compact"
+        />
+      )}
       {/* Background photo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
