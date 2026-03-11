@@ -7,7 +7,7 @@ import Image from "next/image";
 import { login, verifyMFA } from "@/lib/auth";
 import { ApiError } from "@/lib/api";
 import type { User } from "@/lib/types";
-import logoCrest from "@/public/logo-crest-v2.png";
+const logoCrest = "/logo-crest-v2.png";
 
 function getRedirectPath(user: User): string {
   if (user.password_change_required) return "/change-password";
@@ -177,7 +177,7 @@ export default function LoginPage() {
 
         {/* Logo crest */}
         <div className="mb-12 text-center flex flex-col items-center">
-          <Image src={logoCrest} alt="Heritage Motor" className="h-[88px] w-auto mb-6" priority />
+          <Image src={logoCrest} alt="Heritage Motor" width={88} height={88} className="h-[88px] w-auto mb-6" priority />
           <h1 className="font-display text-xl font-semibold tracking-[0.25em] uppercase text-[#b8955a]">
             Heritage Motor
           </h1>

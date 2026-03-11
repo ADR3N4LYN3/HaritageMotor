@@ -9,6 +9,7 @@ heritagemotor.app {
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://plausible.heritagemotor.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://api.heritagemotor.app https://plausible.heritagemotor.app"
 		-Server
 	}
 
@@ -20,6 +21,18 @@ heritagemotor.app {
 	# Contact page
 	handle /contact {
 		rewrite * /contact.html
+		root * /srv/landing
+		file_server
+	}
+
+	# Legal pages
+	handle /privacy {
+		rewrite * /privacy.html
+		root * /srv/landing
+		file_server
+	}
+	handle /legal {
+		rewrite * /legal.html
 		root * /srv/landing
 		file_server
 	}
@@ -48,6 +61,7 @@ api.heritagemotor.app {
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
 		-Server
 	}
 }
@@ -81,6 +95,7 @@ app.heritagemotor.app {
 		Referrer-Policy "strict-origin-when-cross-origin"
 		# PWA: allow camera for QR scanning
 		Permissions-Policy "camera=(self), microphone=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.your-objectstorage.com; connect-src 'self' https://api.heritagemotor.app"
 		-Server
 	}
 }
