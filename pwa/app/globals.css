@@ -21,6 +21,12 @@ body {
   overscroll-behavior: none;
 }
 
+/* Hide native password reveal (Edge/Chrome on Windows) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
 /* Thumb-friendly touch targets */
 .touch-target {
   min-height: 44px;
