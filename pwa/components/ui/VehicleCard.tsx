@@ -19,7 +19,7 @@ export const VehicleCard = memo(function VehicleCard({ vehicle, bayName, onClick
   return (
     <button
       onClick={() => onClick?.(vehicle.id)}
-      className="w-full text-left bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift active:scale-[0.99] transition-transform touch-target group"
+      className="w-full text-left bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift active:scale-[0.99] transition-transform touch-target group"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">

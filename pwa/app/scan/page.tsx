@@ -63,6 +63,17 @@ export default function ScanPage() {
             onResult={resolveToken}
             onError={(err) => setError(err)}
           />
+          {/* Back button */}
+          <button
+            onClick={() => router.back()}
+            className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/[0.08] flex items-center justify-center text-white/70 hover:text-gold hover:border-gold/30 transition-all duration-300 active:scale-95 safe-top"
+            style={{ transitionTimingFunction: "var(--ease-lux)" }}
+            aria-label="Go back"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </button>
           {error && (
             <div className="absolute top-20 left-4 right-4 bg-danger/90 text-white text-sm p-3 rounded-xl text-center">
               {error}

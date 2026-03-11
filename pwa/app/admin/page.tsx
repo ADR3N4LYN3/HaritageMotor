@@ -132,7 +132,7 @@ function StatsSection() {
 
   return (
     <section ref={revealRef}>
-      <div className="reveal-up grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-xl overflow-hidden border border-white/[0.06]">
+      <div className="reveal-up grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
         {stats.map((s, i) => (
           <div
             key={s.label}
@@ -173,7 +173,7 @@ function QuickLinks() {
           <button
             key={link.href}
             onClick={() => router.push(link.href)}
-            className="bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift text-left group"
+            className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group"
           >
             <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">
               {link.title}
@@ -214,7 +214,7 @@ function TenantsSection() {
 
       {showCreate && <CreateTenantForm onDone={() => setShowCreate(false)} />}
 
-      <div className="reveal-up reveal-d1 space-y-px rounded-xl overflow-hidden border border-white/[0.06]">
+      <div className="reveal-up reveal-d1 space-y-px rounded-2xl overflow-hidden border border-white/[0.06]">
         {data?.data?.length === 0 && (
           <div className="bg-dark-2 py-16 text-center">
             <p className="text-white/20 text-sm font-display font-light italic">
@@ -426,7 +426,7 @@ function StatPill({ value, label }: { value: number; label: string }) {
 }
 
 const inputClass =
-  "w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06] text-white/90 text-sm font-light placeholder:text-white/15 focus:outline-none focus:border-gold/30 focus:bg-white/[0.05] transition-all duration-300";
+  "w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/90 text-sm font-light placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 focus:bg-white/[0.05] transition-all duration-300";
 
 const labelClass = "block text-[10px] tracking-[0.15em] uppercase text-gold/40 mb-1.5 font-medium";
 
@@ -479,7 +479,7 @@ function Select({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-white/[0.08] bg-dark shadow-xl shadow-black/50 overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full rounded-xl border border-white/[0.08] bg-dark shadow-xl shadow-black/50 overflow-hidden">
           {options.map((o) => (
             <button
               key={o.value}
@@ -527,7 +527,7 @@ function CreateTenantForm({ onDone }: { onDone: () => void }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-dark-2 border border-white/[0.06] gold-border-top rounded-xl p-6 space-y-5"
+      className="bg-dark-2 border border-white/[0.06] gold-border-top rounded-2xl p-6 space-y-5"
     >
       <p className="text-[10px] tracking-[0.2em] uppercase text-gold/50 font-medium">
         New Tenant
@@ -661,7 +661,7 @@ function InviteSection() {
 
       <form
         onSubmit={handleSubmit}
-        className="reveal-up reveal-d1 bg-dark-2 border border-white/[0.06] gold-border-top rounded-xl p-6 space-y-5"
+        className="reveal-up reveal-d1 bg-dark-2 border border-white/[0.06] gold-border-top rounded-2xl p-6 space-y-5"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

@@ -83,7 +83,7 @@ export default function DashboardPage() {
 
         {/* Stats band */}
         <div className="reveal-up reveal-d1">
-          <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-xl overflow-hidden border border-white/[0.06]">
+          <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
             {[
               { value: totalCount, label: "Total", sub: "vehicles" },
               { value: storedCount, label: "Stored", sub: "in custody" },
@@ -111,7 +111,7 @@ export default function DashboardPage() {
         <div className="reveal-up reveal-d2 grid grid-cols-2 gap-3">
           <button
             onClick={() => router.push("/scan")}
-            className="bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift text-left group"
+            className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
@@ -128,7 +128,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => router.push("/bays")}
-            className="bg-white/[0.025] rounded-xl p-4 border border-white/[0.05] gold-border-top card-lift text-left group"
+            className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
@@ -155,7 +155,7 @@ export default function DashboardPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search by make, model, owner..."
-            className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06] text-white placeholder:text-white/20 focus:outline-none focus:border-gold/30 focus:bg-white/[0.05] focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-all duration-300"
+            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-all duration-300"
             style={{ transitionTimingFunction: "var(--ease-lux)" }}
           />
         </div>
