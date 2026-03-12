@@ -3,6 +3,7 @@ import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 import { SWRProvider } from "@/components/providers/SWRProvider";
 import { AppErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthBootstrap } from "@/components/AuthBootstrap";
+import { CookieBanner } from "@/components/ui/CookieBanner";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -48,6 +49,7 @@ export default function RootLayout({
           <AuthBootstrap>
             <SWRProvider>{children}</SWRProvider>
           </AuthBootstrap>
+          <CookieBanner />
         </AppErrorBoundary>
       </body>
     </html>

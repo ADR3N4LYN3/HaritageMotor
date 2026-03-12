@@ -10,8 +10,7 @@ import logoCrest from "@/public/logo-crest-v2.png";
 
 function getRedirectPath(user: User): string {
   if (user.password_change_required) return "/change-password";
-  if (user.role === "superadmin") return "/admin";
-  return "/scan";
+  return "/dashboard";
 }
 
 /* ---------- i18n (EN/FR/DE) — same pattern as landing pages ---------- */

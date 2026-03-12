@@ -132,6 +132,71 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   .footer-links { gap: 0.8rem 1.5rem; }
 }
 
+/* COOKIE BANNER */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 1.5rem 1.5rem;
+  pointer-events: none;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(26, 25, 22, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.cookie-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.55);
+  line-height: 1.6;
+  margin: 0;
+}
+.cookie-link {
+  color: #b8955a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-link:hover { color: #d4b07a; }
+.cookie-btn {
+  white-space: nowrap;
+  padding: 0.55rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 149, 90, 0.35);
+  background: transparent;
+  color: #b8955a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cookie-btn:hover {
+  background: #b8955a;
+  color: #0e0d0b;
+  border-color: #b8955a;
+}
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; }
+  .cookie-btn { width: 100%; }
+}
+
 </style>
 </head>
 <body>
@@ -201,7 +266,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <p>To exercise your rights: <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></p>
   <h2>5. Cookies</h2>
   <p>The marketing website <strong>does not use cookies</strong>. Plausible Analytics is entirely cookie-free and GDPR-compliant.</p>
-  <p>The SaaS platform uses a strictly necessary authentication cookie (<code>refresh_token</code>, httpOnly), exempt from consent under Article 82 of the French Data Protection Act.</p>
+  <p>The SaaS platform uses strictly necessary cookies for authentication and navigation. These cookies are essential for the application to function and are exempt from consent under applicable data protection regulations.</p>
   <h2>6. Limitation of liability</h2>
   <p>Heritage Motor strives to provide information as accurate as possible. However, it cannot be held responsible for omissions, inaccuracies or deficiencies in updates, whether caused by itself or by third-party partners providing such information.</p>
   <p>Heritage Motor cannot be held responsible for direct and indirect damages caused to the user's equipment when accessing the website.</p>
@@ -243,7 +308,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <p>Pour exercer vos droits : <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></p>
   <h2>5. Cookies</h2>
   <p>Le site marketing <strong>n'utilise pas de cookies</strong>. L'outil d'analyse Plausible Analytics est enti&egrave;rement sans cookies et conforme au RGPD.</p>
-  <p>La plateforme SaaS utilise un cookie strictement n&eacute;cessaire &agrave; l'authentification (<code>refresh_token</code>, httpOnly), exempt&eacute; de consentement au titre de l'article 82 de la loi Informatique et Libert&eacute;s.</p>
+  <p>La plateforme SaaS utilise des cookies strictement n&eacute;cessaires &agrave; l'authentification et &agrave; la navigation. Ces cookies sont essentiels au fonctionnement de l'application et sont exempt&eacute;s de consentement conform&eacute;ment &agrave; la r&eacute;glementation applicable en mati&egrave;re de protection des donn&eacute;es.</p>
   <h2>6. Limitation de responsabilit&eacute;</h2>
   <p>Heritage Motor s'efforce de fournir des informations aussi pr&eacute;cises que possible. Toutefois, il ne pourra &ecirc;tre tenu responsable des omissions, inexactitudes ou carences dans la mise &agrave; jour, qu'elles soient de son fait ou du fait des tiers partenaires qui lui fournissent ces informations.</p>
   <p>Heritage Motor ne pourra &ecirc;tre tenu responsable des dommages directs et indirects caus&eacute;s au mat&eacute;riel de l'utilisateur lors de l'acc&egrave;s au site.</p>
@@ -285,7 +350,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <p>Zur Aus&uuml;bung Ihrer Rechte: <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a></p>
   <h2>5. Cookies</h2>
   <p>Die Marketing-Website <strong>verwendet keine Cookies</strong>. Plausible Analytics ist vollst&auml;ndig cookie-frei und DSGVO-konform.</p>
-  <p>Die SaaS-Plattform verwendet ein streng notwendiges Authentifizierungs-Cookie (<code>refresh_token</code>, httpOnly), das gem&auml;&szlig; Artikel 82 des franz&ouml;sischen Datenschutzgesetzes von der Einwilligung befreit ist.</p>
+  <p>Die SaaS-Plattform verwendet streng notwendige Cookies f&uuml;r die Authentifizierung und Navigation. Diese Cookies sind f&uuml;r die Funktion der Anwendung unerlässlich und gem&auml;&szlig; den geltenden Datenschutzbestimmungen von der Einwilligung befreit.</p>
   <h2>6. Haftungsbeschr&auml;nkung</h2>
   <p>Heritage Motor bem&uuml;ht sich, m&ouml;glichst genaue Informationen bereitzustellen. Es kann jedoch nicht f&uuml;r Auslassungen, Ungenauigkeiten oder M&auml;ngel bei der Aktualisierung verantwortlich gemacht werden.</p>
   <p>Heritage Motor kann nicht f&uuml;r direkte und indirekte Sch&auml;den verantwortlich gemacht werden, die beim Zugriff auf die Website an der Ausr&uuml;stung des Nutzers entstehen.</p>
@@ -312,15 +377,20 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   var i18n = {
     fr: {
       'nav.platform': 'Plateforme', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
-      'nav.cta': 'Demander une d\u00e9mo', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales'
+      'nav.cta': 'Demander une d\u00e9mo', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales',
+      'cookie_text': 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.',
+      'cookie_accept': 'Accepter'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
-      'nav.cta': 'Demo anfragen', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum'
+      'nav.cta': 'Demo anfragen', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum',
+      'cookie_text': 'Diese Website speichert Ihre Spracheinstellung lokal in Ihrem Browser. Es werden keine Tracking-Cookies verwendet. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.',
+      'cookie_accept': 'Akzeptieren'
     }
   };
 
   document.querySelectorAll('[data-i18n]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
 
   var currentLang = 'en';
   function setLang(lang) {
@@ -331,6 +401,18 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       var key = el.getAttribute('data-i18n');
       if (dict[key]) {
         el.textContent = dict[key];
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    /* Cookie banner i18n — safe: hardcoded dict values only, never user input */
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+      var hKey = el.getAttribute('data-i18n-html');
+      if (dict[hKey]) {
+        var tmpl = document.createElement('template');
+        /* eslint-disable-line no-unsanitized/property -- trusted i18n dict, not user input */
+        tmpl.innerHTML = dict[hKey];
+        el.replaceChildren(tmpl.content);
       } else if (el._origHTML) {
         el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
       }
@@ -388,6 +470,29 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   drawer.querySelectorAll('.drawer-lang button').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
   });
+</script>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var banner = document.getElementById('cookie-banner');
+  var btn = document.getElementById('cookie-accept');
+  if (!banner || !btn) return;
+  try { if (localStorage.getItem('hm-cookie-consent')) return; } catch(e) {}
+  banner.hidden = false;
+  btn.addEventListener('click', function() {
+    try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
+    banner.hidden = true;
+  });
+})();
 </script>
 </body>
 </html>

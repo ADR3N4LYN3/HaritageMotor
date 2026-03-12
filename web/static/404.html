@@ -141,6 +141,71 @@ h1 {
 }
 .lang-sw button:hover { color: rgba(255,255,255,0.5); }
 .lang-sw button.active { color: var(--gold); }
+
+/* COOKIE BANNER */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 1.5rem 1.5rem;
+  pointer-events: none;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(26, 25, 22, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.cookie-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.55);
+  line-height: 1.6;
+  margin: 0;
+}
+.cookie-link {
+  color: #b8955a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-link:hover { color: #d4b07a; }
+.cookie-btn {
+  white-space: nowrap;
+  padding: 0.55rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 149, 90, 0.35);
+  background: transparent;
+  color: #b8955a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cookie-btn:hover {
+  background: #b8955a;
+  color: #0e0d0b;
+  border-color: #b8955a;
+}
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; }
+  .cookie-btn { width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -184,21 +249,38 @@ h1 {
 
 <script>
 const i18n = {
-  fr: { title: "Page introuvable", desc: "La page que vous cherchez n\u2019existe pas ou a \u00e9t\u00e9 d\u00e9plac\u00e9e.", cta: "Retour \u00e0 Heritage Motor" },
-  de: { title: "Seite nicht gefunden", desc: "Die gesuchte Seite existiert nicht oder wurde verschoben.", cta: "Zur\u00fcck zu Heritage Motor" },
+  fr: { title: "Page introuvable", desc: "La page que vous cherchez n\u2019existe pas ou a \u00e9t\u00e9 d\u00e9plac\u00e9e.", cta: "Retour \u00e0 Heritage Motor", cookie_text: 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.', cookie_accept: "Accepter" },
+  de: { title: "Seite nicht gefunden", desc: "Die gesuchte Seite existiert nicht oder wurde verschoben.", cta: "Zur\u00fcck zu Heritage Motor", cookie_text: 'Diese Website speichert Ihre Spracheinstellung lokal in Ihrem Browser. Es werden keine Tracking-Cookies verwendet. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.', cookie_accept: "Akzeptieren" },
 };
 
+/* Store original HTML for data-i18n-html elements */
+document.querySelectorAll('[data-i18n-html]').forEach(el => { el._origHTML = el.cloneNode(true); });
+
 function setLang(lang) {
+  const dict = i18n[lang] || {};
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    el.textContent = (i18n[lang] && i18n[lang][key]) || el.textContent;
+    el.textContent = (dict[key]) || el.textContent;
   });
-  // Reset English from defaults if needed
+  /* Reset English from defaults if needed */
   if (lang === 'en') {
     document.querySelector('[data-i18n="title"]').textContent = 'Page not found';
     document.querySelector('[data-i18n="desc"]').textContent = 'The page you are looking for does not exist or has been moved.';
     document.querySelector('[data-i18n="cta"]').textContent = 'Back to Heritage Motor';
+    const acceptBtn = document.querySelector('[data-i18n="cookie_accept"]');
+    if (acceptBtn) acceptBtn.textContent = 'Accept';
   }
+  /* Cookie banner i18n — trusted hardcoded dict, not user input */
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const hKey = el.getAttribute('data-i18n-html');
+    if (dict[hKey]) {
+      const tmpl = document.createElement('template');
+      tmpl.innerHTML = dict[hKey]; /* eslint-disable-line -- trusted i18n dict, not user input */
+      el.replaceChildren(tmpl.content);
+    } else if (el._origHTML) {
+      el.replaceChildren(...Array.from(el._origHTML.cloneNode(true).childNodes));
+    }
+  });
   document.querySelectorAll('.lang-sw button').forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-lang') === lang);
   });
@@ -215,6 +297,29 @@ try {
 document.querySelectorAll('.lang-sw button').forEach(b => {
   b.addEventListener('click', () => setLang(b.getAttribute('data-lang')));
 });
+</script>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var banner = document.getElementById('cookie-banner');
+  var btn = document.getElementById('cookie-accept');
+  if (!banner || !btn) return;
+  try { if (localStorage.getItem('hm-cookie-consent')) return; } catch(e) {}
+  banner.hidden = false;
+  btn.addEventListener('click', function() {
+    try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
+    banner.hidden = true;
+  });
+})();
 </script>
 </body>
 </html>

@@ -198,6 +198,71 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   .form-submit { width: 100%; justify-content: center; }
   .footer-links { gap: 0.8rem 1.5rem; }
 }
+
+/* COOKIE BANNER */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 1.5rem 1.5rem;
+  pointer-events: none;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(26, 25, 22, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.cookie-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.55);
+  line-height: 1.6;
+  margin: 0;
+}
+.cookie-link {
+  color: #b8955a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-link:hover { color: #d4b07a; }
+.cookie-btn {
+  white-space: nowrap;
+  padding: 0.55rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 149, 90, 0.35);
+  background: transparent;
+  color: #b8955a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cookie-btn:hover {
+  background: #b8955a;
+  color: #0e0d0b;
+  border-color: #b8955a;
+}
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; }
+  .cookie-btn { width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -381,7 +446,9 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'form.sending': 'Envoi en cours\u2026',
       'form.success': 'Merci\u00a0! Nous vous recontacterons sous 24 heures.',
       'form.error_rate': 'Trop de requ\u00eates. Veuillez r\u00e9essayer dans quelques minutes.',
-      'form.error_generic': 'Une erreur est survenue. Veuillez r\u00e9essayer ou nous \u00e9crire \u00e0 welcome@heritagemotor.app'
+      'form.error_generic': 'Une erreur est survenue. Veuillez r\u00e9essayer ou nous \u00e9crire \u00e0 welcome@heritagemotor.app',
+      'cookie_text': 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.',
+      'cookie_accept': 'Accepter'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
@@ -414,12 +481,15 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       'form.sending': 'Wird gesendet\u2026',
       'form.success': 'Vielen Dank! Wir melden uns innerhalb von 24 Stunden.',
       'form.error_rate': 'Zu viele Anfragen. Bitte versuchen Sie es in einigen Minuten erneut.',
-      'form.error_generic': 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns an welcome@heritagemotor.app'
+      'form.error_generic': 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns an welcome@heritagemotor.app',
+      'cookie_text': 'Diese Website speichert Ihre Spracheinstellung lokal in Ihrem Browser. Es werden keine Tracking-Cookies verwendet. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.',
+      'cookie_accept': 'Akzeptieren'
     }
   };
 
   // Store original EN content
   document.querySelectorAll('[data-i18n]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el) { el._origPH = el.placeholder; });
 
   var currentLang = 'en';
@@ -450,6 +520,17 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
       var key = el.getAttribute('data-i18n-ph');
       el.placeholder = (dict[key]) || el._origPH || '';
+    });
+    // Safe: values come from hardcoded i18n dict above, not user input
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n-html');
+      if (dict[key]) {
+        var tmpl = document.createElement('template');
+        tmpl.innerHTML = dict[key]; // eslint-disable-line -- trusted hardcoded i18n dict, not user input
+        el.replaceChildren(tmpl.content);
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
     });
     document.getElementById('langCurrent').textContent = lang.toUpperCase();
     document.querySelectorAll('.lang-opt').forEach(function(btn) {
@@ -600,6 +681,29 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   drawer.querySelectorAll('.drawer-lang button').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
   });
+</script>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var banner = document.getElementById('cookie-banner');
+  var btn = document.getElementById('cookie-accept');
+  if (!banner || !btn) return;
+  try { if (localStorage.getItem('hm-cookie-consent')) return; } catch(e) {}
+  banner.hidden = false;
+  btn.addEventListener('click', function() {
+    try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
+    banner.hidden = true;
+  });
+})();
 </script>
 </body>
 </html>

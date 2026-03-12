@@ -175,6 +175,7 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 	defer tx.Rollback(ctx) //nolint:errcheck // rollback is no-op after commit
 
 	vehicleID := uuid.New()
+	qrToken := uuid.New().String()
 	now := time.Now().UTC()
 
 	tags := req.Tags
@@ -189,7 +190,7 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 	) VALUES (
 		$1, $2, $3, $4, $5, $6, $7, $8,
 		$9, $10, $11, $12,
-		$13, $14, $15, $16, NULL, $17, $18
+		$13, $14, $15, $16, $17, $18, $19
 	)
 	RETURNING id, tenant_id, make, model, year, color, license_plate, vin,
 		owner_name, owner_email, owner_phone, owner_notes, status, current_bay_id,
@@ -201,7 +202,7 @@ func (s *Service) Create(ctx context.Context, tenantID, userID uuid.UUID, req Cr
 		vehicleID, tenantID, req.Make, req.Model, req.Year, req.Color,
 		req.LicensePlate, req.VIN, req.OwnerName, req.OwnerEmail,
 		req.OwnerPhone, req.OwnerNotes, status, req.BayID, req.Notes,
-		tags, now, now,
+		tags, qrToken, now, now,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("inserting vehicle: %w", err)

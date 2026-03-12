@@ -140,12 +140,14 @@ func (s *Service) Create(ctx context.Context, tenantID uuid.UUID, req CreateBayR
 		features = []string{}
 	}
 
+	qrToken := uuid.New().String()
+
 	var b domain.Bay
 	err = db.Conn(ctx, s.pool).QueryRow(ctx,
-		`INSERT INTO bays (tenant_id, code, zone, description, status, features)
-		 VALUES ($1, $2, $3, $4, $5, $6)
+		`INSERT INTO bays (tenant_id, code, zone, description, status, features, qr_token)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7)
 		 RETURNING id, tenant_id, code, zone, description, status, features, qr_token, created_at, updated_at`,
-		tenantID, req.Code, req.Zone, req.Description, domain.BayStatusFree, features).
+		tenantID, req.Code, req.Zone, req.Description, domain.BayStatusFree, features, qrToken).
 		Scan(&b.ID, &b.TenantID, &b.Code, &b.Zone, &b.Description,
 			&b.Status, &b.Features, &b.QRToken, &b.CreatedAt, &b.UpdatedAt)
 	if err != nil {

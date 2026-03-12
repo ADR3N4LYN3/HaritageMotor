@@ -135,6 +135,71 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   .footer-links { gap: 0.8rem 1.5rem; }
 }
 
+/* COOKIE BANNER */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 1.5rem 1.5rem;
+  pointer-events: none;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(26, 25, 22, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.cookie-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.55);
+  line-height: 1.6;
+  margin: 0;
+}
+.cookie-link {
+  color: #b8955a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-link:hover { color: #d4b07a; }
+.cookie-btn {
+  white-space: nowrap;
+  padding: 0.55rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 149, 90, 0.35);
+  background: transparent;
+  color: #b8955a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cookie-btn:hover {
+  background: #b8955a;
+  color: #0e0d0b;
+  border-color: #b8955a;
+}
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; }
+  .cookie-btn { width: 100%; }
+}
+
 </style>
 </head>
 <body>
@@ -186,29 +251,26 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <h3>2.1 Marketing website (heritagemotor.app)</h3>
   <ul>
     <li><strong>Analytics:</strong> We use <a href="https://plausible.io" target="_blank" rel="noopener">Plausible Analytics</a>, a privacy-focused, cookie-free analytics tool. It collects no personal data and does not track you across websites. Data is aggregated and never sold.</li>
-    <li><strong>Language preference:</strong> Your chosen language (EN/FR/DE) is saved in your browser's localStorage. This is not a cookie and is never sent to our servers.</li>
+    <li><strong>Language preference:</strong> Your chosen language (EN/FR/DE) and cookie consent status are saved locally in your browser. This data is not a cookie and is never sent to our servers.</li>
     <li><strong>Contact form:</strong> When you submit the contact form, we collect your name, email address, company name, fleet size, and message. This data is used solely to respond to your inquiry.</li>
   </ul>
   <h3>2.2 SaaS platform (app.heritagemotor.app)</h3>
   <p>When using the Heritage Motor platform as an authenticated user, we process:</p>
   <ul>
-    <li><strong>Account data:</strong> Name, email address, role, and authentication credentials (hashed passwords, MFA secrets).</li>
+    <li><strong>Account data:</strong> Name, email address, role, and authentication credentials.</li>
     <li><strong>Vehicle data:</strong> Vehicle information (make, model, VIN, photos, documents) entered by your facility's operators.</li>
     <li><strong>Operational data:</strong> Events, bay assignments, tasks, movement logs, and audit trails.</li>
-    <li><strong>Session data:</strong> JWT access tokens (15-minute expiry) and refresh tokens (7-day expiry, stored as hashed values).</li>
+    <li><strong>Session data:</strong> Session tokens with limited validity, securely stored.</li>
   </ul>
-  <p>All platform data is isolated per tenant via PostgreSQL Row-Level Security. No tenant can access another tenant's data.</p>
+  <p>All platform data is strictly isolated per tenant. No tenant can access another tenant's data.</p>
   <h2>3. Cookies &amp; tracking</h2>
   <p>Our marketing website <strong>does not use cookies</strong>. Plausible Analytics is fully cookie-free and GDPR-compliant without consent.</p>
-  <p>The SaaS platform uses:</p>
-  <ul>
-    <li><strong>refresh_token</strong> (httpOnly cookie): Stores your session refresh token. This is strictly necessary for authentication and does not require consent under GDPR Article 6(1)(b).</li>
-  </ul>
+  <p>The SaaS platform uses strictly necessary cookies for authentication and navigation. These are essential for the application to function and do not require consent under applicable data protection regulations.</p>
   <p>We do not use advertising cookies, third-party trackers, or fingerprinting of any kind.</p>
   <h2>4. Legal basis for processing</h2>
   <ul>
-    <li><strong>Contract performance</strong> (Art. 6(1)(b) GDPR): Processing account and vehicle data to deliver the service you subscribed to.</li>
-    <li><strong>Legitimate interest</strong> (Art. 6(1)(f) GDPR): Privacy-friendly analytics to improve our website; contact form processing to respond to inquiries.</li>
+    <li><strong>Contract performance:</strong> Processing account and vehicle data to deliver the service you subscribed to.</li>
+    <li><strong>Legitimate interest:</strong> Privacy-friendly analytics to improve our website; contact form processing to respond to inquiries.</li>
   </ul>
   <h2>5. Data hosting &amp; transfers</h2>
   <ul>
@@ -236,7 +298,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <p>To exercise any of these rights, email <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>. We will respond within 30 days.</p>
   <p>You also have the right to lodge a complaint with your local data protection authority (in France: <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>).</p>
   <h2>8. Security</h2>
-  <p>We implement industry-standard security measures including: bcrypt password hashing, mandatory two-factor authentication (TOTP), encrypted connections (TLS), JWT token blacklisting, rate limiting, and row-level data isolation per tenant.</p>
+  <p>We implement industry-standard security measures including: password encryption, mandatory two-factor authentication, encrypted connections, rate limiting, and strict data isolation between tenants.</p>
   <h2>9. Changes to this policy</h2>
   <p>We may update this policy from time to time. Significant changes will be communicated via email to registered users. The "last updated" date at the top reflects the latest revision.</p>
 </div>
@@ -255,29 +317,26 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <h3>2.1 Site marketing (heritagemotor.app)</h3>
   <ul>
     <li><strong>Analyse :</strong> Nous utilisons <a href="https://plausible.io" target="_blank" rel="noopener">Plausible Analytics</a>, un outil d'analyse respectueux de la vie priv&eacute;e, sans cookies. Il ne collecte aucune donn&eacute;e personnelle et ne vous suit pas entre les sites. Les donn&eacute;es sont agr&eacute;g&eacute;es et jamais vendues.</li>
-    <li><strong>Pr&eacute;f&eacute;rence linguistique :</strong> Votre langue choisie (EN/FR/DE) est enregistr&eacute;e dans le localStorage de votre navigateur. Ce n'est pas un cookie et n'est jamais envoy&eacute; &agrave; nos serveurs.</li>
+    <li><strong>Pr&eacute;f&eacute;rence linguistique :</strong> Votre langue choisie (EN/FR/DE) et le statut de consentement aux cookies sont enregistr&eacute;s localement dans votre navigateur. Ces donn&eacute;es ne sont pas des cookies et ne sont jamais envoy&eacute;es &agrave; nos serveurs.</li>
     <li><strong>Formulaire de contact :</strong> Lorsque vous soumettez le formulaire de contact, nous collectons votre nom, adresse email, nom de soci&eacute;t&eacute;, taille de flotte et message. Ces donn&eacute;es sont utilis&eacute;es uniquement pour r&eacute;pondre &agrave; votre demande.</li>
   </ul>
   <h3>2.2 Plateforme SaaS (app.heritagemotor.app)</h3>
   <p>En utilisant la plateforme Heritage Motor en tant qu'utilisateur authentifi&eacute;, nous traitons :</p>
   <ul>
-    <li><strong>Donn&eacute;es de compte :</strong> Nom, adresse email, r&ocirc;le et identifiants d'authentification (mots de passe hach&eacute;s, secrets MFA).</li>
+    <li><strong>Donn&eacute;es de compte :</strong> Nom, adresse email, r&ocirc;le et identifiants d'authentification.</li>
     <li><strong>Donn&eacute;es v&eacute;hicules :</strong> Informations sur les v&eacute;hicules (marque, mod&egrave;le, VIN, photos, documents) saisies par les op&eacute;rateurs de votre facility.</li>
     <li><strong>Donn&eacute;es op&eacute;rationnelles :</strong> &Eacute;v&eacute;nements, affectations de baies, t&acirc;ches, journaux de mouvements et pistes d'audit.</li>
-    <li><strong>Donn&eacute;es de session :</strong> Tokens d'acc&egrave;s JWT (expiration 15 minutes) et tokens de rafra&icirc;chissement (expiration 7 jours, stock&eacute;s sous forme hach&eacute;e).</li>
+    <li><strong>Donn&eacute;es de session :</strong> Tokens de session &agrave; dur&eacute;e limit&eacute;e, stock&eacute;s de mani&egrave;re s&eacute;curis&eacute;e.</li>
   </ul>
-  <p>Toutes les donn&eacute;es de la plateforme sont isol&eacute;es par tenant via PostgreSQL Row-Level Security. Aucun tenant ne peut acc&eacute;der aux donn&eacute;es d'un autre tenant.</p>
+  <p>Toutes les donn&eacute;es de la plateforme sont strictement isol&eacute;es par tenant. Aucun tenant ne peut acc&eacute;der aux donn&eacute;es d'un autre tenant.</p>
   <h2>3. Cookies et suivi</h2>
   <p>Notre site marketing <strong>n'utilise pas de cookies</strong>. Plausible Analytics est enti&egrave;rement sans cookies et conforme au RGPD sans consentement.</p>
-  <p>La plateforme SaaS utilise :</p>
-  <ul>
-    <li><strong>refresh_token</strong> (cookie httpOnly) : Stocke votre token de rafra&icirc;chissement de session. Il est strictement n&eacute;cessaire &agrave; l'authentification et ne requiert pas de consentement en vertu de l'article 6(1)(b) du RGPD.</li>
-  </ul>
+  <p>La plateforme SaaS utilise des cookies strictement n&eacute;cessaires &agrave; l'authentification et &agrave; la navigation. Ceux-ci sont essentiels au fonctionnement de l'application et ne requi&egrave;rent pas de consentement conform&eacute;ment &agrave; la r&eacute;glementation applicable en mati&egrave;re de protection des donn&eacute;es.</p>
   <p>Nous n'utilisons aucun cookie publicitaire, tracker tiers ou fingerprinting d'aucune sorte.</p>
   <h2>4. Base juridique du traitement</h2>
   <ul>
-    <li><strong>Ex&eacute;cution du contrat</strong> (Art. 6(1)(b) RGPD) : Traitement des donn&eacute;es de compte et de v&eacute;hicules pour fournir le service auquel vous avez souscrit.</li>
-    <li><strong>Int&eacute;r&ecirc;t l&eacute;gitime</strong> (Art. 6(1)(f) RGPD) : Analyse respectueuse de la vie priv&eacute;e pour am&eacute;liorer notre site ; traitement du formulaire de contact pour r&eacute;pondre aux demandes.</li>
+    <li><strong>Ex&eacute;cution du contrat :</strong> Traitement des donn&eacute;es de compte et de v&eacute;hicules pour fournir le service auquel vous avez souscrit.</li>
+    <li><strong>Int&eacute;r&ecirc;t l&eacute;gitime :</strong> Analyse respectueuse de la vie priv&eacute;e pour am&eacute;liorer notre site ; traitement du formulaire de contact pour r&eacute;pondre aux demandes.</li>
   </ul>
   <h2>5. H&eacute;bergement et transferts de donn&eacute;es</h2>
   <ul>
@@ -305,7 +364,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <p>Pour exercer l'un de ces droits, envoyez un email &agrave; <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>. Nous r&eacute;pondrons sous 30 jours.</p>
   <p>Vous avez &eacute;galement le droit de d&eacute;poser une plainte aupr&egrave;s de votre autorit&eacute; locale de protection des donn&eacute;es (en France : <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>).</p>
   <h2>8. S&eacute;curit&eacute;</h2>
-  <p>Nous mettons en &oelig;uvre des mesures de s&eacute;curit&eacute; conformes aux standards de l'industrie, notamment : le hachage des mots de passe par bcrypt, l'authentification &agrave; deux facteurs obligatoire (TOTP), les connexions chiffr&eacute;es (TLS), la liste noire des tokens JWT, la limitation de d&eacute;bit et l'isolation des donn&eacute;es par tenant au niveau des lignes.</p>
+  <p>Nous mettons en &oelig;uvre des mesures de s&eacute;curit&eacute; conformes aux standards de l'industrie, notamment : le chiffrement des mots de passe, l'authentification &agrave; deux facteurs obligatoire, les connexions chiffr&eacute;es, la limitation de d&eacute;bit et l'isolation stricte des donn&eacute;es entre tenants.</p>
   <h2>9. Modifications de cette politique</h2>
   <p>Nous pouvons mettre &agrave; jour cette politique de temps &agrave; autre. Les modifications significatives seront communiqu&eacute;es par email aux utilisateurs enregistr&eacute;s. La date de &laquo; derni&egrave;re mise &agrave; jour &raquo; en haut de page refl&egrave;te la derni&egrave;re r&eacute;vision.</p>
 </div>
@@ -324,29 +383,26 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <h3>2.1 Marketing-Website (heritagemotor.app)</h3>
   <ul>
     <li><strong>Analyse:</strong> Wir verwenden <a href="https://plausible.io" target="_blank" rel="noopener">Plausible Analytics</a>, ein datenschutzfreundliches, cookie-freies Analysetool. Es erhebt keine personenbezogenen Daten und verfolgt Sie nicht website&uuml;bergreifend. Die Daten sind aggregiert und werden nie verkauft.</li>
-    <li><strong>Sprachpr&auml;ferenz:</strong> Ihre gew&auml;hlte Sprache (EN/FR/DE) wird im localStorage Ihres Browsers gespeichert. Dies ist kein Cookie und wird nie an unsere Server gesendet.</li>
+    <li><strong>Sprachpr&auml;ferenz:</strong> Ihre gew&auml;hlte Sprache (EN/FR/DE) und der Cookie-Zustimmungsstatus werden lokal in Ihrem Browser gespeichert. Diese Daten sind keine Cookies und werden nie an unsere Server gesendet.</li>
     <li><strong>Kontaktformular:</strong> Wenn Sie das Kontaktformular absenden, erheben wir Ihren Namen, Ihre E-Mail-Adresse, Ihren Firmennamen, Ihre Flottengr&ouml;&szlig;e und Ihre Nachricht. Diese Daten werden ausschlie&szlig;lich zur Beantwortung Ihrer Anfrage verwendet.</li>
   </ul>
   <h3>2.2 SaaS-Plattform (app.heritagemotor.app)</h3>
   <p>Bei der Nutzung der Heritage Motor Plattform als authentifizierter Benutzer verarbeiten wir:</p>
   <ul>
-    <li><strong>Kontodaten:</strong> Name, E-Mail-Adresse, Rolle und Authentifizierungsdaten (gehashte Passw&ouml;rter, MFA-Geheimnisse).</li>
+    <li><strong>Kontodaten:</strong> Name, E-Mail-Adresse, Rolle und Authentifizierungsdaten.</li>
     <li><strong>Fahrzeugdaten:</strong> Fahrzeuginformationen (Marke, Modell, VIN, Fotos, Dokumente), die von den Betreibern Ihrer Einrichtung eingegeben werden.</li>
     <li><strong>Betriebsdaten:</strong> Ereignisse, Stellplatzzuweisungen, Aufgaben, Bewegungsprotokolle und Pr&uuml;fpfade.</li>
-    <li><strong>Sitzungsdaten:</strong> JWT-Zugriffstoken (15-Minuten-Ablauf) und Aktualisierungstoken (7-Tage-Ablauf, als gehashte Werte gespeichert).</li>
+    <li><strong>Sitzungsdaten:</strong> Sitzungstoken mit begrenzter G&uuml;ltigkeit, sicher gespeichert.</li>
   </ul>
-  <p>Alle Plattformdaten sind pro Mandant &uuml;ber PostgreSQL Row-Level Security isoliert. Kein Mandant kann auf die Daten eines anderen Mandanten zugreifen.</p>
+  <p>Alle Plattformdaten sind strikt pro Mandant isoliert. Kein Mandant kann auf die Daten eines anderen Mandanten zugreifen.</p>
   <h2>3. Cookies und Tracking</h2>
   <p>Unsere Marketing-Website <strong>verwendet keine Cookies</strong>. Plausible Analytics ist vollst&auml;ndig cookie-frei und DSGVO-konform ohne Einwilligung.</p>
-  <p>Die SaaS-Plattform verwendet:</p>
-  <ul>
-    <li><strong>refresh_token</strong> (httpOnly Cookie): Speichert Ihren Sitzungs-Aktualisierungstoken. Dieser ist f&uuml;r die Authentifizierung streng erforderlich und erfordert keine Einwilligung gem&auml;&szlig; Art. 6(1)(b) DSGVO.</li>
-  </ul>
+  <p>Die SaaS-Plattform verwendet streng notwendige Cookies f&uuml;r die Authentifizierung und Navigation. Diese sind f&uuml;r die Funktion der Anwendung unerlässlich und erfordern keine Einwilligung gem&auml;&szlig; den geltenden Datenschutzbestimmungen.</p>
   <p>Wir verwenden keine Werbe-Cookies, Drittanbieter-Tracker oder Fingerprinting jeglicher Art.</p>
   <h2>4. Rechtsgrundlage der Verarbeitung</h2>
   <ul>
-    <li><strong>Vertragserf&uuml;llung</strong> (Art. 6(1)(b) DSGVO): Verarbeitung von Konto- und Fahrzeugdaten zur Erbringung des abonnierten Dienstes.</li>
-    <li><strong>Berechtigtes Interesse</strong> (Art. 6(1)(f) DSGVO): Datenschutzfreundliche Analyse zur Verbesserung unserer Website; Verarbeitung des Kontaktformulars zur Beantwortung von Anfragen.</li>
+    <li><strong>Vertragserf&uuml;llung:</strong> Verarbeitung von Konto- und Fahrzeugdaten zur Erbringung des abonnierten Dienstes.</li>
+    <li><strong>Berechtigtes Interesse:</strong> Datenschutzfreundliche Analyse zur Verbesserung unserer Website; Verarbeitung des Kontaktformulars zur Beantwortung von Anfragen.</li>
   </ul>
   <h2>5. Datenhosting und -&uuml;bertragungen</h2>
   <ul>
@@ -374,7 +430,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <p>Um eines dieser Rechte auszu&uuml;ben, senden Sie eine E-Mail an <a href="mailto:welcome@heritagemotor.app">welcome@heritagemotor.app</a>. Wir antworten innerhalb von 30 Tagen.</p>
   <p>Sie haben auch das Recht, eine Beschwerde bei Ihrer lokalen Datenschutzbeh&ouml;rde einzureichen (in Frankreich: <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>).</p>
   <h2>8. Sicherheit</h2>
-  <p>Wir implementieren branchenstandard-konforme Sicherheitsma&szlig;nahmen, darunter: bcrypt-Passwort-Hashing, obligatorische Zwei-Faktor-Authentifizierung (TOTP), verschl&uuml;sselte Verbindungen (TLS), JWT-Token-Blacklisting, Rate Limiting und zeilenbasierte Datenisolation pro Mandant.</p>
+  <p>Wir implementieren branchenstandard-konforme Sicherheitsma&szlig;nahmen, darunter: Passwortverschl&uuml;sselung, obligatorische Zwei-Faktor-Authentifizierung, verschl&uuml;sselte Verbindungen, Rate Limiting und strikte Datenisolation zwischen Mandanten.</p>
   <h2>9. &Auml;nderungen dieser Richtlinie</h2>
   <p>Wir k&ouml;nnen diese Richtlinie von Zeit zu Zeit aktualisieren. Wesentliche &Auml;nderungen werden registrierten Benutzern per E-Mail mitgeteilt. Das Datum der &bdquo;letzten Aktualisierung&ldquo; oben auf der Seite gibt die letzte &Uuml;berarbeitung an.</p>
 </div>
@@ -396,15 +452,20 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   var i18n = {
     fr: {
       'nav.platform': 'Plateforme', 'nav.pricing': 'Tarifs', 'nav.contact': 'Contact',
-      'nav.cta': 'Demander une d\u00e9mo', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales'
+      'nav.cta': 'Demander une d\u00e9mo', 'nav.home': 'Accueil', 'nav.privacy': 'Confidentialit\u00e9', 'nav.legal': 'Mentions l\u00e9gales',
+      'cookie_text': 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.',
+      'cookie_accept': 'Accepter'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
-      'nav.cta': 'Demo anfragen', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum'
+      'nav.cta': 'Demo anfragen', 'nav.home': 'Startseite', 'nav.privacy': 'Datenschutz', 'nav.legal': 'Impressum',
+      'cookie_text': 'Diese Website speichert Ihre Spracheinstellung lokal in Ihrem Browser. Es werden keine Tracking-Cookies verwendet. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.',
+      'cookie_accept': 'Akzeptieren'
     }
   };
 
   document.querySelectorAll('[data-i18n]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) { el._origHTML = el.cloneNode(true); });
 
   var currentLang = 'en';
   function setLang(lang) {
@@ -416,6 +477,17 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       if (dict[key]) {
         // Safe: values come from hardcoded i18n dict above, not user input
         el.textContent = dict[key];
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    // Cookie banner i18n — safe: hardcoded dict values, not user input
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+      var hKey = el.getAttribute('data-i18n-html');
+      if (dict[hKey]) {
+        var tmpl = document.createElement('template');
+        tmpl.innerHTML = dict[hKey]; // eslint-disable-line -- trusted i18n dict
+        el.replaceChildren(tmpl.content);
       } else if (el._origHTML) {
         el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
       }
@@ -473,6 +545,29 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   drawer.querySelectorAll('.drawer-lang button').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
   });
+</script>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var banner = document.getElementById('cookie-banner');
+  var btn = document.getElementById('cookie-accept');
+  if (!banner || !btn) return;
+  try { if (localStorage.getItem('hm-cookie-consent')) return; } catch(e) {}
+  banner.hidden = false;
+  btn.addEventListener('click', function() {
+    try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
+    banner.hidden = true;
+  });
+})();
 </script>
 </body>
 </html>

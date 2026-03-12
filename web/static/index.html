@@ -388,6 +388,71 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   .feat-card { padding: 2rem 1.5rem; }
 }
 
+/* COOKIE BANNER */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 1.5rem 1.5rem;
+  pointer-events: none;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(26, 25, 22, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.cookie-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.55);
+  line-height: 1.6;
+  margin: 0;
+}
+.cookie-link {
+  color: #b8955a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cookie-link:hover { color: #d4b07a; }
+.cookie-btn {
+  white-space: nowrap;
+  padding: 0.55rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 149, 90, 0.35);
+  background: transparent;
+  color: #b8955a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cookie-btn:hover {
+  background: #b8955a;
+  color: #0e0d0b;
+  border-color: #b8955a;
+}
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; }
+  .cookie-btn { width: 100%; }
+}
+
 </style>
 </head>
 <body>
@@ -898,7 +963,9 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'cta.tag': 'Commencer',
       'cta.title': 'Votre site m\u00e9rite<br> un <em>syst\u00e8me d\'exploitation.</em>',
       'cta.text': '20 minutes de d\u00e9mo, sans engagement. Juste une conversation sur le fonctionnement de votre site \u2014 et si Heritage Motor est le bon choix.',
-      'cta.conversation': 'D\u00e9marrer une conversation'
+      'cta.conversation': 'D\u00e9marrer une conversation',
+      'cookie_text': 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.',
+      'cookie_accept': 'Accepter'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.timeline': 'Zeitleiste', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
@@ -983,12 +1050,17 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'cta.tag': 'Loslegen',
       'cta.title': 'Ihr Standort verdient<br> ein <em>Betriebssystem.</em>',
       'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespr\u00e4ch dar\u00fcber, wie Ihr Standort arbeitet \u2014 und ob Heritage Motor die richtige L\u00f6sung ist.',
-      'cta.conversation': 'Gespr\u00e4ch starten'
+      'cta.conversation': 'Gespr\u00e4ch starten',
+      'cookie_text': 'Diese Website speichert Ihre Spracheinstellung lokal in Ihrem Browser. Es werden keine Tracking-Cookies verwendet. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.',
+      'cookie_accept': 'Akzeptieren'
     }
   };
 
   // Store original EN content
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el._origHTML = el.cloneNode(true);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
     el._origHTML = el.cloneNode(true);
   });
 
@@ -999,6 +1071,18 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       var key = el.getAttribute('data-i18n');
       if (dict[key]) {
         // Safe: values come from hardcoded i18n dict above, not user input
+        var temp = document.createElement('template');
+        temp.innerHTML = dict[key]; // eslint-disable-line no-unsanitized/property -- trusted hardcoded i18n dict, not user input
+        el.replaceChildren(temp.content);
+      } else if (el._origHTML) {
+        el.replaceChildren.apply(el, Array.from(el._origHTML.cloneNode(true).childNodes));
+      }
+    });
+    // HTML i18n elements (cookie banner text with links)
+    // Safe: values come from hardcoded i18n dict above, not user input
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n-html');
+      if (dict[key]) {
         var temp = document.createElement('template');
         temp.innerHTML = dict[key]; // eslint-disable-line no-unsanitized/property -- trusted hardcoded i18n dict, not user input
         el.replaceChildren(temp.content);
@@ -1165,6 +1249,29 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       setLang(this.getAttribute('data-lang'));
     });
   });
+</script>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var banner = document.getElementById('cookie-banner');
+  var btn = document.getElementById('cookie-accept');
+  if (!banner || !btn) return;
+  try { if (localStorage.getItem('hm-cookie-consent')) return; } catch(e) {}
+  banner.hidden = false;
+  btn.addEventListener('click', function() {
+    try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
+    banner.hidden = true;
+  });
+})();
 </script>
 </body>
 </html>
