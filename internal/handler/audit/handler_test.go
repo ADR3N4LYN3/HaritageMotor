@@ -1,6 +1,7 @@
 package audit_test
 
 import (
+	"context"
 	"net/http"
 	"testing"
 	"time"
@@ -39,20 +40,23 @@ func TestAuditList_AdminCanList(t *testing.T) {
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
 	// The audit middleware writes asynchronously in a goroutine.
-	// Poll until the entry appears (max ~2s).
+	// Wait for the entry to exist in the DB before testing the API endpoint.
+	// Use ownerPool (bypasses RLS) for the direct check.
+	require.Eventually(t, func() bool {
+		var count int
+		err := env.OwnerPool.QueryRow(context.Background(),
+			`SELECT COUNT(*) FROM audit_log WHERE tenant_id = $1`, tenantID,
+		).Scan(&count)
+		return err == nil && count >= 1
+	}, 10*time.Second, 200*time.Millisecond, "audit entry should appear within 10s")
+
+	// Now test the API endpoint.
+	resp := env.DoRequest(t, http.MethodGet, "/audit", adminToken, nil)
+	defer resp.Body.Close()
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+
 	var body auditListResponse
-	for i := 0; i < 20; i++ {
-		time.Sleep(100 * time.Millisecond)
-
-		resp := env.DoRequest(t, http.MethodGet, "/audit", adminToken, nil)
-		require.Equal(t, http.StatusOK, resp.StatusCode)
-		testutil.ReadJSON(t, resp, &body)
-		resp.Body.Close()
-
-		if body.TotalCount >= 1 {
-			break
-		}
-	}
+	testutil.ReadJSON(t, resp, &body)
 
 	assert.GreaterOrEqual(t, body.TotalCount, 1, "should have at least one audit entry from the vehicle creation")
 	assert.GreaterOrEqual(t, len(body.Data), 1)
