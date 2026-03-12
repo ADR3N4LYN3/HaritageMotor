@@ -11,7 +11,7 @@ interface QRScannerProps {
 export function QRScanner({ onResult, onError }: QRScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [scanning, setScanning] = useState(true);
-  const readerRef = useRef<BrowserQRCodeReader | null>(null);
+  const controlsRef = useRef<{ stop: () => void } | null>(null);
 
   // Stable refs for callbacks to avoid restarting scanner on every render
   const onResultRef = useRef(onResult);
@@ -23,7 +23,6 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
     if (!scanning) return;
 
     const reader = new BrowserQRCodeReader();
-    readerRef.current = reader;
 
     const startScanning = async () => {
       try {
@@ -46,7 +45,7 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
           return;
         }
 
-        await reader.decodeFromVideoDevice(
+        const controls = await reader.decodeFromVideoDevice(
           deviceId,
           videoRef.current!,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,6 +59,7 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
             }
           }
         );
+        controlsRef.current = controls;
       } catch {
         onErrorRef.current?.("Camera access denied");
       }
@@ -68,11 +68,11 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
     startScanning();
 
     const currentVideo = videoRef.current;
-    const currentReader = readerRef.current;
     return () => {
-      // Stop the zxing scanning loop
-      if (currentReader) {
-        currentReader.reset();
+      // Stop the zxing scanning loop via controls
+      if (controlsRef.current) {
+        controlsRef.current.stop();
+        controlsRef.current = null;
       }
       // Stop all media tracks
       if (currentVideo?.srcObject) {
@@ -105,8 +105,8 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
       </div>
       {/* Dim outside scan area */}
       <div className="absolute inset-0 bg-black/40 pointer-events-none" style={{
-        maskImage: "radial-gradient(circle 140px at center, transparent 0%, transparent 100%, black 100%)",
-        WebkitMaskImage: "radial-gradient(circle 140px at center, transparent 0%, transparent 100%, black 100%)",
+        maskImage: "radial-gradient(circle 130px at center, transparent 95%, black 100%)",
+        WebkitMaskImage: "radial-gradient(circle 130px at center, transparent 95%, black 100%)",
       }} />
       {/* Instructions */}
       <div className="absolute bottom-24 left-0 right-0 text-center">

@@ -179,8 +179,8 @@ func main() {
 	// Fiber app
 	app := fiber.New(fiber.Config{
 		EnableTrustedProxyCheck: true,
-		TrustedProxies:         []string{"127.0.0.1", "::1"},
-		ProxyHeader:            "X-Forwarded-For",
+		TrustedProxies:          []string{"127.0.0.1", "::1"},
+		ProxyHeader:             "X-Forwarded-For",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 			if e, ok := err.(*fiber.Error); ok {
