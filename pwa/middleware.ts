@@ -34,6 +34,16 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  // Protect /users — only admin role (UX guard, backend enforces real RBAC)
+  if (pathname.startsWith("/users")) {
+    const role = req.cookies.get("user_role")?.value;
+    if (role !== "admin") {
+      const scanUrl = req.nextUrl.clone();
+      scanUrl.pathname = "/scan";
+      return NextResponse.redirect(scanUrl);
+    }
+  }
+
   return NextResponse.next();
 }
 

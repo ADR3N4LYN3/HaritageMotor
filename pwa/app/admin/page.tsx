@@ -140,7 +140,7 @@ function StatsSection() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative">
-              <p className="text-3xl lg:text-4xl font-display font-light text-white/90 tabular-nums">
+              <p className="text-3xl lg:text-4xl font-sans font-normal text-white/90 tabular-nums">
                 {s.value}
               </p>
               <p className="text-[10px] tracking-[0.15em] uppercase text-gold/60 mt-2 font-medium">
@@ -419,7 +419,7 @@ function TenantRow({
 function StatPill({ value, label }: { value: number; label: string }) {
   return (
     <div className="text-right">
-      <p className="text-sm font-display font-light text-white/50 tabular-nums">{value}</p>
+      <p className="text-sm font-sans font-normal text-white/50 tabular-nums">{value}</p>
       <p className="text-[10px] text-white/15 tracking-[0.12em] uppercase">{label}</p>
     </div>
   );

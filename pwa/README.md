@@ -39,15 +39,19 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
 pwa/
   app/
     layout.tsx                    Root layout (fonts, providers, metadata)
-    page.tsx                      Redirect -> /scan
+    page.tsx                      Redirect -> /dashboard
     globals.css                   Animations, touch targets, safe areas
     login/page.tsx                Login (email/password + MFA, show/hide password)
     change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
-    dashboard/page.tsx            Liste vehicules (recherche, filtres)
-    scan/page.tsx                 Scanner QR -> detail vehicule/bay
+    dashboard/page.tsx            Superadmin: admin plateforme (activity sidebar + tabs) / Autres: registre vehicules
+    scan/page.tsx                 Scanner QR + bottom sheets (vehicules, bays, taches)
+    profile/page.tsx              Profil utilisateur (MFA setup/disable, logout)
+    tasks/page.tsx                Liste taches (filtres type, statut, vehicule)
+    users/page.tsx                Gestion utilisateurs CRUD (admin only)
+    qr-codes/page.tsx             Generation et impression QR codes (admin only)
     admin/
-      page.tsx                    Superadmin (tenants CRUD, invitations, quick links grid)
-      qr-codes/page.tsx           Generation et impression QR codes
+      page.tsx                    Admin legacy (superadmin redirect)
+      qr-codes/page.tsx           Generation et impression QR codes (legacy)
     vehicle/new/page.tsx          Onboarding nouveau vehicule
     vehicle/[id]/
       page.tsx                    Detail vehicule + timeline
@@ -71,7 +75,7 @@ pwa/
     layout/
       AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
       TopBar.tsx                  Header fixe (logo, SyncBadge, user)
-      BottomNav.tsx               Navigation mobile (Scan, Vehicules)
+      BottomNav.tsx               Navigation mobile (Scan, Tasks, Vehicules)
     ui/
       ActionButton.tsx            Bouton CTA (primary/danger/secondary)
       PageHeader.tsx              Header reutilisable (bouton retour, titre, subtitle, action slot)
@@ -101,7 +105,7 @@ pwa/
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)
   store/
     app.store.ts                  Zustand (accessToken, pendingCount, logout)
-  middleware.ts                   Guard auth (redirect /login si pas de cookie)
+  middleware.ts                   Guard auth (redirect /login si pas de cookie, /admin → superadmin, /users → admin)
 ```
 
 ## Patterns cles
@@ -194,8 +198,10 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `PageHeader` | `components/ui/PageHeader.tsx` | Header reutilisable : bouton retour (backHref ou router.back()), titre serif, subtitle, slot action. Utilise sur toutes les sous-pages. |
 | `PasswordInput` | `change-password/page.tsx` | Input mot de passe avec toggle show/hide (eye icon) |
 | `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
-| `Select` | `admin/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
-| `TenantRow` | `admin/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
+| `Select` | `dashboard/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
+| `TenantRow` | `dashboard/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
+| `SuperAdminDashboard` | `dashboard/page.tsx` | Admin plateforme : activity sidebar (w-80) + 5 tabs (Overview, Tenants, Vehicles, Bays, Invite) |
+| `ActivityPanel` | `dashboard/page.tsx` | Timeline recente (actions, logins) dans sidebar gauche fixe |
 | `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via useSWR + cookie httpOnly → `/api/auth/refresh` → Zustand (onSuccess callback). Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
 
 ## react-doctor (100/100)

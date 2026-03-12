@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAppStore } from "@/store/app.store";
 import { SyncBadge } from "../ui/SyncBadge";
 import logoCrest from "@/public/logo-crest-v2.png";
@@ -20,9 +21,13 @@ export function TopBar() {
       <div className="flex items-center gap-3">
         <SyncBadge />
         {user && (
-          <div className="text-[11px] text-white/35 tracking-wider font-light">
-            {user.first_name}
-          </div>
+          <Link
+            href="/profile"
+            className="w-8 h-8 rounded-full border border-white/[0.12] bg-white/[0.06] flex items-center justify-center text-[11px] font-medium text-gold/80 hover:border-gold/30 hover:text-gold transition-all duration-300"
+            aria-label="Profile"
+          >
+            {user.first_name[0]}{user.last_name[0]}
+          </Link>
         )}
       </div>
     </header>

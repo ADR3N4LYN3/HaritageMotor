@@ -23,19 +23,19 @@ Progressive Web App built with Next.js 14, designed as a mobile-first field tool
 pwa/
 ├── app/
 │   ├── layout.tsx             # Root layout (metadata, viewport, PWA manifest)
-│   ├── page.tsx               # Root redirect → /scan
+│   ├── page.tsx               # Root redirect → /dashboard
 │   ├── login/
 │   │   ├── layout.tsx         # Login layout (no AppShell)
 │   │   └── page.tsx           # Login + MFA verification
 │   ├── scan/
 │   │   ├── layout.tsx         # Scan layout (no AppShell)
-│   │   └── page.tsx           # QR scanner + manual code entry
+│   │   └── page.tsx           # QR scanner + bottom sheets (vehicles, bays, tasks)
 │   ├── admin/
-│   │   ├── page.tsx           # Superadmin dashboard (tenants, stats, invitations, quick links)
-│   │   └── qr-codes/page.tsx  # QR code generation and printing
+│   │   ├── page.tsx           # Legacy admin (redirects superadmin)
+│   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
-│   │   └── page.tsx           # Vehicle list with search, filters, quick action cards
+│   │   └── page.tsx           # Superadmin: platform admin (activity sidebar + tabs) / Others: vehicle registry
 │   ├── vehicle/new/
 │   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
@@ -46,6 +46,14 @@ pwa/
 │   │   ├── task/page.tsx      # Task completion
 │   │   ├── photo/page.tsx     # Photo capture and upload
 │   │   └── exit/page.tsx      # Vehicle exit confirmation
+│   ├── profile/
+│   │   └── page.tsx           # User profile (MFA setup/disable, logout)
+│   ├── tasks/
+│   │   └── page.tsx           # Task list with filters (type, status, vehicle)
+│   ├── users/
+│   │   └── page.tsx           # User management CRUD (admin only)
+│   ├── qr-codes/
+│   │   └── page.tsx           # QR code generation and printing (admin only)
 │   ├── bays/
 │   │   └── page.tsx           # Bay list with status filters and stats
 │   ├── bay/new/
@@ -59,12 +67,12 @@ pwa/
 │       ├── refresh/route.ts     # Proxy refresh through Next.js (cookie → API)
 │       ├── logout/route.ts      # Proxy logout to backend + clear cookie
 │       └── clear-token/route.ts # Clear refresh token cookie on logout
-├── middleware.ts                 # Auth guard + role-based route protection (/admin → superadmin only)
+├── middleware.ts                 # Auth guard + role-based route protection (/admin → superadmin, /users → admin)
 ├── components/
 │   ├── layout/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
 │   │   ├── TopBar.tsx         # App header with sync badge
-│   │   └── BottomNav.tsx      # Fixed bottom navigation (Scan, Vehicles)
+│   │   └── BottomNav.tsx      # Fixed bottom navigation (Scan, Tasks, Vehicles)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
 │   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot
@@ -289,12 +297,16 @@ Fallback: manual code entry for devices without camera access.
 
 | Route | Auth | Description |
 |-------|------|-------------|
-| `/` | No | Redirects to `/scan` |
+| `/` | No | Redirects to `/dashboard` |
 | `/login` | No | Login form + MFA verification |
-| `/admin` | Yes (superadmin) | Platform administration (tenants, invitations, quick links) |
+| `/admin` | Yes (superadmin) | Legacy admin page |
 | `/admin/qr-codes` | Yes (admin) | QR code generation and printing |
-| `/scan` | Yes | QR scanner (default landing page) |
-| `/dashboard` | Yes | Vehicle list with search, status filters, quick action cards |
+| `/scan` | Yes | QR scanner + bottom sheets (vehicles, bays, tasks) |
+| `/dashboard` | Yes | Superadmin: platform admin (activity, tabs) / Others: vehicle registry |
+| `/profile` | Yes | User profile (MFA setup/disable, logout) |
+| `/tasks` | Yes | Task list with filters (type, status, vehicle) |
+| `/users` | Yes (admin) | User management CRUD |
+| `/qr-codes` | Yes (admin) | QR code generation and printing |
 | `/vehicle/new` | Yes | New vehicle onboarding form |
 | `/vehicle/[id]` | Yes | Vehicle detail with timeline and actions |
 | `/vehicle/[id]/edit` | Yes | Edit vehicle details |
@@ -341,9 +353,12 @@ Wraps authenticated pages with consistent layout:
 
 ### Navigation
 
-Bottom navigation bar with two tabs:
-- **Scan** — QR scanner (primary workflow entry)
+Bottom navigation bar with three tabs:
+- **Scan** — QR scanner with bottom sheets (primary workflow entry)
+- **Tasks** — Task list with filters
 - **Vehicles** — Dashboard with search and filters
+
+TopBar includes a profile avatar (initials) linking to `/profile`.
 
 ## Design System (Dark Luxury)
 

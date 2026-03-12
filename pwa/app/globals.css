@@ -140,6 +140,15 @@ input::-ms-clear {
   border-top-color: var(--gold);
 }
 
+/* Hide scrollbar but keep scroll */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* QR code print styles */
 @media print {
   body {
