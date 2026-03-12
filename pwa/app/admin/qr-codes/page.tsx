@@ -33,7 +33,8 @@ export default function QRCodesPage() {
   const { data: baysData, isLoading: baysLoading } = useSWR<{ bays: BayQR[] }>("/bays/qr-sheet");
   const { data: vehiclesData, isLoading: vehiclesLoading } = useSWR<{ vehicles: VehicleQR[] }>("/vehicles/qr-sheet");
 
-  if (user?.role !== "admin" && user?.role !== "superadmin") {
+  // Only tenant admin can access QR codes — superadmin has no tenant context
+  if (user?.role !== "admin") {
     return (
       <AppShell>
         <div className="text-center py-12 text-white/50">Access denied</div>

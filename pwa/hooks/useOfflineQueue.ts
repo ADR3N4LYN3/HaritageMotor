@@ -6,7 +6,8 @@ import { getAllActions, getActionCount, removeAction, updateActionStatus } from 
 import { api } from "@/lib/api";
 import type { PendingAction } from "@/lib/types";
 
-const MAX_RETRY_DELAY = 30000;
+const MAX_RETRIES = 2;
+const MAX_RETRY_DELAY = 10000;
 
 export function useOfflineQueue() {
   const setPendingCount = useAppStore((s) => s.setPendingCount);
@@ -77,7 +78,7 @@ async function syncAction(action: PendingAction): Promise<void> {
     return;
   }
 
-  for (let attempt = 0; attempt <= 5; attempt++) {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       await updateActionStatus(action.id, "syncing");
 
@@ -104,9 +105,9 @@ async function syncAction(action: PendingAction): Promise<void> {
         await updateActionStatus(action.id, "failed");
         return;
       }
-      // Network error — retry with exponential backoff
+      // Network error — retry with exponential backoff (limited retries)
       await updateActionStatus(action.id, "pending");
-      if (attempt < 5) {
+      if (attempt < MAX_RETRIES) {
         const delay = Math.min(1000 * Math.pow(2, attempt), MAX_RETRY_DELAY);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }

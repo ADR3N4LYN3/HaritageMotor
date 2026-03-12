@@ -69,6 +69,10 @@ Each refresh uses token rotation:
 3. Old token is revoked (`revoked_at = NOW()`)
 4. New access + refresh token pair is issued
 
+### PWA Refresh Mutex
+
+The PWA API client (`pwa/lib/api.ts`) deduplicates concurrent 401 refresh attempts. When multiple API calls receive 401 simultaneously, only the first triggers a refresh — subsequent calls await the same promise. This prevents token rotation conflicts where only the first refresh would succeed (the backend invalidates the old refresh token on rotation).
+
 ## Authorization (RBAC)
 
 ### Roles

@@ -256,7 +256,7 @@ interface PendingAction {
 - Listens for `online` browser event to trigger sync
 - Polls every 30 seconds when online
 - Processes actions in FIFO order (sorted by `created_at`)
-- Exponential backoff on network errors: 1s, 2s, 4s, 8s, 16s (5 retries max, cap at 30s in code)
+- Exponential backoff on network errors: 1s, 2s (2 retries max, cap at 10s)
 - Client errors (4xx) mark action as `failed` — no retry
 
 ## QR Scanner
@@ -292,7 +292,7 @@ Fallback: manual code entry for devices without camera access.
 | `/` | No | Redirects to `/scan` |
 | `/login` | No | Login form + MFA verification |
 | `/admin` | Yes (superadmin) | Platform administration (tenants, invitations, quick links) |
-| `/admin/qr-codes` | Yes (superadmin) | QR code generation and printing |
+| `/admin/qr-codes` | Yes (admin) | QR code generation and printing |
 | `/scan` | Yes | QR scanner (default landing page) |
 | `/dashboard` | Yes | Vehicle list with search, status filters, quick action cards |
 | `/vehicle/new` | Yes | New vehicle onboarding form |
@@ -306,6 +306,7 @@ Fallback: manual code entry for devices without camera access.
 | `/bay/new` | Yes | Create new bay |
 | `/bay/[id]` | Yes | Bay detail view |
 | `/bay/[id]/edit` | Yes | Edit bay details |
+| `not-found` | No | Custom 404 page (dark luxury theme) |
 
 ## Role-Based UI
 

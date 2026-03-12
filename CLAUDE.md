@@ -219,8 +219,9 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 ### Règles critiques PWA
 - **BFF pattern** : refresh token en cookie `httpOnly`, routes Next.js `/api/auth/*` comme proxy vers le backend Go
 - **AuthBootstrap obligatoire** dans `layout.tsx` : restaure session au montage via `useSWR` + cookie httpOnly → Zustand. Sans lui, toute page auth est blanche après F5
-- **Handler 401** : ne JAMAIS conditionner le refresh sur `token` en mémoire (Zustand est in-memory, `token = null` après refresh). Toujours tenter le refresh via cookie httpOnly
-- **Offline queue** : `pushAction()` en IndexedDB sur erreur réseau (move/task/exit). Photos non sérialisables → upload uniquement en ligne
+- **Handler 401** : ne JAMAIS conditionner le refresh sur `token` en mémoire (Zustand est in-memory, `token = null` après refresh). Toujours tenter le refresh via cookie httpOnly. Le refresh est dédupliqué via un mutex (une seule promise partagée pour les 401 concurrents)
+- **AuthBootstrap + password_change_required** : AuthBootstrap redirige vers `/change-password` dans son `onSuccess` si `user.password_change_required === true` (enforcement post-F5)
+- **Offline queue** : `pushAction()` en IndexedDB sur erreur réseau (move/task/exit). Photos non sérialisables → upload uniquement en ligne. Max 2 retries, backoff cap 10s
 - **Zustand** : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
 
 ### Design System Dark Luxury (PWA)

@@ -14,7 +14,7 @@ const QRScanner = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-64 bg-neutral-900 animate-pulse rounded-xl" />
+      <div className="w-full h-64 bg-white/[0.03] animate-pulse rounded-xl" />
     ),
   }
 );
@@ -35,6 +35,9 @@ export default function ScanPage() {
         router.push(`/vehicle/${result.entity_id}`);
       } else if (result.entity_type === "bay") {
         router.push(`/bay/${result.entity_id}`);
+      } else {
+        setError("Unknown QR code type");
+        setResolving(false);
       }
     } catch (err) {
       if (err instanceof ApiError) {
