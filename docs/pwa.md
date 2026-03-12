@@ -30,6 +30,8 @@ pwa/
 │   ├── scan/
 │   │   ├── layout.tsx         # Scan layout (no AppShell)
 │   │   └── page.tsx           # QR scanner + bottom sheets (vehicles, bays, tasks)
+│   ├── change-password/
+│   │   └── page.tsx           # Password change (PasswordInput, strength meter, checklist)
 │   ├── admin/
 │   │   ├── page.tsx           # Legacy admin (redirects superadmin)
 │   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
@@ -69,6 +71,7 @@ pwa/
 │       └── clear-token/route.ts # Clear refresh token cookie on logout
 ├── middleware.ts                 # Auth guard + role-based route protection (/admin → superadmin, /users → admin)
 ├── components/
+│   ├── ErrorBoundary.tsx        # App error boundary (react-error-boundary, full-screen fallback with retry)
 │   ├── layout/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
 │   │   ├── TopBar.tsx         # App header with sync badge
@@ -300,6 +303,7 @@ Fallback: manual code entry for devices without camera access.
 |-------|------|-------------|
 | `/` | No | Redirects to `/dashboard` |
 | `/login` | No | Login form + MFA verification |
+| `/change-password` | Yes | Password change (strength meter, checklist) |
 | `/admin` | Yes (superadmin) | Legacy admin page |
 | `/admin/qr-codes` | Yes (admin) | QR code generation and printing |
 | `/scan` | Yes | QR scanner + bottom sheets (vehicles, bays, tasks) |

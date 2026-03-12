@@ -72,6 +72,7 @@ pwa/
       clear-token/route.ts        Suppression cookie (fallback)
   components/
     AuthBootstrap.tsx             Restaure session au mount (cookie → Zustand)
+    ErrorBoundary.tsx             Error boundary global (react-error-boundary, fallback plein ecran)
     layout/
       AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
       TopBar.tsx                  Header fixe (logo, SyncBadge, user)
@@ -202,6 +203,7 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `Select` | `dashboard/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
 | `TenantRow` | `dashboard/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
 | `CookieBanner` | `components/layout/CookieBanner.tsx` | Banniere GDPR consentement cookies, persistence localStorage, style dark luxury |
+| `AppErrorBoundary` | `components/ErrorBoundary.tsx` | Error boundary global (react-error-boundary). Affiche fallback plein ecran dark luxury avec message d'erreur et bouton "Try again" (reload page). |
 | `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via useSWR + cookie httpOnly → `/api/auth/refresh` → Zustand (onSuccess callback). Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
 
 ## react-doctor (100/100)
