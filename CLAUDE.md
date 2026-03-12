@@ -103,6 +103,7 @@ pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 - MFA TOTP obligatoire (Google Authenticator)
 - Secrets (JWT_SECRET, clés S3) TOUJOURS dans les variables d'env, JAMAIS dans le code
 - Rate limiting : 5 req/15min/IP sur auth, 100 req/min/user sur routes authentifiées
+- Trusted Proxies : `EnableTrustedProxyCheck: true` + `TrustedProxies: ["127.0.0.1", "::1"]` + `ProxyHeader: "X-Forwarded-For"` — obligatoire derrière Caddy pour que `c.IP()` retourne l'IP client réelle
 - Upload limiter : 200MB cumulé / 10 min / user sur les endpoints upload
 - Password strength : min 8 chars, upper+lower+digit+special
 
@@ -276,7 +277,26 @@ Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` pa
 - `contact.html` : `data-i18n` (nav, labels, placeholders) + détection auto de la langue navigateur. Nav simplifié (pas de lien "Contact" redondant avec le CTA)
 - `privacy.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
 - `legal.html` : `data-lang-block` pour le corps + `data-i18n` pour nav/footer
-- `404.html` : `data-i18n` + fond route brumeuse (Unsplash), shield crest, CTA style landing
+- `404.html` : `data-i18n` + fond route brumeuse (Unsplash), shield crest, CTA style landing (pas de nav, page centrée)
+
+### Nav responsive (hamburger drawer)
+
+Breakpoint mobile : `@media (max-width: 960px)` sur toutes les pages avec nav (index, contact, legal, privacy).
+
+**Comportement mobile (≤960px) :**
+- Logo texte "HERITAGE MOTOR" masqué (`.nav-logo span { display: none }`), seul le blason reste (32px)
+- Nav links, CTA, lang switch masqués — tout est dans le drawer
+- Burger visible (`.nav-burger { display: flex }`)
+- Mobile drawer : slide-in 280px depuis la droite, overlay sombre, fermeture par overlay/Escape/lien
+
+**Pattern JS toggle (référence = index.html) :**
+- `toggleDrawer(open)` : paramètre `open` explicite (boolean) ou toggle par détection de classe
+- Overlay click → `toggleDrawer(false)` (pas toggle, fermeture garantie)
+- Escape key → `toggleDrawer(false)`
+- `aria-expanded` mis à jour dynamiquement sur le burger
+- `document.body.style.overflow = 'hidden'` quand ouvert (empêche scroll derrière)
+
+**404.html** : pas de nav, pas de hamburger — page centrée by design.
 
 ### Design System Landing (Dark Luxury)
 
@@ -308,7 +328,8 @@ Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` pa
 Logo principal : `logo-crest-v2.png` — blason HM art déco + couronne de laurier, PNG fond transparent, tons or (#b8955a / #c4a265).
 
 Utilisé comme `<img>` + texte "HERITAGE MOTOR" en Cormorant Garamond 600 à côté. Tailles :
-- **Landing nav** : 42px + texte 19px
+- **Landing nav desktop** : 42px + texte 19px
+- **Landing nav mobile** (≤960px) : 32px, texte masqué (blason seul)
 - **Landing footer** : 28px + texte 15px
 - **PWA TopBar** : 30px + texte 0.82rem
 - **PWA Login** : 88px (centré, texte en dessous)

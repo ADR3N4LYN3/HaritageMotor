@@ -117,10 +117,12 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 
 @media (max-width: 960px) {
   nav { padding: 1rem 1.5rem; }
+  .nav-logo span { display: none; }
+  .nav-logo img { height: 32px; }
   .nav-links { display: none; }
+  .nav-cta { display: none; }
   .lang-switch { display: none; }
   .nav-burger { display: flex; flex-direction: column; }
-  .nav-cta { font-size: 0.7rem; padding: 0.6rem 1.2rem; letter-spacing: 0.12em; }
   .legal-hero { padding: 4rem 1.5rem 2rem; }
   .legal-body { padding: 2.5rem 1.5rem; }
   footer { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding: 2rem 1.5rem; }
@@ -128,7 +130,6 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 }
 
 @media (max-width: 480px) {
-  .nav-cta { font-size: 0.68rem; padding: 0.55rem 1rem; letter-spacing: 0.1em; }
   .legal-hero { padding: 3rem 1.25rem 1.5rem; }
   .legal-body { padding: 2rem 1.25rem; }
   .footer-links { gap: 0.8rem 1.5rem; }
@@ -155,11 +156,11 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
         <button class="lang-opt" data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
       </div>
     </div>
-    <button class="nav-burger" id="navBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="mobile-drawer-overlay" id="drawerOverlay"></div>
-<div class="mobile-drawer" id="mobileDrawer">
+<div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Mobile menu">
   <a href="/#platform" data-i18n="nav.platform">Platform</a>
   <a href="/#pricing" data-i18n="nav.pricing">Pricing</a>
   <a href="/contact" data-i18n="nav.contact">Contact</a>
@@ -455,18 +456,21 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   var burger = document.getElementById('navBurger');
   var drawer = document.getElementById('mobileDrawer');
   var overlay = document.getElementById('drawerOverlay');
-  var drawerOpen = false;
-  function toggleDrawer() {
-    drawerOpen = !drawerOpen;
-    burger.classList.toggle('open', drawerOpen);
-    drawer.classList.toggle('open', drawerOpen);
-    overlay.classList.toggle('open', drawerOpen);
-    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+  function toggleDrawer(open) {
+    var isOpen = typeof open === 'boolean' ? open : !drawer.classList.contains('open');
+    drawer.classList.toggle('open', isOpen);
+    overlay.classList.toggle('open', isOpen);
+    burger.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   }
-  burger.addEventListener('click', toggleDrawer);
-  overlay.addEventListener('click', toggleDrawer);
-  document.querySelectorAll('.mobile-drawer a').forEach(function(a) { a.addEventListener('click', function() { if (drawerOpen) toggleDrawer(); }); });
-  document.querySelectorAll('.drawer-lang button').forEach(function(btn) {
+  burger.addEventListener('click', function() { toggleDrawer(); });
+  overlay.addEventListener('click', function() { toggleDrawer(false); });
+  drawer.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() { toggleDrawer(false); });
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') toggleDrawer(false); });
+  drawer.querySelectorAll('.drawer-lang button').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
   });
 </script>

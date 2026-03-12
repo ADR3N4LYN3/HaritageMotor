@@ -334,10 +334,12 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
 @media (max-width: 960px) {
   nav { padding: 1.25rem 1.5rem; }
   nav.scrolled { padding: 0.9rem 1.5rem; }
+  .nav-logo span { display: none; }
+  .nav-logo img { height: 32px; }
   .nav-links { display: none; }
   .nav-sign-in { display: none; }
+  .nav-cta { display: none; }
   .nav-right { gap: 1rem; }
-  .nav-cta { font-size: 0.62rem; padding: 0.45rem 0.9rem; letter-spacing: 0.1em; white-space: nowrap; min-width: auto !important; }
   .lang-switch { display: none; }
   .nav-burger { display: flex; flex-direction: column; }
   .hero h1 { font-size: clamp(2.8rem, 8vw, 4rem); }
@@ -377,7 +379,6 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
 }
 
 @media (max-width: 480px) {
-  .nav-cta { font-size: 0.58rem; padding: 0.4rem 0.8rem; letter-spacing: 0.1em; white-space: nowrap; }
   .hero h1 { font-size: clamp(2.2rem, 9vw, 3.2rem); }
   .pillar-band { height: 70vh; }
   .pillar-band-content { padding: 2.5rem 1.25rem; }

@@ -179,10 +179,12 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 /* RESPONSIVE */
 @media (max-width: 960px) {
   nav { padding: 1rem 1.5rem; }
+  .nav-logo span { display: none; }
+  .nav-logo img { height: 32px; }
   .nav-links { display: none; }
+  .nav-cta { display: none; }
   .lang-switch { display: none; }
   .nav-burger { display: flex; flex-direction: column; }
-  .nav-cta { font-size: 0.62rem; padding: 0.45rem 0.9rem; letter-spacing: 0.1em; }
   main { padding: 3rem 1.5rem; grid-template-columns: 1fr; gap: 3rem; }
   .contact-form-wrap { padding: 2rem 1.5rem; }
   .form-row { grid-template-columns: 1fr; }
@@ -191,7 +193,6 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
 }
 
 @media (max-width: 480px) {
-  .nav-cta { font-size: 0.68rem; padding: 0.55rem 1rem; letter-spacing: 0.1em; }
   .contact-info h1 { font-size: clamp(1.6rem, 7vw, 2.5rem); }
   .contact-form-wrap { padding: 1.5rem 1rem; }
   .form-submit { width: 100%; justify-content: center; }
