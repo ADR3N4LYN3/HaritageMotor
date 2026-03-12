@@ -29,6 +29,7 @@ import (
 	contacthandler "github.com/chriis/heritage-motor/internal/handler/contact"
 	dochandler "github.com/chriis/heritage-motor/internal/handler/document"
 	eventhandler "github.com/chriis/heritage-motor/internal/handler/event"
+	photohandler "github.com/chriis/heritage-motor/internal/handler/photo"
 	scanhandler "github.com/chriis/heritage-motor/internal/handler/scan"
 	taskhandler "github.com/chriis/heritage-motor/internal/handler/task"
 	userhandler "github.com/chriis/heritage-motor/internal/handler/user"
@@ -171,6 +172,7 @@ func buildApp(ownerPool, appPool *pgxpool.Pool, jwtManager *auth.JWTManager) *fi
 	userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry(), planService)
 	auditHandler := auditloghandler.NewHandler(appPool)
 	scanHandler := scanhandler.NewHandler(appPool)
+	photoHandler := photohandler.NewHandler(nil) // nil s3Client for tests
 	adminHandler := adminhandler.NewHandler(adminService)
 	contactHandler := contacthandler.NewHandler(contactService)
 
@@ -255,6 +257,9 @@ func buildApp(ownerPool, appPool *pgxpool.Pool, jwtManager *auth.JWTManager) *fi
 
 	// Scan
 	authed.Get("/scan/:token", scanHandler.Resolve)
+
+	// Photos (signed URL for download)
+	authed.Get("/photos/:key/signed-url", photoHandler.GetSignedURL)
 
 	// Audit
 	authed.Get("/audit", middleware.RequireAdmin(), auditHandler.List)
