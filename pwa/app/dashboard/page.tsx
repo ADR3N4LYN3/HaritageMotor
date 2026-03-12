@@ -24,20 +24,31 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 20;
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
+
   const queryString = useMemo(() => {
     const queryParams = new URLSearchParams();
     if (debouncedSearch) queryParams.set("search", debouncedSearch);
     if (statusFilter) queryParams.set("status", statusFilter);
+    queryParams.set("page", String(page));
+    queryParams.set("per_page", String(PER_PAGE));
     return queryParams.toString();
-  }, [debouncedSearch, statusFilter]);
+  }, [debouncedSearch, statusFilter, page]);
 
   const { data, isLoading, error } = useSWR<{ data: Vehicle[]; total_count: number }>(
-    `/vehicles${queryString ? `?${queryString}` : ""}`,
+    `/vehicles?${queryString}`,
     { refreshInterval: 30000 }
   );
 
   const vehicles = data?.data || [];
   const totalCount = data?.total_count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
 
   const handleVehicleClick = useCallback(
     (id: string) => router.push(`/vehicle/${id}`),
@@ -53,6 +64,7 @@ export default function DashboardPage() {
     transit: "Transit",
   };
 
+  // Counts from visible page — Total comes from server total_count
   const storedCount = vehicles.filter((v) => v.status === "stored").length;
   const outCount = vehicles.filter((v) => v.status === "out").length;
 
@@ -212,9 +224,30 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Bottom count */}
+        {/* Pagination + count */}
         {!isLoading && vehicles.length > 0 && (
-          <div className="reveal-up text-center pt-4 pb-2">
+          <div className="reveal-up text-center pt-4 pb-2 space-y-3">
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300"
+                >
+                  Previous
+                </button>
+                <span className="text-xs text-white/40 tabular-nums">
+                  {page} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300"
+                >
+                  Next
+                </button>
+              </div>
+            )}
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/20">
               {totalCount} vehicle{totalCount !== 1 ? "s" : ""} in registry
             </p>

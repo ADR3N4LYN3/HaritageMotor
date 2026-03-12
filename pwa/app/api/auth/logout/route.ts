@@ -7,14 +7,18 @@ export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
 
   // Call backend logout with the refresh token from the httpOnly cookie
-  if (refreshToken && authHeader) {
+  // Always attempt if we have a refresh token — auth header is optional
+  if (refreshToken) {
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (authHeader) {
+        headers["Authorization"] = authHeader;
+      }
       await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authHeader,
-        },
+        headers,
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
     } catch {

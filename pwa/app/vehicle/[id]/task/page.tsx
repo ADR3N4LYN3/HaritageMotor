@@ -35,7 +35,7 @@ export default function TaskPage() {
   const { refreshCount } = useOfflineQueue();
 
   const [completing, setCompleting] = useState<string | null>(null);
-  const [notes, setNotes] = useState("");
+  const [taskNotes, setTaskNotes] = useState<Record<string, string>>({});
   const [{ loading, success, error }, setStatus] = useReducer(
     (s: { loading: boolean; success: { task: Task } | null; error: string | null }, a: Partial<{ loading: boolean; success: { task: Task } | null; error: string | null }>) => ({ ...s, ...a }),
     { loading: false, success: null as { task: Task } | null, error: null as string | null }
@@ -44,6 +44,7 @@ export default function TaskPage() {
   async function handleComplete(task: Task) {
     setStatus({ loading: true, error: null });
 
+    const notes = taskNotes[task.id] || "";
     const payload = { task_id: task.id, notes: notes || undefined };
 
     // Offline fallback — queue for later sync
@@ -93,7 +94,6 @@ export default function TaskPage() {
         onDone={() => {
           setStatus({ success: null });
           setCompleting(null);
-          setNotes("");
         }}
       />
     );
@@ -201,8 +201,8 @@ export default function TaskPage() {
                     {isExpanded && (
                       <div className="px-4 pb-4 pt-0 space-y-3 border-t border-white/[0.06]">
                         <textarea
-                          value={notes}
-                          onChange={(e) => setNotes(e.target.value)}
+                          value={taskNotes[task.id] || ""}
+                          onChange={(e) => setTaskNotes((prev) => ({ ...prev, [task.id]: e.target.value }))}
                           placeholder="Notes (optional)"
                           rows={2}
                           className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors"

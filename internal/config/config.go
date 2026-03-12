@@ -79,13 +79,15 @@ func Load() (*Config, error) {
 	// Validate required config in production
 	if cfg.AppEnv == "production" {
 		required := map[string]string{
-			"DATABASE_URL":     cfg.DatabaseURL,
-			"DATABASE_APP_URL": cfg.DatabaseAppURL,
-			"S3_ENDPOINT":      cfg.S3Endpoint,
-			"S3_ACCESS_KEY":    cfg.S3AccessKey,
-			"S3_SECRET_KEY":    cfg.S3SecretKey,
-			"S3_BUCKET":        cfg.S3Bucket,
-			"RESEND_API_KEY":   cfg.ResendAPIKey,
+			"DATABASE_URL":         cfg.DatabaseURL,
+			"DATABASE_APP_URL":     cfg.DatabaseAppURL,
+			"S3_ENDPOINT":          cfg.S3Endpoint,
+			"S3_ACCESS_KEY":        cfg.S3AccessKey,
+			"S3_SECRET_KEY":        cfg.S3SecretKey,
+			"S3_BUCKET":            cfg.S3Bucket,
+			"RESEND_API_KEY":       cfg.ResendAPIKey,
+			"TURNSTILE_SECRET_KEY": cfg.TurnstileSecretKey,
+			"APP_BASE_URL":         cfg.AppBaseURL,
 		}
 		for name, val := range required {
 			if val == "" {

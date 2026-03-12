@@ -68,13 +68,16 @@ export function QRScanner({ onResult, onError }: QRScannerProps) {
     startScanning();
 
     const currentVideo = videoRef.current;
+    const currentReader = readerRef.current;
     return () => {
-      if (readerRef.current) {
-        // Stop all tracks
-        if (currentVideo?.srcObject) {
-          const stream = currentVideo.srcObject as MediaStream;
-          stream.getTracks().forEach((track) => track.stop());
-        }
+      // Stop the zxing scanning loop
+      if (currentReader) {
+        currentReader.reset();
+      }
+      // Stop all media tracks
+      if (currentVideo?.srcObject) {
+        const stream = currentVideo.srcObject as MediaStream;
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [scanning]);

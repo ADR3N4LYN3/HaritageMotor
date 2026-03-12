@@ -96,16 +96,16 @@ export default function EditVehiclePage() {
       make: make.trim(),
       model: model.trim(),
       owner_name: ownerName.trim(),
+      color: color.trim(),
+      license_plate: licensePlate.trim(),
+      vin: vin.trim(),
+      owner_email: ownerEmail.trim(),
+      owner_phone: ownerPhone.trim(),
+      owner_notes: ownerNotes.trim(),
+      notes: notes.trim(),
+      tags,
     };
     if (year) body.year = parseInt(year, 10);
-    if (color.trim()) body.color = color.trim();
-    if (licensePlate.trim()) body.license_plate = licensePlate.trim();
-    if (vin.trim()) body.vin = vin.trim();
-    if (ownerEmail.trim()) body.owner_email = ownerEmail.trim();
-    if (ownerPhone.trim()) body.owner_phone = ownerPhone.trim();
-    if (ownerNotes.trim()) body.owner_notes = ownerNotes.trim();
-    if (notes.trim()) body.notes = notes.trim();
-    body.tags = tags;
 
     try {
       await api.patch(`/vehicles/${id}`, body);

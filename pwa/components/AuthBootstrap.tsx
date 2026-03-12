@@ -1,10 +1,12 @@
 "use client";
 
 import useSWR from "swr";
+import { useRouter } from "next/navigation";
 import { useAppStore } from "@/store/app.store";
 
 export function AuthBootstrap({ children }: { children: React.ReactNode }) {
   const accessToken = useAppStore((s) => s.accessToken);
+  const router = useRouter();
 
   const { isLoading } = useSWR(
     accessToken ? null : "auth-bootstrap",
@@ -25,6 +27,10 @@ export function AuthBootstrap({ children }: { children: React.ReactNode }) {
           const store = useAppStore.getState();
           store.setAccessToken(data.access_token);
           if (data.user) store.setUser(data.user);
+          // Re-enforce password change requirement after session restore
+          if (data.user?.password_change_required) {
+            router.replace("/change-password");
+          }
         }
       },
     }

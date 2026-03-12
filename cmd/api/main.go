@@ -137,6 +137,24 @@ func main() {
 		}()
 	}
 
+	// Start periodic cleanup of expired/revoked refresh tokens (every 24h).
+	if ownerPool != nil {
+		go func() {
+			ticker := time.NewTicker(24 * time.Hour)
+			defer ticker.Stop()
+			for range ticker.C {
+				cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 10*time.Second)
+				tag, cleanupErr := ownerPool.Exec(cleanupCtx, "DELETE FROM refresh_tokens WHERE expires_at < NOW() - INTERVAL '7 days'")
+				cleanupCancel()
+				if cleanupErr != nil {
+					log.Warn().Err(cleanupErr).Msg("refresh token cleanup failed")
+				} else if tag.RowsAffected() > 0 {
+					log.Info().Int64("deleted", tag.RowsAffected()).Msg("refresh token cleanup")
+				}
+			}
+		}()
+	}
+
 	// S3 Storage
 	s3Client, err := storage.NewS3Client(
 		cfg.S3Endpoint, cfg.S3Bucket,
@@ -160,6 +178,9 @@ func main() {
 
 	// Fiber app
 	app := fiber.New(fiber.Config{
+		EnableTrustedProxyCheck: true,
+		TrustedProxies:         []string{"127.0.0.1", "::1"},
+		ProxyHeader:            "X-Forwarded-For",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 			if e, ok := err.(*fiber.Error); ok {

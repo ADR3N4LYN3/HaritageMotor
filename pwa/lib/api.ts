@@ -9,17 +9,30 @@ class ApiError extends Error {
   }
 }
 
+let refreshPromise: Promise<string | null> | null = null;
+
 async function refreshAccessToken(): Promise<string | null> {
+  // Deduplicate concurrent refresh calls — all 401 handlers share one promise
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch("/api/auth/refresh", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.access_token || null;
+    } catch {
+      return null;
+    }
+  })();
+
   try {
-    const res = await fetch("/api/auth/refresh", {
-      method: "POST",
-      credentials: "include",
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.access_token || null;
-  } catch {
-    return null;
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
   }
 }
 

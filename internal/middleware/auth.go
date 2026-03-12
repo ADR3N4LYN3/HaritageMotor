@@ -25,6 +25,24 @@ type blacklistEntry struct {
 	cachedAt    time.Time
 }
 
+func init() {
+	// Periodic purge of expired blacklist cache entries to prevent unbounded memory growth.
+	go func() {
+		ticker := time.NewTicker(5 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			blacklistCache.Range(func(key, value any) bool {
+				if entry, ok := value.(blacklistEntry); ok {
+					if time.Since(entry.cachedAt) > blacklistCacheTTL {
+						blacklistCache.Delete(key)
+					}
+				}
+				return true
+			})
+		}
+	}()
+}
+
 type contextKey string
 
 const (

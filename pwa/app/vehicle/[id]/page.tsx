@@ -29,12 +29,14 @@ export default function VehiclePage() {
 
   const [downloadingDoc, setDownloadingDoc] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const canOperate = role === "admin" || role === "operator";
   const canTechnician = canOperate || role === "technician";
 
   async function handleDownload(docId: string) {
     setDownloadingDoc(docId);
+    setErrorMsg(null);
     try {
       const res = await api.get<{ document: Document; signed_url: string }>(
         `/vehicles/${id}/documents/${docId}`
@@ -43,7 +45,7 @@ export default function VehiclePage() {
         window.open(res.signed_url, "_blank");
       }
     } catch {
-      // silently fail
+      setErrorMsg("Failed to download document. Please try again.");
     } finally {
       setDownloadingDoc(null);
     }
@@ -51,12 +53,34 @@ export default function VehiclePage() {
 
   async function handleReport() {
     setReportLoading(true);
+    setErrorMsg(null);
     try {
-      const token = useAppStore.getState().accessToken;
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
-      const res = await fetch(`${apiUrl}/vehicles/${id}/report`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+
+      const doFetch = () => {
+        const token = useAppStore.getState().accessToken;
+        return fetch(`${apiUrl}/vehicles/${id}/report`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+      };
+
+      let res = await doFetch();
+
+      // Handle 401 with refresh (same logic as api.ts)
+      if (res.status === 401) {
+        const refreshRes = await fetch("/api/auth/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (refreshRes.ok) {
+          const data = await refreshRes.json();
+          if (data.access_token) {
+            useAppStore.getState().setAccessToken(data.access_token);
+            res = await doFetch();
+          }
+        }
+      }
+
       if (!res.ok) throw new Error("Report generation failed");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -66,7 +90,7 @@ export default function VehiclePage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      // silently fail
+      setErrorMsg("Failed to generate report. Please try again.");
     } finally {
       setReportLoading(false);
     }
@@ -170,6 +194,11 @@ export default function VehiclePage() {
               </ActionButton>
             )}
           </div>
+        )}
+
+        {/* Error feedback */}
+        {errorMsg && (
+          <p className="text-danger text-sm text-center">{errorMsg}</p>
         )}
 
         {/* PDF Report */}

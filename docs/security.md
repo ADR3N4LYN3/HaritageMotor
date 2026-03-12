@@ -160,6 +160,10 @@ All user-created passwords must meet:
 
 Enforced in `internal/domain/password.go` via `ValidatePasswordStrength()`.
 
+### Trusted Proxies
+
+Fiber is configured with `EnableTrustedProxyCheck: true` and `TrustedProxies: ["127.0.0.1", "::1"]` so that `c.IP()` correctly resolves the real client IP from the `X-Forwarded-For` header set by Caddy. Without this, rate limiting would key on the proxy's loopback IP instead of the actual client.
+
 ### Rate Limiting
 
 Endpoints are rate-limited to prevent brute-force and abuse:
@@ -273,6 +277,8 @@ Applied by Caddy. Headers vary per host:
 The PWA subdomain allows `camera=(self)` for QR scanning via the device camera.
 
 **Token Blacklist Cleanup**: A background goroutine runs every hour to purge expired entries from `token_blacklist` (`DELETE WHERE expires_at < NOW()`).
+
+**Refresh Token Cleanup**: A background goroutine runs every 24 hours to purge expired refresh tokens older than 7 days (`DELETE FROM refresh_tokens WHERE expires_at < NOW() - INTERVAL '7 days'`).
 
 ### Graceful Shutdown
 

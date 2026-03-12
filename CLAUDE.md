@@ -236,7 +236,8 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 ## Patterns performance à respecter
 
-- **Caches sync.Map** : blacklist (TTL 30s) + tenant (TTL 5min) — appeler `InvalidateBlacklistCache()` / `InvalidateTenantCache()` lors de mutations
+- **Caches sync.Map** : blacklist (TTL 30s, purge auto 5min) + tenant (TTL 5min) — appeler `InvalidateBlacklistCache()` / `InvalidateTenantCache()` lors de mutations
+- **Cleanup goroutines** : token_blacklist (1h), refresh_tokens (24h, >7j), blacklist cache (5min)
 - **COUNT(*) OVER()** : toujours utiliser en single query pour les listes paginées
 - **VehicleCard memo** : ne pas retirer `React.memo()` ni `useCallback` dashboard
 - **URL.revokeObjectURL()** : toujours cleanup les previews au unmount (useCamera)
