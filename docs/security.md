@@ -98,7 +98,7 @@ Request → AuthMiddleware → Per-user limiter → RequirePasswordChanged → T
 5. **AuditMiddleware**: Logs request to audit_log in background goroutine
 6. **RBAC Middleware**: Per-route role check
 
-Superadmin routes: `Auth → RequireSuperAdmin` (no TenantMiddleware, uses ownerPool)
+Superadmin routes: `Auth → RequireSuperAdmin → AuditMiddleware` (no TenantMiddleware, uses ownerPool)
 
 ### Route Protection
 
@@ -133,7 +133,9 @@ CREATE POLICY vehicles_tenant_isolation ON vehicles
 ### Tables with RLS
 
 All business tables have RLS enabled:
-- `tenants`, `users`, `vehicles`, `bays`, `events`, `tasks`, `documents`, `audit_log`, `refresh_tokens`
+- `users`, `vehicles`, `bays`, `events`, `tasks`, `documents`
+
+Tables **without** RLS: `tenants` (root table), `audit_log` (admin-only), `refresh_tokens` (token hash lookup), `contact_requests` (public), `token_blacklist` (auth), `plan_limits` (platform), `invitations` (superadmin).
 
 ### Tenant Validation Cache
 
@@ -341,9 +343,13 @@ CREATE RULE no_delete_events AS ON DELETE TO events DO INSTEAD NOTHING;
 
 ### Connection Pool Security
 
-| Setting | Value | Purpose |
-|---------|-------|---------|
-| MaxConns | 25 | Prevent connection exhaustion |
-| MinConns | 5 | Keep warm connections |
-| MaxConnLifetime | 2 hours | Rotate connections to prevent stale state |
-| MaxConnIdleTime | 5 minutes | Release unused connections |
+Two pools with different configurations:
+
+| Setting | Owner Pool | App Pool (RLS) | Purpose |
+|---------|-----------|----------------|---------|
+| MaxConns | 25 | 20 | Prevent connection exhaustion |
+| MinConns | 5 | 3 | Keep warm connections |
+| MaxConnLifetime | 2 hours | 2 hours | Rotate connections to prevent stale state |
+| MaxConnIdleTime | 5 minutes | 5 minutes | Release unused connections |
+| MaxConnLifetimeJitter | 10 minutes | 10 minutes | Stagger connection renewals |
+| HealthCheckPeriod | 1 minute | 1 minute | Detect broken connections |

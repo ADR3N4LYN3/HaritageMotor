@@ -226,9 +226,45 @@ Paginated event history for a vehicle.
 
 **Response:** Paginated list of Event objects.
 
+### GET /vehicles/qr-sheet
+**Admin only.**
+
+Returns QR data for all vehicles (for QR code generation/printing).
+
+**Response:** `{"data": [{"id": "uuid", "qr_token": "...", "make": "...", "model": "..."}]}`
+
+### GET /vehicles/:id/report
+**Operator+ required.**
+
+Generates a PDF report for a vehicle (timeline, tasks, metadata). Uses `go-pdf/fpdf` with a LIMIT of 1000 events and 500 tasks.
+
+**Response:** `application/pdf` binary.
+
+---
+
+## Photos
+
+### GET /photos/:key/signed-url
+
+Returns a time-limited signed S3 URL for downloading a photo or document.
+
+**Response:**
+```json
+{
+  "url": "https://s3.../signed-url?..."
+}
+```
+
 ---
 
 ## Bays
+
+### GET /bays/qr-sheet
+**Admin only.**
+
+Returns QR data for all bays (for QR code generation/printing).
+
+**Response:** `{"data": [{"id": "uuid", "qr_token": "...", "code": "...", "zone": "..."}]}`
 
 ### GET /bays
 

@@ -50,7 +50,7 @@ Hetzner VPS
 
 Multi-stage build in `./Dockerfile`:
 
-- **Builder**: `golang:1.23-alpine` - compiles the binary
+- **Builder**: `golang:1.25-alpine` - compiles the binary
 - **Runner**: `alpine:3.20` - minimal runtime with ca-certificates
 - Binary: `/app/api`
 - Exposed port: 8080
@@ -123,11 +123,14 @@ In production (`APP_ENV=production`), the following are **required** and will ca
 |----------|-----------|
 | `JWT_SECRET` | Must be at least 32 characters, not the default value |
 | `DATABASE_URL` | Must be set |
+| `DATABASE_APP_URL` | Must be set (RLS-enforced pool for `heritage_app` role) |
 | `S3_ENDPOINT` | Must be set |
 | `S3_ACCESS_KEY` | Must be set |
 | `S3_SECRET_KEY` | Must be set |
 | `S3_BUCKET` | Must be set |
 | `RESEND_API_KEY` | Must be set |
+| `TURNSTILE_SECRET_KEY` | Must be set (Cloudflare Turnstile anti-bot on login + contact) |
+| `APP_BASE_URL` | Must be set (used by mailer for email links) |
 
 ## SSL / TLS with Cloudflare
 

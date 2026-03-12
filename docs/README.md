@@ -6,8 +6,8 @@ Multi-tenant B2B SaaS platform for premium vehicle storage facilities.
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Go 1.22+, Fiber v2, PostgreSQL 16 |
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| Backend | Go 1.25+, Fiber v2, PostgreSQL 16 |
+| Frontend | Next.js 14.2 (App Router), TypeScript, Tailwind CSS |
 | Auth | JWT (HS256), bcrypt, TOTP (RFC 6238) |
 | Storage | Hetzner Object Storage (S3-compatible) |
 | Analytics | Plausible CE (self-hosted) |
@@ -58,6 +58,7 @@ heritage-motor/
 │   │   ├── document/            #   Document upload/management
 │   │   ├── user/                #   User CRUD (admin)
 │   │   ├── scan/                #   QR code resolution
+│   │   ├── photo/               #   Photo signed-URL download
 │   │   ├── audit/               #   Audit log viewer
 │   │   └── response.go          #   Shared response helpers
 │   ├── middleware/               # Auth, Tenant RLS, RBAC, Audit, UploadLimiter
@@ -72,7 +73,8 @@ heritage-motor/
 │   │   ├── event/                #   Event operations
 │   │   ├── task/                 #   Task operations
 │   │   ├── document/             #   Document operations
-│   │   └── user/                 #   User operations
+│   │   ├── user/                 #   User operations
+│   │   └── report/               #   PDF report generation (go-pdf/fpdf)
 │   ├── storage/                  # S3 client
 │   └── testutil/                 # Integration test infrastructure (Setup, Env, helpers)
 ├── pwa/                          # Next.js PWA frontend
@@ -94,7 +96,7 @@ heritage-motor/
 
 ### Prerequisites
 
-- Go 1.22+
+- Go 1.25+
 - PostgreSQL 16
 - Node.js 20+ (for PWA)
 - Git LFS (large media files like `hero-bg.mp4` are tracked via LFS)

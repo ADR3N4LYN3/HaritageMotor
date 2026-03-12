@@ -435,5 +435,5 @@ docker compose up -d app
 Configured in `app/layout.tsx`:
 - `manifest: "/manifest.json"`
 - Apple Web App capable with `black-translucent` status bar
-- Viewport: `width=device-width`, `initialScale=1`, `maximumScale=1`, `user-scalable=false`
+- Viewport: `width=device-width`, `initialScale=1`, `maximumScale=1`, `user-scalable=true` (WCAG)
 - Theme color: `#0e0d0b`

@@ -32,8 +32,8 @@ Migrations are located in `internal/db/migrations/` and run sequentially on star
 | 009 | `009_refresh_tokens.up.sql` | Refresh tokens with hash-based lookup |
 | 010 | `010_qr_tokens.up.sql` | QR token columns on vehicles and bays |
 | 011 | `011_events_user_index.up.sql` | Index on `events(user_id, occurred_at DESC)` |
-| 012 | `012_rls_enable.up.sql` | Enable RLS on all business tables |
-| 013 | `013_rls_enforce.up.sql` | `heritage_app` role, grants, policies with missing_ok |
+| 012 | _(skipped)_ | _(RLS enable merged into 013)_ |
+| 013 | `013_rls_enforce.up.sql` | `heritage_app` role, grants, RLS enable + policies with missing_ok |
 | 014 | `014_rls_harden.up.sql` | FORCE RLS on all business tables |
 | 015 | `015_token_blacklist.up.sql` | Token blacklist table for JWT revocation |
 | 016 | `016_contact_requests.up.sql` | Contact form submissions (public, no RLS) |
@@ -427,16 +427,18 @@ conn.Exec(c.Context(), "SET LOCAL app.current_tenant_id = $1", tenantID.String()
 
 ## Connection Pool
 
-Configured in `internal/db/db.go` using `pgxpool`:
+Configured in `internal/db/db.go` using `pgxpool`. Two pools:
 
-| Setting | Value | Purpose |
-|---------|-------|---------|
-| `MaxConns` | 25 | Prevent connection exhaustion |
-| `MinConns` | 5 | Keep warm connections |
-| `MaxConnLifetime` | 2 hours | Rotate connections to prevent stale state |
-| `MaxConnIdleTime` | 5 minutes | Release unused connections |
+| Setting | Owner Pool | App Pool (RLS) |
+|---------|-----------|----------------|
+| `MaxConns` | 25 | 20 |
+| `MinConns` | 5 | 3 |
+| `MaxConnLifetime` | 2 hours | 2 hours |
+| `MaxConnIdleTime` | 5 minutes | 5 minutes |
+| `MaxConnLifetimeJitter` | 10 minutes | 10 minutes |
+| `HealthCheckPeriod` | 1 minute | 1 minute |
 
-Connection timeout: 10 seconds. The pool pings the database on creation to verify connectivity.
+Connection timeout: 10 seconds. Both pools ping the database on creation to verify connectivity.
 
 ## Index Strategy
 

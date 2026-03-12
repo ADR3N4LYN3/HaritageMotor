@@ -12,7 +12,7 @@
 
 | Composant | Choix |
 |---|---|
-| Backend | Go 1.22+ / Fiber v2 |
+| Backend | Go 1.25+ / Fiber v2 |
 | Base de données | PostgreSQL 16 (RLS multi-tenant) |
 | Frontend | Next.js + TypeScript (PWA dans `pwa/`) |
 | Stockage fichiers | Hetzner Object Storage (S3-compatible) |
@@ -54,7 +54,7 @@ internal/
     upload_limiter.go            — Rate limit uploads (200MB/10min/user)
   handler/
     response.go                  — HandleServiceError, PaginationParams, PaginatedResponse
-    admin/ auth/ bay/ contact/ document/ event/ scan/ task/ user/ vehicle/
+    admin/ auth/ bay/ contact/ document/ event/ photo/ scan/ task/ user/ vehicle/
   service/
     admin/                       — Superadmin : tenants CRUD, invitations, dashboard
     auth/                        — Login, logout, refresh, MFA, change-password
@@ -62,6 +62,7 @@ internal/
     contact/                     — Formulaire contact public + email confirmation i18n + anti-bot (honeypot + Turnstile)
     mailer/                      — Envoi emails via Resend API
     plan/                        — Limites par plan (starter/pro/enterprise)
+    report/                      — Génération PDF véhicule (go-pdf/fpdf)
   turnstile/turnstile.go         — Cloudflare Turnstile token verification (shared auth + contact)
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
   testutil/setup.go              — Infrastructure tests intégration (Env, Setup, helpers)

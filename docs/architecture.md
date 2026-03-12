@@ -41,7 +41,7 @@ Every authenticated request passes through (in order):
 5. **AuditMiddleware** (`internal/middleware/audit.go`): Captures request metadata and logs to `audit_log` in a background goroutine
 6. **RBAC** (`internal/middleware/rbac.go`): Per-route role checks (`RequireAdmin`, `RequireOperatorOrAbove`, `RequireTechnicianOrAbove`, `RequireSuperAdmin`)
 
-**Superadmin routes** follow a separate chain: Auth → RequireSuperAdmin (no TenantMiddleware, uses ownerPool directly).
+**Superadmin routes** follow a separate chain: Auth → RequireSuperAdmin → AuditMiddleware (no TenantMiddleware, uses ownerPool directly).
 
 ### Service Layer
 
@@ -97,7 +97,7 @@ Client Request
 │                → Handler → Service → PostgreSQL / S3   │
 │                                                        │
 │  Superadmin routes (no tenant):                         │
-│    AuthMiddleware → RequireSuperAdmin                  │
+│    AuthMiddleware → RequireSuperAdmin → AuditMiddleware │
 │      → AdminHandler → AdminService → ownerPool         │
 └────────────────────────────────────────────────────────┘
 ```
@@ -174,4 +174,6 @@ Pagination is normalized both at the handler level (via shared `PaginationParams
 | `aws-sdk-go-v2/service/s3` | v1.96 | S3 file storage |
 | `pquerna/otp` | v1.5 | TOTP for MFA |
 | `joho/godotenv` | v1.5 | .env file loading |
+| `go-pdf/fpdf` | v0.9 | PDF report generation |
+| `gabriel-vasile/mimetype` | v1.4 | File upload MIME type detection |
 | `golang.org/x/crypto` | v0.48 | bcrypt password hashing |
