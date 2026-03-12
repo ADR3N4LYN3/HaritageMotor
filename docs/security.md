@@ -170,6 +170,8 @@ Enforced in `internal/domain/password.go` via `ValidatePasswordStrength()`.
 
 Fiber is configured with `EnableTrustedProxyCheck: true` and `TrustedProxies: ["127.0.0.1", "::1"]` so that `c.IP()` correctly resolves the real client IP from the `X-Forwarded-For` header set by Caddy. Without this, rate limiting would key on the proxy's loopback IP instead of the actual client.
 
+**Important:** `EnableTrustedProxyCheck` is only active when `APP_ENV=production`. In development and test environments, it is disabled so that `c.IP()` returns `127.0.0.1` directly without looking for `X-Forwarded-For`. This prevents rate limiters from keying on an empty IP when no proxy header is present.
+
 ### Rate Limiting
 
 Endpoints are rate-limited to prevent brute-force and abuse:

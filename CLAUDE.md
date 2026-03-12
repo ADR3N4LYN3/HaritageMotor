@@ -104,7 +104,7 @@ pwa/                             — Frontend Next.js PWA (voir pwa/README.md)
 - MFA TOTP obligatoire (Google Authenticator)
 - Secrets (JWT_SECRET, clés S3) TOUJOURS dans les variables d'env, JAMAIS dans le code
 - Rate limiting : 5 req/15min/IP sur auth, 100 req/min/user sur routes authentifiées
-- Trusted Proxies : `EnableTrustedProxyCheck: true` + `TrustedProxies: ["127.0.0.1", "::1"]` + `ProxyHeader: "X-Forwarded-For"` — obligatoire derrière Caddy pour que `c.IP()` retourne l'IP client réelle
+- Trusted Proxies : `EnableTrustedProxyCheck` activé **uniquement en production** (`APP_ENV=production`) + `TrustedProxies: ["127.0.0.1", "::1"]` + `ProxyHeader: "X-Forwarded-For"` — obligatoire derrière Caddy pour que `c.IP()` retourne l'IP client réelle. Désactivé en dev/test pour éviter `c.IP()` vide sans header proxy
 - Upload limiter : 200MB cumulé / 10 min / user sur les endpoints upload
 - Password strength : min 8 chars, upper+lower+digit+special
 

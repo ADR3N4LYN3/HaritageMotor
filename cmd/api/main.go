@@ -176,9 +176,13 @@ func main() {
 		allowedOrigins = envOrigins
 	}
 
+	// Trusted proxies: only in production behind Caddy, not in dev/test
+	// to avoid c.IP() returning empty when requests come from 127.0.0.1 without X-Forwarded-For
+	enableProxy := cfg.AppEnv == "production"
+
 	// Fiber app
 	app := fiber.New(fiber.Config{
-		EnableTrustedProxyCheck: true,
+		EnableTrustedProxyCheck: enableProxy,
 		TrustedProxies:          []string{"127.0.0.1", "::1"},
 		ProxyHeader:             "X-Forwarded-For",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
