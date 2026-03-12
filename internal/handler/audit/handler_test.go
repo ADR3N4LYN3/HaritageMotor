@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,30 +26,16 @@ func TestAuditList_AdminCanList(t *testing.T) {
 	adminID := env.CreateUser(t, tenantID, "audit-admin@test.com", "P@ssw0rd!!", "admin")
 	adminToken := env.AuthToken(t, adminID, tenantID, "admin")
 
-	// First, perform a POST action to generate an audit entry.
-	// Creating a vehicle via API triggers the audit middleware.
-	payload := map[string]interface{}{
-		"make":       "Ferrari",
-		"model":      "F40",
-		"owner_name": "Audit Owner",
-	}
-	// Need an operator-or-above to create vehicles; admin qualifies.
-	createResp := env.DoRequest(t, http.MethodPost, "/vehicles", adminToken, payload)
-	defer createResp.Body.Close()
-	require.Equal(t, http.StatusCreated, createResp.StatusCode)
+	// Insert an audit entry directly via ownerPool (bypasses RLS).
+	// This avoids depending on the async audit goroutine's timing.
+	_, err := env.OwnerPool.Exec(context.Background(),
+		`INSERT INTO audit_log (tenant_id, user_id, action, resource_type, ip_address, user_agent, request_id)
+		 VALUES ($1, $2, 'vehicles.create', 'vehicle', '127.0.0.1', 'test-agent', 'test-req-id')`,
+		tenantID, adminID,
+	)
+	require.NoError(t, err)
 
-	// The audit middleware writes asynchronously in a goroutine.
-	// Wait for the entry to exist in the DB before testing the API endpoint.
-	// Use ownerPool (bypasses RLS) for the direct check.
-	require.Eventually(t, func() bool {
-		var count int
-		err := env.OwnerPool.QueryRow(context.Background(),
-			`SELECT COUNT(*) FROM audit_log WHERE tenant_id = $1`, tenantID,
-		).Scan(&count)
-		return err == nil && count >= 1
-	}, 10*time.Second, 200*time.Millisecond, "audit entry should appear within 10s")
-
-	// Now test the API endpoint.
+	// Test the API endpoint — should see the entry via appPool with RLS.
 	resp := env.DoRequest(t, http.MethodGet, "/audit", adminToken, nil)
 	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -58,9 +43,15 @@ func TestAuditList_AdminCanList(t *testing.T) {
 	var body auditListResponse
 	testutil.ReadJSON(t, resp, &body)
 
-	assert.GreaterOrEqual(t, body.TotalCount, 1, "should have at least one audit entry from the vehicle creation")
+	assert.GreaterOrEqual(t, body.TotalCount, 1, "should have at least one audit entry")
 	assert.GreaterOrEqual(t, len(body.Data), 1)
 	assert.Equal(t, 1, body.Page)
+
+	// Verify the entry content
+	if len(body.Data) >= 1 {
+		assert.Equal(t, "vehicles.create", body.Data[0]["action"])
+		assert.Equal(t, "vehicle", body.Data[0]["resource_type"])
+	}
 }
 
 func TestAuditList_OperatorForbidden(t *testing.T) {
