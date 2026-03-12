@@ -170,7 +170,7 @@ func buildApp(ownerPool, appPool *pgxpool.Pool, jwtManager *auth.JWTManager) *fi
 	taskHandler := taskhandler.NewHandler(taskService)
 	docHandler := dochandler.NewHandler(docService, nil) // nil s3Client for tests
 	userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry(), planService)
-	auditHandler := auditloghandler.NewHandler(appPool)
+	auditHandler := auditloghandler.NewHandler(ownerPool)
 	scanHandler := scanhandler.NewHandler(appPool)
 	photoHandler := photohandler.NewHandler(nil) // nil s3Client for tests
 	adminHandler := adminhandler.NewHandler(adminService)

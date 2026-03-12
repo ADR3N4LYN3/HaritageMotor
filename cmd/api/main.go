@@ -250,7 +250,7 @@ func main() {
 		taskHandler := taskhandler.NewHandler(taskService)
 		docHandler := dochandler.NewHandler(docService, s3Client)
 		userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry(), planService)
-		auditHandler := auditloghandler.NewHandler(appPool)
+		auditHandler := auditloghandler.NewHandler(ownerPool)
 		photoHandler := photohandler.NewHandler(s3Client)
 		scanHandler := scanhandler.NewHandler(appPool)
 		adminHandler := adminhandler.NewHandler(adminService)
