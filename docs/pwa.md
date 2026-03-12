@@ -35,7 +35,7 @@ pwa/
 │   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
-│   │   └── page.tsx           # Superadmin: platform admin (activity sidebar + tabs) / Others: vehicle registry
+│   │   └── page.tsx           # Unified dashboard: vehicle registry + role-based quick links (superadmin sees "Admin Panel")
 │   ├── vehicle/new/
 │   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
@@ -72,7 +72,8 @@ pwa/
 │   ├── layout/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
 │   │   ├── TopBar.tsx         # App header with sync badge
-│   │   └── BottomNav.tsx      # Fixed bottom navigation (Scan, Tasks, Vehicles)
+│   │   ├── BottomNav.tsx      # Fixed bottom navigation (Scan, Tasks, Vehicles)
+│   │   └── CookieBanner.tsx   # GDPR cookie consent banner (localStorage persistence)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
 │   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot
@@ -145,7 +146,7 @@ The login page handles TOTP-based MFA:
 2. If MFA is enabled, API returns `{mfa_required: true, mfa_token: "..."}`
 3. Page switches to 6-digit code input
 4. Auto-submits when 6 digits are entered
-5. On success, stores tokens and redirects to `/scan`
+5. On success, stores tokens and redirects to `/dashboard`
 
 ### Cloudflare Turnstile (Anti-Bot)
 
@@ -302,7 +303,7 @@ Fallback: manual code entry for devices without camera access.
 | `/admin` | Yes (superadmin) | Legacy admin page |
 | `/admin/qr-codes` | Yes (admin) | QR code generation and printing |
 | `/scan` | Yes | QR scanner + bottom sheets (vehicles, bays, tasks) |
-| `/dashboard` | Yes | Superadmin: platform admin (activity, tabs) / Others: vehicle registry |
+| `/dashboard` | Yes | Unified dashboard: vehicle registry + role-based quick links (superadmin sees "Admin Panel" link) |
 | `/profile` | Yes | User profile (MFA setup/disable, logout) |
 | `/tasks` | Yes | Task list with filters (type, status, vehicle) |
 | `/users` | Yes (admin) | User management CRUD |

@@ -43,7 +43,7 @@ pwa/
     globals.css                   Animations, touch targets, safe areas
     login/page.tsx                Login (email/password + MFA, show/hide password)
     change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
-    dashboard/page.tsx            Superadmin: admin plateforme (activity sidebar + tabs) / Autres: registre vehicules
+    dashboard/page.tsx            Dashboard unifie : registre vehicules + quick links par role (superadmin voit "Admin Panel")
     scan/page.tsx                 Scanner QR + bottom sheets (vehicules, bays, taches)
     profile/page.tsx              Profil utilisateur (MFA setup/disable, logout)
     tasks/page.tsx                Liste taches (filtres type, statut, vehicule)
@@ -76,6 +76,7 @@ pwa/
       AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
       TopBar.tsx                  Header fixe (logo, SyncBadge, user)
       BottomNav.tsx               Navigation mobile (Scan, Tasks, Vehicules)
+      CookieBanner.tsx            Banniere consentement cookies GDPR (persistence localStorage)
     ui/
       ActionButton.tsx            Bouton CTA (primary/danger/secondary)
       PageHeader.tsx              Header reutilisable (bouton retour, titre, subtitle, action slot)
@@ -200,8 +201,7 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
 | `Select` | `dashboard/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
 | `TenantRow` | `dashboard/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
-| `SuperAdminDashboard` | `dashboard/page.tsx` | Admin plateforme : activity sidebar (w-80) + 5 tabs (Overview, Tenants, Vehicles, Bays, Invite) |
-| `ActivityPanel` | `dashboard/page.tsx` | Timeline recente (actions, logins) dans sidebar gauche fixe |
+| `CookieBanner` | `components/layout/CookieBanner.tsx` | Banniere GDPR consentement cookies, persistence localStorage, style dark luxury |
 | `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via useSWR + cookie httpOnly → `/api/auth/refresh` → Zustand (onSuccess callback). Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
 
 ## react-doctor (100/100)
