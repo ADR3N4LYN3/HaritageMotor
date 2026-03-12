@@ -3,6 +3,7 @@ package audit_test
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -37,13 +38,21 @@ func TestAuditList_AdminCanList(t *testing.T) {
 	defer createResp.Body.Close()
 	require.Equal(t, http.StatusCreated, createResp.StatusCode)
 
-	// Now list audit entries.
-	resp := env.DoRequest(t, http.MethodGet, "/audit", adminToken, nil)
-	defer resp.Body.Close()
-	require.Equal(t, http.StatusOK, resp.StatusCode)
-
+	// The audit middleware writes asynchronously in a goroutine.
+	// Poll until the entry appears (max ~2s).
 	var body auditListResponse
-	testutil.ReadJSON(t, resp, &body)
+	for i := 0; i < 20; i++ {
+		time.Sleep(100 * time.Millisecond)
+
+		resp := env.DoRequest(t, http.MethodGet, "/audit", adminToken, nil)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		testutil.ReadJSON(t, resp, &body)
+		resp.Body.Close()
+
+		if body.TotalCount >= 1 {
+			break
+		}
+	}
 
 	assert.GreaterOrEqual(t, body.TotalCount, 1, "should have at least one audit entry from the vehicle creation")
 	assert.GreaterOrEqual(t, len(body.Data), 1)
