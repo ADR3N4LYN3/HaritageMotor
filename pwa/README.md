@@ -44,13 +44,13 @@ pwa/
     login/page.tsx                Login (email/password + MFA, show/hide password)
     change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
     dashboard/page.tsx            Dashboard unifie : registre vehicules + quick links par role (superadmin voit "Admin Panel")
-    scan/page.tsx                 Scanner QR + bottom sheets (vehicules, bays, taches)
-    profile/page.tsx              Profil utilisateur (MFA setup/disable, logout)
-    tasks/page.tsx                Liste taches (filtres type, statut, vehicule)
-    users/page.tsx                Gestion utilisateurs CRUD (admin only)
+    scan/page.tsx                 Scanner QR + bottom sheets (→ components/scan/)
+    profile/page.tsx              Profil utilisateur (→ components/profile/TOTPSetup)
+    tasks/page.tsx                Liste taches (→ components/tasks/CreateTaskModal)
+    users/page.tsx                Gestion utilisateurs (→ components/users/UserFormModal)
     qr-codes/page.tsx             Generation et impression QR codes (admin only)
     admin/
-      page.tsx                    Admin legacy (superadmin redirect)
+      page.tsx                    Panel superadmin (→ components/admin/)
       qr-codes/page.tsx           Generation et impression QR codes (legacy)
     vehicle/new/page.tsx          Onboarding nouveau vehicule
     vehicle/[id]/
@@ -76,7 +76,7 @@ pwa/
     layout/
       AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
       TopBar.tsx                  Header fixe (logo, SyncBadge, user)
-      BottomNav.tsx               Navigation mobile (Scan, Tasks, Vehicules)
+      BottomNav.tsx               Navigation mobile (Home, Scan, Bays, Profile)
       CookieBanner.tsx            Banniere consentement cookies GDPR (persistence localStorage)
     ui/
       ActionButton.tsx            Bouton CTA (primary/danger/secondary)
@@ -90,6 +90,27 @@ pwa/
     camera/
       CameraCapture.tsx           Capture photo (getUserMedia, 1920x1080 JPEG)
       PhotoGrid.tsx               Grille photos (3 colonnes)
+    admin/
+      AdminSelect.tsx             Select custom dark/gold
+      CreateTenantForm.tsx        Formulaire creation tenant
+      InviteSection.tsx           Section invitation utilisateur
+      QuickLinks.tsx              Liens rapides admin
+      SectionHeading.tsx          Heading section avec tag
+      StatsSection.tsx            Grille statistiques plateforme
+      TenantRow.tsx               Ligne tenant expandable (edit/delete)
+      TenantsSection.tsx          Liste tenants avec creation
+    profile/
+      TOTPSetup.tsx               Setup/disable MFA (QR code, verification)
+    scan/
+      BaysSheet.tsx               Bottom sheet liste bays
+      ManualSheet.tsx             Bottom sheet saisie manuelle
+      StatusBadge.tsx             Badge statut vehicule/bay
+      TasksSheet.tsx              Bottom sheet taches en attente
+      VehiclesSheet.tsx           Bottom sheet liste vehicules
+    tasks/
+      CreateTaskModal.tsx         Modal creation tache (recherche vehicule)
+    users/
+      UserFormModal.tsx           Modal creation/edition utilisateur
     scanner/
       QRScanner.tsx               Lecteur QR code (@zxing, getUserMedia prompt + camera arriere)
     providers/
@@ -200,8 +221,11 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `PageHeader` | `components/ui/PageHeader.tsx` | Header reutilisable : bouton retour (backHref ou router.back()), titre serif, subtitle, slot action. Utilise sur toutes les sous-pages. |
 | `PasswordInput` | `change-password/page.tsx` | Input mot de passe avec toggle show/hide (eye icon) |
 | `getStrength` + barre | `change-password/page.tsx` | Indicateur de force (5 segments Weak→Excellent) + checklist (8+ chars, upper, lower, digit, special) |
-| `Select` | `dashboard/page.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
-| `TenantRow` | `dashboard/page.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
+| `AdminSelect` | `components/admin/AdminSelect.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
+| `TenantRow` | `components/admin/TenantRow.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
+| `TOTPSetup` | `components/profile/TOTPSetup.tsx` | Setup/disable MFA avec QR code, verification TOTP |
+| `CreateTaskModal` | `components/tasks/CreateTaskModal.tsx` | Modal creation tache avec recherche vehicule |
+| `UserFormModal` | `components/users/UserFormModal.tsx` | Modal creation/edition utilisateur |
 | `CookieBanner` | `components/layout/CookieBanner.tsx` | Banniere GDPR consentement cookies, persistence localStorage, style dark luxury |
 | `AppErrorBoundary` | `components/ErrorBoundary.tsx` | Error boundary global (react-error-boundary). Affiche fallback plein ecran dark luxury avec message d'erreur et bouton "Try again" (reload page). |
 | `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via useSWR + cookie httpOnly → `/api/auth/refresh` → Zustand (onSuccess callback). Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |

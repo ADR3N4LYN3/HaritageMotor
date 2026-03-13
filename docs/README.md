@@ -41,7 +41,9 @@ Multi-tenant B2B SaaS platform for premium vehicle storage facilities.
 
 ```
 heritage-motor/
-├── cmd/api/main.go              # Entry point, route wiring
+├── cmd/api/
+│   ├── main.go                  # Entry point, config, cleanup, graceful shutdown
+│   └── routes.go                # Route definitions, service/handler wiring
 ├── internal/
 │   ├── auth/                    # JWT, bcrypt, TOTP
 │   ├── config/                  # Environment config loader
@@ -66,6 +68,8 @@ heritage-motor/
 │   │   ├── admin/                #   Superadmin tenant/user management
 │   │   ├── auth/                 #   Login, MFA, logout, change-password
 │   │   ├── contact/              #   Contact form + i18n confirmation email (EN/FR/DE)
+│   │   │   ├── service.go        #     Business logic (Submit, send helpers)
+│   │   │   └── templates.go      #     i18n HTML email builders (EN/FR/DE)
 │   │   ├── mailer/               #   Email sending via Resend API
 │   │   ├── plan/                 #   Plan limits enforcement (starter/pro/enterprise)
 │   │   ├── vehicle/              #   Vehicle operations
@@ -75,6 +79,8 @@ heritage-motor/
 │   │   ├── document/             #   Document operations
 │   │   ├── user/                 #   User operations
 │   │   └── report/               #   PDF report generation (go-pdf/fpdf)
+│   │       ├── service.go        #     Data loading + orchestration
+│   │       └── pdf_builder.go    #     PDF rendering (layout, sections, formatting)
 │   ├── storage/                  # S3 client
 │   └── testutil/                 # Integration test infrastructure (Setup, Env, helpers)
 ├── pwa/                          # Next.js PWA frontend

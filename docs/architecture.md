@@ -51,6 +51,10 @@ Located in `internal/service/`. Each service:
 - Manages database transactions where needed
 - Returns domain types or typed errors
 
+Large services are split into focused files within the same package:
+- `contact/service.go` (logic) + `contact/templates.go` (i18n email HTML builders)
+- `report/service.go` (data loading) + `report/pdf_builder.go` (PDF rendering)
+
 ### Domain Layer
 
 Located in `internal/domain/`:

@@ -33,7 +33,7 @@ pwa/
 │   ├── change-password/
 │   │   └── page.tsx           # Password change (PasswordInput, strength meter, checklist)
 │   ├── admin/
-│   │   ├── page.tsx           # Legacy admin (redirects superadmin)
+│   │   ├── page.tsx           # Superadmin panel (imports components/admin/*)
 │   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
@@ -74,8 +74,8 @@ pwa/
 │   ├── ErrorBoundary.tsx        # App error boundary (react-error-boundary, full-screen fallback with retry)
 │   ├── layout/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
-│   │   ├── TopBar.tsx         # App header with sync badge
-│   │   ├── BottomNav.tsx      # Fixed bottom navigation (Scan, Tasks, Vehicles)
+│   │   ├── TopBar.tsx         # App header with notification bell + sync badge
+│   │   ├── BottomNav.tsx      # Fixed bottom navigation (Home, Scan, Bays, Profile)
 │   │   └── CookieBanner.tsx   # GDPR cookie consent banner (localStorage persistence)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
@@ -89,6 +89,27 @@ pwa/
 │   ├── camera/
 │   │   ├── CameraCapture.tsx  # Camera interface for photos
 │   │   └── PhotoGrid.tsx      # Photo preview grid
+│   ├── admin/
+│   │   ├── AdminSelect.tsx    # Styled select input for admin forms
+│   │   ├── CreateTenantForm.tsx # Tenant creation form
+│   │   ├── InviteSection.tsx  # User invitation form + users table
+│   │   ├── QuickLinks.tsx     # Admin overview quick links grid
+│   │   ├── SectionHeading.tsx # Reusable section heading with tag
+│   │   ├── StatsSection.tsx   # Platform stats grid
+│   │   ├── TenantRow.tsx      # Expandable tenant row with edit/delete
+│   │   └── TenantsSection.tsx # Tenants list section
+│   ├── profile/
+│   │   └── TOTPSetup.tsx      # TOTP MFA setup/disable flow
+│   ├── scan/
+│   │   ├── BaysSheet.tsx      # Bottom sheet: bay list
+│   │   ├── ManualSheet.tsx    # Bottom sheet: manual vehicle search
+│   │   ├── StatusBadge.tsx    # Vehicle/bay status pill
+│   │   ├── TasksSheet.tsx     # Bottom sheet: pending tasks
+│   │   └── VehiclesSheet.tsx  # Bottom sheet: vehicle list
+│   ├── tasks/
+│   │   └── CreateTaskModal.tsx # Task creation modal with form
+│   ├── users/
+│   │   └── UserFormModal.tsx  # User create/edit modal
 │   └── scanner/
 │       └── QRScanner.tsx      # QR code scanner with @zxing
 ├── hooks/
@@ -348,24 +369,25 @@ Wraps authenticated pages with consistent layout:
 
 ```
 ┌──────────────────┐
-│     TopBar       │  ← Fixed top, sync badge
+│     TopBar       │  ← Fixed top, bell + sync badge + avatar
 ├──────────────────┤
 │                  │
 │   Main Content   │  ← pt-14 pb-20 px-4
 │                  │
 ├──────────────────┤
-│   BottomNav      │  ← Fixed bottom (Scan, Vehicles)
+│   BottomNav      │  ← Fixed bottom (Home, Scan, Bays, Profile)
 └──────────────────┘
 ```
 
 ### Navigation
 
-Bottom navigation bar with three tabs:
+Bottom navigation bar with four tabs:
+- **Home** — Dashboard with vehicle registry, stats, quick actions
 - **Scan** — QR scanner with bottom sheets (primary workflow entry)
-- **Tasks** — Task list with filters
-- **Vehicles** — Dashboard with search and filters
+- **Bays** — Bay list with status filters and stats
+- **Profile** — User profile, MFA settings, logout
 
-TopBar includes a profile avatar (initials) linking to `/profile`.
+TopBar includes a notification bell (pending task count via SWR), sync badge, and profile avatar (initials).
 
 ## Design System (Dark Luxury)
 

@@ -29,7 +29,8 @@
 
 ```
 cmd/
-  api/main.go                    — Point d'entrée Fiber, toutes les routes + middleware chains
+  api/main.go                    — Point d'entrée Fiber, services init + middleware chains
+  api/routes.go                  — Définition de toutes les routes API (extrait de main.go)
   bootstrap/main.go              — CLI création compte superadmin
 internal/
   config/config.go               — Chargement env vars (godotenv + os.Getenv)
@@ -59,10 +60,14 @@ internal/
     admin/                       — Superadmin : tenants CRUD, invitations, dashboard
     auth/                        — Login, logout, refresh, MFA, change-password
     bay/ event/ task/ document/ user/ vehicle/   — CRUD + logique métier
-    contact/                     — Formulaire contact public + email confirmation i18n + anti-bot (honeypot + Turnstile)
+    contact/
+      service.go                 — Formulaire contact public + anti-bot (honeypot + Turnstile)
+      templates.go               — Templates email i18n (confirmation FR/EN/DE + notification admin)
     mailer/                      — Envoi emails via Resend API
     plan/                        — Limites par plan (starter/pro/enterprise)
-    report/                      — Génération PDF véhicule (go-pdf/fpdf)
+    report/
+      service.go                 — Génération PDF véhicule (orchestration)
+      pdf_builder.go             — Construction PDF pages (go-pdf/fpdf)
   turnstile/turnstile.go         — Cloudflare Turnstile token verification (shared auth + contact)
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
   testutil/setup.go              — Infrastructure tests intégration (Env, Setup, helpers)
