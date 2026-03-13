@@ -7,7 +7,7 @@ import logoCrest from "@/public/logo-crest-v2.png";
 
 const baseNav = [
   { href: "/dashboard", label: "Home", icon: HomeIcon },
-  { href: "/scan", label: "Scan", icon: ScanIcon },
+  { href: "/scan", label: "Scan QR", icon: ScanIcon },
   { href: "/bays", label: "Bays", icon: BayIcon },
   { href: "/tasks", label: "Tasks", icon: TaskIcon },
 ];

@@ -64,7 +64,7 @@ export default function ScanPage() {
 
   if (resolving) {
     return (
-      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center gap-4">
+      <div className="fixed inset-0 lg:left-[220px] bg-black flex flex-col items-center justify-center gap-4">
         <div className="w-12 h-12 border-4 border-gold/30 border-t-gold rounded-full animate-spin" />
         <p className="text-white/60 text-sm">Resolving...</p>
       </div>
@@ -72,7 +72,7 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black">
+    <div className="fixed inset-0 lg:left-[220px] bg-black">
       {/* Scanner background — always visible */}
       <QRScanner
         onResult={resolveToken}
