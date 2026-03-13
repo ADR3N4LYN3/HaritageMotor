@@ -38,8 +38,8 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	filters.Normalize()
 
 	// Single query with COUNT(*) OVER() — avoids a separate COUNT(*) round-trip.
-	query := `SELECT id, tenant_id, user_id, action, resource_type, resource_id,
-		old_values, new_values, ip_address, user_agent, request_id, occurred_at,
+	query := `SELECT id::TEXT, tenant_id::TEXT, user_id::TEXT, action, resource_type, resource_id::TEXT,
+		old_values, new_values, host(ip_address), user_agent, request_id, occurred_at,
 		COUNT(*) OVER() AS total_count
 		FROM audit_log WHERE tenant_id = $1`
 	args := []interface{}{tenantID}
