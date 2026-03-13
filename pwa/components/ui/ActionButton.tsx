@@ -17,13 +17,13 @@ export function ActionButton({
   disabled,
   ...props
 }: ActionButtonProps) {
-  const base = "font-sans font-semibold rounded-xl transition-all active:scale-[0.98] touch-target flex items-center justify-center gap-2";
-  const height = "min-h-[64px] px-6 text-base";
+  const base = "font-sans font-medium rounded-xl transition-all active:scale-[0.98] touch-target flex items-center justify-center gap-2";
+  const height = "min-h-[48px] px-6 text-sm tracking-wide";
 
   const variants = {
-    primary: "bg-gold text-white hover:bg-[#a07d48] disabled:bg-gold/40",
-    danger: "bg-danger text-white hover:bg-[#dc2626] disabled:bg-danger/40",
-    secondary: "bg-white/10 text-white hover:bg-white/15 disabled:bg-white/5 disabled:text-white/30",
+    primary: "bg-gold/90 text-black hover:bg-gold disabled:bg-gold/30 disabled:text-black/50",
+    danger: "bg-transparent text-danger border border-danger/30 hover:bg-danger/10 disabled:opacity-40",
+    secondary: "bg-white/[0.06] text-white/70 border border-white/[0.08] hover:bg-white/[0.1] disabled:opacity-30",
   };
 
   return (

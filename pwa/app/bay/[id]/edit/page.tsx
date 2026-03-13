@@ -212,24 +212,27 @@ export default function EditBayPage() {
 
         {error && <p className="text-danger text-sm text-center">{error}</p>}
 
-        <div className="space-y-2 pb-4">
-          <ActionButton
-            onClick={handleSave}
-            loading={loading}
-            disabled={!code.trim()}
-          >
-            Save Changes
-          </ActionButton>
-
+        <div className="flex gap-3 pb-4">
           {bay.status === "free" && (
             <ActionButton
               variant="danger"
               onClick={handleDelete}
               disabled={loading}
+              fullWidth={false}
+              className="flex-1"
             >
-              Delete Bay
+              Delete
             </ActionButton>
           )}
+          <ActionButton
+            onClick={handleSave}
+            loading={loading}
+            disabled={!code.trim()}
+            fullWidth={false}
+            className="flex-[2]"
+          >
+            Save Changes
+          </ActionButton>
         </div>
       </div>
     </AppShell>

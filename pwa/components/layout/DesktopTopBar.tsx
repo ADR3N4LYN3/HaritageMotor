@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/store/app.store";
 import { SyncBadge } from "../ui/SyncBadge";
+import { LangSwitcher } from "../ui/LangSwitcher";
 import useSWR from "swr";
 
 const pageLabels: Record<string, string> = {
@@ -35,6 +36,7 @@ export function DesktopTopBar() {
       <p className="text-[13px] text-white/50">{pageLabel}</p>
       <div className="flex items-center gap-3.5">
         <SyncBadge />
+        <LangSwitcher />
         {user && (
           <Link href="/tasks" className="relative" aria-label="Pending tasks">
             <svg className="w-[18px] h-[18px] text-white/35 hover:text-white/55 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -61,3 +63,4 @@ export function DesktopTopBar() {
     </header>
   );
 }
+

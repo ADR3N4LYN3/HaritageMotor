@@ -9,7 +9,7 @@ const noiseBg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='htt
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-black relative flex">
+    <div className="min-h-screen bg-black relative flex overflow-x-hidden">
       {/* Noise texture (same as landing) */}
       <div className="pointer-events-none fixed inset-0 opacity-[0.025] z-0" style={{ backgroundImage: noiseBg }} />
       {/* Subtle radial gold glow at top */}

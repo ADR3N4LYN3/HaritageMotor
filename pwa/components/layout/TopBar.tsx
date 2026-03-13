@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAppStore } from "@/store/app.store";
 import { SyncBadge } from "../ui/SyncBadge";
+import { LangSwitcher } from "../ui/LangSwitcher";
 import logoCrest from "@/public/logo-crest-v2.png";
 import useSWR from "swr";
 
@@ -25,6 +26,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-3">
         <SyncBadge />
+        <LangSwitcher />
         {user && (
           <Link href="/tasks" className="relative" aria-label="Pending tasks">
             <svg className="w-5 h-5 text-white/40 hover:text-white/60 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
