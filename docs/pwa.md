@@ -76,7 +76,7 @@ pwa/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
 │   │   ├── TopBar.tsx         # App header with notification bell + sync badge
 │   │   ├── BottomNav.tsx      # Fixed bottom navigation (Home, Scan, Bays, Profile)
-│   │   └── CookieBanner.tsx   # GDPR cookie consent modal (centered overlay, blur backdrop, essential/analytics toggles)
+│   │   └── (CookieBanner moved to ui/)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
 │   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot
@@ -85,7 +85,8 @@ pwa/
 │   │   ├── BaySelector.tsx    # Bay picker for move actions
 │   │   ├── SyncBadge.tsx      # Pending offline actions indicator
 │   │   ├── Skeleton.tsx       # Loading skeletons
-│   │   └── SuccessScreen.tsx  # Success confirmation screen
+│   │   ├── SuccessScreen.tsx  # Success confirmation screen
+│   │   └── CookieBanner.tsx   # GDPR cookie consent modal (centered overlay, blur backdrop, essential/analytics toggles)
 │   ├── camera/
 │   │   ├── CameraCapture.tsx  # Camera interface for photos
 │   │   └── PhotoGrid.tsx      # Photo preview grid

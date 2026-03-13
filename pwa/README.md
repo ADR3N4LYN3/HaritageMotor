@@ -77,7 +77,6 @@ pwa/
       AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
       TopBar.tsx                  Header fixe (logo, SyncBadge, user)
       BottomNav.tsx               Navigation mobile (Home, Scan, Bays, Profile)
-      CookieBanner.tsx            Banniere consentement cookies GDPR (persistence localStorage)
     ui/
       ActionButton.tsx            Bouton CTA (primary/danger/secondary)
       PageHeader.tsx              Header reutilisable (bouton retour, titre, subtitle, action slot)
@@ -87,6 +86,7 @@ pwa/
       SuccessScreen.tsx           Ecran de confirmation
       SyncBadge.tsx               Badge actions offline en attente
       Skeleton.tsx                Placeholder chargement
+      CookieBanner.tsx            Modal consentement cookies GDPR (overlay centre, blur backdrop, toggles essentiels/analytics)
     camera/
       CameraCapture.tsx           Capture photo (getUserMedia, 1920x1080 JPEG)
       PhotoGrid.tsx               Grille photos (3 colonnes)
@@ -227,7 +227,7 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `TOTPSetup` | `components/profile/TOTPSetup.tsx` | Setup/disable MFA avec QR code, verification TOTP |
 | `CreateTaskModal` | `components/tasks/CreateTaskModal.tsx` | Modal creation tache avec recherche vehicule |
 | `UserFormModal` | `components/users/UserFormModal.tsx` | Modal creation/edition utilisateur |
-| `CookieBanner` | `components/layout/CookieBanner.tsx` | Banniere GDPR consentement cookies, persistence localStorage, style dark luxury |
+| `CookieBanner` | `components/ui/CookieBanner.tsx` | Modal GDPR consentement cookies (overlay centre, blur backdrop, toggles essentiels/analytics), persistence localStorage |
 | `AppErrorBoundary` | `components/ErrorBoundary.tsx` | Error boundary global (react-error-boundary). Affiche fallback plein ecran dark luxury avec message d'erreur et bouton "Try again" (reload page). |
 | `AuthBootstrap` | `components/AuthBootstrap.tsx` | Restaure session au mount via useSWR + cookie httpOnly → `/api/auth/refresh` → Zustand (onSuccess callback). Affiche spinner pendant hydratation. Sans lui, toute page auth est blanche apres F5. |
 

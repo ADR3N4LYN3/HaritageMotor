@@ -72,7 +72,7 @@ Integration tests use a shared `Env` initialized via `sync.Once`:
 - Full Fiber app with all routes and middleware
 - Dual pools (owner + app) against a real PostgreSQL test database
 - Helpers: `CreateTenant`, `CreateUser`, `CreateVehicle`, `CreateBay`, `AuthToken`, `DoRequest`, `ReadJSON`
-- 12 test files covering RLS isolation, RBAC matrix, blacklist, audit, plan limits, and all CRUD handlers
+- 19 test files covering RLS isolation, RBAC matrix, blacklist, audit, plan limits, all CRUD handlers, auth unit tests, config, domain validation, contact, scan, photo
 
 ## Request Flow
 
@@ -169,15 +169,15 @@ Pagination is normalized both at the handler level (via shared `PaginationParams
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `gofiber/fiber/v2` | v2.52 | HTTP framework |
-| `jackc/pgx/v5` | v5.8 | PostgreSQL driver + pool |
-| `golang-jwt/jwt/v5` | v5.3 | JWT token generation/validation |
-| `google/uuid` | v1.6 | UUID generation |
-| `go-playground/validator/v10` | v10.30 | Request validation |
-| `rs/zerolog` | v1.34 | Structured JSON logging |
-| `aws-sdk-go-v2/service/s3` | v1.96 | S3 file storage |
-| `pquerna/otp` | v1.5 | TOTP for MFA |
-| `joho/godotenv` | v1.5 | .env file loading |
-| `go-pdf/fpdf` | v0.9 | PDF report generation |
-| `gabriel-vasile/mimetype` | v1.4 | File upload MIME type detection |
-| `golang.org/x/crypto` | v0.48 | bcrypt password hashing |
+| `gofiber/fiber/v2` | v2.52.12 | HTTP framework |
+| `jackc/pgx/v5` | v5.8.0 | PostgreSQL driver + pool |
+| `golang-jwt/jwt/v5` | v5.3.1 | JWT token generation/validation |
+| `google/uuid` | v1.6.0 | UUID generation |
+| `go-playground/validator/v10` | v10.30.1 | Request validation |
+| `rs/zerolog` | v1.34.0 | Structured JSON logging |
+| `aws-sdk-go-v2/service/s3` | v1.96.4 | S3 file storage |
+| `pquerna/otp` | v1.5.0 | TOTP for MFA |
+| `joho/godotenv` | v1.5.1 | .env file loading |
+| `go-pdf/fpdf` | v0.9.0 | PDF report generation |
+| `gabriel-vasile/mimetype` | v1.4.13 | File upload MIME type detection |
+| `golang.org/x/crypto` | v0.48.0 | bcrypt password hashing |

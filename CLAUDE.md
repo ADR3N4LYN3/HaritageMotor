@@ -206,12 +206,15 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - `BgCtx()` : raccourci `context.Background()`
 - Requiert PostgreSQL local avec `.env.test` (gitignored)
 
-### Couverture (12 fichiers de tests)
+### Couverture (19 fichiers de tests)
 - **RLS** : isolation cross-tenant, dual pool, SET LOCAL vérifié (`db/rls_test.go`)
-- **Auth** : login, logout, refresh, MFA setup/verify/disable, change-password (`handler/auth/`)
+- **Auth handler** : login, logout, refresh, MFA setup/verify/disable, change-password (`handler/auth/`)
+- **Auth unit** : JWT generate/validate, bcrypt hash/check, TOTP (`auth/auth_test.go`)
+- **Config** : env parsing, defaults, production validation (`config/config_test.go`)
+- **Domain** : password strength validation, error types (`domain/domain_test.go`)
 - **Middleware** : JWT validation, blacklist after logout, RBAC matrix 5 rôles, PCR, superadmin (`middleware/auth_test.go`)
 - **Audit** : log async POST, skip GET, request ID, append-only (`middleware/audit_test.go`)
-- **CRUD handlers** : vehicle, bay, event, task, user, document, admin (`handler/*/handler_test.go`)
+- **CRUD handlers** : vehicle, bay, event, task, user, document, admin, contact, scan, photo, audit (`handler/*/handler_test.go`)
 - **Plan limits** : starter/pro/enterprise, HTTP 402 blocking (`service/plan/plan_test.go`)
 
 ### Emails transactionnels (Resend API)
