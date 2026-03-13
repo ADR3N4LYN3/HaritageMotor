@@ -238,7 +238,8 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **Glass cards** : `bg-white/[0.03] border border-white/[0.06] rounded-2xl` (pas de shadow)
 - **Inputs** : `bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40 focus:ring-1 focus:ring-gold/20`
 - **Texte** : `text-white` (primaire), `text-white/50` (secondaire), `text-white/30` (muted)
-- **Headings** : `font-display font-light tracking-wide text-white` (serif, léger — PAS bold)
+- **Headings** : `font-light tracking-[0.03em] text-white leading-[1.2]` (DM Sans 300 — PAS serif, PAS bold). `font-display` (Cormorant Garamond) réservé UNIQUEMENT au brand/logo ("HM", "Heritage Motor" sur login/admin header)
+- **Brand text** : `font-sans font-semibold tracking-[0.18em] uppercase text-gold` (DM Sans 600 — TopBar 0.72rem, SideNav 0.65rem)
 - **Section labels** : `text-sm font-semibold text-white/30 uppercase tracking-wider`
 - **Status pills** : actif `bg-gold/15 text-gold border-gold/30`, inactif `bg-white/[0.04] text-white/50 border-white/[0.06]`
 - **Séparateurs** : `border-gold/10` (TopBar, BottomNav)

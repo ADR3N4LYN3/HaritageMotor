@@ -32,9 +32,9 @@ function timeAgo(dateStr: string): string {
   return `${days}d`;
 }
 
-export function ActivityFeed() {
+export function ActivityFeed({ active = true }: { active?: boolean }) {
   const { data, isLoading } = useSWR<PaginatedResponse<ActivityEntry>>(
-    "/activity?per_page=20",
+    active ? "/activity?per_page=20" : null,
     { refreshInterval: 30000 }
   );
 

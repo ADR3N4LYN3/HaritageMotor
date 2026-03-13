@@ -92,7 +92,7 @@ function TenantDashboard() {
         <div className="reveal-up flex items-center justify-between">
           <div>
             <div className="section-tag mb-3"><span>Vehicle Registry</span></div>
-            <h1 className="font-display text-3xl md:text-4xl font-light tracking-wide text-white leading-tight">Your fleet</h1>
+            <h1 className="text-[1.6rem] md:text-[2rem] font-light tracking-[0.03em] text-white leading-[1.2]">Your fleet</h1>
           </div>
           {canCreate && (
             <button
@@ -114,7 +114,7 @@ function TenantDashboard() {
               <div key={s.label} className="bg-dark-2 p-4 md:p-5 text-center group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
-                  <p className="text-2xl md:text-3xl font-sans font-normal text-white/90 tabular-nums">{isLoading ? "-" : s.value}</p>
+                  <p className="text-[1.75rem] md:text-[2rem] font-sans font-normal text-white/90 tabular-nums">{isLoading ? "-" : s.value}</p>
                   <p className="text-[10px] tracking-[0.15em] uppercase text-gold/70 mt-1 font-medium">{s.label}</p>
                 </div>
               </div>
@@ -128,6 +128,7 @@ function TenantDashboard() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
+              aria-pressed={activeTab === tab}
               className={`px-5 py-3 text-[11px] tracking-[0.12em] uppercase font-medium border-b-2 transition-all duration-300 ${
                 activeTab === tab
                   ? "text-gold border-b-gold"
@@ -224,7 +225,8 @@ function TenantDashboard() {
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] tracking-wide uppercase font-medium transition-all duration-300 border ${
+                aria-pressed={statusFilter === s}
+                className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[11px] tracking-[0.06em] uppercase font-medium transition-all duration-300 border ${
                   statusFilter === s
                     ? "bg-gold/15 text-gold border-gold/30"
                     : "bg-white/[0.03] text-white/40 border-white/[0.06] hover:text-white/60 hover:border-white/[0.1]"
@@ -243,7 +245,7 @@ function TenantDashboard() {
             </div>
           ) : vehicles.length === 0 ? (
             <div className="text-center py-16 reveal-up">
-              <p className="font-display text-xl font-light text-white/30 italic">No vehicles found</p>
+              <p className="text-base font-light text-white/30 italic">No vehicles found</p>
               <p className="text-white/15 text-xs mt-2 tracking-wider uppercase">
                 {searchInput || statusFilter ? "Try adjusting your filters" : "Add your first vehicle to get started"}
               </p>
@@ -328,7 +330,7 @@ function TenantDashboard() {
                 Recent activity
               </p>
             </div>
-            <ActivityFeed />
+            <ActivityFeed active={activeTab === "activity"} />
           </div>
         </div>
       </div>

@@ -84,7 +84,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
         className="relative w-full max-w-lg bg-dark-2 border border-white/[0.08] rounded-t-2xl sm:rounded-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl font-light tracking-wide text-white">
+          <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">
             New Task
           </h2>
           <button

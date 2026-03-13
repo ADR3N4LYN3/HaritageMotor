@@ -171,6 +171,7 @@ export default function EditBayPage() {
                   type="button"
                   onClick={() => setStatus(s)}
                   disabled={bay.status === "occupied"}
+                  aria-pressed={status === s}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     status === s
                       ? "bg-gold/15 text-gold border-gold/30"
@@ -197,6 +198,7 @@ export default function EditBayPage() {
                   key={f}
                   type="button"
                   onClick={() => toggleFeature(f)}
+                  aria-pressed={features.includes(f)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     features.includes(f)
                       ? "bg-gold/15 text-gold border-gold/30"

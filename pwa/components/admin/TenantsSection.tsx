@@ -39,7 +39,7 @@ export function TenantsSection() {
       <div className="reveal-up reveal-d1 space-y-px rounded-2xl overflow-hidden border border-white/[0.06]">
         {data?.data?.length === 0 && (
           <div className="bg-dark-2 py-16 text-center">
-            <p className="text-white/20 text-sm font-display font-light italic">
+            <p className="text-white/20 text-sm font-light italic">
               No tenants yet
             </p>
             <p className="text-white/10 text-xs mt-1 font-light">

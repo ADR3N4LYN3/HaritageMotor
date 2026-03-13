@@ -27,12 +27,13 @@ export function SideNav() {
   if (role === "superadmin") navItems.push(adminNav);
 
   return (
+    // Width (w-[220px]) synced with lg:left-[220px] in scan/page.tsx
     <aside className="hidden lg:flex w-[220px] shrink-0 flex-col bg-dark-2 border-r border-white/[0.04] h-screen sticky top-0">
       {/* Header */}
       <div className="px-4 py-4 flex items-center gap-2.5 border-b border-white/[0.04]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoCrest.src} alt="HM" className="h-7 w-auto" />
-        <span className="font-display text-[10.5px] font-semibold tracking-[0.18em] uppercase text-gold">
+        <span className="font-sans text-[0.65rem] font-semibold tracking-[0.18em] uppercase text-gold">
           Heritage Motor
         </span>
       </div>

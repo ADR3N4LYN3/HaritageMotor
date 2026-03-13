@@ -25,7 +25,7 @@ export function SuccessScreen({ title, subtitle, onDone }: SuccessScreenProps) {
           </svg>
         </div>
       </div>
-      <h2 className="text-2xl font-display font-semibold text-white text-center">
+      <h2 className="text-xl font-medium text-white text-center">
         {title}
       </h2>
       {subtitle && (

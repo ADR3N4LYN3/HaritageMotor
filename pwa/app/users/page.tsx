@@ -246,7 +246,7 @@ export default function UsersPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-display text-lg font-light text-white truncate">
+                    <h3 className="text-sm font-normal text-white truncate">
                       {user.first_name} {user.last_name}
                     </h3>
                     <p className="text-sm text-white/40 truncate mt-0.5">

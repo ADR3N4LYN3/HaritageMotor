@@ -23,7 +23,7 @@ export const VehicleCard = memo(function VehicleCard({ vehicle, bayName, onClick
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="font-display text-lg font-light text-white group-hover:text-white/95 truncate transition-colors duration-300">
+          <h3 className="text-[1rem] font-normal text-white group-hover:text-white/95 truncate transition-colors duration-300">
             {vehicle.make} {vehicle.model}
           </h3>
           {vehicle.color && (

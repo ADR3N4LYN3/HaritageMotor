@@ -170,7 +170,7 @@ docker compose up -d --build
 - **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
 - **Landing i18n**: All static pages (index, contact, privacy, legal, 404) support EN/FR/DE via lang switcher, persisted in localStorage
 - **Currency toggle**: Pricing section supports EUR/USD switch, persisted in localStorage (`hm-currency`). Amounts: Starter €800/$880, Pro €1,400/$1,540, Climate add-on +€350/+$385
-- **Typography**: Cormorant Garamond 300 (serif) for headings, DM Sans 400/500 (sans) for UI — consistent across all pages
+- **Typography**: DM Sans 300 (sans-serif) for headings, DM Sans 400/500 for UI. Cormorant Garamond reserved for brand/logo only ("HM", "Heritage Motor" on login/admin)
 - **Email normalization**: TrimSpace + ToLower on both backend (Go) and frontend (TypeScript) before any auth/invite call
 
 ## Domains

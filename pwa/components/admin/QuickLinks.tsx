@@ -21,7 +21,7 @@ export function QuickLinks() {
             onClick={() => router.push(link.href)}
             className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group"
           >
-            <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">
+            <p className="text-sm font-normal text-white/80 group-hover:text-white transition-colors duration-300">
               {link.title}
             </p>
             <p className="text-[10px] text-white/25 mt-1 font-light">{link.sub}</p>

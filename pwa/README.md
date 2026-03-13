@@ -180,15 +180,16 @@ Theme entierement sombre, inspire de la landing page (Ferrari/Porsche aesthetic)
 | success | `#22c55e` |
 | warning | `#f59e0b` |
 | danger | `#ef4444` |
-| Font display | Cormorant Garamond (serif, font-light pour headings — jamais bold) |
+| Font headings | DM Sans 300 (sans-serif, font-light tracking-[0.03em] — jamais bold, jamais serif) |
 | Font body | DM Sans (sans-serif) |
+| Font brand/logo | Cormorant Garamond (serif, font-display — UNIQUEMENT "HM" logo et "Heritage Motor" sur login/admin) |
 
 | Element | Classes Tailwind |
 |---|---|
 | Glass card | `bg-white/[0.03] border border-white/[0.06] rounded-2xl` |
 | Input | `bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40` |
 | Section label | `text-sm font-semibold text-white/30 uppercase tracking-wider` |
-| Heading | `font-display font-light tracking-wide text-white` |
+| Heading | `font-light tracking-[0.03em] text-white leading-[1.2]` |
 | Status pill actif | `bg-gold/15 text-gold border-gold/30` |
 | Status pill inactif | `bg-white/[0.04] text-white/50 border-white/[0.06]` |
 | Card accent | `gold-border-top` (bordure or en haut) |

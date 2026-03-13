@@ -120,12 +120,12 @@ export function TenantRow({
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/15 flex items-center justify-center shrink-0">
-            <span className="text-gold/60 font-display text-sm font-light">
+            <span className="text-gold/60 text-sm font-medium">
               {t.name.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="font-display font-light text-sm text-white/80 group-hover:text-white/95 transition-colors tracking-wide">
+            <p className="font-normal text-sm text-white/80 group-hover:text-white/95 transition-colors">
               {t.name}
             </p>
             <div className="flex items-center gap-2 mt-0.5">

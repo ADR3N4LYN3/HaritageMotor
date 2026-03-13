@@ -67,7 +67,7 @@ export function CookieBanner() {
         </div>
 
         {/* Title */}
-        <h2 className="font-display font-light text-2xl text-white mb-2 tracking-[0.01em]">
+        <h2 className="font-light text-[1.3rem] text-white mb-2 tracking-[0.03em] leading-[1.2]">
           Privacy preferences
         </h2>
 

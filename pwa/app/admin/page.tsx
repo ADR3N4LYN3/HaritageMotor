@@ -56,7 +56,7 @@ function Header() {
             <span className="text-black font-display font-semibold text-sm">H</span>
           </div>
           <div>
-            <h1 className="text-sm font-display font-light text-white/90 tracking-[0.2em] uppercase">
+            <h1 className="text-xs font-sans font-semibold text-white/90 tracking-[0.18em] uppercase">
               Heritage Motor
             </h1>
             <p className="text-gold/50 text-[10px] tracking-[0.25em] uppercase font-medium">

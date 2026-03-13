@@ -160,7 +160,7 @@ export default function ExitVehiclePage() {
             </p>
           </div>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] w-full">
-            <h3 className="font-display text-lg font-light text-white">
+            <h3 className="text-[1rem] font-normal text-white">
               {vehicle.make} {vehicle.model}
             </h3>
             <p className="text-sm text-white/50 mt-0.5">

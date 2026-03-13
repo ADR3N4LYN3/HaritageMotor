@@ -20,7 +20,7 @@ export function TopBar() {
       <div className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoCrest.src} alt="HM" className="h-[30px] w-auto flex-shrink-0" />
-        <span className="font-display text-[13px] font-light tracking-[0.2em] uppercase text-gold">
+        <span className="font-sans text-[0.72rem] font-semibold tracking-[0.18em] uppercase text-gold">
           Heritage Motor
         </span>
       </div>

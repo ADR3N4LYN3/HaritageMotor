@@ -11,6 +11,8 @@ const pageLabels: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/scan": "Scan QR",
   "/bays": "Bays",
+  "/bay": "Bay",
+  "/vehicle": "Vehicle",
   "/tasks": "Tasks",
   "/qr-codes": "QR Codes",
   "/users": "Team",

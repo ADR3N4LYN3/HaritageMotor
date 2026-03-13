@@ -78,6 +78,7 @@ export default function BaysPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
+              aria-pressed={statusFilter === s}
               className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                 statusFilter === s
                   ? "bg-gold/15 text-gold border-gold/30"
@@ -114,7 +115,7 @@ export default function BaysPage() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-display text-lg font-light text-white">{bay.code}</h3>
+                    <h3 className="text-[1rem] font-normal text-white">{bay.code}</h3>
                     {bay.zone && (
                       <p className="text-sm text-white/40 mt-0.5">{bay.zone}</p>
                     )}

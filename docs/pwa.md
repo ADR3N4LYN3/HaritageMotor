@@ -435,8 +435,9 @@ Fully dark theme inspired by the landing page (Ferrari/Porsche aesthetic). Consi
 
 ### Typography
 
-- Display font: `Cormorant Garamond` (serif, `font-display font-light` for headings — never bold)
+- Heading font: `DM Sans 300` (sans-serif, `font-light tracking-[0.03em] leading-[1.2]` — never bold, never serif)
 - Body font: `DM Sans` (sans-serif, body text, labels, buttons)
+- Brand/logo font: `Cormorant Garamond` (serif, `font-display` — ONLY for "HM" logo text and "Heritage Motor" on login/admin header)
 
 ### Component Patterns
 

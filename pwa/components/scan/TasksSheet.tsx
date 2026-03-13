@@ -11,7 +11,7 @@ export function TasksSheet({ onNavigate }: { onNavigate: (vehicleId: string) => 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-xl font-light tracking-wide text-white">Pending Tasks</h2>
+        <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">Pending Tasks</h2>
         {!isLoading && (
           <span className="text-xs bg-warning/10 text-warning px-2 py-0.5 rounded-full font-medium">
             {data?.total_count ?? 0}

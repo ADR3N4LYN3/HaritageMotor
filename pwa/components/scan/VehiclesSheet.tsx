@@ -11,7 +11,7 @@ export function VehiclesSheet({ search, setSearch, onNavigate }: { search: strin
 
   return (
     <div className="space-y-4">
-      <h2 className="font-display text-xl font-light tracking-wide text-white">Vehicles</h2>
+      <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">Vehicles</h2>
       <input
         type="text"
         value={search}

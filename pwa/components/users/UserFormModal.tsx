@@ -55,7 +55,7 @@ export function UserFormModal({
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div className="relative w-full max-w-md bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
-        <h2 className="font-display text-2xl font-light tracking-wide text-white">
+        <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">
           {editingUser ? "Edit user" : "New user"}
         </h2>
 

@@ -37,7 +37,7 @@ export function PageHeader({ title, subtitle, backHref, action }: PageHeaderProp
         </svg>
       </button>
       <div className="flex-1 min-w-0">
-        <h1 className="font-display text-2xl font-light tracking-wide text-white truncate">
+        <h1 className="text-[1.3rem] font-light tracking-[0.03em] text-white truncate leading-[1.2]">
           {title}
         </h1>
         {subtitle && (

@@ -14,7 +14,7 @@ export function SectionHeading({ tag, title, action }: { tag?: string; title: st
               <span>{tag}</span>
             </div>
           )}
-          <h2 className="text-3xl lg:text-4xl font-display font-light text-white tracking-wide leading-tight">
+          <h2 className="text-[1.4rem] lg:text-[1.75rem] font-light text-white tracking-[0.03em] leading-[1.2]">
             {title}
           </h2>
         </div>
