@@ -1376,6 +1376,19 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     });
   }
 
+  /* Clean hash from URL after anchor scroll */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var id = this.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', location.pathname);
+      }
+    });
+  });
+
   /* Hero video fade-in once playing */
   var hv = document.getElementById('heroVideo');
   if (hv) {
