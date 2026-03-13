@@ -26,12 +26,20 @@ export function AdminSelect({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!open) return;
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [open]);
 
   const selected = options.find((o) => o.value === value);
 
@@ -41,6 +49,8 @@ export function AdminSelect({
         id={id}
         type="button"
         onClick={() => setOpen(!open)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
         className={`${inputClass} text-left flex items-center justify-between`}
       >
         <span className={selected ? "text-white/90" : "text-white/15"}>
@@ -56,11 +66,13 @@ export function AdminSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl border border-white/[0.08] bg-dark shadow-xl shadow-black/50 overflow-hidden">
+        <div role="listbox" className="absolute z-50 mt-1 w-full rounded-xl border border-white/[0.08] bg-dark shadow-xl shadow-black/50 overflow-hidden">
           {options.map((o) => (
             <button
               key={o.value}
               type="button"
+              role="option"
+              aria-selected={o.value === value}
               onClick={() => { onChange(o.value); setOpen(false); }}
               className={`w-full text-left px-4 py-2.5 text-sm font-light transition-colors duration-200 ${
                 o.value === value

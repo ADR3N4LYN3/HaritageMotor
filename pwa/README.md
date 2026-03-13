@@ -125,6 +125,7 @@ pwa/
     api.ts                        Client HTTP (auto-refresh 401, FormData)
     auth.ts                       Login, MFA verify, logout
     types.ts                      Interfaces TypeScript
+    task-constants.ts             Constantes partagées tâches (TASK_ICONS)
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)
   store/
     app.store.ts                  Zustand (accessToken, pendingCount, logout)

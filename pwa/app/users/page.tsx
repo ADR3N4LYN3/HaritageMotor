@@ -3,14 +3,13 @@
 import { useState, useMemo, useCallback } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { UserFormModal } from "@/components/users/UserFormModal";
+import { UserFormModal, ROLES } from "@/components/users/UserFormModal";
 import type { UserFormData } from "@/components/users/UserFormModal";
 import { useAppStore } from "@/store/app.store";
 import { api, ApiError } from "@/lib/api";
 import type { User } from "@/lib/types";
 import useSWR from "swr";
 
-const ROLES = ["admin", "operator", "technician", "viewer"] as const;
 const ROLE_FILTERS = ["", ...ROLES] as const;
 
 const roleColors: Record<string, string> = {

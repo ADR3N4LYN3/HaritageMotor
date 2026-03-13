@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import type { User } from "@/lib/types";
 
-const ROLES = ["admin", "operator", "technician", "viewer"] as const;
+export const ROLES = ["admin", "operator", "technician", "viewer"] as const;
 
 export interface UserFormData {
   email: string;
@@ -33,6 +33,14 @@ export function UserFormModal({
   onSubmit,
   onClose,
 }: UserFormModalProps) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) onClose();
@@ -104,7 +112,7 @@ export function UserFormModal({
             className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white focus:border-gold/40 focus:ring-1 focus:ring-gold/20 outline-none text-sm transition-colors appearance-none"
           >
             {ROLES.map((r) => (
-              <option key={r} value={r} className="bg-[#1a1a1a] text-white">
+              <option key={r} value={r} className="bg-dark text-white">
                 {r.charAt(0).toUpperCase() + r.slice(1)}
               </option>
             ))}

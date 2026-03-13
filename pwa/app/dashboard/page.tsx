@@ -107,7 +107,7 @@ function TenantDashboard() {
               { value: storedCount, label: "Stored", sub: "in custody" },
               { value: outCount, label: "Out", sub: "with owners" },
             ].map((s) => (
-              <div key={s.label} className="bg-dark-2 p-4 md:p-5 group relative overflow-hidden">
+              <div key={s.label} className="bg-dark-2 p-4 md:p-5 text-center group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
                   <p className="text-2xl md:text-3xl font-sans font-normal text-white/90 tabular-nums">{isLoading ? "-" : s.value}</p>

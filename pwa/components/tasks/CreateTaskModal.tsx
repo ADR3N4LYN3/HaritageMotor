@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { api, ApiError } from "@/lib/api";
+import { TASK_ICONS } from "@/lib/task-constants";
 
 const TASK_TYPES = ["battery_start", "tire_pressure", "wash", "fluid_check", "custom"];
 
@@ -12,14 +13,6 @@ const TASK_TYPE_LABELS: Record<string, string> = {
   wash: "Wash",
   fluid_check: "Fluid Check",
   custom: "Custom",
-};
-
-const taskIcons: Record<string, string> = {
-  battery_start: "\uD83D\uDD0B",
-  tire_pressure: "\uD83D\uDD27",
-  wash: "\uD83D\uDEBF",
-  fluid_check: "\uD83D\uDD0D",
-  custom: "\uD83D\uDCCB",
 };
 
 export interface CreateTaskModalProps {
@@ -38,6 +31,14 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
   const [dueDate, setDueDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
 
   const filteredVehicles = useMemo(() => {
     const entries = Array.from(vehicleMap.entries());
@@ -80,7 +81,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
       {/* Modal */}
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-lg bg-[#111] border border-white/[0.08] rounded-t-2xl sm:rounded-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto"
+        className="relative w-full max-w-lg bg-dark-2 border border-white/[0.08] rounded-t-2xl sm:rounded-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl font-light tracking-wide text-white">
@@ -116,7 +117,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
           />
           {showDropdown && filteredVehicles.length > 0 && (
-            <div className="absolute z-10 top-full mt-1 w-full bg-[#1a1a1a] border border-white/[0.1] rounded-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-10 top-full mt-1 w-full bg-dark border border-white/[0.1] rounded-lg max-h-40 overflow-y-auto">
               {filteredVehicles.map(([id, name]) => (
                 <button
                   key={id}
@@ -148,8 +149,8 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
           >
             {TASK_TYPES.map((t) => (
-              <option key={t} value={t} className="bg-[#1a1a1a]">
-                {taskIcons[t]} {TASK_TYPE_LABELS[t]}
+              <option key={t} value={t} className="bg-dark">
+                {TASK_ICONS[t]} {TASK_TYPE_LABELS[t]}
               </option>
             ))}
           </select>

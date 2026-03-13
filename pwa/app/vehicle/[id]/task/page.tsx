@@ -13,14 +13,7 @@ import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { pushAction } from "@/lib/offline-queue";
 import type { Task } from "@/lib/types";
 import useSWR from "swr";
-
-const taskIcons: Record<string, string> = {
-  battery_start: "🔋",
-  tire_pressure: "🔧",
-  wash: "🚿",
-  fluid_check: "🔍",
-  custom: "📋",
-};
+import { TASK_ICONS } from "@/lib/task-constants";
 
 export default function TaskPage() {
   const params = useParams();
@@ -167,7 +160,7 @@ export default function TaskPage() {
                       className="w-full text-left p-4 flex items-center gap-3 touch-target"
                     >
                       <span className="text-xl">
-                        {taskIcons[task.task_type] || "📋"}
+                        {TASK_ICONS[task.task_type] || "📋"}
                       </span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">

@@ -1,12 +1,10 @@
-"use client";
-
-import React from "react";
+import type { ReactNode } from "react";
 
 function GoldRule() {
   return <div className="gold-sep" />;
 }
 
-export function SectionHeading({ tag, title, action }: { tag?: string; title: string; action?: React.ReactNode }) {
+export function SectionHeading({ tag, title, action }: { tag?: string; title: string; action?: ReactNode }) {
   return (
     <div className="space-y-4">
       <div className="flex items-end justify-between">

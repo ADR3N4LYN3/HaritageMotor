@@ -2,14 +2,7 @@
 
 import useSWR from "swr";
 import type { Task } from "@/lib/types";
-
-const taskIcons: Record<string, string> = {
-  battery_start: "\uD83D\uDD0B",
-  tire_pressure: "\uD83D\uDD27",
-  wash: "\uD83D\uDEBF",
-  fluid_check: "\uD83D\uDD0D",
-  custom: "\uD83D\uDCCB",
-};
+import { TASK_ICONS } from "@/lib/task-constants";
 
 export function TasksSheet({ onNavigate }: { onNavigate: (vehicleId: string) => void }) {
   const { data, isLoading } = useSWR<{ data: Task[]; total_count: number }>("/tasks?status=pending&per_page=20", { refreshInterval: 30000 });
@@ -42,7 +35,7 @@ export function TasksSheet({ onNavigate }: { onNavigate: (vehicleId: string) => 
                 className="w-full text-left bg-white/[0.03] rounded-xl p-3 border border-white/[0.06] active:scale-[0.98] transition-transform"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">{taskIcons[task.task_type] || "\uD83D\uDCCB"}</span>
+                  <span className="text-lg">{TASK_ICONS[task.task_type] || "\uD83D\uDCCB"}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{task.title}</p>
                     {task.due_date && (

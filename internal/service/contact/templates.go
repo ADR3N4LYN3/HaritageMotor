@@ -1,6 +1,9 @@
 package contact
 
-import "fmt"
+import (
+	"fmt"
+	"html"
+)
 
 type emailStrings struct {
 	Subject  string
@@ -59,6 +62,12 @@ func notificationHTML(req Request) string {
 	if vehicles == "" {
 		vehicles = "N/A"
 	}
+
+	name := html.EscapeString(req.Name)
+	email := html.EscapeString(req.Email)
+	companyEsc := html.EscapeString(company)
+	vehiclesEsc := html.EscapeString(vehicles)
+	message := html.EscapeString(req.Message)
 
 	return fmt.Sprintf(`<!DOCTYPE html>
 <html lang="en">
@@ -166,7 +175,7 @@ func notificationHTML(req Request) string {
 </table>
 </body>
 </html>`,
-		req.Name, req.Email, req.Email, company, vehicles, req.Message,
+		name, email, email, companyEsc, vehiclesEsc, message,
 	)
 }
 
@@ -189,7 +198,10 @@ func confirmationHTML(req Request) string {
 		message = "—"
 	}
 
-	greeting := fmt.Sprintf(t.Greeting, req.Name)
+	company = html.EscapeString(company)
+	vehicles = html.EscapeString(vehicles)
+	message = html.EscapeString(message)
+	greeting := fmt.Sprintf(t.Greeting, html.EscapeString(req.Name))
 
 	return fmt.Sprintf(`<!DOCTYPE html>
 <html lang="%s">

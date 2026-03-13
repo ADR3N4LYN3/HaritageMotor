@@ -9,14 +9,7 @@ import { useAppStore } from "@/store/app.store";
 import { api } from "@/lib/api";
 import type { Task, Vehicle, PaginatedResponse } from "@/lib/types";
 import useSWR from "swr";
-
-const taskIcons: Record<string, string> = {
-  battery_start: "\uD83D\uDD0B",
-  tire_pressure: "\uD83D\uDD27",
-  wash: "\uD83D\uDEBF",
-  fluid_check: "\uD83D\uDD0D",
-  custom: "\uD83D\uDCCB",
-};
+import { TASK_ICONS } from "@/lib/task-constants";
 
 const STATUS_FILTERS = ["", "pending", "completed", "overdue"] as const;
 
@@ -166,7 +159,7 @@ export default function TasksPage() {
                     className="w-full text-left p-4 flex items-center gap-3 touch-target"
                   >
                     <span className="text-xl">
-                      {taskIcons[task.task_type] || "\uD83D\uDCCB"}
+                      {TASK_ICONS[task.task_type] || "\uD83D\uDCCB"}
                     </span>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-white text-sm truncate">

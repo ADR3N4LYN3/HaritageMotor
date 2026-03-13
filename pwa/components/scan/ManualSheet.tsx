@@ -17,6 +17,7 @@ export function ManualSheet({ code, setCode, error, onSubmit, onBack }: {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="Enter QR token..."
+        aria-label="QR token code"
         className="w-full px-4 py-3 rounded-xl bg-white/[0.04] text-white placeholder:text-white/25 border border-white/[0.08] focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
       />
       {error && <p className="text-danger text-sm text-center">{error}</p>}
@@ -29,7 +30,7 @@ export function ManualSheet({ code, setCode, error, onSubmit, onBack }: {
         </button>
         <button
           onClick={onSubmit}
-          className="flex-1 py-3 rounded-xl bg-gold text-white font-medium text-sm active:scale-[0.98] transition-transform"
+          className="flex-1 py-3 rounded-xl bg-gold text-black font-medium text-sm active:scale-[0.98] transition-transform"
           disabled={!code}
         >
           Search

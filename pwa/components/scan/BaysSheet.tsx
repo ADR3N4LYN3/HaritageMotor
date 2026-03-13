@@ -53,6 +53,7 @@ export function BaysSheet({ search, setSearch, onNavigate }: { search: string; s
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search bay code or zone..."
+        aria-label="Search bays"
         className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
       />
       {isLoading ? (

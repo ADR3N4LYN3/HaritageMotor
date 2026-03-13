@@ -122,6 +122,7 @@ pwa/
 │   ├── api.ts                 # API client with auto-refresh
 │   ├── auth.ts                # Login, MFA, logout functions
 │   ├── types.ts               # TypeScript interfaces
+│   ├── task-constants.ts      # Shared task icons (TASK_ICONS)
 │   └── offline-queue.ts       # IndexedDB persistence layer
 ├── store/
 │   └── app.store.ts           # Zustand store (auth + offline state)
