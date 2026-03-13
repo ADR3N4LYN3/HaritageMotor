@@ -45,7 +45,7 @@ heritage-motor/
 ├── internal/
 │   ├── auth/                    # JWT, bcrypt, TOTP
 │   ├── config/                  # Environment config loader
-│   ├── db/                      # Connection pool + migrations (001-018)
+│   ├── db/                      # Connection pool + migrations (001-019)
 │   ├── domain/                  # Types (models), typed errors, password validation
 │   ├── handler/                 # HTTP handlers (REST controllers)
 │   │   ├── admin/               #   Superadmin: tenants CRUD, invitations, dashboard
