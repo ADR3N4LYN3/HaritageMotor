@@ -39,6 +39,7 @@ Migrations are located in `internal/db/migrations/` and run sequentially on star
 | 016 | `016_contact_requests.up.sql` | Contact form submissions (public, no RLS) |
 | 017 | `017_superadmin_role.up.sql` | Add `superadmin` to `user_role` ENUM |
 | 018 | `018_superadmin_schema.up.sql` | Tenant status, password_change_required, plan_limits, invitations |
+| 019 | `019_backfill_qr_tokens.up.sql` | Backfill `qr_token = gen_random_uuid()::TEXT` for existing bays and vehicles where qr_token IS NULL |
 
 ## ENUM Types
 

@@ -155,7 +155,9 @@ The login page handles TOTP-based MFA:
 
 The login page includes a Cloudflare Turnstile widget (compact, dark theme) to prevent bot login attempts. Uses **auto-rendering** via a `cf-turnstile` div with `data-callback` pointing to a global function (`__hmTurnstileCb`) that stores the token in React state. The token is sent as `cf_turnstile_response` in the login request body.
 
-If `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is not set, the widget is not rendered and the token is not sent (dev mode — backend skips verification when `TURNSTILE_SECRET_KEY` is empty).
+The Turnstile widget is positioned with `absolute` CSS to avoid layout shift during loading. If `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is not set, the widget is not rendered and the token is not sent (dev mode — backend skips verification when `TURNSTILE_SECRET_KEY` is empty).
+
+The login page background image uses `fetchPriority="high"` to ensure it loads immediately and avoids a flash of unstyled content.
 
 ### Logo in Standalone Mode
 

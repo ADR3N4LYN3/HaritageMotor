@@ -150,18 +150,21 @@ export default function LoginPage() {
       )}
       {turnstileSiteKey && (
         <div
-          className="cf-turnstile"
+          className="cf-turnstile absolute bottom-4 left-1/2 -translate-x-1/2"
           data-sitekey={turnstileSiteKey}
           data-callback="__hmTurnstileCb"
           data-theme="dark"
           data-size="compact"
         />
       )}
-      {/* Background photo */}
+      {/* Background photo — fixed position + eager loading to prevent CLS */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="https://images.unsplash.com/photo-1767907571229-01cf4ba03590?w=1920&q=60&auto=format&fit=crop"
         alt=""
+        // eslint-disable-next-line react/no-unknown-property
+        fetchPriority="high"
+        decoding="sync"
         className="pointer-events-none fixed inset-0 w-full h-full object-cover object-center scale-105"
       />
       {/* Dark overlay */}
@@ -175,7 +178,7 @@ export default function LoginPage() {
         {/* Logo crest */}
         <div className="mb-12 text-center flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoCrest.src} alt="Heritage Motor" className="h-[88px] w-auto mb-6" />
+          <img src={logoCrest.src} alt="Heritage Motor" width={88} height={88} className="h-[88px] w-auto mb-6" />
           <h1 className="font-display text-xl font-semibold tracking-[0.25em] uppercase text-[#b8955a]">
             Heritage Motor
           </h1>

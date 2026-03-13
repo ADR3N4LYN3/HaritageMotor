@@ -41,7 +41,7 @@ internal/
     db.go                        — NewPool (owner), NewAppPool (heritage_app RLS)
     dbtx.go                      — Interface DBTX, WithTx/TxFromCtx/Conn
     migrate.go                   — RunMigrations (transactionnel, idempotent)
-    migrations/                  — 001-018 (.up.sql + .down.sql)
+    migrations/                  — 001-019 (.up.sql + .down.sql)
   domain/
     types.go                     — Structs (User, Vehicle, Bay, Event, Task, Document, Tenant...)
     errors.go                    — ErrNotFound, ErrForbidden, ErrValidation, ErrConflict...
@@ -376,7 +376,7 @@ Toute la documentation technique est dans [`docs/`](docs/) :
 | [`docs/README.md`](docs/README.md) | Vue d'ensemble projet, quick start, structure |
 | [`docs/architecture.md`](docs/architecture.md) | Layers, middleware pipeline, request flow, multi-tenant |
 | [`docs/api-reference.md`](docs/api-reference.md) | Endpoints REST complets avec exemples |
-| [`docs/database.md`](docs/database.md) | Schéma SQL, migrations 001-018, RLS, index |
+| [`docs/database.md`](docs/database.md) | Schéma SQL, migrations 001-019, RLS, index |
 | [`docs/security.md`](docs/security.md) | Auth, RBAC, token blacklist, rate limiting, headers |
 | [`docs/deployment.md`](docs/deployment.md) | Docker, Caddy, Cloudflare, variables d'env |
 | [`docs/pwa.md`](docs/pwa.md) | Frontend PWA complet |
