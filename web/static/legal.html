@@ -162,7 +162,7 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 300;
-  color: rgba(250, 249, 247, 0.55);
+  color: rgba(250, 249, 247, 0.75);
   line-height: 1.6;
   margin: 0;
 }
@@ -373,6 +373,16 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
 </footer>
 
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+
 <script>
   var i18n = {
     fr: {
@@ -471,16 +481,6 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
   });
 </script>
-
-<!-- Cookie Banner -->
-<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
-  <div class="cookie-inner">
-    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
-    <div class="cookie-actions">
-      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
-    </div>
-  </div>
-</div>
 <script>
 (function() {
   var banner = document.getElementById('cookie-banner');

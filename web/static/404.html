@@ -172,7 +172,7 @@ h1 {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 300;
-  color: rgba(250, 249, 247, 0.55);
+  color: rgba(250, 249, 247, 0.75);
   line-height: 1.6;
   margin: 0;
 }
@@ -247,6 +247,16 @@ h1 {
   </div>
 </div>
 
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-inner">
+    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const i18n = {
   fr: { title: "Page introuvable", desc: "La page que vous cherchez n\u2019existe pas ou a \u00e9t\u00e9 d\u00e9plac\u00e9e.", cta: "Retour \u00e0 Heritage Motor", cookie_text: 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.', cookie_accept: "Accepter" },
@@ -298,16 +308,6 @@ document.querySelectorAll('.lang-sw button').forEach(b => {
   b.addEventListener('click', () => setLang(b.getAttribute('data-lang')));
 });
 </script>
-
-<!-- Cookie Banner -->
-<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
-  <div class="cookie-inner">
-    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
-    <div class="cookie-actions">
-      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
-    </div>
-  </div>
-</div>
 <script>
 (function() {
   var banner = document.getElementById('cookie-banner');

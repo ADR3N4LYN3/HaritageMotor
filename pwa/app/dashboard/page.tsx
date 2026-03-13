@@ -119,62 +119,62 @@ function TenantDashboard() {
         </div>
 
         <div className="reveal-up reveal-d2 grid grid-cols-2 gap-3">
-          <button onClick={() => router.push("/scan")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group">
-            <div className="flex items-center gap-3">
+          <button onClick={() => router.push("/scan")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
+            <div className="flex flex-col items-center gap-2 text-center">
               <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><line x1="7" y1="12" x2="17" y2="12" /></svg>
               </div>
               <div>
-                <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">Scan QR</p>
+                <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Scan QR</p>
                 <p className="text-[10px] text-white/25 mt-0.5">Quick lookup</p>
               </div>
             </div>
           </button>
-          <button onClick={() => router.push("/bays")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group">
-            <div className="flex items-center gap-3">
+          <button onClick={() => router.push("/bays")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
+            <div className="flex flex-col items-center gap-2 text-center">
               <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>
               </div>
               <div>
-                <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">Bays</p>
+                <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Bays</p>
                 <p className="text-[10px] text-white/25 mt-0.5">Manage facility</p>
               </div>
             </div>
           </button>
           {canCreate && (
-            <button onClick={() => router.push("/qr-codes")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group">
-              <div className="flex items-center gap-3">
+            <button onClick={() => router.push("/qr-codes")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
+              <div className="flex flex-col items-center gap-2 text-center">
                 <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" /><rect x="2" y="14" width="8" height="8" rx="1" /><path d="M14 14h4v4h-4zM22 14v4h-4M22 22h-4v-4" /></svg>
                 </div>
                 <div>
-                  <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">QR Codes</p>
+                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">QR Codes</p>
                   <p className="text-[10px] text-white/25 mt-0.5">Print labels</p>
                 </div>
               </div>
             </button>
           )}
           {user?.role === "admin" && (
-            <button onClick={() => router.push("/users")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group">
-              <div className="flex items-center gap-3">
+            <button onClick={() => router.push("/users")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
+              <div className="flex flex-col items-center gap-2 text-center">
                 <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                 </div>
                 <div>
-                  <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">Team</p>
+                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Team</p>
                   <p className="text-[10px] text-white/25 mt-0.5">Manage users</p>
                 </div>
               </div>
             </button>
           )}
           {user?.role === "superadmin" && (
-            <button onClick={() => router.push("/admin")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift text-left group col-span-2">
-              <div className="flex items-center gap-3">
+            <button onClick={() => router.push("/admin")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group col-span-2">
+              <div className="flex flex-col items-center gap-2 text-center">
                 <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
                 </div>
                 <div>
-                  <p className="text-sm font-display font-light text-white/80 group-hover:text-white transition-colors duration-300 tracking-wide">Admin Panel</p>
+                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Admin Panel</p>
                   <p className="text-[10px] text-white/25 mt-0.5">Tenants, invitations, platform</p>
                 </div>
               </div>

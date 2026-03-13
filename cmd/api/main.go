@@ -10,9 +10,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -20,33 +18,7 @@ import (
 	"github.com/chriis/heritage-motor/internal/auth"
 	"github.com/chriis/heritage-motor/internal/config"
 	"github.com/chriis/heritage-motor/internal/db"
-	adminhandler "github.com/chriis/heritage-motor/internal/handler/admin"
-	auditloghandler "github.com/chriis/heritage-motor/internal/handler/audit"
-	authhandler "github.com/chriis/heritage-motor/internal/handler/auth"
-	bayhandler "github.com/chriis/heritage-motor/internal/handler/bay"
-	contacthandler "github.com/chriis/heritage-motor/internal/handler/contact"
-	dochandler "github.com/chriis/heritage-motor/internal/handler/document"
-	eventhandler "github.com/chriis/heritage-motor/internal/handler/event"
-	photohandler "github.com/chriis/heritage-motor/internal/handler/photo"
-	scanhandler "github.com/chriis/heritage-motor/internal/handler/scan"
-	taskhandler "github.com/chriis/heritage-motor/internal/handler/task"
-	userhandler "github.com/chriis/heritage-motor/internal/handler/user"
-	vehiclehandler "github.com/chriis/heritage-motor/internal/handler/vehicle"
-	"github.com/chriis/heritage-motor/internal/middleware"
-	adminsvc "github.com/chriis/heritage-motor/internal/service/admin"
-	authsvc "github.com/chriis/heritage-motor/internal/service/auth"
-	baysvc "github.com/chriis/heritage-motor/internal/service/bay"
-	contactsvc "github.com/chriis/heritage-motor/internal/service/contact"
-	docsvc "github.com/chriis/heritage-motor/internal/service/document"
-	eventsvc "github.com/chriis/heritage-motor/internal/service/event"
-	mailersvc "github.com/chriis/heritage-motor/internal/service/mailer"
-	plansvc "github.com/chriis/heritage-motor/internal/service/plan"
-	reportsvc "github.com/chriis/heritage-motor/internal/service/report"
-	tasksvc "github.com/chriis/heritage-motor/internal/service/task"
-	usersvc "github.com/chriis/heritage-motor/internal/service/user"
-	vehiclesvc "github.com/chriis/heritage-motor/internal/service/vehicle"
 	"github.com/chriis/heritage-motor/internal/storage"
-	"github.com/chriis/heritage-motor/internal/turnstile"
 )
 
 func main() {
@@ -119,40 +91,9 @@ func main() {
 		}
 	}
 
-	// Start periodic cleanup of expired token blacklist entries.
+	// Start periodic cleanup goroutines
 	if ownerPool != nil {
-		go func() {
-			ticker := time.NewTicker(1 * time.Hour)
-			defer ticker.Stop()
-			for range ticker.C {
-				cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 10*time.Second)
-				tag, cleanupErr := ownerPool.Exec(cleanupCtx, "DELETE FROM token_blacklist WHERE expires_at < NOW()")
-				cleanupCancel()
-				if cleanupErr != nil {
-					log.Warn().Err(cleanupErr).Msg("token blacklist cleanup failed")
-				} else if tag.RowsAffected() > 0 {
-					log.Info().Int64("deleted", tag.RowsAffected()).Msg("token blacklist cleanup")
-				}
-			}
-		}()
-	}
-
-	// Start periodic cleanup of expired/revoked refresh tokens (every 24h).
-	if ownerPool != nil {
-		go func() {
-			ticker := time.NewTicker(24 * time.Hour)
-			defer ticker.Stop()
-			for range ticker.C {
-				cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 10*time.Second)
-				tag, cleanupErr := ownerPool.Exec(cleanupCtx, "DELETE FROM refresh_tokens WHERE expires_at < NOW() - INTERVAL '7 days'")
-				cleanupCancel()
-				if cleanupErr != nil {
-					log.Warn().Err(cleanupErr).Msg("refresh token cleanup failed")
-				} else if tag.RowsAffected() > 0 {
-					log.Info().Int64("deleted", tag.RowsAffected()).Msg("refresh token cleanup")
-				}
-			}
-		}()
+		startCleanupRoutines(ownerPool)
 	}
 
 	// S3 Storage
@@ -230,186 +171,18 @@ func main() {
 
 	// API routes require database
 	if ownerPool != nil {
-		// Services
-		authService := authsvc.NewService(ownerPool, jwtManager)
-		vehicleService := vehiclesvc.NewService(appPool)
-		bayService := baysvc.NewService(appPool)
-		eventService := eventsvc.NewService(appPool)
-		taskService := tasksvc.NewService(appPool)
-		docService := docsvc.NewService(appPool, cfg.S3Bucket)
-		userService := usersvc.NewService(appPool)
-		planService := plansvc.NewService(ownerPool)
-		mailerService := mailersvc.NewService(cfg.ResendAPIKey, cfg.EmailFrom, cfg.AppBaseURL)
-		adminService := adminsvc.NewService(ownerPool, mailerService)
-		reportService := reportsvc.NewService(appPool)
-
-		// Turnstile verifier (shared between auth and contact)
-		turnstileVerifier := turnstile.NewVerifier(cfg.TurnstileSecretKey)
-
-		// Handlers
-		authHandler := authhandler.NewHandler(authService, turnstileVerifier)
-		vehicleHandler := vehiclehandler.NewHandler(vehicleService, planService, reportService)
-		bayHandler := bayhandler.NewHandler(bayService, planService)
-		eventHandler := eventhandler.NewHandler(eventService)
-		taskHandler := taskhandler.NewHandler(taskService)
-		docHandler := dochandler.NewHandler(docService, s3Client)
-		userHandler := userhandler.NewHandler(userService, ownerPool, jwtManager.AccessExpiry(), planService)
-		auditHandler := auditloghandler.NewHandler(ownerPool)
-		photoHandler := photohandler.NewHandler(s3Client)
-		scanHandler := scanhandler.NewHandler(appPool)
-		adminHandler := adminhandler.NewHandler(adminService)
-
-		// Contact service (public, uses ownerPool — no RLS needed)
-		contactService := contactsvc.NewService(ownerPool, cfg.ResendAPIKey, cfg.EmailFrom, cfg.ContactEmailTo, turnstileVerifier)
-		contactHandler := contacthandler.NewHandler(contactService)
-
-		// Rate limiter for auth endpoints: 5 req per 15 min per IP
-		authLimiter := limiter.New(limiter.Config{
-			Max:        5,
-			Expiration: 15 * time.Minute,
-			KeyGenerator: func(c *fiber.Ctx) string {
-				return c.IP() + ":" + strings.TrimPrefix(c.Path(), "/api/v1/auth/")
-			},
-			LimitReached: func(c *fiber.Ctx) error {
-				return c.Status(429).JSON(fiber.Map{"error": "too many attempts, try again later"})
-			},
+		setupRoutes(app, &routesDeps{
+			ownerPool:          ownerPool,
+			appPool:            appPool,
+			jwtManager:         jwtManager,
+			s3Client:           s3Client,
+			s3Bucket:           cfg.S3Bucket,
+			resendAPIKey:       cfg.ResendAPIKey,
+			emailFrom:          cfg.EmailFrom,
+			contactEmailTo:     cfg.ContactEmailTo,
+			appBaseURL:         cfg.AppBaseURL,
+			turnstileSecretKey: cfg.TurnstileSecretKey,
 		})
-
-		// API v1 routes
-		api := app.Group("/api/v1")
-
-		// Contact form (public, rate limited: 3 per 15 min per IP)
-		contactLimiter := limiter.New(limiter.Config{
-			Max:        3,
-			Expiration: 15 * time.Minute,
-			KeyGenerator: func(c *fiber.Ctx) string {
-				return c.IP() + ":contact"
-			},
-			LimitReached: func(c *fiber.Ctx) error {
-				return c.Status(429).JSON(fiber.Map{"error": "too many requests, try again later"})
-			},
-		})
-		api.Post("/contact", contactLimiter, contactHandler.Submit)
-
-		// Auth routes (no auth middleware, rate limited)
-		authGroup := api.Group("/auth")
-		authGroup.Post("/login", authLimiter, authHandler.Login)
-		authGroup.Post("/mfa/verify", authLimiter, authHandler.VerifyMFA)
-		authGroup.Post("/refresh", authLimiter, authHandler.Refresh)
-
-		// Authenticated routes (isolated group — middleware does not leak to other groups)
-		authed := api.Group("")
-		authed.Use(middleware.AuthMiddleware(jwtManager, ownerPool))
-
-		// Per-user rate limiter: 100 req/min keyed by user_id from JWT.
-		authed.Use(limiter.New(limiter.Config{
-			Max:        100,
-			Expiration: 1 * time.Minute,
-			KeyGenerator: func(c *fiber.Ctx) string {
-				if uid := middleware.UserIDFromCtx(c); uid != uuid.Nil {
-					return uid.String()
-				}
-				return c.IP()
-			},
-			LimitReached: func(c *fiber.Ctx) error {
-				return c.Status(429).JSON(fiber.Map{"error": "rate limit exceeded"})
-			},
-		}))
-
-		// Change-password route: accessible even with password_change_required.
-		// Placed BEFORE RequirePasswordChanged and TenantMiddleware.
-		authed.Post("/auth/change-password", authHandler.ChangePassword)
-
-		authed.Use(middleware.RequirePasswordChanged())
-		authed.Use(middleware.TenantMiddleware(ownerPool, appPool))
-		authed.Use(middleware.AuditMiddleware(ownerPool))
-
-		// Auth routes requiring authentication
-		authAuthed := authed.Group("/auth")
-		authAuthed.Post("/logout", authHandler.Logout)
-		authAuthed.Get("/me", authHandler.GetMe)
-		authAuthed.Post("/mfa/setup", authHandler.SetupMFA)
-		authAuthed.Post("/mfa/enable", authHandler.EnableMFA)
-		authAuthed.Delete("/mfa", middleware.RequireAdmin(), authHandler.DisableMFA)
-
-		// Vehicles
-		vehicles := authed.Group("/vehicles")
-		vehicles.Get("/qr-sheet", middleware.RequireAdmin(), vehicleHandler.QRSheet)
-		vehicles.Get("/", vehicleHandler.List)
-		vehicles.Get("/:id", vehicleHandler.GetByID)
-		vehicles.Post("/", middleware.RequireOperatorOrAbove(), vehicleHandler.Create)
-		vehicles.Patch("/:id", middleware.RequireOperatorOrAbove(), vehicleHandler.Update)
-		vehicles.Delete("/:id", middleware.RequireAdmin(), vehicleHandler.Delete)
-		vehicles.Post("/:id/move", middleware.RequireOperatorOrAbove(), vehicleHandler.Move)
-		vehicles.Post("/:id/exit", middleware.RequireOperatorOrAbove(), vehicleHandler.Exit)
-		vehicles.Get("/:id/timeline", vehicleHandler.GetTimeline)
-		vehicles.Get("/:id/report", middleware.RequireOperatorOrAbove(), vehicleHandler.GetReport)
-
-		// Upload bandwidth limiter: 200MB cumulative per user per 10 minutes.
-		uploadLimiter := middleware.UploadLimiter(middleware.UploadLimiterConfig{
-			MaxBytes: 200 * 1024 * 1024,
-			Window:   10 * time.Minute,
-		})
-
-		// Documents (nested under vehicles)
-		vehicles.Get("/:id/documents", docHandler.List)
-		vehicles.Post("/:id/documents", uploadLimiter, middleware.RequireTechnicianOrAbove(), docHandler.Create)
-		vehicles.Get("/:id/documents/:docId", docHandler.GetByID)
-		vehicles.Delete("/:id/documents/:docId", middleware.RequireAdmin(), docHandler.Delete)
-
-		// Events
-		events := authed.Group("/events")
-		events.Get("/", eventHandler.List)
-		events.Post("/", uploadLimiter, middleware.RequireTechnicianOrAbove(), eventHandler.Create)
-		events.Get("/:id", eventHandler.GetByID)
-
-		// Bays
-		bays := authed.Group("/bays")
-		bays.Get("/qr-sheet", middleware.RequireAdmin(), bayHandler.QRSheet)
-		bays.Get("/", bayHandler.List)
-		bays.Get("/:id", bayHandler.GetByID)
-		bays.Post("/", middleware.RequireOperatorOrAbove(), bayHandler.Create)
-		bays.Patch("/:id", middleware.RequireOperatorOrAbove(), bayHandler.Update)
-		bays.Delete("/:id", middleware.RequireOperatorOrAbove(), bayHandler.Delete)
-
-		// Tasks
-		tasks := authed.Group("/tasks")
-		tasks.Get("/", taskHandler.List)
-		tasks.Get("/:id", taskHandler.GetByID)
-		tasks.Post("/", middleware.RequireTechnicianOrAbove(), taskHandler.Create)
-		tasks.Patch("/:id", middleware.RequireTechnicianOrAbove(), taskHandler.Update)
-		tasks.Post("/:id/complete", middleware.RequireTechnicianOrAbove(), taskHandler.Complete)
-		tasks.Delete("/:id", middleware.RequireAdmin(), taskHandler.Delete)
-
-		// Users (admin only)
-		users := authed.Group("/users", middleware.RequireAdmin())
-		users.Get("/", userHandler.List)
-		users.Post("/", userHandler.Create)
-		users.Patch("/:id", userHandler.Update)
-		users.Delete("/:id", userHandler.Delete)
-
-		// Scan
-		authed.Get("/scan/:token", scanHandler.Resolve)
-
-		// Photos (signed URL for download)
-		authed.Get("/photos/:key/signed-url", photoHandler.GetSignedURL)
-
-		// Audit log (admin only)
-		authed.Get("/audit", middleware.RequireAdmin(), auditHandler.List)
-
-		// ---- Super-Admin routes (isolated group, no tenant, no RLS) ----
-		sa := api.Group("/admin",
-			middleware.AuthMiddleware(jwtManager, ownerPool),
-			middleware.RequireSuperAdmin(),
-			middleware.AuditMiddleware(ownerPool),
-		)
-		sa.Get("/dashboard", adminHandler.DashboardStats)
-		sa.Get("/tenants", adminHandler.ListTenants)
-		sa.Get("/tenants/:id", adminHandler.GetTenant)
-		sa.Post("/tenants", adminHandler.CreateTenant)
-		sa.Patch("/tenants/:id", adminHandler.UpdateTenant)
-		sa.Delete("/tenants/:id", adminHandler.DeleteTenant)
-		sa.Post("/invitations", adminHandler.InviteUser)
 	}
 
 	// Graceful shutdown with timeout
@@ -429,4 +202,38 @@ func main() {
 	if err := app.Listen(addr); err != nil {
 		log.Fatal().Err(err).Msg("server failed")
 	}
+}
+
+func startCleanupRoutines(ownerPool *pgxpool.Pool) {
+	// Cleanup expired token blacklist entries (every hour)
+	go func() {
+		ticker := time.NewTicker(1 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
+			cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 10*time.Second)
+			tag, cleanupErr := ownerPool.Exec(cleanupCtx, "DELETE FROM token_blacklist WHERE expires_at < NOW()")
+			cleanupCancel()
+			if cleanupErr != nil {
+				log.Warn().Err(cleanupErr).Msg("token blacklist cleanup failed")
+			} else if tag.RowsAffected() > 0 {
+				log.Info().Int64("deleted", tag.RowsAffected()).Msg("token blacklist cleanup")
+			}
+		}
+	}()
+
+	// Cleanup expired/revoked refresh tokens (every 24h)
+	go func() {
+		ticker := time.NewTicker(24 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
+			cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 10*time.Second)
+			tag, cleanupErr := ownerPool.Exec(cleanupCtx, "DELETE FROM refresh_tokens WHERE expires_at < NOW() - INTERVAL '7 days'")
+			cleanupCancel()
+			if cleanupErr != nil {
+				log.Warn().Err(cleanupErr).Msg("refresh token cleanup failed")
+			} else if tag.RowsAffected() > 0 {
+				log.Info().Int64("deleted", tag.RowsAffected()).Msg("refresh token cleanup")
+			}
+		}
+	}()
 }
