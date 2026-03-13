@@ -76,7 +76,7 @@ pwa/
 │   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
 │   │   ├── TopBar.tsx         # App header with notification bell + sync badge
 │   │   ├── BottomNav.tsx      # Fixed bottom navigation (Home, Scan, Bays, Profile)
-│   │   └── CookieBanner.tsx   # GDPR cookie consent banner (localStorage persistence)
+│   │   └── CookieBanner.tsx   # GDPR cookie consent modal (centered overlay, blur backdrop, essential/analytics toggles)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
 │   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot

@@ -388,39 +388,56 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   .feat-card { padding: 2rem 1.5rem; }
 }
 
-/* COOKIE BANNER */
-.cookie-banner {
+/* COOKIE CONSENT MODAL */
+.cookie-overlay {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
   z-index: 9999;
-  padding: 0 1.5rem 1.5rem;
-  pointer-events: none;
-}
-.cookie-banner[hidden] { display: none; }
-.cookie-inner {
-  max-width: 600px;
-  margin: 0 auto;
-  background: rgba(26, 25, 22, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(184, 149, 90, 0.15);
-  border-radius: 16px;
-  padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  pointer-events: auto;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1.5rem;
 }
-.cookie-text {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
+.cookie-overlay[hidden] { display: none; }
+.cookie-modal {
+  max-width: 480px;
+  width: 100%;
+  background: rgba(22, 21, 18, 0.97);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  border-radius: 20px;
+  padding: 2rem 2rem 1.75rem;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+.cookie-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: rgba(184, 149, 90, 0.1);
+  border: 1px solid rgba(184, 149, 90, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.cookie-title {
+  font-family: 'Cormorant Garamond', serif;
   font-weight: 300;
-  color: rgba(250, 249, 247, 0.75);
-  line-height: 1.6;
-  margin: 0;
+  font-size: 1.5rem;
+  color: #faf9f7;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.01em;
+}
+.cookie-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.55);
+  line-height: 1.7;
+  margin: 0 0 1.5rem;
 }
 .cookie-link {
   color: #b8955a;
@@ -428,28 +445,122 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   text-underline-offset: 2px;
 }
 .cookie-link:hover { color: #d4b07a; }
+.cookie-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+.cookie-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.cookie-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.cookie-option-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #faf9f7;
+}
+.cookie-option-hint {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: rgba(250, 249, 247, 0.35);
+}
+/* Toggle switch */
+.cookie-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+.cookie-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.cookie-toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.cookie-toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+.cookie-toggle input:checked + .cookie-toggle-track {
+  background: rgba(184, 149, 90, 0.25);
+  border-color: rgba(184, 149, 90, 0.4);
+}
+.cookie-toggle input:checked + .cookie-toggle-track::after {
+  left: 20px;
+  background: #b8955a;
+}
+.cookie-toggle-locked .cookie-toggle-track {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* Buttons */
+.cookie-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
 .cookie-btn {
-  white-space: nowrap;
-  padding: 0.55rem 1.5rem;
-  border-radius: 8px;
-  border: 1px solid rgba(184, 149, 90, 0.35);
-  background: transparent;
-  color: #b8955a;
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
 }
-.cookie-btn:hover {
+.cookie-btn-save {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(250, 249, 247, 0.6);
+}
+.cookie-btn-save:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #faf9f7;
+}
+.cookie-btn-accept {
   background: #b8955a;
+  border: 1px solid #b8955a;
   color: #0e0d0b;
-  border-color: #b8955a;
 }
-@media (max-width: 600px) {
-  .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; }
+.cookie-btn-accept:hover {
+  background: #c4a265;
+  border-color: #c4a265;
+}
+@media (max-width: 480px) {
+  .cookie-modal { padding: 1.5rem; border-radius: 16px; }
+  .cookie-buttons { flex-direction: column-reverse; }
   .cookie-btn { width: 100%; }
 }
 
@@ -836,12 +947,37 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
   <div class="footer-copy">&copy; 2026 heritagemotor.app</div>
 </footer>
 
-<!-- Cookie Banner -->
-<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
-  <div class="cookie-inner">
-    <p class="cookie-text" data-i18n-html="cookie_text">This website saves your language preference locally in your browser. No tracking cookies are used. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
-    <div class="cookie-actions">
-      <button id="cookie-accept" class="cookie-btn" data-i18n="cookie_accept">Accept</button>
+<!-- Cookie Consent Modal -->
+<div id="cookie-overlay" class="cookie-overlay" role="dialog" aria-modal="true" aria-label="Cookie consent" hidden>
+  <div class="cookie-modal">
+    <div class="cookie-icon">🔒</div>
+    <h2 class="cookie-title" data-i18n="cookie_title">Privacy preferences</h2>
+    <p class="cookie-desc" data-i18n-html="cookie_desc">We respect your privacy. Choose which data processing you allow. See our <a href="/privacy" class="cookie-link">Privacy Policy</a>.</p>
+    <div class="cookie-options">
+      <div class="cookie-option">
+        <div class="cookie-option-info">
+          <span class="cookie-option-label" data-i18n="cookie_essential_label">Essential</span>
+          <span class="cookie-option-hint" data-i18n="cookie_essential_hint">Language preference, consent choice</span>
+        </div>
+        <label class="cookie-toggle cookie-toggle-locked">
+          <input type="checkbox" checked disabled>
+          <span class="cookie-toggle-track"></span>
+        </label>
+      </div>
+      <div class="cookie-option">
+        <div class="cookie-option-info">
+          <span class="cookie-option-label" data-i18n="cookie_analytics_label">Anonymous analytics</span>
+          <span class="cookie-option-hint" data-i18n="cookie_analytics_hint">Privacy-friendly usage stats (no cookies, no personal data)</span>
+        </div>
+        <label class="cookie-toggle">
+          <input type="checkbox" id="cookie-analytics" checked>
+          <span class="cookie-toggle-track"></span>
+        </label>
+      </div>
+    </div>
+    <div class="cookie-buttons">
+      <button id="cookie-save" class="cookie-btn cookie-btn-save" data-i18n="cookie_save">Save choices</button>
+      <button id="cookie-accept" class="cookie-btn cookie-btn-accept" data-i18n="cookie_accept_all">Accept all</button>
     </div>
   </div>
 </div>
@@ -974,8 +1110,14 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'cta.title': 'Votre site m\u00e9rite<br> un <em>syst\u00e8me d\'exploitation.</em>',
       'cta.text': '20 minutes de d\u00e9mo, sans engagement. Juste une conversation sur le fonctionnement de votre site \u2014 et si Heritage Motor est le bon choix.',
       'cta.conversation': 'D\u00e9marrer une conversation',
-      'cookie_text': 'Ce site sauvegarde votre pr\u00e9f\u00e9rence linguistique localement dans votre navigateur. Aucun cookie de suivi n\'est utilis\u00e9. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.',
-      'cookie_accept': 'Accepter'
+      'cookie_title': 'Pr\u00e9f\u00e9rences de confidentialit\u00e9',
+      'cookie_desc': 'Nous respectons votre vie priv\u00e9e. Choisissez quels traitements de donn\u00e9es vous autorisez. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.',
+      'cookie_essential_label': 'Essentiels',
+      'cookie_essential_hint': 'Pr\u00e9f\u00e9rence de langue, choix de consentement',
+      'cookie_analytics_label': 'Statistiques anonymes',
+      'cookie_analytics_hint': 'Statistiques d\'utilisation respect. de la vie priv\u00e9e (pas de cookies, pas de donn\u00e9es personnelles)',
+      'cookie_save': 'Enregistrer mes choix',
+      'cookie_accept_all': 'Tout accepter'
     },
     de: {
       'nav.platform': 'Plattform', 'nav.timeline': 'Zeitleiste', 'nav.pricing': 'Preise', 'nav.contact': 'Kontakt',
@@ -1061,8 +1203,14 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
       'cta.title': 'Ihr Standort verdient<br> ein <em>Betriebssystem.</em>',
       'cta.text': '20-Minuten-Demo, unverbindlich. Einfach ein Gespr\u00e4ch dar\u00fcber, wie Ihr Standort arbeitet \u2014 und ob Heritage Motor die richtige L\u00f6sung ist.',
       'cta.conversation': 'Gespr\u00e4ch starten',
-      'cookie_text': 'Diese Website speichert Ihre Spracheinstellung lokal in Ihrem Browser. Es werden keine Tracking-Cookies verwendet. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.',
-      'cookie_accept': 'Akzeptieren'
+      'cookie_title': 'Datenschutzeinstellungen',
+      'cookie_desc': 'Wir respektieren Ihre Privatsph\u00e4re. W\u00e4hlen Sie, welche Datenverarbeitungen Sie zulassen. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.',
+      'cookie_essential_label': 'Essenziell',
+      'cookie_essential_hint': 'Spracheinstellung, Einwilligungswahl',
+      'cookie_analytics_label': 'Anonyme Statistiken',
+      'cookie_analytics_hint': 'Datenschutzfreundliche Nutzungsstatistiken (keine Cookies, keine pers\u00f6nlichen Daten)',
+      'cookie_save': 'Auswahl speichern',
+      'cookie_accept_all': 'Alle akzeptieren'
     }
   };
 
@@ -1262,15 +1410,52 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
 </script>
 <script>
 (function() {
-  var banner = document.getElementById('cookie-banner');
-  var btn = document.getElementById('cookie-accept');
-  if (!banner || !btn) return;
-  try { if (localStorage.getItem('hm-cookie-consent')) return; } catch(e) {}
-  banner.hidden = false;
-  btn.addEventListener('click', function() {
-    try { localStorage.setItem('hm-cookie-consent', 'accepted'); } catch(e) {}
-    banner.hidden = true;
-  });
+  var overlay = document.getElementById('cookie-overlay');
+  var btnAccept = document.getElementById('cookie-accept');
+  var btnSave = document.getElementById('cookie-save');
+  var analyticsToggle = document.getElementById('cookie-analytics');
+  if (!overlay || !btnAccept || !btnSave) return;
+
+  // Check existing consent
+  try {
+    var consent = localStorage.getItem('hm-cookie-consent');
+    if (consent) {
+      var prefs = JSON.parse(consent);
+      if (prefs && prefs.essential) {
+        // Apply saved analytics preference
+        if (!prefs.analytics) {
+          localStorage.setItem('plausible_ignore', 'true');
+        } else {
+          localStorage.removeItem('plausible_ignore');
+        }
+        return; // Don't show modal
+      }
+    }
+  } catch(e) {}
+
+  // Show modal
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  function saveConsent(analytics) {
+    try {
+      localStorage.setItem('hm-cookie-consent', JSON.stringify({
+        essential: true,
+        analytics: analytics,
+        timestamp: new Date().toISOString()
+      }));
+      if (!analytics) {
+        localStorage.setItem('plausible_ignore', 'true');
+      } else {
+        localStorage.removeItem('plausible_ignore');
+      }
+    } catch(e) {}
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  btnAccept.addEventListener('click', function() { saveConsent(true); });
+  btnSave.addEventListener('click', function() { saveConsent(analyticsToggle && analyticsToggle.checked); });
 })();
 </script>
 </body>

@@ -306,6 +306,18 @@ Breakpoint mobile : `@media (max-width: 960px)` sur toutes les pages avec nav (i
 
 **404.html** : pas de nav, pas de hamburger — page centrée by design.
 
+### Cookie Consent Modal
+
+Modal centrée avec backdrop blur (`backdrop-filter: blur(8px)`) qui bloque l'interaction tant que l'utilisateur n'a pas choisi. Présente sur les 5 pages statiques + la PWA (`CookieBanner.tsx`).
+
+**Options :**
+- **Essentiels** (toujours actif, toggle verrouillé) — préférence de langue, choix de consentement, cookies auth (PWA)
+- **Statistiques anonymes** (toggle on/off, activé par défaut) — Plausible analytics
+
+**Consentement stocké** : `localStorage('hm-cookie-consent')` = JSON `{essential: true, analytics: bool, timestamp: ISO}`. Opt-out Plausible via `localStorage('plausible_ignore', 'true')` (standard Plausible).
+
+**Boutons** : "Enregistrer mes choix" (sauve l'état des toggles) / "Tout accepter" (active tout). i18n EN/FR/DE sur les pages statiques.
+
 ### Design System Landing (Dark Luxury)
 
 **Polices :**
