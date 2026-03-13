@@ -2,6 +2,7 @@ package audit
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -89,7 +90,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 			IPAddress    *string
 			UserAgent    *string
 			RequestID    *string
-			OccurredAt   string
+			OccurredAt   time.Time
 		}
 		err := rows.Scan(
 			&entry.ID, &entry.TenantID, &entry.UserID, &entry.Action,
@@ -110,7 +111,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 			"resource_id":   entry.ResourceID,
 			"ip_address":    entry.IPAddress,
 			"request_id":    entry.RequestID,
-			"occurred_at":   entry.OccurredAt,
+			"occurred_at":   entry.OccurredAt.Format(time.RFC3339),
 		})
 	}
 
