@@ -534,6 +534,35 @@ Soft delete.
 
 ## Audit Log (Admin only)
 
+### GET /activity
+
+Activity feed for all authenticated roles (tenant-scoped). Returns recent actions with user names.
+
+**Query params:**
+| Param | Type | Description |
+|-------|------|-------------|
+| `page` | int | Page number |
+| `per_page` | int | Items per page (max 30) |
+
+**Response:** Paginated list of activity entries.
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "action": "vehicles.move",
+      "resource_type": "vehicle",
+      "resource_id": "uuid",
+      "occurred_at": "2026-03-13T10:00:00Z",
+      "user_name": "Marc Dubois"
+    }
+  ],
+  "total_count": 42,
+  "page": 1,
+  "per_page": 20
+}
+```
+
 ### GET /audit
 
 **Query params:**
@@ -640,6 +669,22 @@ Paginated list of all tenants with resource counts.
 ### GET /admin/tenants/:id
 
 Single tenant details with resource stats.
+
+### GET /admin/tenants/:id/users
+
+List users belonging to a specific tenant.
+
+**Query params:** `page`, `per_page` (standard pagination).
+
+**Response:** Paginated list of `{ id, email, first_name, last_name, role, last_login_at }`.
+
+### GET /admin/tenants/:id/vehicles
+
+List vehicles belonging to a specific tenant.
+
+**Query params:** `page`, `per_page` (standard pagination).
+
+**Response:** Paginated list of `{ id, make, model, year, status, owner_name }`.
 
 ### POST /admin/tenants
 

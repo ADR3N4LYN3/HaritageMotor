@@ -73,14 +73,17 @@ pwa/
 ├── components/
 │   ├── ErrorBoundary.tsx        # App error boundary (react-error-boundary, full-screen fallback with retry)
 │   ├── layout/
-│   │   ├── AppShell.tsx       # TopBar + main content + BottomNav
-│   │   ├── TopBar.tsx         # App header with notification bell + sync badge
-│   │   ├── BottomNav.tsx      # Fixed bottom navigation (Home, Scan, Bays, Profile)
+│   │   ├── AppShell.tsx       # Responsive shell: SideNav (lg+) + TopBar (mobile) + BottomNav (mobile)
+│   │   ├── TopBar.tsx         # Mobile/tablet header with notification bell + sync badge
+│   │   ├── DesktopTopBar.tsx  # Desktop topbar (page title + bell + avatar)
+│   │   ├── SideNav.tsx        # Desktop sidebar navigation (220px, role-based nav items)
+│   │   ├── BottomNav.tsx      # Fixed bottom navigation — mobile/tablet only (Home, Scan, Bays, Profile)
 │   │   └── (CookieBanner moved to ui/)
 │   ├── ui/
 │   │   ├── ActionButton.tsx   # Styled button with loading state
 │   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot
 │   │   ├── VehicleCard.tsx    # Vehicle summary card (memo, gold-border-top, card-lift)
+│   │   ├── ActivityFeed.tsx   # Activity timeline feed (all roles, fetches GET /activity)
 │   │   ├── EventItem.tsx      # Timeline event display
 │   │   ├── BaySelector.tsx    # Bay picker for move actions
 │   │   ├── SyncBadge.tsx      # Pending offline actions indicator
@@ -367,29 +370,49 @@ Role is read from the Zustand store (`user.role`) and checked client-side. Serve
 
 ### AppShell
 
-Wraps authenticated pages with consistent layout:
+Responsive layout that adapts to viewport:
 
+**Mobile / Tablet (< lg)**
 ```
 ┌──────────────────┐
 │     TopBar       │  ← Fixed top, bell + sync badge + avatar
 ├──────────────────┤
 │                  │
-│   Main Content   │  ← pt-14 pb-20 px-4
+│   Main Content   │  ← pt-16 pb-20 px-4, max-w-2xl
 │                  │
 ├──────────────────┤
 │   BottomNav      │  ← Fixed bottom (Home, Scan, Bays, Profile)
 └──────────────────┘
 ```
 
+**Desktop (lg+)**
+```
+┌────────┬─────────────────────────┐
+│        │    DesktopTopBar        │  ← Page title + bell + avatar
+│ Side   ├─────────────────────────┤
+│ Nav    │                         │
+│ 220px  │    Main Content         │  ← max-w-900px, px-9 py-7
+│        │                         │
+│        │                         │
+└────────┴─────────────────────────┘
+```
+
 ### Navigation
 
-Bottom navigation bar with four tabs:
+**Mobile/Tablet:** Bottom navigation bar with four tabs:
 - **Home** — Dashboard with vehicle registry, stats, quick actions
 - **Scan** — QR scanner with bottom sheets (primary workflow entry)
 - **Bays** — Bay list with status filters and stats
 - **Profile** — User profile, MFA settings, logout
 
-TopBar includes a notification bell (pending task count via SWR), sync badge, and profile avatar (initials).
+**Desktop:** Sidebar navigation (SideNav, 220px) with role-based items:
+- All roles: Home, Scan, Bays, Tasks
+- Admin/Operator: + QR Codes
+- Admin: + Team
+- Superadmin: + Admin
+- Profile at bottom with separator
+
+TopBar (mobile) includes a notification bell (pending task count via SWR), sync badge, and profile avatar (initials). DesktopTopBar shows the current page label, bell, and avatar.
 
 ## Design System (Dark Luxury)
 

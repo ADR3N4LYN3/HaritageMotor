@@ -394,6 +394,80 @@ func (s *Service) GetDashboardStats(ctx context.Context) (*DashboardStats, error
 	return &stats, nil
 }
 
+// TenantUser is a lightweight user representation for the admin panel.
+type TenantUser struct {
+	ID        uuid.UUID  `json:"id"`
+	Email     string     `json:"email"`
+	FirstName string     `json:"first_name"`
+	LastName  string     `json:"last_name"`
+	Role      string     `json:"role"`
+	LastLogin *time.Time `json:"last_login_at,omitempty"`
+}
+
+// TenantVehicle is a lightweight vehicle representation for the admin panel.
+type TenantVehicle struct {
+	ID        uuid.UUID `json:"id"`
+	Make      string    `json:"make"`
+	Model     string    `json:"model"`
+	Year      *int      `json:"year,omitempty"`
+	Status    string    `json:"status"`
+	OwnerName string    `json:"owner_name"`
+}
+
+func (s *Service) ListTenantUsers(ctx context.Context, tenantID uuid.UUID, page, perPage int) ([]TenantUser, int, error) {
+	offset := (page - 1) * perPage
+
+	rows, err := s.pool.Query(ctx,
+		`SELECT id, email, first_name, last_name, user_role, last_login_at,
+			COUNT(*) OVER() AS total_count
+		FROM users
+		WHERE tenant_id = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3`, tenantID, perPage, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("list tenant users: %w", err)
+	}
+	defer rows.Close()
+
+	var total int
+	var users []TenantUser
+	for rows.Next() {
+		var u TenantUser
+		if err := rows.Scan(&u.ID, &u.Email, &u.FirstName, &u.LastName, &u.Role, &u.LastLogin, &total); err != nil {
+			continue
+		}
+		users = append(users, u)
+	}
+	return users, total, nil
+}
+
+func (s *Service) ListTenantVehicles(ctx context.Context, tenantID uuid.UUID, page, perPage int) ([]TenantVehicle, int, error) {
+	offset := (page - 1) * perPage
+
+	rows, err := s.pool.Query(ctx,
+		`SELECT id, make, model, year, status, owner_name,
+			COUNT(*) OVER() AS total_count
+		FROM vehicles
+		WHERE tenant_id = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3`, tenantID, perPage, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("list tenant vehicles: %w", err)
+	}
+	defer rows.Close()
+
+	var total int
+	var vehicles []TenantVehicle
+	for rows.Next() {
+		var v TenantVehicle
+		if err := rows.Scan(&v.ID, &v.Make, &v.Model, &v.Year, &v.Status, &v.OwnerName, &total); err != nil {
+			continue
+		}
+		vehicles = append(vehicles, v)
+	}
+	return vehicles, total, nil
+}
+
 // generateTempPassword creates a random password that meets complexity requirements.
 func generateTempPassword(length int) (string, error) {
 	const (

@@ -18,6 +18,7 @@ const config: Config = {
         success: "#22c55e",
         warning: "#f59e0b",
         danger: "#ef4444",
+        info: "#3b82f6",
       },
       fontFamily: {
         display: ["var(--font-display)", "Cormorant Garamond", "serif"],

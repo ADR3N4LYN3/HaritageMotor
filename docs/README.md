@@ -61,7 +61,8 @@ heritage-motor/
 │   │   ├── user/                #   User CRUD (admin)
 │   │   ├── scan/                #   QR code resolution
 │   │   ├── photo/               #   Photo signed-URL download
-│   │   ├── audit/               #   Audit log viewer
+│   │   ├── audit/               #   Audit log viewer (admin only)
+│   │   ├── activity/            #   Activity feed (all roles, tenant-scoped)
 │   │   └── response.go          #   Shared response helpers
 │   ├── middleware/               # Auth, Tenant RLS, RBAC, Audit, UploadLimiter
 │   ├── service/                  # Business logic layer

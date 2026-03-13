@@ -4,7 +4,6 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppStore } from "@/store/app.store";
 import { logout } from "@/lib/auth";
 import { StatsSection } from "@/components/admin/StatsSection";
-import { QuickLinks } from "@/components/admin/QuickLinks";
 import { TenantsSection } from "@/components/admin/TenantsSection";
 import { InviteSection } from "@/components/admin/InviteSection";
 
@@ -33,7 +32,6 @@ export default function AdminPage() {
       <Header />
       <main className="relative max-w-6xl mx-auto px-6 lg:px-8 py-14 space-y-16">
         <StatsSection />
-        <QuickLinks />
         <TenantsSection />
         <InviteSection />
       </main>

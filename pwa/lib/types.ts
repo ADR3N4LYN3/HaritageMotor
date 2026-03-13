@@ -115,6 +115,15 @@ export interface PaginatedResponse<T> {
   per_page: number;
 }
 
+export interface ActivityEntry {
+  id: string;
+  action: string;
+  resource_type: string;
+  resource_id: string | null;
+  occurred_at: string;
+  user_name: string;
+}
+
 export interface ScanResult {
   entity_type: "vehicle" | "bay";
   entity_id: string;

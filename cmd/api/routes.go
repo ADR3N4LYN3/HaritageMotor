@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/chriis/heritage-motor/internal/auth"
+	activityhandler "github.com/chriis/heritage-motor/internal/handler/activity"
 	adminhandler "github.com/chriis/heritage-motor/internal/handler/admin"
 	auditloghandler "github.com/chriis/heritage-motor/internal/handler/audit"
 	authhandler "github.com/chriis/heritage-motor/internal/handler/auth"
@@ -67,6 +68,7 @@ func setupRoutes(app *fiber.App, cfg *routesDeps) {
 	auditHandler := auditloghandler.NewHandler(cfg.ownerPool)
 	photoHandler := photohandler.NewHandler(cfg.s3Client)
 	scanHandler := scanhandler.NewHandler(cfg.appPool)
+	activityHandler := activityhandler.NewHandler(cfg.appPool)
 	adminHandler := adminhandler.NewHandler(adminService)
 
 	// Contact service (public, uses ownerPool — no RLS needed)
@@ -204,6 +206,9 @@ func setupRoutes(app *fiber.App, cfg *routesDeps) {
 	// Photos (signed URL for download)
 	authed.Get("/photos/:key/signed-url", photoHandler.GetSignedURL)
 
+	// Activity feed (all authenticated roles)
+	authed.Get("/activity", activityHandler.List)
+
 	// Audit log (admin only)
 	authed.Get("/audit", middleware.RequireAdmin(), auditHandler.List)
 
@@ -216,6 +221,8 @@ func setupRoutes(app *fiber.App, cfg *routesDeps) {
 	sa.Get("/dashboard", adminHandler.DashboardStats)
 	sa.Get("/tenants", adminHandler.ListTenants)
 	sa.Get("/tenants/:id", adminHandler.GetTenant)
+	sa.Get("/tenants/:id/users", adminHandler.ListTenantUsers)
+	sa.Get("/tenants/:id/vehicles", adminHandler.ListTenantVehicles)
 	sa.Post("/tenants", adminHandler.CreateTenant)
 	sa.Patch("/tenants/:id", adminHandler.UpdateTenant)
 	sa.Delete("/tenants/:id", adminHandler.DeleteTenant)

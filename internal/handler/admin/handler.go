@@ -110,6 +110,56 @@ func (h *Handler) DeleteTenant(c *fiber.Ctx) error {
 	return c.SendStatus(204)
 }
 
+// ListTenantUsers returns users belonging to a specific tenant.
+func (h *Handler) ListTenantUsers(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid tenant ID"})
+	}
+
+	var p handler.PaginationParams
+	if err := c.QueryParser(&p); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid query parameters"})
+	}
+	p.Normalize()
+
+	users, total, svcErr := h.service.ListTenantUsers(c.UserContext(), id, p.Page, p.PerPage)
+	if svcErr != nil {
+		return handler.HandleServiceError(c, svcErr)
+	}
+	return c.JSON(handler.PaginatedResponse{
+		Data:       users,
+		TotalCount: total,
+		Page:       p.Page,
+		PerPage:    p.PerPage,
+	})
+}
+
+// ListTenantVehicles returns vehicles belonging to a specific tenant.
+func (h *Handler) ListTenantVehicles(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid tenant ID"})
+	}
+
+	var p handler.PaginationParams
+	if err := c.QueryParser(&p); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid query parameters"})
+	}
+	p.Normalize()
+
+	vehicles, total, svcErr := h.service.ListTenantVehicles(c.UserContext(), id, p.Page, p.PerPage)
+	if svcErr != nil {
+		return handler.HandleServiceError(c, svcErr)
+	}
+	return c.JSON(handler.PaginatedResponse{
+		Data:       vehicles,
+		TotalCount: total,
+		Page:       p.Page,
+		PerPage:    p.PerPage,
+	})
+}
+
 // InviteUser creates a user with temp password and sends welcome email.
 func (h *Handler) InviteUser(c *fiber.Ctx) error {
 	var req adminsvc.InviteUserRequest

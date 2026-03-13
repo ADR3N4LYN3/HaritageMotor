@@ -55,7 +55,7 @@ internal/
     upload_limiter.go            — Rate limit uploads (200MB/10min/user)
   handler/
     response.go                  — HandleServiceError, PaginationParams, PaginatedResponse
-    admin/ auth/ bay/ contact/ document/ event/ photo/ scan/ task/ user/ vehicle/
+    activity/ admin/ auth/ bay/ contact/ document/ event/ photo/ scan/ task/ user/ vehicle/
   service/
     admin/                       — Superadmin : tenants CRUD, invitations, dashboard
     auth/                        — Login, logout, refresh, MFA, change-password
