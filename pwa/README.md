@@ -43,8 +43,10 @@ pwa/
     globals.css                   Animations, touch targets, safe areas
     login/page.tsx                Login (email/password + MFA, show/hide password)
     change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
-    dashboard/page.tsx            Dashboard unifie : registre vehicules + quick links par role (superadmin voit "Admin Panel")
-    scan/page.tsx                 Scanner QR + bottom sheets (→ components/scan/)
+    dashboard/page.tsx            Dashboard unifie : onglets Fleet/Activity (always-mounted, hidden class), registre vehicules + quick links par role
+    scan/
+      layout.tsx                  Layout scan (SideNav desktop, pas d'AppShell)
+      page.tsx                    Scanner QR + bottom sheets + bouton retour mobile
     profile/page.tsx              Profil utilisateur (→ components/profile/TOTPSetup)
     tasks/page.tsx                Liste taches (→ components/tasks/CreateTaskModal)
     users/page.tsx                Gestion utilisateurs (→ components/users/UserFormModal)
@@ -74,17 +76,21 @@ pwa/
     AuthBootstrap.tsx             Restaure session au mount (cookie → Zustand)
     ErrorBoundary.tsx             Error boundary global (react-error-boundary, fallback plein ecran)
     layout/
-      AppShell.tsx                Wrapper (TopBar + BottomNav + contenu)
-      TopBar.tsx                  Header fixe (logo, SyncBadge, user)
-      BottomNav.tsx               Navigation mobile (Home, Scan, Bays, Profile)
+      AppShell.tsx                Wrapper responsive (SideNav lg+ / TopBar+BottomNav mobile)
+      TopBar.tsx                  Header fixe mobile (logo, SyncBadge, LangSwitcher, bell, avatar)
+      DesktopTopBar.tsx           Header desktop (page label, LangSwitcher, bell, avatar)
+      SideNav.tsx                 Sidebar desktop 220px (role-based nav items)
+      BottomNav.tsx               Navigation mobile (Home, Scan QR, Bays, Profile)
     ui/
-      ActionButton.tsx            Bouton CTA (primary/danger/secondary)
+      ActionButton.tsx            Bouton CTA (primary gold/danger outlined/secondary, 48px, spinner)
       PageHeader.tsx              Header reutilisable (bouton retour, titre, subtitle, action slot)
       VehicleCard.tsx             Carte vehicule (memo, gold-border-top, card-lift)
       EventItem.tsx               Evenement timeline
       BaySelector.tsx             Selection de bay (recherche + liste)
       SuccessScreen.tsx           Ecran de confirmation
+      LangSwitcher.tsx            Switch langue EN/FR/DE (SVG flags, localStorage('hm-lang'))
       SyncBadge.tsx               Badge actions offline en attente
+      ActivityFeed.tsx            Feed activite recente (GET /activity, prop `active` pour pause polling)
       Skeleton.tsx                Placeholder chargement
       CookieBanner.tsx            Modal consentement cookies GDPR (overlay centre, blur backdrop, toggles essentiels/analytics)
     camera/

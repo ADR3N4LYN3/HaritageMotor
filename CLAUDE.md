@@ -232,6 +232,11 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **AuthBootstrap + password_change_required** : AuthBootstrap redirige vers `/change-password` dans son `onSuccess` si `user.password_change_required === true` (enforcement post-F5)
 - **Offline queue** : `pushAction()` en IndexedDB sur erreur réseau (move/task/exit). Photos non sérialisables → upload uniquement en ligne. Max 2 retries, backoff cap 10s
 - **Zustand** : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
+- **Dashboard tabs (Fleet/Activity)** : toujours montés avec CSS `hidden` class (jamais conditional rendering) pour préserver les animations `useReveal` (IntersectionObserver one-shot)
+- **ActivityFeed `active` prop** : passer `active={false}` quand l'onglet Activity est masqué pour stopper le polling SWR
+- **Scan layout** : le scan a son propre layout (`scan/layout.tsx`) avec `<SideNav />` car il n'utilise pas AppShell. Le `lg:left-[220px]` sur les conteneurs fixed doit rester synchronisé avec la largeur du SideNav
+- **LangSwitcher partagé** : composant unique (`components/ui/LangSwitcher.tsx`) avec SVG flags inline (pas d'emoji), utilisé dans TopBar ET DesktopTopBar. Persiste dans `localStorage('hm-lang')` — partagé avec les pages statiques landing
+- **Accessibilité toggle pills** : tous les boutons toggle/filtre doivent avoir `aria-pressed`, les dropdowns `aria-expanded`
 
 ### Design System Dark Luxury (PWA)
 - **Background** : `bg-black` (#0e0d0b) sur AppShell et toutes les pages

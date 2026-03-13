@@ -28,8 +28,8 @@ pwa/
 │   │   ├── layout.tsx         # Login layout (no AppShell)
 │   │   └── page.tsx           # Login + MFA verification
 │   ├── scan/
-│   │   ├── layout.tsx         # Scan layout (no AppShell)
-│   │   └── page.tsx           # QR scanner + bottom sheets (vehicles, bays, tasks)
+│   │   ├── layout.tsx         # Scan layout (SideNav for desktop, no AppShell)
+│   │   └── page.tsx           # QR scanner + bottom sheets (vehicles, bays, tasks) + mobile back button
 │   ├── change-password/
 │   │   └── page.tsx           # Password change (PasswordInput, strength meter, checklist)
 │   ├── admin/
@@ -37,7 +37,7 @@ pwa/
 │   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
-│   │   └── page.tsx           # Unified dashboard: vehicle registry + role-based quick links (superadmin sees "Admin Panel")
+│   │   └── page.tsx           # Unified dashboard: Fleet/Activity tabs (always-mounted with hidden class), vehicle registry + role-based quick links
 │   ├── vehicle/new/
 │   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
@@ -74,18 +74,19 @@ pwa/
 │   ├── ErrorBoundary.tsx        # App error boundary (react-error-boundary, full-screen fallback with retry)
 │   ├── layout/
 │   │   ├── AppShell.tsx       # Responsive shell: SideNav (lg+) + TopBar (mobile) + BottomNav (mobile)
-│   │   ├── TopBar.tsx         # Mobile/tablet header with notification bell + sync badge
-│   │   ├── DesktopTopBar.tsx  # Desktop topbar (page title + bell + avatar)
+│   │   ├── TopBar.tsx         # Mobile/tablet header with notification bell + sync badge + lang switcher
+│   │   ├── DesktopTopBar.tsx  # Desktop topbar (page title + bell + lang switcher + avatar)
 │   │   ├── SideNav.tsx        # Desktop sidebar navigation (220px, role-based nav items)
-│   │   ├── BottomNav.tsx      # Fixed bottom navigation — mobile/tablet only (Home, Scan, Bays, Profile)
+│   │   ├── BottomNav.tsx      # Fixed bottom navigation — mobile/tablet only (Home, Scan QR, Bays, Profile)
 │   │   └── (CookieBanner moved to ui/)
 │   ├── ui/
-│   │   ├── ActionButton.tsx   # Styled button with loading state
+│   │   ├── ActionButton.tsx   # Styled button (primary gold/danger outlined/secondary, 48px, loading spinner)
 │   │   ├── PageHeader.tsx     # Reusable header with back button, title, subtitle, action slot
 │   │   ├── VehicleCard.tsx    # Vehicle summary card (memo, gold-border-top, card-lift)
-│   │   ├── ActivityFeed.tsx   # Activity timeline feed (all roles, fetches GET /activity)
+│   │   ├── ActivityFeed.tsx   # Activity timeline feed (all roles, fetches GET /activity, accepts `active` prop to pause polling)
 │   │   ├── EventItem.tsx      # Timeline event display
 │   │   ├── BaySelector.tsx    # Bay picker for move actions
+│   │   ├── LangSwitcher.tsx   # Language switcher (EN/FR/DE) with inline SVG flags, localStorage('hm-lang')
 │   │   ├── SyncBadge.tsx      # Pending offline actions indicator
 │   │   ├── Skeleton.tsx       # Loading skeletons
 │   │   ├── SuccessScreen.tsx  # Success confirmation screen
@@ -401,7 +402,7 @@ Responsive layout that adapts to viewport:
 
 **Mobile/Tablet:** Bottom navigation bar with four tabs:
 - **Home** — Dashboard with vehicle registry, stats, quick actions
-- **Scan** — QR scanner with bottom sheets (primary workflow entry)
+- **Scan QR** — QR scanner with bottom sheets (primary workflow entry)
 - **Bays** — Bay list with status filters and stats
 - **Profile** — User profile, MFA settings, logout
 
@@ -412,7 +413,15 @@ Responsive layout that adapts to viewport:
 - Superadmin: + Admin
 - Profile at bottom with separator
 
-TopBar (mobile) includes a notification bell (pending task count via SWR), sync badge, and profile avatar (initials). DesktopTopBar shows the current page label, bell, and avatar.
+TopBar (mobile) includes a notification bell (pending task count via SWR), sync badge, language switcher (SVG flags), and profile avatar (initials). DesktopTopBar shows the current page label, bell, language switcher, and avatar.
+
+### Language Switcher
+
+Shared `LangSwitcher` component (`components/ui/LangSwitcher.tsx`) used in both TopBar and DesktopTopBar. Features:
+- Inline SVG flags (UK, France, Germany) — no emoji for cross-platform consistency
+- Dropdown with `aria-expanded`, click-outside-to-close
+- Reads/writes `localStorage('hm-lang')` — shared with landing pages
+- Three languages: EN (default), FR, DE
 
 ## Design System (Dark Luxury)
 
@@ -449,6 +458,14 @@ Fully dark theme inspired by the landing page (Ferrari/Porsche aesthetic). Consi
 - Loading: skeleton placeholders with `skeleton` class
 - Gold top border accent: `gold-border-top` class on cards
 - Card hover lift: `card-lift` class (translateY(-4px) + gold glow on hover)
+
+### Accessibility
+
+- Toggle/filter buttons use `aria-pressed` (dashboard tabs, status filters, bay features)
+- Language switcher uses `aria-expanded`
+- All interactive elements have `aria-label` where visible text is absent
+- Touch targets: min 44x44px (`touch-target` class)
+- Safe areas for iOS/Android notches (`safe-top`, `safe-bottom`)
 
 ### Reveal Animations
 
