@@ -15,20 +15,34 @@ const TASK_TYPE_LABELS: Record<string, string> = {
   custom: "Custom",
 };
 
+export interface TaskToEdit {
+  id: string;
+  vehicle_id: string;
+  task_type: string;
+  title: string;
+  description?: string;
+  due_date?: string;
+}
+
 export interface CreateTaskModalProps {
   vehicleMap: Map<string, string>;
   onClose: () => void;
   onCreated: () => void;
+  editTask?: TaskToEdit;
 }
 
-export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskModalProps) {
-  const [vehicleId, setVehicleId] = useState("");
-  const [vehicleSearch, setVehicleSearch] = useState("");
+export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: CreateTaskModalProps) {
+  const [vehicleId, setVehicleId] = useState(editTask?.vehicle_id || "");
+  const [vehicleSearch, setVehicleSearch] = useState(
+    editTask ? vehicleMap.get(editTask.vehicle_id) || "" : ""
+  );
   const [showDropdown, setShowDropdown] = useState(false);
-  const [taskType, setTaskType] = useState("custom");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [taskType, setTaskType] = useState(editTask?.task_type || "custom");
+  const [title, setTitle] = useState(editTask?.title || "");
+  const [description, setDescription] = useState(editTask?.description || "");
+  const [dueDate, setDueDate] = useState(
+    editTask?.due_date ? editTask.due_date.split("T")[0] : ""
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,17 +68,26 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
     setLoading(true);
     setError(null);
     try {
-      await api.post("/tasks", {
-        vehicle_id: vehicleId,
-        task_type: taskType,
-        title: title.trim(),
-        description: description.trim() || undefined,
-        due_date: dueDate || undefined,
-      });
+      if (editTask) {
+        await api.patch(`/tasks/${editTask.id}`, {
+          task_type: taskType,
+          title: title.trim(),
+          description: description.trim() || undefined,
+          due_date: dueDate || undefined,
+        });
+      } else {
+        await api.post("/tasks", {
+          vehicle_id: vehicleId,
+          task_type: taskType,
+          title: title.trim(),
+          description: description.trim() || undefined,
+          due_date: dueDate || undefined,
+        });
+      }
       onCreated();
     } catch (err: unknown) {
       setError(
-        err instanceof ApiError ? err.message : "Failed to create task"
+        err instanceof ApiError ? err.message : editTask ? "Failed to update task" : "Failed to create task"
       );
     } finally {
       setLoading(false);
@@ -85,7 +108,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
       >
         <div className="flex items-center justify-between">
           <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">
-            New Task
+            {editTask ? "Edit Task" : "New Task"}
           </h2>
           <button
             type="button"
@@ -114,7 +137,8 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
             }}
             onFocus={() => setShowDropdown(true)}
             placeholder="Search vehicle..."
-            className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
+            disabled={!!editTask}
+            className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors disabled:opacity-50"
           />
           {showDropdown && filteredVehicles.length > 0 && (
             <div className="absolute z-10 top-full mt-1 w-full bg-dark border border-white/[0.1] rounded-lg max-h-40 overflow-y-auto">
@@ -201,7 +225,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated }: CreateTaskMo
         {error && <p className="text-danger text-xs">{error}</p>}
 
         <ActionButton type="submit" loading={loading} disabled={!vehicleId || !title.trim()}>
-          Create Task
+          {editTask ? "Save Changes" : "Create Task"}
         </ActionButton>
       </form>
     </div>

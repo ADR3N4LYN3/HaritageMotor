@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { CreateTaskModal } from "@/components/tasks/CreateTaskModal";
+import type { TaskToEdit } from "@/components/tasks/CreateTaskModal";
 import { useAppStore } from "@/store/app.store";
 import { api } from "@/lib/api";
 import type { Task, Vehicle, PaginatedResponse } from "@/lib/types";
@@ -22,16 +23,20 @@ const statusColors: Record<string, string> = {
 
 export default function TasksPage() {
   const user = useAppStore((s) => s.user);
+  const isAdmin = user?.role === "admin";
   const canCreate =
-    user?.role === "admin" || user?.role === "operator" || user?.role === "technician";
+    isAdmin || user?.role === "operator" || user?.role === "technician";
 
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 20;
   const [showCreate, setShowCreate] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskToEdit | null>(null);
   const [completing, setCompleting] = useState<string | null>(null);
   const [completeLoading, setCompleteLoading] = useState(false);
   const [completeError, setCompleteError] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const queryParams = new URLSearchParams();
   if (statusFilter) queryParams.set("status", statusFilter);
@@ -84,6 +89,41 @@ export default function TasksPage() {
     setStatusFilter(status);
     setPage(1);
   }, []);
+
+  const handleDeleteTask = useCallback(
+    async (taskId: string) => {
+      if (deleteConfirm !== taskId) {
+        setDeleteConfirm(taskId);
+        return;
+      }
+      setDeleteLoading(true);
+      try {
+        await api.delete(`/tasks/${taskId}`);
+        mutate();
+        setDeleteConfirm(null);
+        setCompleting(null);
+      } catch (err: unknown) {
+        setCompleteError(err instanceof Error ? err.message : "Failed to delete task");
+      } finally {
+        setDeleteLoading(false);
+      }
+    },
+    [deleteConfirm, mutate]
+  );
+
+  const handleEditTask = useCallback(
+    (task: Task) => {
+      setEditingTask({
+        id: task.id,
+        vehicle_id: task.vehicle_id,
+        task_type: task.task_type,
+        title: task.title,
+        description: task.description,
+        due_date: task.due_date,
+      });
+    },
+    []
+  );
 
   return (
     <AppShell>
@@ -198,26 +238,66 @@ export default function TasksPage() {
                         <p className="text-danger text-xs">{completeError}</p>
                       )}
                       {canCreate && (
-                        <ActionButton
-                          onClick={() => handleComplete(task.id)}
-                          loading={completeLoading}
-                        >
-                          Mark as Done
-                        </ActionButton>
+                        <div className="flex gap-2">
+                          <ActionButton
+                            onClick={() => handleComplete(task.id)}
+                            loading={completeLoading}
+                          >
+                            Mark as Done
+                          </ActionButton>
+                        </div>
                       )}
+                      <div className="flex gap-2">
+                        {canCreate && (
+                          <button
+                            onClick={() => handleEditTask(task)}
+                            className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white/50 text-xs hover:text-gold hover:border-gold/30 transition-colors"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {isAdmin && (
+                          <button
+                            onClick={() => handleDeleteTask(task.id)}
+                            disabled={deleteLoading}
+                            className={`px-3 py-1.5 rounded-lg border text-xs transition-colors ${
+                              deleteConfirm === task.id
+                                ? "border-danger/40 bg-danger/10 text-danger"
+                                : "border-white/[0.08] bg-white/[0.04] text-white/40 hover:text-danger hover:border-danger/30"
+                            }`}
+                          >
+                            {deleteConfirm === task.id ? "Confirm delete" : "Delete"}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
 
-                  {isExpanded && task.status !== "pending" && task.description && (
-                    <div className="px-4 pb-4 pt-0 border-t border-white/[0.06]">
-                      <p className="text-sm text-white/50 pt-3">
-                        {task.description}
-                      </p>
+                  {isExpanded && task.status !== "pending" && (
+                    <div className="px-4 pb-4 pt-0 border-t border-white/[0.06] space-y-3">
+                      {task.description && (
+                        <p className="text-sm text-white/50 pt-3">
+                          {task.description}
+                        </p>
+                      )}
                       {task.completed_at && (
                         <p className="text-xs text-white/30 mt-2">
                           Completed:{" "}
                           {new Date(task.completed_at).toLocaleDateString()}
                         </p>
+                      )}
+                      {isAdmin && (
+                        <button
+                          onClick={() => handleDeleteTask(task.id)}
+                          disabled={deleteLoading}
+                          className={`px-3 py-1.5 rounded-lg border text-xs transition-colors ${
+                            deleteConfirm === task.id
+                              ? "border-danger/40 bg-danger/10 text-danger"
+                              : "border-white/[0.08] bg-white/[0.04] text-white/40 hover:text-danger hover:border-danger/30"
+                          }`}
+                        >
+                          {deleteConfirm === task.id ? "Confirm delete" : "Delete"}
+                        </button>
                       )}
                     </div>
                   )}
@@ -251,13 +331,18 @@ export default function TasksPage() {
         )}
       </div>
 
-      {/* Create Task Modal */}
-      {showCreate && (
+      {/* Create/Edit Task Modal */}
+      {(showCreate || editingTask) && (
         <CreateTaskModal
           vehicleMap={vehicleMap}
-          onClose={() => setShowCreate(false)}
+          editTask={editingTask || undefined}
+          onClose={() => {
+            setShowCreate(false);
+            setEditingTask(null);
+          }}
           onCreated={() => {
             setShowCreate(false);
+            setEditingTask(null);
             mutate();
           }}
         />

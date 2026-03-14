@@ -10,9 +10,9 @@ export function useVehicle(id: string) {
 }
 
 export function useVehicleTimeline(id: string) {
-  const { data, error, isLoading } = useSWR<{ data: Event[]; total_count: number }>(
+  const { data, error, isLoading, mutate } = useSWR<{ data: Event[]; total_count: number }>(
     id ? `/vehicles/${id}/timeline` : null,
     { refreshInterval: 30000 }
   );
-  return { events: data?.data || [], total: data?.total_count || 0, error, isLoading };
+  return { events: data?.data || [], total: data?.total_count || 0, error, isLoading, mutate };
 }

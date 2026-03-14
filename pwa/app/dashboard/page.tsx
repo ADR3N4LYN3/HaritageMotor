@@ -195,6 +195,19 @@ function TenantDashboard() {
                 </div>
               </button>
             )}
+            {user?.role === "admin" && (
+              <button onClick={() => router.push("/audit")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.auditLog}</p>
+                    <p className="text-[10px] text-white/25 mt-0.5">{t.auditSub}</p>
+                  </div>
+                </div>
+              </button>
+            )}
             {user?.role === "superadmin" && (
               <button onClick={() => router.push("/admin")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group col-span-2 lg:col-span-4">
                 <div className="flex flex-col items-center gap-2 text-center">

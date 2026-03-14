@@ -48,15 +48,16 @@ pwa/
       layout.tsx                  Layout scan (SideNav desktop, pas d'AppShell)
       page.tsx                    Scanner QR + bottom sheets + bouton retour mobile
     profile/page.tsx              Profil utilisateur (→ components/profile/TOTPSetup)
-    tasks/page.tsx                Liste taches (→ components/tasks/CreateTaskModal)
+    tasks/page.tsx                Liste taches + edit/delete (→ components/tasks/CreateTaskModal)
     users/page.tsx                Gestion utilisateurs (→ components/users/UserFormModal)
+    audit/page.tsx                Journal d'audit avec filtres par type de ressource (admin only)
     qr-codes/page.tsx             Generation et impression QR codes (admin only)
     admin/
       page.tsx                    Panel superadmin (→ components/admin/)
       qr-codes/page.tsx           Generation et impression QR codes (legacy)
     vehicle/new/page.tsx          Onboarding nouveau vehicule
     vehicle/[id]/
-      page.tsx                    Detail vehicule + timeline
+      page.tsx                    Detail vehicule + timeline + delete vehicule/document (admin) + add note/incident
       edit/page.tsx               Edition vehicule
       move/page.tsx               Deplacement vers un bay
       exit/page.tsx               Sortie vehicule (photos + checklist)
@@ -114,7 +115,7 @@ pwa/
       TasksSheet.tsx              Bottom sheet taches en attente
       VehiclesSheet.tsx           Bottom sheet liste vehicules
     tasks/
-      CreateTaskModal.tsx         Modal creation tache (recherche vehicule)
+      CreateTaskModal.tsx         Modal creation/edition tache (prop editTask pour PATCH)
     users/
       UserFormModal.tsx           Modal creation/edition utilisateur
     scanner/
@@ -131,8 +132,8 @@ pwa/
     api.ts                        Client HTTP (auto-refresh 401, FormData)
     auth.ts                       Login, MFA verify, logout
     i18n.ts                       Hook useI18n + broadcastLang (EN/FR/DE temps réel)
-    translations.ts               Dictionnaires i18n (dashboard, bays, page labels)
-    types.ts                      Interfaces TypeScript
+    translations.ts               Dictionnaires i18n (dashboard, bays, page labels, audit)
+    types.ts                      Interfaces TypeScript (Vehicle, Bay, Task, Event, User, AuditEntry, etc.)
     task-constants.ts             Constantes partagées tâches (TASK_ICONS)
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)
   store/
@@ -234,7 +235,7 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `AdminSelect` | `components/admin/AdminSelect.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
 | `TenantRow` | `components/admin/TenantRow.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
 | `TOTPSetup` | `components/profile/TOTPSetup.tsx` | Setup/disable MFA avec QR code, verification TOTP |
-| `CreateTaskModal` | `components/tasks/CreateTaskModal.tsx` | Modal creation tache avec recherche vehicule |
+| `CreateTaskModal` | `components/tasks/CreateTaskModal.tsx` | Modal creation/edition tache (prop `editTask` pour mode PATCH, vehicule verrouille en edition) |
 | `UserFormModal` | `components/users/UserFormModal.tsx` | Modal creation/edition utilisateur |
 | `CookieBanner` | `components/ui/CookieBanner.tsx` | Modal GDPR consentement cookies (overlay centre, blur backdrop, toggles essentiels/analytics), persistence localStorage |
 | `AppErrorBoundary` | `components/ErrorBoundary.tsx` | Error boundary global (react-error-boundary). Affiche fallback plein ecran dark luxury avec message d'erreur et bouton "Try again" (reload page). |

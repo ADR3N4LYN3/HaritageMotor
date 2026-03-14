@@ -124,6 +124,18 @@ export interface ActivityEntry {
   user_name: string;
 }
 
+export interface AuditEntry {
+  id: string;
+  tenant_id: string;
+  user_id: string | null;
+  action: string;
+  resource_type: string;
+  resource_id: string | null;
+  ip_address: string | null;
+  request_id: string | null;
+  occurred_at: string;
+}
+
 export interface ScanResult {
   entity_type: "vehicle" | "bay";
   entity_id: string;

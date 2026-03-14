@@ -42,7 +42,7 @@ pwa/
 │   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
 │   │   ├── layout.tsx         # Vehicle detail layout
-│   │   ├── page.tsx           # Vehicle detail + timeline
+│   │   ├── page.tsx           # Vehicle detail + timeline + delete (admin) + add note/incident
 │   │   ├── edit/page.tsx      # Edit vehicle details
 │   │   ├── move/page.tsx      # Move vehicle to another bay
 │   │   ├── task/page.tsx      # Task completion
@@ -51,9 +51,11 @@ pwa/
 │   ├── profile/
 │   │   └── page.tsx           # User profile (MFA setup/disable, logout)
 │   ├── tasks/
-│   │   └── page.tsx           # Task list with filters (type, status, vehicle)
+│   │   └── page.tsx           # Task list with filters, edit, delete (admin)
 │   ├── users/
 │   │   └── page.tsx           # User management CRUD (admin only)
+│   ├── audit/
+│   │   └── page.tsx           # Audit log viewer with resource filters (admin only)
 │   ├── qr-codes/
 │   │   └── page.tsx           # QR code generation and printing (admin only)
 │   ├── bays/
@@ -112,7 +114,7 @@ pwa/
 │   │   ├── TasksSheet.tsx     # Bottom sheet: pending tasks
 │   │   └── VehiclesSheet.tsx  # Bottom sheet: vehicle list
 │   ├── tasks/
-│   │   └── CreateTaskModal.tsx # Task creation modal with form
+│   │   └── CreateTaskModal.tsx # Task create/edit modal (supports editTask prop for PATCH)
 │   ├── users/
 │   │   └── UserFormModal.tsx  # User create/edit modal
 │   └── scanner/
@@ -340,11 +342,12 @@ Fallback: manual code entry for devices without camera access.
 | `/scan` | Yes | QR scanner + bottom sheets (vehicles, bays, tasks) |
 | `/dashboard` | Yes | Unified dashboard: vehicle registry + role-based quick links (superadmin sees "Admin Panel" link) |
 | `/profile` | Yes | User profile (MFA setup/disable, logout) |
-| `/tasks` | Yes | Task list with filters (type, status, vehicle) |
+| `/tasks` | Yes | Task list with filters, edit (technician+), delete (admin) |
 | `/users` | Yes (admin) | User management CRUD |
+| `/audit` | Yes (admin) | Audit log with resource type filters and pagination |
 | `/qr-codes` | Yes (admin) | QR code generation and printing |
 | `/vehicle/new` | Yes | New vehicle onboarding form |
-| `/vehicle/[id]` | Yes | Vehicle detail with timeline and actions |
+| `/vehicle/[id]` | Yes | Vehicle detail with timeline, document management, add note/incident, delete (admin) |
 | `/vehicle/[id]/edit` | Yes | Edit vehicle details |
 | `/vehicle/[id]/move` | Yes | Bay selector for vehicle relocation |
 | `/vehicle/[id]/task` | Yes | Task completion form |
@@ -366,6 +369,13 @@ The vehicle detail page conditionally shows actions based on user role:
 | Maintenance Tasks | `admin`, `operator`, `technician` |
 | Add Photo | `admin`, `operator`, `technician` |
 | Exit Vehicle | `admin`, `operator` |
+| Add Note / Report Incident | `admin`, `operator`, `technician` |
+| Delete Vehicle (soft) | `admin` |
+| Delete Document | `admin` |
+| Edit Task | `admin`, `operator`, `technician` |
+| Delete Task | `admin` |
+| View Audit Log | `admin` |
+| Generate PDF Report | `admin`, `operator` |
 
 Role is read from the Zustand store (`user.role`) and checked client-side. Server-side RBAC middleware provides the enforcement layer.
 
@@ -411,7 +421,7 @@ Responsive layout that adapts to viewport:
 **Desktop:** Sidebar navigation (SideNav, 220px) with role-based items:
 - All roles: Home, Scan, Bays, Tasks
 - Admin/Operator: + QR Codes
-- Admin: + Team
+- Admin: + Team, + Audit Log
 - Superadmin: + Admin
 - Profile at bottom with separator
 

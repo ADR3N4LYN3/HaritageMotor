@@ -21,8 +21,8 @@ export default function VehiclePage() {
   const role = user?.role || "viewer";
 
   const { vehicle, isLoading } = useVehicle(id);
-  const { events, isLoading: eventsLoading } = useVehicleTimeline(id);
-  const { data: docsData } = useSWR<PaginatedResponse<Document>>(
+  const { events, isLoading: eventsLoading, mutate: mutateTimeline } = useVehicleTimeline(id);
+  const { data: docsData, mutate: mutateDocs } = useSWR<PaginatedResponse<Document>>(
     id ? `/vehicles/${id}/documents` : null
   );
   const documents = docsData?.data || [];
@@ -30,9 +30,18 @@ export default function VehiclePage() {
   const [downloadingDoc, setDownloadingDoc] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
+  const [deleteDocConfirm, setDeleteDocConfirm] = useState<string | null>(null);
+  const [showNoteForm, setShowNoteForm] = useState(false);
+  const [noteType, setNoteType] = useState<"note_added" | "incident_reported">("note_added");
+  const [noteText, setNoteText] = useState("");
+  const [noteLoading, setNoteLoading] = useState(false);
 
   const canOperate = role === "admin" || role === "operator";
   const canTechnician = canOperate || role === "technician";
+  const isAdmin = role === "admin";
 
   async function handleDownload(docId: string) {
     setDownloadingDoc(docId);
@@ -93,6 +102,62 @@ export default function VehiclePage() {
       setErrorMsg("Failed to generate report. Please try again.");
     } finally {
       setReportLoading(false);
+    }
+  }
+
+  async function handleDeleteVehicle() {
+    if (!deleteConfirm) {
+      setDeleteConfirm(true);
+      return;
+    }
+    setDeleteLoading(true);
+    setErrorMsg(null);
+    try {
+      await api.delete(`/vehicles/${id}`);
+      router.push("/dashboard");
+    } catch {
+      setErrorMsg("Failed to delete vehicle. Please try again.");
+      setDeleteConfirm(false);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
+  async function handleDeleteDoc(docId: string) {
+    if (deleteDocConfirm !== docId) {
+      setDeleteDocConfirm(docId);
+      return;
+    }
+    setDeletingDocId(docId);
+    try {
+      await api.delete(`/vehicles/${id}/documents/${docId}`);
+      mutateDocs();
+      setDeleteDocConfirm(null);
+    } catch {
+      setErrorMsg("Failed to delete document.");
+    } finally {
+      setDeletingDocId(null);
+    }
+  }
+
+  async function handleAddNote(e: React.FormEvent) {
+    e.preventDefault();
+    if (!noteText.trim()) return;
+    setNoteLoading(true);
+    setErrorMsg(null);
+    try {
+      await api.post("/events", {
+        vehicle_id: id,
+        event_type: noteType,
+        notes: noteText.trim(),
+      });
+      setNoteText("");
+      setShowNoteForm(false);
+      mutateTimeline();
+    } catch {
+      setErrorMsg("Failed to add note.");
+    } finally {
+      setNoteLoading(false);
     }
   }
 
@@ -212,6 +277,17 @@ export default function VehiclePage() {
           </ActionButton>
         )}
 
+        {/* Delete Vehicle — admin only */}
+        {isAdmin && (
+          <ActionButton
+            variant="danger"
+            onClick={handleDeleteVehicle}
+            loading={deleteLoading}
+          >
+            {deleteConfirm ? "Confirm deletion" : "Delete Vehicle"}
+          </ActionButton>
+        )}
+
         {/* Documents */}
         {documents.length > 0 && (
           <div>
@@ -227,13 +303,36 @@ export default function VehiclePage() {
                       {doc.doc_type} · {(doc.size_bytes / 1024).toFixed(0)} KB
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleDownload(doc.id)}
-                    disabled={downloadingDoc === doc.id}
-                    className="ml-3 px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors disabled:opacity-50"
-                  >
-                    {downloadingDoc === doc.id ? "..." : "Download"}
-                  </button>
+                  <div className="flex items-center gap-2 ml-3 shrink-0">
+                    <button
+                      onClick={() => handleDownload(doc.id)}
+                      disabled={downloadingDoc === doc.id}
+                      className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors disabled:opacity-50"
+                    >
+                      {downloadingDoc === doc.id ? "..." : "Download"}
+                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleDeleteDoc(doc.id)}
+                        disabled={deletingDocId === doc.id}
+                        className={`w-8 h-8 rounded-lg border flex items-center justify-center text-xs transition-colors ${
+                          deleteDocConfirm === doc.id
+                            ? "border-danger/40 bg-danger/10 text-danger"
+                            : "border-white/[0.08] bg-white/[0.04] text-white/40 hover:text-danger hover:border-danger/30"
+                        }`}
+                        aria-label={deleteDocConfirm === doc.id ? "Confirm delete" : "Delete document"}
+                      >
+                        {deleteDocConfirm === doc.id ? (
+                          <span className="text-[10px] font-semibold">OK</span>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -242,9 +341,63 @@ export default function VehiclePage() {
 
         {/* Timeline */}
         <div>
-          <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Timeline
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider">
+              Timeline
+            </h2>
+            {canTechnician && (
+              <button
+                onClick={() => setShowNoteForm(!showNoteForm)}
+                className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/50 text-xs hover:text-gold hover:border-gold/30 transition-all duration-300"
+                style={{ transitionTimingFunction: "var(--ease-lux)" }}
+              >
+                {showNoteForm ? "Cancel" : "+ Add Note"}
+              </button>
+            )}
+          </div>
+
+          {/* Add note/incident form */}
+          {showNoteForm && (
+            <form onSubmit={handleAddNote} className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4 mb-3 space-y-3">
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setNoteType("note_added")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                    noteType === "note_added"
+                      ? "bg-gold/15 text-gold border-gold/30"
+                      : "bg-white/[0.04] text-white/50 border-white/[0.06]"
+                  }`}
+                  aria-pressed={noteType === "note_added"}
+                >
+                  📝 Note
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNoteType("incident_reported")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                    noteType === "incident_reported"
+                      ? "bg-danger/15 text-danger border-danger/30"
+                      : "bg-white/[0.04] text-white/50 border-white/[0.06]"
+                  }`}
+                  aria-pressed={noteType === "incident_reported"}
+                >
+                  ⚠️ Incident
+                </button>
+              </div>
+              <textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder={noteType === "note_added" ? "Add a note..." : "Describe the incident..."}
+                rows={2}
+                required
+                className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors"
+              />
+              <ActionButton type="submit" loading={noteLoading} disabled={!noteText.trim()} fullWidth={false} className="px-6">
+                Add to Timeline
+              </ActionButton>
+            </form>
+          )}
           {eventsLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((n) => (
