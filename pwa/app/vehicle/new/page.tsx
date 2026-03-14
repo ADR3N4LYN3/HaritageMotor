@@ -2,6 +2,7 @@
 
 import { useState, useReducer } from "react";
 import { useRouter } from "next/navigation";
+import { useSWRConfig } from "swr";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -45,6 +46,7 @@ const initialForm: FormState = {
 
 export default function NewVehiclePage() {
   const router = useRouter();
+  const { mutate } = useSWRConfig();
   const user = useAppStore((s) => s.user);
   const role = user?.role || "viewer";
   const canCreate = role === "admin" || role === "operator";
@@ -101,6 +103,8 @@ export default function NewVehiclePage() {
 
     try {
       const vehicle = await api.post<{ id: string }>("/vehicles", body);
+      // Invalidate vehicles cache so dashboard shows the new vehicle immediately
+      mutate((key: unknown) => typeof key === "string" && key.startsWith("/vehicles"));
       router.push(`/vehicle/${vehicle.id}`);
     } catch (err: unknown) {
       if (err instanceof ApiError) {

@@ -5,31 +5,21 @@ import { usePathname } from "next/navigation";
 import { useAppStore } from "@/store/app.store";
 import { SyncBadge } from "../ui/SyncBadge";
 import { LangSwitcher } from "../ui/LangSwitcher";
+import { useI18n } from "@/lib/i18n";
+import { pageLabelsI18n } from "@/lib/translations";
 import useSWR from "swr";
-
-const pageLabels: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/scan": "Scan QR",
-  "/bays": "Bays",
-  "/bay": "Bay",
-  "/vehicle": "Vehicle",
-  "/tasks": "Tasks",
-  "/qr-codes": "QR Codes",
-  "/users": "Team",
-  "/profile": "Profile",
-  "/admin": "Admin",
-};
 
 export function DesktopTopBar() {
   const user = useAppStore((s) => s.user);
   const pathname = usePathname();
+  const { t } = useI18n(pageLabelsI18n);
   const { data: taskData } = useSWR<{ data: unknown[]; total_count: number }>(
     user ? "/tasks?status=pending&per_page=1" : null,
     { refreshInterval: 60000 }
   );
   const pendingTasks = taskData?.total_count ?? 0;
 
-  const pageLabel = Object.entries(pageLabels).find(
+  const pageLabel = Object.entries(t).find(
     ([path]) => pathname === path || (path !== "/dashboard" && pathname.startsWith(path))
   )?.[1] || "";
 
@@ -65,4 +55,3 @@ export function DesktopTopBar() {
     </header>
   );
 }
-

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { broadcastLang, getSavedLang, type Lang } from "@/lib/i18n";
 
-type Lang = "en" | "fr" | "de";
 const langLabels: Record<Lang, string> = { en: "EN", fr: "FR", de: "DE" };
 const langNames: Record<Lang, string> = { en: "English", fr: "Français", de: "Deutsch" };
 const langOrder: Lang[] = ["en", "fr", "de"];
@@ -45,8 +45,7 @@ export function LangSwitcher() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("hm-lang") as Lang | null;
-    if (saved && saved in langLabels) setLang(saved);
+    setLang(getSavedLang());
   }, []);
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export function LangSwitcher() {
 
   function pick(l: Lang) {
     setLang(l);
-    localStorage.setItem("hm-lang", l);
+    broadcastLang(l);
     setOpen(false);
   }
 

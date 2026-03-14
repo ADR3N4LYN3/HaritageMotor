@@ -8,6 +8,8 @@ import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { ActivityFeed } from "@/components/ui/ActivityFeed";
 import { useAppStore } from "@/store/app.store";
 import { useReveal } from "@/hooks/useReveal";
+import { useI18n } from "@/lib/i18n";
+import { dashboardI18n } from "@/lib/translations";
 import useSWR from "swr";
 import type { Vehicle } from "@/lib/types";
 
@@ -44,6 +46,7 @@ function TenantDashboard() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const revealRef = useReveal();
+  const { t } = useI18n(dashboardI18n);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchInput), 300);
@@ -80,7 +83,7 @@ function TenantDashboard() {
 
   const statuses = ["", "stored", "out", "maintenance", "transit"];
   const statusLabels: Record<string, string> = {
-    "": "All", stored: "Stored", out: "Out", maintenance: "Maint.", transit: "Transit",
+    "": t.all, stored: t.stored, out: t.out, maintenance: t.maint, transit: t.transit,
   };
 
   const storedCount = vehicles.filter((v) => v.status === "stored").length;
@@ -91,8 +94,8 @@ function TenantDashboard() {
       <div ref={revealRef} className="space-y-6">
         <div className="reveal-up flex items-center justify-between">
           <div>
-            <div className="section-tag mb-3"><span>Vehicle Registry</span></div>
-            <h1 className="text-[1.6rem] md:text-[2rem] font-light tracking-[0.03em] text-white leading-[1.2]">Your fleet</h1>
+            <div className="section-tag mb-3"><span>{t.registry}</span></div>
+            <h1 className="text-[1.6rem] md:text-[2rem] font-light tracking-[0.03em] text-white leading-[1.2]">{t.fleet}</h1>
           </div>
           {canCreate && (
             <button
@@ -107,9 +110,9 @@ function TenantDashboard() {
         <div className="reveal-up reveal-d1">
           <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
             {[
-              { value: totalCount, label: "Total", sub: "vehicles" },
-              { value: storedCount, label: "Stored", sub: "in custody" },
-              { value: outCount, label: "Out", sub: "with owners" },
+              { value: totalCount, label: t.total, sub: t.vehicles },
+              { value: storedCount, label: t.stored, sub: t.inCustody },
+              { value: outCount, label: t.out, sub: t.withOwners },
             ].map((s) => (
               <div key={s.label} className="bg-dark-2 p-4 md:p-5 text-center group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -136,7 +139,7 @@ function TenantDashboard() {
               }`}
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
             >
-              {tab === "fleet" ? "Fleet" : "Activity"}
+              {tab === "fleet" ? t.tabFleet : t.tabActivity}
             </button>
           ))}
         </div>
@@ -150,8 +153,8 @@ function TenantDashboard() {
                   <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><line x1="7" y1="12" x2="17" y2="12" /></svg>
                 </div>
                 <div>
-                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Scan QR</p>
-                  <p className="text-[10px] text-white/25 mt-0.5">Quick lookup</p>
+                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.scanQr}</p>
+                  <p className="text-[10px] text-white/25 mt-0.5">{t.quickLookup}</p>
                 </div>
               </div>
             </button>
@@ -161,8 +164,8 @@ function TenantDashboard() {
                   <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>
                 </div>
                 <div>
-                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Bays</p>
-                  <p className="text-[10px] text-white/25 mt-0.5">Manage facility</p>
+                  <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.bays}</p>
+                  <p className="text-[10px] text-white/25 mt-0.5">{t.manageFacility}</p>
                 </div>
               </div>
             </button>
@@ -173,8 +176,8 @@ function TenantDashboard() {
                     <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" /><rect x="2" y="14" width="8" height="8" rx="1" /><path d="M14 14h4v4h-4zM22 14v4h-4M22 22h-4v-4" /></svg>
                   </div>
                   <div>
-                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">QR Codes</p>
-                    <p className="text-[10px] text-white/25 mt-0.5">Print labels</p>
+                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.qrCodes}</p>
+                    <p className="text-[10px] text-white/25 mt-0.5">{t.printLabels}</p>
                   </div>
                 </div>
               </button>
@@ -186,8 +189,8 @@ function TenantDashboard() {
                     <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                   </div>
                   <div>
-                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Team</p>
-                    <p className="text-[10px] text-white/25 mt-0.5">Manage users</p>
+                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.team}</p>
+                    <p className="text-[10px] text-white/25 mt-0.5">{t.manageUsers}</p>
                   </div>
                 </div>
               </button>
@@ -199,8 +202,8 @@ function TenantDashboard() {
                     <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
                   </div>
                   <div>
-                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">Admin Panel</p>
-                    <p className="text-[10px] text-white/25 mt-0.5">Tenants, invitations, platform</p>
+                    <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.adminPanel}</p>
+                    <p className="text-[10px] text-white/25 mt-0.5">{t.adminSub}</p>
                   </div>
                 </div>
               </button>
@@ -214,7 +217,7 @@ function TenantDashboard() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by make, model, owner..."
+              placeholder={t.searchPlaceholder}
               className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-all duration-300"
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
             />
@@ -240,14 +243,14 @@ function TenantDashboard() {
             <div className="space-y-3">{[1, 2, 3, 4].map((n) => <VehicleCardSkeleton key={n} />)}</div>
           ) : error ? (
             <div className="text-center py-16">
-              <p className="text-danger/80 text-sm font-light">Failed to load vehicles</p>
-              <p className="text-white/20 text-xs mt-1">Please try again later</p>
+              <p className="text-danger/80 text-sm font-light">{t.failedLoad}</p>
+              <p className="text-white/20 text-xs mt-1">{t.tryAgain}</p>
             </div>
           ) : vehicles.length === 0 ? (
             <div className="text-center py-16 reveal-up">
-              <p className="text-base font-light text-white/30 italic">No vehicles found</p>
+              <p className="text-base font-light text-white/30 italic">{t.noVehicles}</p>
               <p className="text-white/15 text-xs mt-2 tracking-wider uppercase">
-                {searchInput || statusFilter ? "Try adjusting your filters" : "Add your first vehicle to get started"}
+                {searchInput || statusFilter ? t.adjustFilters : t.addFirst}
               </p>
             </div>
           ) : (
@@ -258,7 +261,7 @@ function TenantDashboard() {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr>
-                        {["Vehicle", "Owner", "Status", "Bay", "Year"].map((h) => (
+                        {[t.vehicle, t.owner, t.status, t.bay, t.year].map((h) => (
                           <th key={h} className="text-[10px] tracking-[0.15em] uppercase text-gold/40 font-medium text-left px-4 py-3 border-b border-white/[0.06]">
                             {h}
                           </th>
@@ -309,13 +312,13 @@ function TenantDashboard() {
             <div className="reveal-up text-center pt-4 pb-2 space-y-3">
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-3">
-                  <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300">Previous</button>
+                  <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300">{t.previous}</button>
                   <span className="text-xs text-white/40 tabular-nums">{page} / {totalPages}</span>
-                  <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300">Next</button>
+                  <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300">{t.next}</button>
                 </div>
               )}
               <p className="text-[10px] tracking-[0.2em] uppercase text-white/20">
-                {totalCount} vehicle{totalCount !== 1 ? "s" : ""} in registry
+                {totalCount} {t.vehicles} {t.inRegistry}
               </p>
             </div>
           )}
@@ -327,7 +330,7 @@ function TenantDashboard() {
             <div className="flex items-center gap-2 mb-5">
               <div className="w-1.5 h-1.5 rounded-full bg-gold/60 shadow-[0_0_10px_rgba(184,149,90,0.4)]" />
               <p className="text-[11px] tracking-[0.18em] uppercase text-gold/60 font-semibold">
-                Recent activity
+                {t.recentActivity}
               </p>
             </div>
             <ActivityFeed active={activeTab === "activity"} />
