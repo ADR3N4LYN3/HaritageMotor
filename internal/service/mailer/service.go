@@ -141,7 +141,7 @@ func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword, lang stri
 
   <!-- Brand name -->
   <tr><td align="center" style="padding:0 0 0;">
-    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
+    <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
   </td></tr>
 
   <!-- Gold accent line -->
@@ -155,8 +155,8 @@ func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword, lang stri
 
   <!-- Greeting -->
   <tr><td style="padding:36px 56px 0;">
-    <p style="margin:0 0 24px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">%s</p>
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#8a867e;line-height:1.8;">%s</p>
+    <p style="margin:0 0 24px;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">%s</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#8a867e;line-height:1.8;">%s</p>
   </td></tr>
 
   <!-- Spacer -->
@@ -167,19 +167,19 @@ func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword, lang stri
     <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#12110e;border:1px solid #b8955a18;border-radius:4px;">
       <!-- Card header -->
       <tr><td style="padding:20px 28px 16px;border-bottom:1px solid #b8955a12;">
-        <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">%s</p>
+        <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">%s</p>
       </td></tr>
       <!-- Email -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Email</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Email</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Password -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
+          <td style="padding:16px 0 15px;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
           <td style="padding:16px 0 15px;font-family:'Courier New',Courier,monospace;font-size:15px;color:#b8955a;letter-spacing:1px;">%s</td>
         </tr></table>
       </td></tr>
@@ -192,14 +192,14 @@ func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword, lang stri
   <tr><td align="center" style="padding:32px 40px 0;">
     <table cellpadding="0" cellspacing="0"><tr>
       <td style="background:#b8955a;border-radius:4px;padding:14px 36px;">
-        <a href="%s/login" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#0a0908;text-decoration:none;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">%s</a>
+        <a href="%s/login" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;color:#0a0908;text-decoration:none;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">%s</a>
       </td>
     </tr></table>
   </td></tr>
 
   <!-- Note -->
   <tr><td style="padding:28px 56px 0;">
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5a564e;line-height:1.6;font-style:italic;">%s</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5a564e;line-height:1.6;font-style:italic;">%s</p>
   </td></tr>
 
   <!-- Bottom spacer -->
@@ -214,8 +214,8 @@ func (s *Service) SendWelcome(to, firstName, tenantName, tempPassword, lang stri
 
   <!-- Footer -->
   <tr><td align="center" style="padding:24px 56px 48px;">
-    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">%s</p>
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
+    <p style="margin:0 0 6px;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">%s</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
   </td></tr>
 
 </table>

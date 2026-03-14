@@ -130,6 +130,8 @@ pwa/
   lib/
     api.ts                        Client HTTP (auto-refresh 401, FormData)
     auth.ts                       Login, MFA verify, logout
+    i18n.ts                       Hook useI18n + broadcastLang (EN/FR/DE temps réel)
+    translations.ts               Dictionnaires i18n (dashboard, bays, page labels)
     types.ts                      Interfaces TypeScript
     task-constants.ts             Constantes partagées tâches (TASK_ICONS)
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)

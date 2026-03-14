@@ -126,6 +126,8 @@ pwa/
 ├── lib/
 │   ├── api.ts                 # API client with auto-refresh
 │   ├── auth.ts                # Login, MFA, logout functions
+│   ├── i18n.ts                # Shared i18n hook (useI18n) + broadcast mechanism
+│   ├── translations.ts        # Translation dictionaries EN/FR/DE (dashboard, bays, page labels)
 │   ├── types.ts               # TypeScript interfaces
 │   ├── task-constants.ts      # Shared task icons (TASK_ICONS)
 │   └── offline-queue.ts       # IndexedDB persistence layer
@@ -415,13 +417,21 @@ Responsive layout that adapts to viewport:
 
 TopBar (mobile) includes a notification bell (pending task count via SWR), sync badge, language switcher (SVG flags), and profile avatar (initials). DesktopTopBar shows the current page label, bell, language switcher, and avatar.
 
-### Language Switcher
+### Language Switcher & i18n
 
 Shared `LangSwitcher` component (`components/ui/LangSwitcher.tsx`) used in both TopBar and DesktopTopBar. Features:
 - Inline SVG flags (UK, France, Germany) — no emoji for cross-platform consistency
 - Dropdown with `aria-expanded`, click-outside-to-close
 - Reads/writes `localStorage('hm-lang')` — shared with landing pages
 - Three languages: EN (default), FR, DE
+- **Broadcast mechanism**: `broadcastLang()` from `lib/i18n.ts` notifies all `useI18n()` hooks in real-time — no page reload needed
+
+**PWA i18n architecture** (`lib/i18n.ts` + `lib/translations.ts`):
+- `useI18n(dict)` hook: reads `localStorage('hm-lang')`, subscribes to broadcast updates, returns `{ lang, t }`
+- `broadcastLang(l)` : called by LangSwitcher, updates all subscribed hooks via in-memory listener set
+- Translation dictionaries in `lib/translations.ts`: `dashboardI18n`, `baysI18n`, `pageLabelsI18n`
+- Login and change-password pages use their own local `loginI18n` / `cpI18n` dicts (pre-existing pattern)
+- Translated pages: dashboard, bays, DesktopTopBar page labels, login, change-password
 
 ## Design System (Dark Luxury)
 

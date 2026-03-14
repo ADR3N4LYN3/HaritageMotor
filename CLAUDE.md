@@ -67,7 +67,9 @@ internal/
     plan/                        — Limites par plan (starter/pro/enterprise)
     report/
       service.go                 — Génération PDF véhicule (orchestration)
-      pdf_builder.go             — Construction PDF pages (go-pdf/fpdf)
+      pdf_builder.go             — Construction PDF pages (go-pdf/fpdf), design dark luxury
+      logo.go                    — go:embed du logo-crest-v2.png pour le PDF
+      logo-crest-v2.png          — Logo embarqué (copie pour go:embed)
   turnstile/turnstile.go         — Cloudflare Turnstile token verification (shared auth + contact)
   storage/s3.go                  — Upload, GetSignedURL, Delete (aws-sdk-go-v2)
   testutil/setup.go              — Infrastructure tests intégration (Env, Setup, helpers)
@@ -219,7 +221,7 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 ### Emails transactionnels (Resend API)
 
-7 templates (confirmation contact FR/EN/DE, notification admin, welcome FR/EN/DE) dans `contact/service.go` et `mailer/service.go`. Design dark luxury, i18n via champ `lang` (en|fr|de).
+7 templates (confirmation contact FR/EN/DE, notification admin, welcome FR/EN/DE) dans `contact/service.go` et `mailer/service.go`. Design dark luxury, i18n via champ `lang` (en|fr|de). Polices : `Cormorant Garamond` (serif, titres/brand) + `DM Sans` (sans, body/labels) avec fallbacks Georgia/Helvetica Neue pour les clients email qui ne supportent pas les web fonts.
 
 ## Architecture PWA (pwa/)
 
@@ -235,7 +237,8 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **Dashboard tabs (Fleet/Activity)** : toujours montés avec CSS `hidden` class (jamais conditional rendering) pour préserver les animations `useReveal` (IntersectionObserver one-shot)
 - **ActivityFeed `active` prop** : passer `active={false}` quand l'onglet Activity est masqué pour stopper le polling SWR
 - **Scan layout** : le scan a son propre layout (`scan/layout.tsx`) avec `<SideNav />` car il n'utilise pas AppShell. Le `lg:left-[220px]` sur les conteneurs fixed doit rester synchronisé avec la largeur du SideNav
-- **LangSwitcher partagé** : composant unique (`components/ui/LangSwitcher.tsx`) avec SVG flags inline (pas d'emoji), utilisé dans TopBar ET DesktopTopBar. Persiste dans `localStorage('hm-lang')` — partagé avec les pages statiques landing
+- **LangSwitcher partagé** : composant unique (`components/ui/LangSwitcher.tsx`) avec SVG flags inline (pas d'emoji), utilisé dans TopBar ET DesktopTopBar. Persiste dans `localStorage('hm-lang')` — partagé avec les pages statiques landing. Utilise `broadcastLang()` pour notifier tous les hooks `useI18n()` en temps réel
+- **i18n PWA** : hook `useI18n(dict)` dans `lib/i18n.ts` + dictionnaires EN/FR/DE dans `lib/translations.ts`. Pages traduites : dashboard, bays, DesktopTopBar, login, change-password. Login/change-password utilisent leurs propres dicts locaux
 - **Accessibilité toggle pills** : tous les boutons toggle/filtre doivent avoir `aria-pressed`, les dropdowns `aria-expanded`
 
 ### Design System Dark Luxury (PWA)
@@ -363,9 +366,10 @@ Utilisé comme `<img>` + texte "HERITAGE MOTOR" en Cormorant Garamond 600 à cô
 - **PWA TopBar** : 30px + texte 0.82rem
 - **PWA Login** : 88px (centré, texte en dessous)
 - **Emails** : 72px (via `https://heritagemotor.app/logo-crest-v2.png`)
+- **PDF report** : 18mm (go:embed dans `internal/service/report/`)
 - **Vidéo watermark** : 52px (Remotion `staticFile`)
 
-Fichier présent dans 3 répertoires : `web/static/`, `pwa/public/`, `video/public/`.
+Fichier présent dans 4 répertoires : `web/static/`, `pwa/public/`, `video/public/`, `internal/service/report/` (go:embed PDF).
 
 **PWA standalone** : En mode standalone Docker, Next.js ne sert PAS les fichiers `public/` directement. Le logo doit être importé en static import (`import logoCrest from "@/public/logo-crest-v2.png"`) puis utilisé via `logoCrest.src` — webpack le bundle dans `/_next/static/media/`. Pattern utilisé dans `login/page.tsx` et `TopBar.tsx`.
 

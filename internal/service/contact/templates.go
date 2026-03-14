@@ -87,7 +87,7 @@ func notificationHTML(req Request) string {
 
   <!-- Brand name -->
   <tr><td align="center" style="padding:0 0 0;">
-    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
+    <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
   </td></tr>
 
   <!-- Gold accent line -->
@@ -101,7 +101,7 @@ func notificationHTML(req Request) string {
 
   <!-- Title -->
   <tr><td style="padding:36px 56px 0;">
-    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">New Demo Request</p>
+    <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">New Demo Request</p>
   </td></tr>
 
   <!-- Spacer -->
@@ -112,41 +112,41 @@ func notificationHTML(req Request) string {
     <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#12110e;border:1px solid #b8955a18;border-radius:4px;">
       <!-- Card header -->
       <tr><td style="padding:20px 28px 16px;border-bottom:1px solid #b8955a12;">
-        <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">Contact Details</p>
+        <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">Contact Details</p>
       </td></tr>
       <!-- Name -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Name</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Name</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Email -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Email</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;"><a href="mailto:%s" style="color:#b8955a;text-decoration:none;">%s</a></td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Email</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;"><a href="mailto:%s" style="color:#b8955a;text-decoration:none;">%s</a></td>
         </tr></table>
       </td></tr>
       <!-- Company -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Company</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Company</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Fleet -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Fleet size</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">Fleet size</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Message -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;vertical-align:top;">Message</td>
-          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;line-height:1.6;">%s</td>
+          <td style="padding:16px 0 15px;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;vertical-align:top;">Message</td>
+          <td style="padding:16px 0 15px;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;line-height:1.6;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Card bottom padding -->
@@ -166,8 +166,8 @@ func notificationHTML(req Request) string {
 
   <!-- Footer -->
   <tr><td align="center" style="padding:24px 56px 48px;">
-    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">Heritage Motor — Admin Notification</p>
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
+    <p style="margin:0 0 6px;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">Heritage Motor — Admin Notification</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
   </td></tr>
 
 </table>
@@ -221,7 +221,7 @@ func confirmationHTML(req Request) string {
 
   <!-- Brand name -->
   <tr><td align="center" style="padding:0 0 0;">
-    <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
+    <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:13px;color:#b8955a;letter-spacing:5px;text-transform:uppercase;font-weight:normal;">Heritage Motor</p>
   </td></tr>
 
   <!-- Gold accent line -->
@@ -235,8 +235,8 @@ func confirmationHTML(req Request) string {
 
   <!-- Body -->
   <tr><td style="padding:36px 56px 0;">
-    <p style="margin:0 0 24px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">%s</p>
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#8a867e;line-height:1.8;">%s</p>
+    <p style="margin:0 0 24px;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:20px;color:#faf9f7;font-weight:normal;line-height:1.5;">%s</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;color:#8a867e;line-height:1.8;">%s</p>
   </td></tr>
 
   <!-- Spacer -->
@@ -247,27 +247,27 @@ func confirmationHTML(req Request) string {
     <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#12110e;border:1px solid #b8955a18;border-radius:4px;">
       <!-- Card header -->
       <tr><td style="padding:20px 28px 16px;border-bottom:1px solid #b8955a12;">
-        <p style="margin:0;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">%s</p>
+        <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#b8955a;letter-spacing:3px;text-transform:uppercase;">%s</p>
       </td></tr>
       <!-- Row 1 -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Row 2 -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
-          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;">%s</td>
+          <td style="padding:16px 0 15px;border-bottom:1px solid #ffffff06;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Row 3 -->
       <tr><td style="padding:0 28px;">
         <table width="100%%" cellpadding="0" cellspacing="0"><tr>
-          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;vertical-align:top;">%s</td>
-          <td style="padding:16px 0 15px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;line-height:1.6;">%s</td>
+          <td style="padding:16px 0 15px;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#5a564e;letter-spacing:1px;text-transform:uppercase;width:130px;vertical-align:top;">%s</td>
+          <td style="padding:16px 0 15px;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#e8e6e1;line-height:1.6;">%s</td>
         </tr></table>
       </td></tr>
       <!-- Card bottom padding -->
@@ -277,7 +277,7 @@ func confirmationHTML(req Request) string {
 
   <!-- Response time -->
   <tr><td style="padding:32px 56px 0;">
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5a564e;line-height:1.6;font-style:italic;">%s</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5a564e;line-height:1.6;font-style:italic;">%s</p>
   </td></tr>
 
   <!-- Bottom spacer -->
@@ -292,8 +292,8 @@ func confirmationHTML(req Request) string {
 
   <!-- Footer -->
   <tr><td align="center" style="padding:24px 56px 48px;">
-    <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">%s</p>
-    <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
+    <p style="margin:0 0 6px;font-family:'Cormorant Garamond',Georgia,'Times New Roman','Palatino Linotype',serif;font-size:10px;color:#3a3730;letter-spacing:3px;text-transform:uppercase;">%s</p>
+    <p style="margin:0;font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#2a2722;">heritagemotor.app</p>
   </td></tr>
 
 </table>

@@ -79,9 +79,11 @@ heritage-motor/
 │   │   ├── task/                 #   Task operations
 │   │   ├── document/             #   Document operations
 │   │   ├── user/                 #   User operations
-│   │   └── report/               #   PDF report generation (go-pdf/fpdf)
+│   │   └── report/               #   PDF report generation (go-pdf/fpdf), dark luxury design
 │   │       ├── service.go        #     Data loading + orchestration
-│   │       └── pdf_builder.go    #     PDF rendering (layout, sections, formatting)
+│   │       ├── pdf_builder.go    #     PDF rendering (dark header, logo, gold accents, tables)
+│   │       ├── logo.go           #     go:embed for logo-crest-v2.png
+│   │       └── logo-crest-v2.png #     Embedded logo for PDF header
 │   ├── storage/                  # S3 client
 │   └── testutil/                 # Integration test infrastructure (Setup, Env, helpers)
 ├── pwa/                          # Next.js PWA frontend
@@ -169,8 +171,10 @@ docker compose up -d --build
 - **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
 - **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
 - **Landing i18n**: All static pages (index, contact, privacy, legal, 404) support EN/FR/DE via lang switcher, persisted in localStorage
+- **PWA i18n**: Shared `useI18n` hook (`lib/i18n.ts`) + translation dictionaries (`lib/translations.ts`). LangSwitcher broadcasts changes to all hooks in real-time. Translated pages: dashboard, bays, DesktopTopBar, login, change-password
 - **Currency toggle**: Pricing section supports EUR/USD switch, persisted in localStorage (`hm-currency`). Amounts: Starter €800/$880, Pro €1,400/$1,540, Climate add-on +€350/+$385
 - **Typography**: DM Sans 300 (sans-serif) for headings, DM Sans 400/500 for UI. Cormorant Garamond reserved for brand/logo only ("HM", "Heritage Motor" on login/admin)
+- **Export theming**: All exports (emails + PDF) aligned with the dark luxury brand. Emails use `Cormorant Garamond` + `DM Sans` font stacks with Georgia/Helvetica fallbacks. PDF report has dark header with embedded logo, Times serif headings (fpdf built-in closest to Cormorant), gold accents, dark table headers, branded footer
 - **Email normalization**: TrimSpace + ToLower on both backend (Go) and frontend (TypeScript) before any auth/invite call
 
 ## Domains
