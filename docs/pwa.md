@@ -44,7 +44,7 @@ pwa/
 │   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
 │   │   ├── layout.tsx         # Vehicle detail layout
-│   │   ├── page.tsx           # Vehicle detail + timeline + delete (admin) + add note/incident
+│   │   ├── page.tsx           # Vehicle detail + timeline + tags + delete (admin) + add note/incident
 │   │   ├── edit/page.tsx      # Edit vehicle details
 │   │   ├── move/page.tsx      # Move vehicle to another bay
 │   │   ├── task/page.tsx      # Task completion
@@ -91,6 +91,7 @@ pwa/
 │   │   ├── EventItem.tsx      # Timeline event display
 │   │   ├── BaySelector.tsx    # Bay picker for move actions
 │   │   ├── LangSwitcher.tsx   # Language switcher (EN/FR/DE) with inline SVG flags, localStorage('hm-lang')
+│   │   ├── TagInput.tsx       # Vehicle tag editor (4 presets + free-text custom tags, used in create/edit)
 │   │   ├── SyncBadge.tsx      # Pending offline actions indicator
 │   │   ├── Skeleton.tsx       # Loading skeletons
 │   │   ├── SuccessScreen.tsx  # Success confirmation screen

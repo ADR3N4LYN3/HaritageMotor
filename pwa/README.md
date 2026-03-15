@@ -91,6 +91,7 @@ pwa/
       BaySelector.tsx             Selection de bay (recherche + liste)
       SuccessScreen.tsx           Ecran de confirmation
       LangSwitcher.tsx            Switch langue EN/FR/DE (SVG flags, localStorage('hm-lang'))
+      TagInput.tsx                Editeur tags vehicule (4 presets + saisie libre, create/edit)
       SyncBadge.tsx               Badge actions offline en attente
       ActivityFeed.tsx            Feed activite recente (GET /activity, prop `active` pour pause polling)
       Skeleton.tsx                Placeholder chargement
