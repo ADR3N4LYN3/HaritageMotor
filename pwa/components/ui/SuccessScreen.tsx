@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { ActionButton } from "./ActionButton";
+import { useI18n } from "@/lib/i18n";
+import { commonI18n } from "@/lib/translations";
 
 interface SuccessScreenProps {
   title: string;
@@ -10,6 +12,7 @@ interface SuccessScreenProps {
 }
 
 export function SuccessScreen({ title, subtitle, onDone }: SuccessScreenProps) {
+  const { t } = useI18n(commonI18n);
   useEffect(() => {
     if (typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate(100);
@@ -32,7 +35,7 @@ export function SuccessScreen({ title, subtitle, onDone }: SuccessScreenProps) {
         <p className="text-white/60 text-center mt-2 text-sm">{subtitle}</p>
       )}
       <div className="w-full max-w-sm mt-8">
-        <ActionButton onClick={onDone}>Done</ActionButton>
+        <ActionButton onClick={onDone}>{t.done}</ActionButton>
       </div>
     </div>
   );

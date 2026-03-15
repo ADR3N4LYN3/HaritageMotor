@@ -1,3 +1,7 @@
+"use client";
+
+import { useI18n } from "@/lib/i18n";
+import { eventItemI18n } from "@/lib/translations";
 import type { Event } from "@/lib/types";
 
 interface EventItemProps {
@@ -5,30 +9,32 @@ interface EventItemProps {
   operatorName?: string;
 }
 
-const eventMeta: Record<string, { label: string; color: string }> = {
-  vehicle_intake: { label: "Vehicle Intake", color: "text-success" },
-  vehicle_exit: { label: "Vehicle Exit", color: "text-danger" },
-  vehicle_moved: { label: "Vehicle Moved", color: "text-[#3b82f6]" },
-  task_completed: { label: "Task Completed", color: "text-success" },
-  document_added: { label: "Document Added", color: "text-gold" },
-  photo_added: { label: "Photo Added", color: "text-gold" },
-  status_changed: { label: "Status Changed", color: "text-warning" },
-  note_added: { label: "Note Added", color: "text-white" },
-  incident_reported: { label: "Incident", color: "text-danger" },
+const eventColors: Record<string, string> = {
+  vehicle_intake: "text-success",
+  vehicle_exit: "text-danger",
+  vehicle_moved: "text-[#3b82f6]",
+  task_completed: "text-success",
+  document_added: "text-gold",
+  photo_added: "text-gold",
+  status_changed: "text-warning",
+  note_added: "text-white",
+  incident_reported: "text-danger",
 };
 
 export function EventItem({ event, operatorName }: EventItemProps) {
-  const info = eventMeta[event.event_type] || { label: event.event_type, color: "text-white" };
+  const { t } = useI18n(eventItemI18n);
+  const color = eventColors[event.event_type] || "text-white";
+  const label = t[event.event_type] || event.event_type;
   const date = new Date(event.occurred_at);
 
   return (
     <div className="flex gap-3 py-3 border-b border-white/[0.06] last:border-0">
-      <div className={`mt-0.5 ${info.color}`}>
+      <div className={`mt-0.5 ${color}`}>
         <EventIcon type={event.event_type} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <span className={`text-sm font-medium ${info.color}`}>{info.label}</span>
+          <span className={`text-sm font-medium ${color}`}>{label}</span>
           <span className="text-xs text-white/40">
             {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </span>
