@@ -264,6 +264,8 @@ PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Desig
 - **i18n PWA** : hook `useI18n(dict)` dans `lib/i18n.ts` + dictionnaires EN/FR/DE dans `lib/translations.ts`. Pages traduites : dashboard, vehicles, bays, tasks, profile, scan (+ sheets), audit, DesktopTopBar, SideNav, BottomNav, ActivityFeed, login, change-password. Dicts : `dashboardI18n`, `baysI18n`, `tasksI18n`, `profileI18n`, `scanI18n`, `activityI18n`, `auditI18n`, `navI18n`, `pageLabelsI18n`, `commonI18n`. Login/change-password utilisent leurs propres dicts locaux
 - **Accessibilité toggle pills** : tous les boutons toggle/filtre doivent avoir `aria-pressed`, les dropdowns `aria-expanded`
 - **Tags véhicules** : DB `TEXT[]`, 4 presets (classique, competition, vip, electrique) + saisie libre. Composant `TagInput` partagé entre create/edit. Affichés sur la page détail véhicule. Admin/operator uniquement
+- **Catalogue véhicules** : `lib/vehicle-catalog.ts` — 65 constructeurs, 700+ modèles (statique, curé). Sélection en cascade Make → Model → Year via `CustomSelect` (searchable). "Other..." pour saisie libre. Utilisé dans vehicle/new. Pour mettre à jour : éditer le fichier et redéployer
+- **CustomSelect** : composant dropdown réutilisable (`components/ui/CustomSelect.tsx`) avec props `searchable` (filtre texte), `loading`, `icon` (ReactNode). Utilisé pour bays, tasks, makes, models, years
 
 ### Design System Dark Luxury (PWA)
 - **Background** : `bg-black` (#0e0d0b) sur AppShell et toutes les pages

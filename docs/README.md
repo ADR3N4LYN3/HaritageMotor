@@ -171,7 +171,8 @@ docker compose up -d --build
 - **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
 - **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
 - **Landing i18n**: All static pages (index, contact, privacy, legal, 404) support EN/FR/DE via lang switcher, persisted in localStorage
-- **PWA i18n**: Shared `useI18n` hook (`lib/i18n.ts`) + translation dictionaries (`lib/translations.ts`). LangSwitcher broadcasts changes to all hooks in real-time. Translated pages: dashboard, bays, DesktopTopBar, login, change-password
+- **PWA i18n**: Shared `useI18n` hook (`lib/i18n.ts`) + translation dictionaries (`lib/translations.ts`). LangSwitcher broadcasts changes to all hooks in real-time. Translated pages: dashboard, vehicles, bays, tasks, profile, scan, audit, nav, activity feed, login, change-password
+- **Vehicle catalog**: Curated static catalog (`lib/vehicle-catalog.ts`) with 65 makes and 700+ models. Cascading Make → Model → Year selection via searchable CustomSelect. "Other..." for unlisted vehicles
 - **Currency toggle**: Pricing section supports EUR/USD switch, persisted in localStorage (`hm-currency`). Amounts: Starter €800/$880, Pro €1,400/$1,540, Climate add-on +€350/+$385
 - **Typography**: DM Sans 300 (sans-serif) for headings, DM Sans 400/500 for UI. Cormorant Garamond reserved for brand/logo only ("HM", "Heritage Motor" on login/admin)
 - **Export theming**: All exports (emails + PDF) aligned with the dark luxury brand. Emails use `Cormorant Garamond` + `DM Sans` font stacks with Georgia/Helvetica fallbacks. PDF report: 3-page layout — p1 dark header + vehicle card + owner/custody side-by-side + 4 stats cards, p2 timeline table, p3 tasks + docs tables. Times Italic 14-16pt gold titles, dark table headers (#1e1c12), alternating rows, page numbers in footer

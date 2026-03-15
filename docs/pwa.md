@@ -92,6 +92,7 @@ pwa/
 │   │   ├── BaySelector.tsx    # Bay picker for move actions
 │   │   ├── LangSwitcher.tsx   # Language switcher (EN/FR/DE) with inline SVG flags, localStorage('hm-lang')
 │   │   ├── TagInput.tsx       # Vehicle tag editor (4 presets + free-text custom tags, used in create/edit)
+│   │   ├── CustomSelect.tsx  # Searchable dropdown (searchable, loading, icon props) — used for makes, models, years, bays, tasks
 │   │   ├── SyncBadge.tsx      # Pending offline actions indicator
 │   │   ├── Skeleton.tsx       # Loading skeletons
 │   │   ├── SuccessScreen.tsx  # Success confirmation screen
@@ -133,6 +134,7 @@ pwa/
 │   ├── auth.ts                # Login, MFA, logout functions
 │   ├── i18n.ts                # Shared i18n hook (useI18n) + broadcast mechanism
 │   ├── translations.ts        # Translation dictionaries EN/FR/DE (all pages + nav + audit + common)
+│   ├── vehicle-catalog.ts     # Curated vehicle catalog (65 makes, 700+ models, static)
 │   ├── types.ts               # TypeScript interfaces
 │   ├── task-constants.ts      # Shared task icons (TASK_ICONS)
 │   └── offline-queue.ts       # IndexedDB persistence layer

@@ -135,8 +135,9 @@ pwa/
     auth.ts                       Login, MFA verify, logout
     i18n.ts                       Hook useI18n + broadcastLang (EN/FR/DE temps réel)
     translations.ts               Dictionnaires i18n (toutes pages + nav + audit + common)
+    vehicle-catalog.ts            Catalogue véhicules curé (65 marques, 700+ modèles, statique)
     types.ts                      Interfaces TypeScript (Vehicle, Bay, Task, Event, User, AuditEntry, etc.)
-    task-constants.ts             Constantes partagées tâches (TASK_ICONS)
+    task-constants.ts             Constantes partagées tâches (TaskIcon SVG component)
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)
   store/
     app.store.ts                  Zustand (accessToken, pendingCount, logout)
