@@ -11,13 +11,19 @@ import useSWR from "swr";
 
 const RESOURCE_FILTERS = ["", "vehicle", "bay", "task", "event", "user", "document"] as const;
 
-function actionColor(action: string): string {
-  if (action.includes("delete")) return "bg-danger/10 text-danger";
-  if (action.includes("create") || action.includes("upload")) return "bg-success/10 text-success";
-  if (action.includes("update") || action.includes("move") || action.includes("exit") || action.includes("complete")) return "bg-warning/10 text-warning";
-  return "bg-white/[0.06] text-white/50";
+/* ── Action verb extraction + color ── */
+function parseAction(action: string): { verb: string; color: string } {
+  if (action.includes("delete")) return { verb: "delete", color: "bg-danger/15 text-danger border border-danger/20" };
+  if (action.includes("move")) return { verb: "move", color: "bg-[#3b82f6]/15 text-[#3b82f6] border border-[#3b82f6]/20" };
+  if (action.includes("exit")) return { verb: "exit", color: "bg-warning/15 text-warning border border-warning/20" };
+  if (action.includes("create")) return { verb: "create", color: "bg-success/15 text-success border border-success/20" };
+  if (action.includes("upload")) return { verb: "upload", color: "bg-success/15 text-success border border-success/20" };
+  if (action.includes("update")) return { verb: "update", color: "bg-gold/15 text-gold border border-gold/20" };
+  if (action.includes("complete")) return { verb: "complete", color: "bg-success/15 text-success border border-success/20" };
+  return { verb: action, color: "bg-white/[0.06] text-white/50 border border-white/[0.08]" };
 }
 
+/* ── Resource icon SVGs ── */
 function ResourceIcon({ type, className }: { type: string; className?: string }) {
   const cls = className || "w-4 h-4";
   const props = { className: cls, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -39,6 +45,17 @@ function ResourceIcon({ type, className }: { type: string; className?: string })
   }
 }
 
+/* ── Relative time ── */
+function relativeTime(date: Date): string {
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (diff < 60) return `${diff}s`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d`;
+  return date.toLocaleDateString();
+}
+
 export default function AuditPage() {
   const currentUser = useAppStore((s) => s.user);
   const isAdmin = currentUser?.role === "admin";
@@ -47,6 +64,11 @@ export default function AuditPage() {
   const resourceLabels: Record<string, string> = {
     "": t.all, vehicle: t.vehicle, bay: t.bay, task: t.task,
     event: t.event, user: t.user, document: t.document,
+  };
+
+  const verbLabels: Record<string, string> = {
+    create: t.verbCreate, update: t.verbUpdate, delete: t.verbDelete,
+    move: t.verbMove, exit: t.verbExit, upload: t.verbUpload, complete: t.verbComplete,
   };
 
   const [resourceFilter, setResourceFilter] = useState("");
@@ -128,52 +150,52 @@ export default function AuditPage() {
           <div className="space-y-2">
             {entries.map((entry) => {
               const date = new Date(entry.occurred_at);
+              const { verb, color } = parseAction(entry.action);
+              const verbLabel = verbLabels[verb] || verb;
+              const resLabel = resourceLabels[entry.resource_type] || entry.resource_type;
+
               return (
                 <div
                   key={entry.id}
-                  className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]"
+                  className="bg-white/[0.03] rounded-2xl px-4 py-3.5 border border-white/[0.06] flex items-center gap-3"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0 text-gold/70">
-                        <ResourceIcon type={entry.resource_type} className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span
-                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider ${actionColor(entry.action)}`}
-                          >
-                            {entry.action}
-                          </span>
-                          <span className="text-sm text-white">
-                            {resourceLabels[entry.resource_type] || entry.resource_type}
-                          </span>
-                          {entry.resource_id && (
-                            <span className="text-xs text-white/30 font-mono truncate max-w-[120px]">
-                              {entry.resource_id.slice(0, 8)}...
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-white/30">
-                          {entry.ip_address && (
-                            <span>{entry.ip_address}</span>
-                          )}
-                          {entry.request_id && (
-                            <span className="font-mono truncate max-w-[80px]">
-                              req:{entry.request_id.slice(0, 8)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                  {/* Icon */}
+                  <div className="w-9 h-9 rounded-xl bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0 text-gold/70">
+                    <ResourceIcon type={entry.resource_type} className="w-4 h-4" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] text-white/90">
+                      <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider mr-2 align-middle ${color}`}>
+                        {verbLabel}
+                      </span>
+                      <span className="text-white/60">{resLabel}</span>
+                      {entry.resource_id && (
+                        <span className="text-white/20 font-mono text-[11px] ml-1.5">
+                          {entry.resource_id.slice(0, 8)}
+                        </span>
+                      )}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5 text-[11px] text-white/25">
+                      <span>{relativeTime(date)}</span>
+                      {entry.ip_address && (
+                        <>
+                          <span className="text-white/10">·</span>
+                          <span>{entry.ip_address}</span>
+                        </>
+                      )}
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-xs text-white/40">
-                        {date.toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-white/30">
-                        {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
+                  </div>
+
+                  {/* Date */}
+                  <div className="text-right shrink-0">
+                    <p className="text-[11px] text-white/30 tabular-nums">
+                      {date.toLocaleDateString(undefined, { day: "2-digit", month: "2-digit" })}
+                    </p>
+                    <p className="text-[11px] text-white/20 tabular-nums">
+                      {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
                   </div>
                 </div>
               );
