@@ -224,6 +224,18 @@ export default function VehiclePage() {
               {vehicle.license_plate}
             </div>
           )}
+          {vehicle.tags && vehicle.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {vehicle.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[11px] tracking-[0.04em] px-2.5 py-1 rounded-full bg-white/[0.04] text-white/50 border border-white/[0.06]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
