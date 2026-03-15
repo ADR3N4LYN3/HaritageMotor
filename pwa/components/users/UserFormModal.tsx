@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import type { User } from "@/lib/types";
 
 export const ROLES = ["admin", "operator", "technician", "viewer"] as const;
@@ -106,17 +107,14 @@ export function UserFormModal({
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
             Role
           </label>
-          <select
+          <CustomSelect
             value={form.role}
-            onChange={(e) => onUpdateField("role", e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white focus:border-gold/40 focus:ring-1 focus:ring-gold/20 outline-none text-sm transition-colors appearance-none"
-          >
-            {ROLES.map((r) => (
-              <option key={r} value={r} className="bg-dark text-white">
-                {r.charAt(0).toUpperCase() + r.slice(1)}
-              </option>
-            ))}
-          </select>
+            onChange={(v) => onUpdateField("role", v)}
+            options={ROLES.map((r) => ({
+              value: r,
+              label: r.charAt(0).toUpperCase() + r.slice(1),
+            }))}
+          />
         </div>
 
         {!editingUser && (

@@ -9,6 +9,7 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { useBays } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
 import { TagInput } from "@/components/ui/TagInput";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { useAppStore } from "@/store/app.store";
 
 interface FormState {
@@ -186,23 +187,21 @@ export default function NewVehiclePage() {
             {/* Bay assignment */}
             <div>
               <p className="text-xs text-white/30 mb-2">Assign to bay (optional)</p>
-              <select
+              <CustomSelect
                 value={form.bay_id}
-                onChange={(e) => updateField("bay_id", e.target.value)}
-                className={`${inputClass} appearance-none`}
-              >
-                <option value="">No bay</option>
-                {baysLoading ? (
-                  <option disabled>Loading...</option>
-                ) : (
-                  freeBays.map((bay) => (
-                    <option key={bay.id} value={bay.id}>
-                      {bay.code}
-                      {bay.zone ? ` (${bay.zone})` : ""}
-                    </option>
-                  ))
-                )}
-              </select>
+                onChange={(v) => updateField("bay_id", v)}
+                placeholder="No bay"
+                options={[
+                  { value: "", label: "No bay" },
+                  ...(baysLoading
+                    ? [{ value: "__loading", label: "Loading..." }]
+                    : freeBays.map((bay) => ({
+                        value: bay.id,
+                        label: bay.code,
+                        sub: bay.zone ?? undefined,
+                      }))),
+                ]}
+              />
             </div>
 
             <textarea

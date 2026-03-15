@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { api, ApiError } from "@/lib/api";
 import { TASK_ICONS } from "@/lib/task-constants";
 
@@ -167,17 +168,15 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
             Task Type
           </label>
-          <select
+          <CustomSelect
             value={taskType}
-            onChange={(e) => setTaskType(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
-          >
-            {TASK_TYPES.map((t) => (
-              <option key={t} value={t} className="bg-dark">
-                {TASK_ICONS[t]} {TASK_TYPE_LABELS[t]}
-              </option>
-            ))}
-          </select>
+            onChange={setTaskType}
+            options={TASK_TYPES.map((t) => ({
+              value: t,
+              label: TASK_TYPE_LABELS[t],
+              icon: TASK_ICONS[t],
+            }))}
+          />
         </div>
 
         {/* Title */}
