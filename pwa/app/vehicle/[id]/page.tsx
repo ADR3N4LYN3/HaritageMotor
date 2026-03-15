@@ -9,6 +9,8 @@ import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle, useVehicleTimeline } from "@/hooks/useVehicle";
 import { useAppStore } from "@/store/app.store";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
+import { vehicleDetailI18n } from "@/lib/translations";
 import type { Document, PaginatedResponse } from "@/lib/types";
 import useSWR from "swr";
 
@@ -18,6 +20,7 @@ export default function VehiclePage() {
   const id = params.id as string;
   const user = useAppStore((s) => s.user);
   const role = user?.role || "viewer";
+  const { t } = useI18n(vehicleDetailI18n);
 
   const { vehicle, isLoading } = useVehicle(id);
   const { events, isLoading: eventsLoading, mutate: mutateTimeline } = useVehicleTimeline(id);
@@ -78,7 +81,7 @@ export default function VehiclePage() {
       );
       if (res.signed_url) window.open(res.signed_url, "_blank");
     } catch {
-      setErrorMsg("Failed to download document.");
+      setErrorMsg(t.failedDownload);
     } finally {
       setDownloadingDoc(null);
     }
@@ -115,7 +118,7 @@ export default function VehiclePage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      setErrorMsg("Failed to generate report.");
+      setErrorMsg(t.failedReport);
     } finally {
       setReportLoading(false);
     }
@@ -129,7 +132,7 @@ export default function VehiclePage() {
       await api.delete(`/vehicles/${id}`);
       router.push("/dashboard");
     } catch {
-      setErrorMsg("Failed to delete vehicle.");
+      setErrorMsg(t.failedDelete);
       setDeleteConfirm(false);
     } finally {
       setDeleteLoading(false);
@@ -144,7 +147,7 @@ export default function VehiclePage() {
       mutateDocs();
       setDeleteDocConfirm(null);
     } catch {
-      setErrorMsg("Failed to delete document.");
+      setErrorMsg(t.failedDeleteDoc);
     } finally {
       setDeletingDocId(null);
     }
@@ -161,7 +164,7 @@ export default function VehiclePage() {
       setShowNoteForm(false);
       mutateTimeline();
     } catch {
-      setErrorMsg("Failed to add note.");
+      setErrorMsg(t.failedAddNote);
     } finally {
       setNoteLoading(false);
     }
@@ -182,7 +185,7 @@ export default function VehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Vehicle not found</div>
+        <div className="text-center py-12 text-white/50">{t.notFound}</div>
       </AppShell>
     );
   }
@@ -198,7 +201,7 @@ export default function VehiclePage() {
     <AppShell>
       <div className="space-y-5">
         {/* ── Hero Section ── */}
-        <div className="relative rounded-2xl overflow-hidden border border-white/[0.05]">
+        <div className="relative rounded-2xl overflow-hidden border border-white/[0.06]">
           {/* Photo or fallback */}
           {heroUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -233,7 +236,7 @@ export default function VehiclePage() {
                 onClick={() => router.push(`/vehicle/${id}/edit`)}
                 className="px-3.5 py-2 rounded-lg border border-white/[0.15] bg-black/50 backdrop-blur-md text-white/60 text-xs font-medium tracking-wide hover:text-gold hover:border-gold/30 transition-all"
               >
-                Edit
+                {t.edit}
               </button>
             )}
           </div>
@@ -288,31 +291,31 @@ export default function VehiclePage() {
                 <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center text-gold/70">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                 </div>
-                <span className="text-[0.68rem] text-white/60 group-hover:text-white/80 transition-colors">Move</span>
+                <span className="text-[0.68rem] text-white/60 group-hover:text-white/80 transition-colors">{t.move}</span>
               </button>
             )}
             {canTechnician && (
-              <button onClick={() => router.push(`/vehicle/${id}/task`)} className="bg-white/[0.025] border border-white/[0.05] rounded-xl p-3 flex flex-col items-center gap-2 hover:border-gold/20 transition-all active:scale-95 group">
+              <button onClick={() => router.push(`/vehicle/${id}/task`)} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 flex flex-col items-center gap-2 hover:border-gold/20 transition-all active:scale-95 group">
                 <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center text-gold/70">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
                 </div>
-                <span className="text-[0.68rem] text-white/60 group-hover:text-white/80 transition-colors">Tasks</span>
+                <span className="text-[0.68rem] text-white/60 group-hover:text-white/80 transition-colors">{t.tasks}</span>
               </button>
             )}
             {canTechnician && (
-              <button onClick={() => router.push(`/vehicle/${id}/photo`)} className="bg-white/[0.025] border border-white/[0.05] rounded-xl p-3 flex flex-col items-center gap-2 hover:border-gold/20 transition-all active:scale-95 group">
+              <button onClick={() => router.push(`/vehicle/${id}/photo`)} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 flex flex-col items-center gap-2 hover:border-gold/20 transition-all active:scale-95 group">
                 <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center text-gold/70">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
                 </div>
-                <span className="text-[0.68rem] text-white/60 group-hover:text-white/80 transition-colors">Photo</span>
+                <span className="text-[0.68rem] text-white/60 group-hover:text-white/80 transition-colors">{t.photo}</span>
               </button>
             )}
             {canOperate && (
-              <button onClick={() => router.push(`/vehicle/${id}/exit`)} className="bg-white/[0.025] border border-white/[0.05] rounded-xl p-3 flex flex-col items-center gap-2 hover:border-danger/20 transition-all active:scale-95 group">
+              <button onClick={() => router.push(`/vehicle/${id}/exit`)} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 flex flex-col items-center gap-2 hover:border-danger/20 transition-all active:scale-95 group">
                 <div className="w-9 h-9 rounded-lg bg-danger/10 border border-danger/15 flex items-center justify-center text-danger/70">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M12 19V7M5 12l7-7 7 7" /><line x1="5" y1="3" x2="19" y2="3" /></svg>
                 </div>
-                <span className="text-[0.68rem] text-danger/60 group-hover:text-danger/80 transition-colors">Exit</span>
+                <span className="text-[0.68rem] text-danger/60 group-hover:text-danger/80 transition-colors">{t.exit}</span>
               </button>
             )}
           </div>
@@ -326,14 +329,14 @@ export default function VehiclePage() {
           {/* Left column: Info + Documents + Secondary actions */}
           <div className="space-y-5">
             {/* Vehicle Info */}
-            <div className="bg-white/[0.025] border border-white/[0.05] rounded-2xl p-4">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-gold/50 mb-3">Vehicle</p>
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-white/30 mb-3">{t.vehicleInfo}</p>
               {[
-                ["Make", vehicle.make],
-                ["Model", vehicle.model],
-                ["Year", vehicle.year],
-                ["Color", vehicle.color],
-                ["VIN", vehicle.vin],
+                [t.make, vehicle.make],
+                [t.model, vehicle.model],
+                [t.year, vehicle.year],
+                [t.color, vehicle.color],
+                [t.vin, vehicle.vin],
               ].filter(([, v]) => v).map(([label, value]) => (
                 <div key={label as string} className="flex justify-between items-baseline py-1.5 border-b border-white/[0.04] last:border-0">
                   <span className="text-[0.78rem] text-white/35">{label}</span>
@@ -343,12 +346,12 @@ export default function VehiclePage() {
             </div>
 
             {/* Owner Info */}
-            <div className="bg-white/[0.025] border border-white/[0.05] rounded-2xl p-4">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-gold/50 mb-3">Owner</p>
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-white/30 mb-3">{t.owner}</p>
               {[
-                ["Name", vehicle.owner_name],
-                ["Email", vehicle.owner_email],
-                ["Phone", vehicle.owner_phone],
+                [t.name, vehicle.owner_name],
+                [t.email, vehicle.owner_email],
+                [t.phone, vehicle.owner_phone],
               ].filter(([, v]) => v).map(([label, value]) => (
                 <div key={label as string} className="flex justify-between items-baseline py-1.5 border-b border-white/[0.04] last:border-0">
                   <span className="text-[0.78rem] text-white/35">{label}</span>
@@ -360,8 +363,8 @@ export default function VehiclePage() {
             {/* Documents */}
             {documents.length > 0 && (
               <div>
-                <h2 className="text-[0.65rem] font-semibold text-white/30 uppercase tracking-[0.15em] mb-2">Documents</h2>
-                <div className="bg-white/[0.025] rounded-2xl border border-white/[0.05] divide-y divide-white/[0.04]">
+                <h2 className="text-[0.65rem] font-semibold text-white/30 uppercase tracking-[0.15em] mb-2">{t.documents}</h2>
+                <div className="bg-white/[0.03] rounded-2xl border border-white/[0.06] divide-y divide-white/[0.04]">
                   {documents.map((doc) => (
                     <div key={doc.id} className="px-4 py-3 flex items-center justify-between">
                       <div className="min-w-0 flex-1">
@@ -370,7 +373,7 @@ export default function VehiclePage() {
                       </div>
                       <div className="flex items-center gap-2 ml-3 shrink-0">
                         <button onClick={() => handleDownload(doc.id)} disabled={downloadingDoc === doc.id} className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-white/60 text-xs hover:bg-white/[0.1] transition-colors disabled:opacity-50">
-                          {downloadingDoc === doc.id ? "..." : "Download"}
+                          {downloadingDoc === doc.id ? "..." : t.download}
                         </button>
                         {isAdmin && (
                           <button
@@ -395,12 +398,12 @@ export default function VehiclePage() {
             <div className="flex gap-2">
               {canOperate && (
                 <button onClick={handleReport} disabled={reportLoading} className="flex-1 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/50 text-[0.78rem] hover:text-gold hover:border-gold/30 transition-all disabled:opacity-50">
-                  {reportLoading ? "Generating..." : "PDF Report"}
+                  {reportLoading ? t.generating : t.pdfReport}
                 </button>
               )}
               {isAdmin && (
                 <button onClick={handleDeleteVehicle} disabled={deleteLoading} className="flex-1 py-2.5 rounded-xl border border-danger/15 bg-danger/[0.04] text-danger/60 text-[0.78rem] hover:text-danger hover:border-danger/30 transition-all disabled:opacity-50">
-                  {deleteConfirm ? "Confirm" : "Delete"}
+                  {deleteConfirm ? t.confirm : t.delete}
                 </button>
               )}
             </div>
@@ -409,13 +412,13 @@ export default function VehiclePage() {
           {/* Right column: Timeline */}
           <div className="mt-5 lg:mt-0">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-[0.65rem] font-semibold text-white/30 uppercase tracking-[0.15em]">Timeline</h2>
+              <h2 className="text-[0.65rem] font-semibold text-white/30 uppercase tracking-[0.15em]">{t.timeline}</h2>
               {canTechnician && (
                 <button
                   onClick={() => setShowNoteForm(!showNoteForm)}
                   className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/50 text-xs hover:text-gold hover:border-gold/30 transition-all duration-300"
                 >
-                  {showNoteForm ? "Cancel" : "+ Add Note"}
+                  {showNoteForm ? t.cancel : t.addNote}
                 </button>
               )}
             </div>
@@ -424,26 +427,26 @@ export default function VehiclePage() {
             {showNoteForm && (
               <form onSubmit={handleAddNote} className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4 mb-3 space-y-3">
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setNoteType("note_added")} aria-pressed={noteType === "note_added"} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${noteType === "note_added" ? "bg-gold/15 text-gold border-gold/30" : "bg-white/[0.04] text-white/50 border-white/[0.06]"}`}>
+                  <button type="button" onClick={() => setNoteType("note_added")} aria-pressed={noteType === "note_added"} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${noteType === "note_added" ? "bg-gold/15 text-gold border-gold/30" : "bg-white/[0.03] text-white/50 border-white/[0.06]"}`}>
                     <svg className="w-3.5 h-3.5 inline -mt-px mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                    Note
+                    {t.note}
                   </button>
-                  <button type="button" onClick={() => setNoteType("incident_reported")} aria-pressed={noteType === "incident_reported"} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${noteType === "incident_reported" ? "bg-danger/15 text-danger border-danger/30" : "bg-white/[0.04] text-white/50 border-white/[0.06]"}`}>
+                  <button type="button" onClick={() => setNoteType("incident_reported")} aria-pressed={noteType === "incident_reported"} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${noteType === "incident_reported" ? "bg-danger/15 text-danger border-danger/30" : "bg-white/[0.03] text-white/50 border-white/[0.06]"}`}>
                     <svg className="w-3.5 h-3.5 inline -mt-px mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-                    Incident
+                    {t.incident}
                   </button>
                 </div>
-                <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder={noteType === "note_added" ? "Add a note..." : "Describe the incident..."} rows={2} required className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors" />
-                <ActionButton type="submit" loading={noteLoading} disabled={!noteText.trim()} fullWidth={false} className="px-6">Add to Timeline</ActionButton>
+                <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder={noteType === "note_added" ? t.addNotePlaceholder : t.describeIncident} rows={2} required className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors" />
+                <ActionButton type="submit" loading={noteLoading} disabled={!noteText.trim()} fullWidth={false} className="px-6">{t.addToTimeline}</ActionButton>
               </form>
             )}
 
             {eventsLoading ? (
               <div className="space-y-2">{[1, 2, 3].map((n) => <div key={n} className="skeleton h-16 rounded-xl" />)}</div>
             ) : events.length === 0 ? (
-              <p className="text-center text-sm text-white/30 py-6">No events yet</p>
+              <p className="text-center text-sm text-white/30 py-6">{t.noEvents}</p>
             ) : (
-              <div className="bg-white/[0.025] rounded-2xl border border-white/[0.05] p-4">
+              <div className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4">
                 {events.map((event) => <EventItem key={event.id} event={event} />)}
               </div>
             )}

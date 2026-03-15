@@ -50,7 +50,7 @@ export default function BaysPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <PageHeader
           title={t.title}
           backHref="/dashboard"
@@ -69,15 +69,15 @@ export default function BaysPage() {
         {/* Stats */}
         {!isLoading && (
           <div className="flex gap-3">
-            <div className="bg-white/[0.03] rounded-xl px-3 py-2 border border-white/[0.06] text-center flex-1">
+            <div className="bg-white/[0.03] rounded-2xl px-3 py-2 border border-white/[0.06] text-center flex-1">
               <p className="text-lg font-light text-success">{stats.free}</p>
               <p className="text-xs text-white/30">{t.free}</p>
             </div>
-            <div className="bg-white/[0.03] rounded-xl px-3 py-2 border border-white/[0.06] text-center flex-1">
+            <div className="bg-white/[0.03] rounded-2xl px-3 py-2 border border-white/[0.06] text-center flex-1">
               <p className="text-lg font-light text-warning">{stats.occupied}</p>
               <p className="text-xs text-white/30">{t.occupied}</p>
             </div>
-            <div className="bg-white/[0.03] rounded-xl px-3 py-2 border border-white/[0.06] text-center flex-1">
+            <div className="bg-white/[0.03] rounded-2xl px-3 py-2 border border-white/[0.06] text-center flex-1">
               <p className="text-lg font-light text-white">{stats.total}</p>
               <p className="text-xs text-white/30">{t.total}</p>
             </div>
@@ -94,7 +94,7 @@ export default function BaysPage() {
               className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                 statusFilter === s
                   ? "bg-gold/15 text-gold border-gold/30"
-                  : "bg-white/[0.04] text-white/50 border-white/[0.06]"
+                  : "bg-white/[0.03] text-white/50 border-white/[0.06]"
               }`}
             >
               {statusLabels[s] || s}

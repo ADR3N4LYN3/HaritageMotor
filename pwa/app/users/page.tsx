@@ -178,7 +178,7 @@ export default function UsersPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <PageHeader
           title="Team"
           backHref="/dashboard"
@@ -214,7 +214,7 @@ export default function UsersPage() {
               className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                 roleFilter === r
                   ? "bg-gold/15 text-gold border-gold/30"
-                  : "bg-white/[0.04] text-white/50 border-white/[0.06]"
+                  : "bg-white/[0.03] text-white/50 border-white/[0.06]"
               }`}
             >
               {r || "All"}

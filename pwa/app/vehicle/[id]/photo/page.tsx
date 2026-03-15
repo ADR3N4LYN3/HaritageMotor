@@ -12,6 +12,8 @@ import { useVehicle } from "@/hooks/useVehicle";
 import { useCamera } from "@/hooks/useCamera";
 import { api } from "@/lib/api";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
+import { useI18n } from "@/lib/i18n";
+import { vehiclePhotoI18n } from "@/lib/translations";
 
 const CameraCapture = dynamic(
   () =>
@@ -26,6 +28,7 @@ export default function PhotoPage() {
   const router = useRouter();
   const id = params.id as string;
 
+  const { t } = useI18n(vehiclePhotoI18n);
   const { vehicle } = useVehicle(id);
   const { photos, addPhoto, removePhoto } = useCamera();
   useOfflineQueue(); // Activate sync listeners for pending actions
@@ -57,11 +60,11 @@ export default function PhotoPage() {
     }
   }
 
-  if (success && vehicle) {
+  if (success) {
     return (
       <SuccessScreen
-        title="Photos Uploaded"
-        subtitle={`${photos.length} photo${photos.length > 1 ? "s" : ""} — ${vehicle.make} ${vehicle.model}`}
+        title={t.uploaded}
+        subtitle={vehicle ? `${photos.length} ${photos.length > 1 ? t.photos : t.photo} — ${vehicle.make} ${vehicle.model}` : `${photos.length} ${photos.length > 1 ? t.photos : t.photo}`}
         onDone={() => router.push(`/vehicle/${id}`)}
       />
     );
@@ -71,12 +74,12 @@ export default function PhotoPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Add Photos"
+          title={t.title}
           subtitle={vehicle ? `${vehicle.make} ${vehicle.model}` : undefined}
           backHref={`/vehicle/${id}`}
         />
 
-        <CameraCapture onCapture={addPhoto} multiple label="Take photo" />
+        <CameraCapture onCapture={addPhoto} multiple label={t.takePhoto} />
 
         {photos.length > 0 && (
           <PhotoGrid photos={photos} onRemove={removePhoto} />
@@ -91,7 +94,7 @@ export default function PhotoPage() {
           loading={loading}
           disabled={photos.length === 0}
         >
-          Upload {photos.length} Photo{photos.length !== 1 ? "s" : ""}
+          {t.upload} {photos.length} {photos.length !== 1 ? t.photos : t.photo}
         </ActionButton>
       </div>
     </AppShell>

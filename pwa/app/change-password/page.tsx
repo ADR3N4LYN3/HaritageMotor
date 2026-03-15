@@ -190,7 +190,7 @@ export default function ChangePasswordPage() {
             <path d="M140,22 L254,22 Q260,22 260,28 L260,180 Q260,220 236,246 Q210,274 140,310 Q70,274 44,246 Q20,220 20,180 L20,28 Q20,22 26,22 Z" fill="none" stroke="#b8955a" strokeWidth="1.2"/>
             <text x="140" y="185" textAnchor="middle" fontFamily="'Cormorant Garamond','Georgia',serif" fontSize="118" fontWeight="700" letterSpacing="5" fill="url(#cpGV)">HM</text>
           </svg>
-          <h1 className="font-display text-xl font-light tracking-wide text-white">
+          <h1 className="font-display text-xl font-semibold tracking-wide text-white">
             {t.title}
           </h1>
           <p className="text-white/40 text-sm mt-2">{t.subtitle}</p>
