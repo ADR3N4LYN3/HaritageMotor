@@ -41,13 +41,13 @@ pwa/
 │   ├── vehicles/
 │   │   └── page.tsx           # Full vehicle list with search, status filters, table/cards
 │   ├── vehicle/new/
-│   │   └── page.tsx           # New vehicle onboarding form
+│   │   └── page.tsx           # New vehicle onboarding (cascading Make→Model→Year selects, tags)
 │   ├── vehicle/[id]/
 │   │   ├── layout.tsx         # Vehicle detail layout
 │   │   ├── page.tsx           # Vehicle detail + timeline + tags + delete (admin) + add note/incident
-│   │   ├── edit/page.tsx      # Edit vehicle details
+│   │   ├── edit/page.tsx      # Edit vehicle details (cascading selects, tags)
 │   │   ├── move/page.tsx      # Move vehicle to another bay
-│   │   ├── task/page.tsx      # Task completion
+│   │   ├── task/page.tsx      # Task list + create task + completion (SVG icons)
 │   │   ├── photo/page.tsx     # Photo capture and upload
 │   │   └── exit/page.tsx      # Vehicle exit confirmation
 │   ├── profile/
@@ -57,7 +57,7 @@ pwa/
 │   ├── users/
 │   │   └── page.tsx           # User management CRUD (admin only)
 │   ├── audit/
-│   │   └── page.tsx           # Audit log viewer with resource filters (admin only)
+│   │   └── page.tsx           # Audit log: translated verbs, color-coded pills, relative time, SVG icons (admin)
 │   ├── qr-codes/
 │   │   └── page.tsx           # QR code generation and printing (admin only)
 │   ├── bays/
@@ -118,7 +118,7 @@ pwa/
 │   │   ├── TasksSheet.tsx     # Bottom sheet: pending tasks
 │   │   └── VehiclesSheet.tsx  # Bottom sheet: vehicle list
 │   ├── tasks/
-│   │   └── CreateTaskModal.tsx # Task create/edit modal (supports editTask prop for PATCH)
+│   │   └── CreateTaskModal.tsx # Task create/edit modal (editTask prop for PATCH, vehicle search with owner/plate)
 │   ├── users/
 │   │   └── UserFormModal.tsx  # User create/edit modal
 │   └── scanner/
@@ -136,7 +136,7 @@ pwa/
 │   ├── translations.ts        # Translation dictionaries EN/FR/DE (all pages + nav + audit + common)
 │   ├── vehicle-catalog.ts     # Curated vehicle catalog (65 makes, 700+ models, static)
 │   ├── types.ts               # TypeScript interfaces
-│   ├── task-constants.ts      # Shared task icons (TASK_ICONS)
+│   ├── task-constants.tsx     # Task type definitions (9 types, SVG icons, TaskIcon component)
 │   └── offline-queue.ts       # IndexedDB persistence layer
 ├── store/
 │   └── app.store.ts           # Zustand store (auth + offline state)
@@ -350,13 +350,13 @@ Fallback: manual code entry for devices without camera access.
 | `/profile` | Yes | User profile (MFA setup/disable, logout) |
 | `/tasks` | Yes | Task list with filters, edit (technician+), delete (admin) |
 | `/users` | Yes (admin) | User management CRUD |
-| `/audit` | Yes (admin) | Audit log with resource type filters and pagination |
+| `/audit` | Yes (admin) | Audit log: translated verbs, color-coded pills, resource filters, relative time |
 | `/qr-codes` | Yes (admin) | QR code generation and printing |
-| `/vehicle/new` | Yes | New vehicle onboarding form (with tags) |
+| `/vehicle/new` | Yes | Vehicle onboarding (cascading Make→Model→Year, tags) |
 | `/vehicle/[id]` | Yes | Vehicle detail with timeline, tags, documents, add note/incident, delete (admin) |
-| `/vehicle/[id]/edit` | Yes | Edit vehicle details (with tags) |
+| `/vehicle/[id]/edit` | Yes | Edit vehicle (cascading selects, tags) |
 | `/vehicle/[id]/move` | Yes | Bay selector for vehicle relocation |
-| `/vehicle/[id]/task` | Yes | Task completion form |
+| `/vehicle/[id]/task` | Yes | Task list + create task + completion (SVG icons, 9 types) |
 | `/vehicle/[id]/photo` | Yes | Camera capture and photo upload |
 | `/vehicle/[id]/exit` | Yes | Vehicle exit confirmation |
 | `/bays` | Yes | Bay list with status filters and stats |
@@ -378,6 +378,7 @@ The vehicle detail page conditionally shows actions based on user role:
 | Add Note / Report Incident | `admin`, `operator`, `technician` |
 | Delete Vehicle (soft) | `admin` |
 | Delete Document | `admin` |
+| Create Task (from vehicle) | `admin`, `operator`, `technician` |
 | Edit Task | `admin`, `operator`, `technician` |
 | Delete Task | `admin` |
 | View Audit Log | `admin` |

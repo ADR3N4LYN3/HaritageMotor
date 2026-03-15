@@ -40,6 +40,7 @@ Migrations are located in `internal/db/migrations/` and run sequentially on star
 | 017 | `017_superadmin_role.up.sql` | Add `superadmin` to `user_role` ENUM |
 | 018 | `018_superadmin_schema.up.sql` | Tenant status, password_change_required, plan_limits, invitations |
 | 019 | `019_backfill_qr_tokens.up.sql` | Backfill `qr_token = gen_random_uuid()::TEXT` for existing bays and vehicles where qr_token IS NULL |
+| 020 | `020_task_types_extend.up.sql` | Add `inspection`, `detailing`, `cover`, `climate_check` to `task_type` ENUM |
 
 ## ENUM Types
 
@@ -74,7 +75,7 @@ CREATE TYPE event_type AS ENUM (
 ### task_type
 
 ```sql
-CREATE TYPE task_type AS ENUM ('battery_start', 'tire_pressure', 'wash', 'fluid_check', 'custom');
+CREATE TYPE task_type AS ENUM ('battery_start', 'tire_pressure', 'wash', 'fluid_check', 'inspection', 'detailing', 'cover', 'climate_check', 'custom');
 ```
 
 ### task_status

@@ -51,18 +51,18 @@ pwa/
     profile/page.tsx              Profil utilisateur (→ components/profile/TOTPSetup)
     tasks/page.tsx                Liste taches + edit/delete (→ components/tasks/CreateTaskModal)
     users/page.tsx                Gestion utilisateurs (→ components/users/UserFormModal)
-    audit/page.tsx                Journal d'audit avec filtres par type de ressource (admin only)
+    audit/page.tsx                Journal d'audit : verbes traduits, pills couleur, temps relatif, icones SVG (admin)
     qr-codes/page.tsx             Generation et impression QR codes (admin only)
     admin/
       page.tsx                    Panel superadmin (→ components/admin/)
       qr-codes/page.tsx           Generation et impression QR codes (legacy)
-    vehicle/new/page.tsx          Onboarding nouveau vehicule (avec tags)
+    vehicle/new/page.tsx          Onboarding vehicule (selects Make→Model→Year en cascade, tags)
     vehicle/[id]/
       page.tsx                    Detail vehicule + timeline + tags + delete vehicule/document (admin) + add note/incident
-      edit/page.tsx               Edition vehicule (avec tags)
+      edit/page.tsx               Edition vehicule (selects en cascade, tags)
       move/page.tsx               Deplacement vers un bay
       exit/page.tsx               Sortie vehicule (photos + checklist)
-      task/page.tsx               Completion de tache
+      task/page.tsx               Liste taches + creation + completion (icones SVG, 9 types)
       photo/page.tsx              Upload photos
     bays/page.tsx                 Liste bays (filtres statut, stats)
     bay/new/page.tsx              Creation bay
@@ -89,7 +89,8 @@ pwa/
       VehicleCard.tsx             Carte vehicule (memo, gold-border-top, card-lift)
       EventItem.tsx               Evenement timeline
       BaySelector.tsx             Selection de bay (recherche + liste)
-      SuccessScreen.tsx           Ecran de confirmation
+      SuccessScreen.tsx           Ecran de confirmation (max-w-sm desktop)
+      CustomSelect.tsx            Dropdown searchable (icones ReactNode, loading, sub-labels)
       LangSwitcher.tsx            Switch langue EN/FR/DE (SVG flags, localStorage('hm-lang'))
       TagInput.tsx                Editeur tags vehicule (4 presets + saisie libre, create/edit)
       SyncBadge.tsx               Badge actions offline en attente
@@ -117,7 +118,7 @@ pwa/
       TasksSheet.tsx              Bottom sheet taches en attente
       VehiclesSheet.tsx           Bottom sheet liste vehicules
     tasks/
-      CreateTaskModal.tsx         Modal creation/edition tache (prop editTask pour PATCH)
+      CreateTaskModal.tsx         Modal creation/edition tache (editTask pour PATCH, recherche vehicule owner/plaque)
     users/
       UserFormModal.tsx           Modal creation/edition utilisateur
     scanner/
@@ -137,7 +138,7 @@ pwa/
     translations.ts               Dictionnaires i18n (toutes pages + nav + audit + common)
     vehicle-catalog.ts            Catalogue véhicules curé (65 marques, 700+ modèles, statique)
     types.ts                      Interfaces TypeScript (Vehicle, Bay, Task, Event, User, AuditEntry, etc.)
-    task-constants.ts             Constantes partagées tâches (TaskIcon SVG component)
+    task-constants.tsx            Types de taches (9 types, composants SVG, TaskIcon, TASK_TYPES)
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)
   store/
     app.store.ts                  Zustand (accessToken, pendingCount, logout)
@@ -238,7 +239,10 @@ Touch targets : min 44x44px. Safe areas iOS/Android gerees.
 | `AdminSelect` | `components/admin/AdminSelect.tsx` | Dropdown custom dark/gold remplacant les `<select>` natifs, click-outside-to-close |
 | `TenantRow` | `components/admin/TenantRow.tsx` | Ligne tenant expandable (edit inline + delete 2-step confirmation) |
 | `TOTPSetup` | `components/profile/TOTPSetup.tsx` | Setup/disable MFA avec QR code, verification TOTP |
-| `CreateTaskModal` | `components/tasks/CreateTaskModal.tsx` | Modal creation/edition tache (prop `editTask` pour mode PATCH, vehicule verrouille en edition) |
+| `CreateTaskModal` | `components/tasks/CreateTaskModal.tsx` | Modal creation/edition tache (prop `editTask` pour PATCH, recherche vehicule avec owner/plaque, 9 types SVG) |
+| `CustomSelect` | `components/ui/CustomSelect.tsx` | Dropdown searchable avec icones ReactNode, sub-labels, loading state. Utilise pour makes, models, years, bays, task types |
+| `SuccessScreen` | `components/ui/SuccessScreen.tsx` | Ecran de confirmation plein ecran (checkmark anime, max-w-sm desktop) |
+| `TaskIcon` | `lib/task-constants.tsx` | Composant SVG pour chaque type de tache (9 types : battery, tire, wash, fluid, inspection, detailing, cover, climate, custom) |
 | `UserFormModal` | `components/users/UserFormModal.tsx` | Modal creation/edition utilisateur |
 | `CookieBanner` | `components/ui/CookieBanner.tsx` | Modal GDPR consentement cookies (overlay centre, blur backdrop, toggles essentiels/analytics), persistence localStorage |
 | `AppErrorBoundary` | `components/ErrorBoundary.tsx` | Error boundary global (react-error-boundary). Affiche fallback plein ecran dark luxury avec message d'erreur et bouton "Try again" (reload page). |
