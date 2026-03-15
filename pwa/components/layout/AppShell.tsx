@@ -7,7 +7,7 @@ import { DesktopTopBar } from "./DesktopTopBar";
 
 const noiseBg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
   return (
     <div className="min-h-screen bg-black relative flex overflow-x-hidden">
       {/* Noise texture (same as landing) */}
@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <main className="relative z-10 pt-16 lg:pt-0 pb-20 lg:pb-6 px-4 lg:px-0 flex-1">
-          <div className="max-w-2xl lg:max-w-[900px] mx-auto lg:mx-0 lg:px-9 lg:py-7">
+          <div className={`max-w-2xl mx-auto lg:mx-0 lg:px-9 lg:py-7 ${wide ? "lg:max-w-none lg:pr-9" : "lg:max-w-[900px]"}`}>
             {children}
           </div>
         </main>
