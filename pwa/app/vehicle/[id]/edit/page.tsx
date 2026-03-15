@@ -8,9 +8,8 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
 import { api, ApiError } from "@/lib/api";
+import { TagInput } from "@/components/ui/TagInput";
 import { useAppStore } from "@/store/app.store";
-
-const TAG_OPTIONS = ["classique", "competition", "vip", "electrique"];
 
 export default function EditVehiclePage() {
   const params = useParams();
@@ -82,10 +81,8 @@ export default function EditVehiclePage() {
     );
   }
 
-  function toggleTag(tag: string) {
-    setTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+  function updateTags(newTags: string[]) {
+    setTags(newTags);
   }
 
   async function handleSave() {
@@ -205,25 +202,7 @@ export default function EditVehiclePage() {
             />
 
             {/* Tags */}
-            <div>
-              <p className="text-xs text-white/30 mb-2">Tags</p>
-              <div className="flex flex-wrap gap-2">
-                {TAG_OPTIONS.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                      tags.includes(tag)
-                        ? "bg-gold/15 text-gold border-gold/30"
-                        : "bg-white/[0.04] text-white/50 border-white/[0.06]"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <TagInput tags={tags} onChange={updateTags} />
 
             <textarea
               placeholder="Notes"

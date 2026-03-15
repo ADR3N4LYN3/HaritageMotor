@@ -8,9 +8,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { useBays } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
+import { TagInput } from "@/components/ui/TagInput";
 import { useAppStore } from "@/store/app.store";
-
-const TAG_OPTIONS = ["classique", "competition", "vip", "electrique"];
 
 interface FormState {
   make: string;
@@ -72,11 +71,8 @@ export default function NewVehiclePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function toggleTag(tag: string) {
-    setForm((prev) => ({
-      ...prev,
-      tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
-    }));
+  function setTags(tags: string[]) {
+    setForm((prev) => ({ ...prev, tags }));
   }
 
   const isValid = form.make.trim() !== "" && form.model.trim() !== "" && form.owner_name.trim() !== "";
@@ -185,25 +181,7 @@ export default function NewVehiclePage() {
             />
 
             {/* Tags */}
-            <div>
-              <p className="text-xs text-white/30 mb-2">Tags</p>
-              <div className="flex flex-wrap gap-2">
-                {TAG_OPTIONS.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                      form.tags.includes(tag)
-                        ? "bg-gold/15 text-gold border-gold/30"
-                        : "bg-white/[0.04] text-white/50 border-white/[0.06]"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <TagInput tags={form.tags} onChange={setTags} />
 
             {/* Bay assignment */}
             <div>
