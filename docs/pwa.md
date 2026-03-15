@@ -37,7 +37,11 @@ pwa/
 │   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
-│   │   └── page.tsx           # Dashboard: 2-col desktop (fleet 2/3 + activity 1/3), tabbed mobile
+│   │   ├── page.tsx           # Dashboard orchestrator: data fetching, state, tab switching
+│   │   ├── StatsGrid.tsx      # Memoized stats cards (fleet total, stored, out)
+│   │   ├── FleetFilters.tsx   # Memoized search input + status filter pills
+│   │   ├── ActionGrid.tsx     # Memoized action buttons grid (role-aware)
+│   │   └── VehicleList.tsx    # Memoized vehicle cards/table + pagination + StatusPill
 │   ├── vehicles/
 │   │   └── page.tsx           # Full vehicle list with search, status filters, table/cards
 │   ├── vehicle/new/

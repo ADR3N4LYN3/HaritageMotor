@@ -90,6 +90,8 @@ heritage-motor/
 ├── video/                        # Remotion 4 hero video generator
 │   └── src/                      #   HeroVideoV2/V3/V4 (v1 removed)
 ├── web/static/                   # Landing page, contact, privacy, legal, 404 (i18n EN/FR/DE)
+│   ├── shared.css               #   Shared CSS (nav, footer, cookie modal, drawer)
+│   └── shared.js                #   Shared JS (i18n, drawer toggle, cookie consent)
 ├── docs/                         # Documentation (this folder)
 ├── Dockerfile                    # Go API Docker image
 ├── plausible/                    # Plausible Analytics config

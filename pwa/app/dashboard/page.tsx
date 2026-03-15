@@ -3,8 +3,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { VehicleCard } from "@/components/ui/VehicleCard";
-import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { ActivityFeed } from "@/components/ui/ActivityFeed";
 import { useAppStore } from "@/store/app.store";
 import { useReveal } from "@/hooks/useReveal";
@@ -12,6 +10,10 @@ import { useI18n } from "@/lib/i18n";
 import { dashboardI18n } from "@/lib/translations";
 import useSWR from "swr";
 import type { Vehicle } from "@/lib/types";
+import { StatsGrid } from "./StatsGrid";
+import { FleetFilters } from "./FleetFilters";
+import { ActionGrid } from "./ActionGrid";
+import { VehicleList } from "./VehicleList";
 
 /* ══════════════════════════════════════════════════════════════════════
    ROUTE: /dashboard — Vehicle registry for all roles
@@ -44,7 +46,6 @@ function TenantDashboard() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("fleet");
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const revealRef = useReveal();
   const { t } = useI18n(dashboardI18n);
 
@@ -55,6 +56,7 @@ function TenantDashboard() {
 
   const [page, setPage] = useState(1);
   const PER_PAGE = 20;
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => { setPage(1); }, [debouncedSearch, statusFilter]);
 
@@ -87,21 +89,41 @@ function TenantDashboard() {
     [router]
   );
 
-  const statuses = ["", "stored", "out", "maintenance", "transit"];
   const statusLabels: Record<string, string> = useMemo(() => ({
     "": t.all, stored: t.stored, out: t.out, maintenance: t.maint, transit: t.transit,
   }), [t.all, t.stored, t.out, t.maint, t.transit]);
 
   const fleetTotal = statsAll?.total_count ?? 0;
   const { storedCount, outCount } = useMemo(() => {
-    const vehicles = statsAll?.data || [];
+    const allVehicles = statsAll?.data || [];
     let stored = 0, out = 0;
-    for (const v of vehicles) {
+    for (const v of allVehicles) {
       if (v.status === "stored") stored++;
       else if (v.status === "out") out++;
     }
     return { storedCount: stored, outCount: out };
   }, [statsAll?.data]);
+
+  const statsLabels = useMemo(() => ({
+    total: t.total, stored: t.stored, out: t.out,
+    vehicles: t.vehicles, inCustody: t.inCustody, withOwners: t.withOwners,
+  }), [t.total, t.stored, t.out, t.vehicles, t.inCustody, t.withOwners]);
+
+  const actionLabels = useMemo(() => ({
+    scanQr: t.scanQr, quickLookup: t.quickLookup,
+    bays: t.bays, manageFacility: t.manageFacility,
+    qrCodes: t.qrCodes, printLabels: t.printLabels,
+    team: t.team, manageUsers: t.manageUsers,
+    auditLog: t.auditLog, auditSub: t.auditSub,
+    adminPanel: t.adminPanel, adminSub: t.adminSub,
+  }), [t.scanQr, t.quickLookup, t.bays, t.manageFacility, t.qrCodes, t.printLabels, t.team, t.manageUsers, t.auditLog, t.auditSub, t.adminPanel, t.adminSub]);
+
+  const vehicleListLabels = useMemo(() => ({
+    failedLoad: t.failedLoad, tryAgain: t.tryAgain, noVehicles: t.noVehicles,
+    adjustFilters: t.adjustFilters, addFirst: t.addFirst,
+    vehicle: t.vehicle, owner: t.owner, status: t.status, bay: t.bay, year: t.year,
+    previous: t.previous, next: t.next, vehicles: t.vehicles, inRegistry: t.inRegistry,
+  }), [t.failedLoad, t.tryAgain, t.noVehicles, t.adjustFilters, t.addFirst, t.vehicle, t.owner, t.status, t.bay, t.year, t.previous, t.next, t.vehicles, t.inRegistry]);
 
   return (
     <AppShell wide>
@@ -124,21 +146,7 @@ function TenantDashboard() {
           </div>
 
           <div className="reveal-up reveal-d1">
-            <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
-              {[
-                { value: fleetTotal, label: t.total, sub: t.vehicles },
-                { value: storedCount, label: t.stored, sub: t.inCustody },
-                { value: outCount, label: t.out, sub: t.withOwners },
-              ].map((s) => (
-                <div key={s.label} className="bg-dark-2 p-4 md:p-5 text-center group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative">
-                    <p className="text-[1.75rem] md:text-[2rem] font-sans font-normal text-white/90 tabular-nums">{isLoading ? "-" : s.value}</p>
-                    <p className="text-[10px] tracking-[0.15em] uppercase text-gold/70 mt-1 font-medium">{s.label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <StatsGrid total={fleetTotal} stored={storedCount} out={outCount} isLoading={isLoading} labels={statsLabels} />
           </div>
         </div>
 
@@ -168,195 +176,29 @@ function TenantDashboard() {
           {/* Left column — Fleet (2/3) */}
           <div className={`lg:col-span-2 ${activeTab !== "fleet" ? "hidden lg:block" : ""}`}>
             <div className="space-y-6">
-              <div className="reveal-up reveal-d2 grid grid-cols-2 lg:grid-cols-3 gap-3">
-                <button onClick={() => router.push("/scan")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
-                      <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><line x1="7" y1="12" x2="17" y2="12" /></svg>
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.scanQr}</p>
-                      <p className="text-[10px] text-white/25 mt-0.5">{t.quickLookup}</p>
-                    </div>
-                  </div>
-                </button>
-                <button onClick={() => router.push("/bays")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
-                      <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.bays}</p>
-                      <p className="text-[10px] text-white/25 mt-0.5">{t.manageFacility}</p>
-                    </div>
-                  </div>
-                </button>
-                {canCreate && (
-                  <button onClick={() => router.push("/qr-codes")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
-                        <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" /><rect x="2" y="14" width="8" height="8" rx="1" /><path d="M14 14h4v4h-4zM22 14v4h-4M22 22h-4v-4" /></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.qrCodes}</p>
-                        <p className="text-[10px] text-white/25 mt-0.5">{t.printLabels}</p>
-                      </div>
-                    </div>
-                  </button>
-                )}
-                {user?.role === "admin" && (
-                  <button onClick={() => router.push("/users")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
-                        <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.team}</p>
-                        <p className="text-[10px] text-white/25 mt-0.5">{t.manageUsers}</p>
-                      </div>
-                    </div>
-                  </button>
-                )}
-                {user?.role === "admin" && (
-                  <button onClick={() => router.push("/audit")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
-                        <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.auditLog}</p>
-                        <p className="text-[10px] text-white/25 mt-0.5">{t.auditSub}</p>
-                      </div>
-                    </div>
-                  </button>
-                )}
-                {user?.role === "superadmin" && (
-                  <button onClick={() => router.push("/admin")} className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] gold-border-top card-lift group col-span-2 lg:col-span-3">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0">
-                        <svg className="w-4 h-4 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/80 group-hover:text-white transition-colors duration-300">{t.adminPanel}</p>
-                        <p className="text-[10px] text-white/25 mt-0.5">{t.adminSub}</p>
-                      </div>
-                    </div>
-                  </button>
-                )}
-              </div>
+              <ActionGrid canCreate={!!canCreate} isAdmin={user?.role === "admin"} isSuperAdmin={user?.role === "superadmin"} labels={actionLabels} />
 
-              <div className="reveal-up reveal-d3 gold-sep" />
+              <FleetFilters
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+                searchInput={searchInput}
+                onSearchChange={setSearchInput}
+                statusLabels={statusLabels}
+                searchPlaceholder={t.searchPlaceholder}
+              />
 
-              <div className="reveal-up reveal-d3">
-                <input
-                  type="text"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder={t.searchPlaceholder}
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-all duration-300"
-                  style={{ transitionTimingFunction: "var(--ease-lux)" }}
-                />
-              </div>
-
-              <div className="reveal-up reveal-d4 flex flex-wrap gap-2 pb-1">
-                {statuses.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setStatusFilter(s)}
-                    aria-pressed={statusFilter === s}
-                    className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[11px] tracking-[0.06em] uppercase font-medium transition-all duration-300 border ${
-                      statusFilter === s
-                        ? "bg-gold/15 text-gold border-gold/30"
-                        : "bg-white/[0.03] text-white/40 border-white/[0.06] hover:text-white/60 hover:border-white/[0.1]"
-                    }`}
-                    style={{ transitionTimingFunction: "var(--ease-lux)" }}
-                  >{statusLabels[s]}</button>
-                ))}
-              </div>
-
-              {isLoading ? (
-                <div className="space-y-3">{[1, 2, 3, 4].map((n) => <VehicleCardSkeleton key={n} />)}</div>
-              ) : error ? (
-                <div className="text-center py-16">
-                  <p className="text-danger/80 text-sm font-light">{t.failedLoad}</p>
-                  <p className="text-white/20 text-xs mt-1">{t.tryAgain}</p>
-                </div>
-              ) : vehicles.length === 0 ? (
-                <div className="text-center py-16 reveal-up">
-                  <p className="text-base font-light text-white/30 italic">{t.noVehicles}</p>
-                  <p className="text-white/15 text-xs mt-2 tracking-wider uppercase">
-                    {searchInput || statusFilter ? t.adjustFilters : t.addFirst}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {/* Desktop: table view */}
-                  <div className="hidden lg:block">
-                    <div className="rounded-2xl overflow-hidden border border-white/[0.06]">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr>
-                            {[t.vehicle, t.owner, t.status, t.bay, t.year].map((h) => (
-                              <th key={h} className="text-[10px] tracking-[0.15em] uppercase text-gold/40 font-medium text-left px-4 py-3 border-b border-white/[0.06]">
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {vehicles.map((v) => (
-                            <tr
-                              key={v.id}
-                              onClick={() => handleVehicleClick(v.id)}
-                              className="cursor-pointer hover:bg-white/[0.02] transition-colors"
-                            >
-                              <td className="px-4 py-3.5 border-b border-white/[0.03] text-[13px] font-normal text-white/90">
-                                {v.make} {v.model}
-                              </td>
-                              <td className="px-4 py-3.5 border-b border-white/[0.03] text-[13px] font-light text-white/70">
-                                {v.owner_name}
-                              </td>
-                              <td className="px-4 py-3.5 border-b border-white/[0.03]">
-                                <StatusPill status={v.status} />
-                              </td>
-                              <td className="px-4 py-3.5 border-b border-white/[0.03] text-[13px] font-light text-white/70">
-                                —
-                              </td>
-                              <td className="px-4 py-3.5 border-b border-white/[0.03] text-[13px] font-light text-white/70">
-                                {v.year || "—"}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Mobile: card view */}
-                  <div className="lg:hidden space-y-3">
-                    {vehicles.map((vehicle, i) => (
-                      <div key={vehicle.id} className={`reveal-up reveal-d${Math.min(i + 1, 6)}`}>
-                        <VehicleCard vehicle={vehicle} onClick={handleVehicleClick} />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {!isLoading && vehicles.length > 0 && (
-                <div className="reveal-up text-center pt-4 pb-2 space-y-3">
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-3">
-                      <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300">{t.previous}</button>
-                      <span className="text-xs text-white/40 tabular-nums">{page} / {totalPages}</span>
-                      <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/50 text-xs disabled:opacity-20 hover:border-gold/30 hover:text-gold transition-all duration-300">{t.next}</button>
-                    </div>
-                  )}
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-white/20">
-                    {totalCount} {t.vehicles} {t.inRegistry}
-                  </p>
-                </div>
-              )}
+              <VehicleList
+                vehicles={vehicles}
+                isLoading={isLoading}
+                error={error}
+                page={page}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                onVehicleClick={handleVehicleClick}
+                hasFilters={!!(searchInput || statusFilter)}
+                labels={vehicleListLabels}
+              />
             </div>
           </div>
 
@@ -375,22 +217,5 @@ function TenantDashboard() {
         </div>
       </div>
     </AppShell>
-  );
-}
-
-/* ── Status pill ── */
-const statusStyles: Record<string, string> = {
-  stored: "bg-success/10 text-success",
-  out: "bg-white/10 text-white/50",
-  maintenance: "bg-warning/10 text-warning",
-  transit: "bg-info/10 text-info",
-  sold: "bg-white/[0.06] text-white/40",
-};
-
-function StatusPill({ status }: { status: string }) {
-  return (
-    <span className={`text-[10px] font-medium tracking-[0.06em] uppercase px-2.5 py-1 rounded-full ${statusStyles[status] || "bg-white/[0.06] text-white/40"}`}>
-      {status}
-    </span>
   );
 }

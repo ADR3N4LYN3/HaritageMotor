@@ -79,7 +79,9 @@ web/static/
   privacy.html                   — Politique de confidentialité (i18n EN/FR/DE)
   legal.html                     — Mentions légales (i18n EN/FR/DE)
   404.html                       — Page 404 (dark luxury, i18n EN/FR/DE, fond route brumeuse)
-  hero-bg.mp4                    — Vidéo hero (Remotion v2)
+  shared.css                     — CSS partagé (nav, footer, cookie consent, drawer responsive)
+  shared.js                      — JS partagé (i18n switching, drawer toggle, cookie consent)
+  hero-bg.mp4                    — Vidéo hero (Remotion v2, compressé CRF 28 ~11MB)
   logo-crest-v2.png              — Logo principal (blason HM + laurier, PNG transparent)
   logo.svg                       — (legacy) Ancien monogramme HM shield SVG
   logo-crest.svg                 — (legacy) Ancien shield crest SVG complet
@@ -257,7 +259,7 @@ PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Desig
 - **AuthBootstrap + password_change_required** : AuthBootstrap redirige vers `/change-password` dans son `onSuccess` si `user.password_change_required === true` (enforcement post-F5)
 - **Offline queue** : `pushAction()` en IndexedDB sur erreur réseau (move/task/exit). Photos non sérialisables → upload uniquement en ligne. Max 2 retries, backoff cap 10s
 - **Zustand** : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
-- **Dashboard layout 2 colonnes** : desktop (`lg+`) = fleet 2/3 + activity feed 1/3 (sticky sidebar, toujours actif). Mobile = onglets Fleet/Activity avec CSS `hidden` class (jamais conditional rendering) pour préserver `useReveal`. `<AppShell wide>` retire la contrainte `max-w-[900px]`
+- **Dashboard layout 2 colonnes** : desktop (`lg+`) = fleet 2/3 + activity feed 1/3 (sticky sidebar, toujours actif). Mobile = onglets Fleet/Activity avec CSS `hidden` class (jamais conditional rendering) pour préserver `useReveal`. `<AppShell wide>` retire la contrainte `max-w-[900px]`. Découpé en sous-composants memoizés : `StatsGrid`, `FleetFilters`, `ActionGrid`, `VehicleList` (dans `app/dashboard/`)
 - **ActivityFeed `active` prop** : passer `active={false}` quand l'onglet Activity est masqué pour stopper le polling SWR. Sur desktop dashboard, toujours `active` car visible en sidebar
 - **Scan layout** : le scan a son propre layout (`scan/layout.tsx`) avec `<SideNav />` car il n'utilise pas AppShell. Le `lg:left-[220px]` sur les conteneurs fixed doit rester synchronisé avec la largeur du SideNav
 - **LangSwitcher partagé** : composant unique (`components/ui/LangSwitcher.tsx`) avec SVG flags inline (pas d'emoji), utilisé dans TopBar ET DesktopTopBar. Persiste dans `localStorage('hm-lang')` — partagé avec les pages statiques landing. Utilise `broadcastLang()` pour notifier tous les hooks `useI18n()` en temps réel
@@ -288,6 +290,12 @@ PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Desig
 - **Cleanup goroutines** : token_blacklist (1h), refresh_tokens (24h, >7j), blacklist cache (5min)
 - **COUNT(*) OVER()** : toujours utiliser en single query pour les listes paginées
 - **VehicleCard memo** : ne pas retirer `React.memo()` ni `useCallback` dashboard
+- **Dashboard sub-components memoizés** : `StatsGrid`, `FleetFilters`, `ActionGrid`, `VehicleList` — tous wrappés `React.memo`. Stats calculés via `useMemo` single pass (pas de `.filter()` double)
+- **ActivityFeed memo** : wrappé `React.memo`, `verbMap` memoizé, `formatAction` en `useCallback`
+- **SWR global config** : `focusThrottleInterval: 600000`, `revalidateOnReconnect: false` — évite les refetch inutiles au focus/reconnect
+- **Reveal animations** : 500ms (pas 900ms), `will-change: opacity, transform` pour GPU compositing
+- **Hero video** : `preload="metadata"` (pas `auto`), poster image, compressé CRF 28 (~11MB, pas 49MB)
+- **Landing shared assets** : `shared.css` + `shared.js` externalisés et cachés navigateur (au lieu de ~1300 lignes inline dupliquées)
 - **URL.revokeObjectURL()** : toujours cleanup les previews au unmount (useCamera)
 - **react-doctor 100/100** : maintenir le score (`npm run doctor` dans pwa/)
 
@@ -317,8 +325,12 @@ PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Desig
 
 Toutes les pages statiques supportent 3 langues via `localStorage('hm-lang')` partagé entre les pages.
 
+**Fichiers partagés :**
+- `shared.css` : CSS commun (cookie consent modal, nav, footer, drawer responsive). Chargé via `<link>` dans les 5 pages.
+- `shared.js` : JS commun (i18n `setLang`/`applyLang`, drawer toggle, cookie consent modal). Expose `window._hmSetLang` pour que le JS page-specific puisse déclencher un changement de langue. Chaque page définit `window.i18n` (dict de traductions) avant le chargement de `shared.js`.
+
 **Deux patterns i18n :**
-- **`data-i18n`** : pour les éléments courts (nav, footer, tags). JS remplace `el.textContent` via un dict `i18n = { en: {}, fr: {...}, de: {...} }`. L'anglais est le HTML par défaut, pas besoin de clé `en`.
+- **`data-i18n`** : pour les éléments courts (nav, footer, tags). JS remplace `el.textContent` via un dict `window.i18n = { en: {}, fr: {...}, de: {...} }`. L'anglais est le HTML par défaut, pas besoin de clé `en`.
 - **`data-lang-block`** : pour le contenu long (legal, privacy). Blocs HTML complets par langue, toggle via `el.hidden = (lang !== block)`. Plus propre que traduire élément par élément.
 
 **Pages :**

@@ -6,19 +6,9 @@ import { useI18n } from "@/lib/i18n";
 import { activityI18n } from "@/lib/translations";
 import type { ActivityEntry, PaginatedResponse } from "@/lib/types";
 
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "now";
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  return `${days}d`;
-}
-
 export const ActivityFeed = memo(function ActivityFeed({ active = true }: { active?: boolean }) {
   const { t } = useI18n(activityI18n);
+
   const { data, isLoading } = useSWR<PaginatedResponse<ActivityEntry>>(
     active ? "/activity?per_page=20" : null,
     { refreshInterval: 30000 }
@@ -36,14 +26,43 @@ export const ActivityFeed = memo(function ActivityFeed({ active = true }: { acti
     upload: t.uploaded,
   }), [t.created, t.updated, t.deleted, t.moved, t.exited, t.completed, t.uploaded]);
 
+  // Translate resource names (backend sends "vehicles", "bays", etc.)
+  const resourceMap = useMemo<Record<string, string>>(() => ({
+    vehicle: t.resVehicle,
+    vehicles: t.resVehicles,
+    bay: t.resBay,
+    bays: t.resBays,
+    task: t.resTask,
+    tasks: t.resTasks,
+    event: t.resEvent,
+    events: t.resEvents,
+    user: t.resUser,
+    users: t.resUsers,
+    document: t.resDocument,
+    documents: t.resDocuments,
+  }), [t.resVehicle, t.resVehicles, t.resBay, t.resBays, t.resTask, t.resTasks, t.resEvent, t.resEvents, t.resUser, t.resUsers, t.resDocument, t.resDocuments]);
+
   const formatAction = useCallback((action: string): string => {
     const parts = action.split(".");
     if (parts.length === 2) {
       const [resource, verb] = parts;
-      return `${verbMap[verb] || verb} ${resource}`;
+      const translatedVerb = verbMap[verb] || verb;
+      const translatedResource = resourceMap[resource] || resource;
+      return `${translatedVerb} ${translatedResource}`;
     }
     return action;
-  }, [verbMap]);
+  }, [verbMap, resourceMap]);
+
+  function timeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return t.now;
+    if (mins < 60) return `${mins}m`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `${days}d`;
+  }
 
   if (isLoading) {
     return (
@@ -92,7 +111,7 @@ export const ActivityFeed = memo(function ActivityFeed({ active = true }: { acti
             <span className="text-[10px] text-white/20">{timeAgo(entry.occurred_at)}</span>
             {entry.resource_type && (
               <span className="text-[10px] text-gold/30 font-medium uppercase tracking-wide">
-                {entry.resource_type}
+                {resourceMap[entry.resource_type] || entry.resource_type}
               </span>
             )}
           </div>

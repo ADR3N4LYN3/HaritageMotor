@@ -10,6 +10,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap"></noscript>
 <script defer data-domain="heritagemotor.app" src="https://stats.heritagemotor.app/js/script.outbound-links.js"></script>
+<link rel="stylesheet" href="/shared.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -145,179 +146,7 @@ h1 {
 .lang-sw button.active { color: var(--gold); font-weight: 500; }
 .lang-sw .flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
 
-/* COOKIE CONSENT MODAL */
-.cookie-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1.5rem;
-}
-.cookie-overlay[hidden] { display: none; }
-.cookie-modal {
-  max-width: 480px;
-  width: 100%;
-  background: rgba(22, 21, 18, 0.97);
-  border: 1px solid rgba(184, 149, 90, 0.15);
-  border-radius: 20px;
-  padding: 2rem 2rem 1.75rem;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-}
-.cookie-icon {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 1rem;
-  border-radius: 10px;
-  background: rgba(184, 149, 90, 0.1);
-  border: 1px solid rgba(184, 149, 90, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
-.cookie-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 300;
-  font-size: 1.5rem;
-  color: #faf9f7;
-  margin: 0 0 0.5rem;
-  letter-spacing: 0.01em;
-}
-.cookie-desc {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 300;
-  color: rgba(250, 249, 247, 0.55);
-  line-height: 1.7;
-  margin: 0 0 1.5rem;
-}
-.cookie-link {
-  color: #b8955a;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-.cookie-link:hover { color: #d4b07a; }
-.cookie-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.75rem;
-}
-.cookie-option {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-.cookie-option-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-.cookie-option-label {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #faf9f7;
-}
-.cookie-option-hint {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 300;
-  color: rgba(250, 249, 247, 0.35);
-}
-.cookie-toggle {
-  position: relative;
-  width: 40px;
-  height: 22px;
-  flex-shrink: 0;
-  margin-left: 1rem;
-}
-.cookie-toggle input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.cookie-toggle-track {
-  position: absolute;
-  inset: 0;
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.cookie-toggle-track::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
-}
-.cookie-toggle input:checked + .cookie-toggle-track {
-  background: rgba(184, 149, 90, 0.25);
-  border-color: rgba(184, 149, 90, 0.4);
-}
-.cookie-toggle input:checked + .cookie-toggle-track::after {
-  left: 20px;
-  background: #b8955a;
-}
-.cookie-toggle-locked .cookie-toggle-track {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.cookie-buttons {
-  display: flex;
-  gap: 0.75rem;
-}
-.cookie-btn {
-  flex: 1;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  text-align: center;
-}
-.cookie-btn-save {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(250, 249, 247, 0.6);
-}
-.cookie-btn-save:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #faf9f7;
-}
-.cookie-btn-accept {
-  background: #b8955a;
-  border: 1px solid #b8955a;
-  color: #0e0d0b;
-}
-.cookie-btn-accept:hover {
-  background: #c4a265;
-  border-color: #c4a265;
-}
-@media (max-width: 480px) {
-  .cookie-modal { padding: 1.5rem; border-radius: 16px; }
-  .cookie-buttons { flex-direction: column-reverse; }
-  .cookie-btn { width: 100%; }
-}
+
 </style>
 </head>
 <body>
@@ -395,113 +224,34 @@ h1 {
 </div>
 
 <script>
-const i18n = {
+var i18n = {
   fr: { title: "Page introuvable", desc: "La page que vous cherchez n\u2019existe pas ou a \u00e9t\u00e9 d\u00e9plac\u00e9e.", cta: "Retour \u00e0 Heritage Motor", cookie_title: 'Pr\u00e9f\u00e9rences de confidentialit\u00e9', cookie_desc: 'Nous respectons votre vie priv\u00e9e. Choisissez quels traitements de donn\u00e9es vous autorisez. Voir notre <a href="/privacy" class="cookie-link">Politique de confidentialit\u00e9</a>.', cookie_essential_label: 'Essentiels', cookie_essential_hint: 'Pr\u00e9f\u00e9rence de langue, choix de consentement', cookie_analytics_label: 'Statistiques anonymes', cookie_analytics_hint: 'Statistiques d\'utilisation respect. de la vie priv\u00e9e (pas de cookies, pas de donn\u00e9es personnelles)', cookie_save: 'Enregistrer mes choix', cookie_accept_all: 'Tout accepter' },
   de: { title: "Seite nicht gefunden", desc: "Die gesuchte Seite existiert nicht oder wurde verschoben.", cta: "Zur\u00fcck zu Heritage Motor", cookie_title: 'Datenschutzeinstellungen', cookie_desc: 'Wir respektieren Ihre Privatsph\u00e4re. W\u00e4hlen Sie, welche Datenverarbeitungen Sie zulassen. Siehe unsere <a href="/privacy" class="cookie-link">Datenschutzerkl\u00e4rung</a>.', cookie_essential_label: 'Essenziell', cookie_essential_hint: 'Spracheinstellung, Einwilligungswahl', cookie_analytics_label: 'Anonyme Statistiken', cookie_analytics_hint: 'Datenschutzfreundliche Nutzungsstatistiken (keine Cookies, keine pers\u00f6nlichen Daten)', cookie_save: 'Auswahl speichern', cookie_accept_all: 'Alle akzeptieren' },
 };
-
-/* Store original HTML for data-i18n-html elements */
-document.querySelectorAll('[data-i18n-html]').forEach(el => { el._origHTML = el.cloneNode(true); });
-
-function setLang(lang) {
-  const dict = i18n[lang] || {};
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    el.textContent = (dict[key]) || el.textContent;
-  });
-  /* Reset English from defaults if needed */
-  if (lang === 'en') {
-    document.querySelector('[data-i18n="title"]').textContent = 'Page not found';
-    document.querySelector('[data-i18n="desc"]').textContent = 'The page you are looking for does not exist or has been moved.';
-    document.querySelector('[data-i18n="cta"]').textContent = 'Back to Heritage Motor';
-    const acceptBtn = document.querySelector('[data-i18n="cookie_accept_all"]');
-    if (acceptBtn) acceptBtn.textContent = 'Accept all';
-    const saveBtn = document.querySelector('[data-i18n="cookie_save"]');
-    if (saveBtn) saveBtn.textContent = 'Save choices';
-    const titleEl = document.querySelector('[data-i18n="cookie_title"]');
-    if (titleEl) titleEl.textContent = 'Privacy preferences';
-    const essLabel = document.querySelector('[data-i18n="cookie_essential_label"]');
-    if (essLabel) essLabel.textContent = 'Essential';
-    const essHint = document.querySelector('[data-i18n="cookie_essential_hint"]');
-    if (essHint) essHint.textContent = 'Language preference, consent choice';
-    const anaLabel = document.querySelector('[data-i18n="cookie_analytics_label"]');
-    if (anaLabel) anaLabel.textContent = 'Anonymous analytics';
-    const anaHint = document.querySelector('[data-i18n="cookie_analytics_hint"]');
-    if (anaHint) anaHint.textContent = 'Privacy-friendly usage stats (no cookies, no personal data)';
-  }
-  /* Cookie banner i18n — trusted hardcoded dict, not user input */
-  document.querySelectorAll('[data-i18n-html]').forEach(el => {
-    const hKey = el.getAttribute('data-i18n-html');
-    if (dict[hKey]) {
-      const tmpl = document.createElement('template');
-      tmpl.innerHTML = dict[hKey]; /* eslint-disable-line -- trusted i18n dict, not user input */
-      el.replaceChildren(tmpl.content);
-    } else if (el._origHTML) {
-      el.replaceChildren(...Array.from(el._origHTML.cloneNode(true).childNodes));
-    }
-  });
-  document.querySelectorAll('.lang-sw button').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-  });
-  try { localStorage.setItem('hm-lang', lang); } catch {}
-}
-
-// Init from saved lang
-try {
-  const saved = localStorage.getItem('hm-lang');
-  if (saved && i18n[saved]) setLang(saved);
-} catch {}
-
-// Bind buttons
-document.querySelectorAll('.lang-sw button').forEach(b => {
-  b.addEventListener('click', () => setLang(b.getAttribute('data-lang')));
-});
 </script>
+<script src="/shared.js"></script>
 <script>
+// 404-specific: bind .lang-sw buttons and update active state on lang change
 (function() {
-  var overlay = document.getElementById('cookie-overlay');
-  var btnAccept = document.getElementById('cookie-accept');
-  var btnSave = document.getElementById('cookie-save');
-  var analyticsToggle = document.getElementById('cookie-analytics');
-  if (!overlay || !btnAccept || !btnSave) return;
-
+  var origSetLang = window._hmSetLang;
+  if (!origSetLang) return;
+  // Override to also update .lang-sw buttons
+  var wrappedSetLang = function(lang) {
+    origSetLang(lang);
+    document.querySelectorAll('.lang-sw button').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+  };
+  window._hmSetLang = wrappedSetLang;
+  // Bind .lang-sw buttons
+  document.querySelectorAll('.lang-sw button').forEach(function(b) {
+    b.addEventListener('click', function() { wrappedSetLang(b.getAttribute('data-lang')); });
+  });
+  // Re-apply saved lang to trigger .lang-sw button update
   try {
-    var consent = localStorage.getItem('hm-cookie-consent');
-    if (consent) {
-      var prefs = JSON.parse(consent);
-      if (prefs && prefs.essential) {
-        if (!prefs.analytics) {
-          localStorage.setItem('plausible_ignore', 'true');
-        } else {
-          localStorage.removeItem('plausible_ignore');
-        }
-        return;
-      }
-    }
+    var saved = localStorage.getItem('hm-lang');
+    if (saved && window.i18n[saved]) wrappedSetLang(saved);
   } catch(e) {}
-
-  overlay.hidden = false;
-  document.body.style.overflow = 'hidden';
-
-  function saveConsent(analytics) {
-    try {
-      localStorage.setItem('hm-cookie-consent', JSON.stringify({
-        essential: true,
-        analytics: analytics,
-        timestamp: new Date().toISOString()
-      }));
-      if (!analytics) {
-        localStorage.setItem('plausible_ignore', 'true');
-      } else {
-        localStorage.removeItem('plausible_ignore');
-      }
-    } catch(e) {}
-    overlay.hidden = true;
-    document.body.style.overflow = '';
-  }
-
-  btnAccept.addEventListener('click', function() { saveConsent(true); });
-  btnSave.addEventListener('click', function() { saveConsent(analyticsToggle && analyticsToggle.checked); });
 })();
 </script>
 </body>
