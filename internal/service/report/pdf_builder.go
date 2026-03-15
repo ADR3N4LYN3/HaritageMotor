@@ -318,21 +318,23 @@ func drawHeader(pdf *fpdf.Fpdf, tenantName string) {
 	pdf.ImageOptions("logo", logoX, 5, logoSize, logoSize, false,
 		fpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 
-	// Brand name
+	// Brand name — force X=0 so CellFormat(pageW) centers correctly
 	pdf.SetFont("Times", "B", 14)
 	pdf.SetTextColor(goldR, goldG, goldB)
-	pdf.SetY(27)
+	pdf.SetXY(0, 27)
 	pdf.CellFormat(pageW, 6, "HERITAGE  MOTOR", "", 1, "C", false, 0, "")
 
 	// Subtitle
 	pdf.SetFont("Helvetica", "", 8.5)
 	pdf.SetTextColor(180, 175, 165)
+	pdf.SetX(0)
 	pdf.CellFormat(pageW, 4.5, "Vehicle Chain of Custody Report", "", 1, "C", false, 0, "")
 
 	// Tenant name
 	if tenantName != "" {
 		pdf.SetFont("Helvetica", "", 7.5)
 		pdf.SetTextColor(150, 145, 135)
+		pdf.SetX(0)
 		pdf.CellFormat(pageW, 4, tenantName, "", 1, "C", false, 0, "")
 	}
 
