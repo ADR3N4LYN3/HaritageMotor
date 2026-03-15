@@ -36,11 +36,17 @@ export default function BaysPage() {
   );
   const bays = useMemo(() => data?.data || [], [data]);
 
+  // Unfiltered stats — always fetch all bays for counters
+  const { data: statsAll } = useSWR<{ data: Bay[]; total_count: number }>(
+    "/bays",
+    { refreshInterval: 30000 }
+  );
   const stats = useMemo(() => {
-    const free = bays.filter((b) => b.status === "free").length;
-    const occupied = bays.filter((b) => b.status === "occupied").length;
-    return { free, occupied, total: bays.length };
-  }, [bays]);
+    const all = statsAll?.data || [];
+    const free = all.filter((b) => b.status === "free").length;
+    const occupied = all.filter((b) => b.status === "occupied").length;
+    return { free, occupied, total: all.length };
+  }, [statsAll]);
 
   return (
     <AppShell>
@@ -61,7 +67,7 @@ export default function BaysPage() {
         />
 
         {/* Stats */}
-        {!isLoading && !statusFilter && (
+        {!isLoading && (
           <div className="flex gap-3">
             <div className="bg-white/[0.03] rounded-xl px-3 py-2 border border-white/[0.06] text-center flex-1">
               <p className="text-lg font-light text-success">{stats.free}</p>
