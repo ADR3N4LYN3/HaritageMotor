@@ -31,7 +31,7 @@ export function SuccessScreen({ title, subtitle, onDone }: SuccessScreenProps) {
       {subtitle && (
         <p className="text-white/60 text-center mt-2 text-sm">{subtitle}</p>
       )}
-      <div className="w-full mt-8">
+      <div className="w-full max-w-sm mt-8">
         <ActionButton onClick={onDone}>Done</ActionButton>
       </div>
     </div>
