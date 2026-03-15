@@ -125,22 +125,25 @@ h1 {
 
 /* Language switcher */
 .lang-sw {
-  display: flex; gap: 1.2rem;
+  display: flex; gap: 0.8rem;
   margin-top: 2.5rem;
   justify-content: center;
 }
 .lang-sw button {
   background: none; border: none; cursor: pointer;
   font-family: var(--sans);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  transition: color 0.3s;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.4);
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
 }
-.lang-sw button:hover { color: rgba(255,255,255,0.5); }
-.lang-sw button.active { color: var(--gold); }
+.lang-sw button:hover { color: rgba(255,255,255,0.7); }
+.lang-sw button.active { color: var(--gold); font-weight: 500; }
+.lang-sw .flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
 
 /* COOKIE CONSENT MODAL */
 .cookie-overlay {
@@ -350,9 +353,9 @@ h1 {
   <a class="cta" href="/"><span data-i18n="cta">Back to Heritage Motor</span></a>
 
   <div class="lang-sw">
-    <button data-lang="en" class="active">EN</button>
-    <button data-lang="fr">FR</button>
-    <button data-lang="de">DE</button>
+    <button data-lang="en" class="active"><svg class="flag-icon" viewBox="0 0 60 30"><clipPath id="fs"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="ft"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#fs)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ft)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg> EN</button>
+    <button data-lang="fr"><svg class="flag-icon" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg> FR</button>
+    <button data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> DE</button>
   </div>
 </div>
 
