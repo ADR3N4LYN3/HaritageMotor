@@ -236,7 +236,7 @@ export default function TaskPage() {
 
       {showCreate && vehicle && (
         <CreateTaskModal
-          vehicleMap={new Map([[id, `${vehicle.make} ${vehicle.model}`]])}
+          vehicleMap={new Map([[id, { name: `${vehicle.make} ${vehicle.model}`, owner: vehicle.owner_name, plate: vehicle.license_plate || undefined }]])}
           onClose={() => setShowCreate(false)}
           onCreated={() => { setShowCreate(false); mutate(); }}
         />

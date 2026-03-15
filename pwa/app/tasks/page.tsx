@@ -5,7 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { CreateTaskModal } from "@/components/tasks/CreateTaskModal";
-import type { TaskToEdit } from "@/components/tasks/CreateTaskModal";
+import type { TaskToEdit, VehicleInfo } from "@/components/tasks/CreateTaskModal";
 import { useAppStore } from "@/store/app.store";
 import { useI18n } from "@/lib/i18n";
 import { tasksI18n } from "@/lib/translations";
@@ -61,10 +61,14 @@ export default function TasksPage() {
     { refreshInterval: 60000 }
   );
   const vehicleMap = useMemo(() => {
-    const map = new Map<string, string>();
+    const map = new Map<string, VehicleInfo>();
     if (vehiclesData?.data) {
       for (const v of vehiclesData.data) {
-        map.set(v.id, `${v.make} ${v.model}`);
+        map.set(v.id, {
+          name: `${v.make} ${v.model}`,
+          owner: v.owner_name,
+          plate: v.license_plate || undefined,
+        });
       }
     }
     return map;
@@ -191,7 +195,8 @@ export default function TasksPage() {
                 task.due_date &&
                 new Date(task.due_date) < new Date();
               const isExpanded = completing === task.id;
-              const vehicleName = vehicleMap.get(task.vehicle_id) || t.unknownVehicle;
+              const vInfo = vehicleMap.get(task.vehicle_id);
+              const vehicleName = vInfo?.name || t.unknownVehicle;
 
               return (
                 <div

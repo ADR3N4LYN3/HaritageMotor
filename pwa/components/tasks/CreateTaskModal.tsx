@@ -15,8 +15,14 @@ export interface TaskToEdit {
   due_date?: string;
 }
 
+export interface VehicleInfo {
+  name: string;
+  owner: string;
+  plate?: string;
+}
+
 export interface CreateTaskModalProps {
-  vehicleMap: Map<string, string>;
+  vehicleMap: Map<string, VehicleInfo>;
   onClose: () => void;
   onCreated: () => void;
   editTask?: TaskToEdit;
@@ -25,7 +31,7 @@ export interface CreateTaskModalProps {
 export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: CreateTaskModalProps) {
   const [vehicleId, setVehicleId] = useState(editTask?.vehicle_id || "");
   const [vehicleSearch, setVehicleSearch] = useState(
-    editTask ? vehicleMap.get(editTask.vehicle_id) || "" : ""
+    editTask ? vehicleMap.get(editTask.vehicle_id)?.name || "" : ""
   );
   const [showDropdown, setShowDropdown] = useState(false);
   const [taskType, setTaskType] = useState(editTask?.task_type || "custom");
@@ -49,7 +55,9 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
     const entries = Array.from(vehicleMap.entries());
     if (!vehicleSearch.trim()) return entries;
     const q = vehicleSearch.toLowerCase();
-    return entries.filter(([, name]) => name.toLowerCase().includes(q));
+    return entries.filter(([, info]) =>
+      info.name.toLowerCase().includes(q) || info.owner.toLowerCase().includes(q) || info.plate?.toLowerCase().includes(q)
+    );
   }, [vehicleMap, vehicleSearch]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -132,21 +140,24 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors disabled:opacity-50"
           />
           {showDropdown && filteredVehicles.length > 0 && (
-            <div className="absolute z-10 top-full mt-1 w-full bg-dark border border-white/[0.1] rounded-lg max-h-40 overflow-y-auto">
-              {filteredVehicles.map(([id, name]) => (
+            <div className="absolute z-10 top-full mt-1 w-full bg-dark border border-white/[0.1] rounded-lg max-h-48 overflow-y-auto">
+              {filteredVehicles.map(([id, info]) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => {
                     setVehicleId(id);
-                    setVehicleSearch(name);
+                    setVehicleSearch(info.name);
                     setShowDropdown(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-white/[0.06] transition-colors ${
+                  className={`w-full text-left px-3 py-2.5 hover:bg-white/[0.06] transition-colors ${
                     vehicleId === id ? "text-gold" : "text-white/70"
                   }`}
                 >
-                  {name}
+                  <p className="text-sm">{info.name}</p>
+                  <p className="text-[11px] text-white/35 mt-0.5">
+                    {info.owner}{info.plate ? ` · ${info.plate}` : ""}
+                  </p>
                 </button>
               ))}
             </div>
