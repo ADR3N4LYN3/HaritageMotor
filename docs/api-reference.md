@@ -242,6 +242,9 @@ Generates a branded PDF report for a vehicle ("Vehicle Chain of Custody Report")
 - **Page 1 — Summary:** dark header with logo, vehicle info card, owner + custody side-by-side, 4 stats cards (events, tasks, docs, photos)
 - **Page 2 — Timeline:** complete event history table (date, type, notes)
 - **Page 3 — Tasks + Documents:** completed tasks table + documents table
+- **Footer (all pages):** gold separator, "Heritage Motor | date | Report ID", page numbers (1/N)
+
+Events and tasks are silently truncated at their respective limits. Each page includes a unique Report ID (UUID[:8]) for traceability.
 
 **Response:** `application/pdf` binary. Filename: `HeritageMotor_{Make}_{Model}_{Date}.pdf`.
 

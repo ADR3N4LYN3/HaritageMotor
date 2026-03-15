@@ -225,10 +225,10 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 ### Rapport PDF véhicule
 
-PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Design dark luxury aligné avec l'identité visuelle du projet.
+PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Design dark luxury aligné avec l'identité visuelle du projet. Mockup de référence : `mockup-pdf-report.html` (HTML A4, ouvrir dans un navigateur pour itérer sur le design).
 
 **Page 1 — Summary :**
-- Header dark (#0e0d0b) : logo crest 20mm centré, "HERITAGE MOTOR" Times Bold 14pt gold, sous-titre, nom du tenant, séparateur diamant or
+- Header dark (#0e0d0b) : logo crest 20mm centré (SetX(0) obligatoire pour centrage), "HERITAGE MOTOR" Times Bold 14pt gold, sous-titre, nom du tenant, séparateur diamant or
 - Metadata : date de génération + Report ID
 - Card "Vehicle Information" : make/model, year, color, license plate, VIN, status (bordure arrondie, titre Times Italic 14pt gold)
 - Cards "Owner" + "Custody Period" **côte à côte** (deux colonnes)
@@ -242,7 +242,9 @@ PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Desig
 - Table "Completed Tasks" : Task / Type / Completed / Notes
 - Table "Documents" : Filename / Type / Uploaded / Notes
 
-**Footer (toutes pages) :** ligne or, "Heritage Motor | date | Report ID", heritagemotor.app, numéro de page (1/3)
+**Footer (toutes pages) :** ligne or, "Heritage Motor | date | Report ID", heritagemotor.app, numéro de page (1/N)
+
+**Troncation silencieuse** : events > 1000 et tasks > 500 ne sont pas inclus (LIMIT SQL). Report ID = UUID[:8] pour traçabilité.
 
 ## Architecture PWA (pwa/)
 
