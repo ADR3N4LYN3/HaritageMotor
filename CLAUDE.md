@@ -42,7 +42,7 @@ internal/
     db.go                        — NewPool (owner), NewAppPool (heritage_app RLS)
     dbtx.go                      — Interface DBTX, WithTx/TxFromCtx/Conn
     migrate.go                   — RunMigrations (transactionnel, idempotent)
-    migrations/                  — 001-019 (.up.sql + .down.sql)
+    migrations/                  — 001-020 (.up.sql + .down.sql)
   domain/
     types.go                     — Structs (User, Vehicle, Bay, Event, Task, Document, Tenant...)
     errors.go                    — ErrNotFound, ErrForbidden, ErrValidation, ErrConflict...
@@ -265,7 +265,10 @@ PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Desig
 - **Accessibilité toggle pills** : tous les boutons toggle/filtre doivent avoir `aria-pressed`, les dropdowns `aria-expanded`
 - **Tags véhicules** : DB `TEXT[]`, 4 presets (classique, competition, vip, electrique) + saisie libre. Composant `TagInput` partagé entre create/edit. Affichés sur la page détail véhicule. Admin/operator uniquement
 - **Catalogue véhicules** : `lib/vehicle-catalog.ts` — 65 constructeurs, 700+ modèles (statique, curé). Sélection en cascade Make → Model → Year via `CustomSelect` (searchable). "Other..." pour saisie libre. Utilisé dans vehicle/new. Pour mettre à jour : éditer le fichier et redéployer
-- **CustomSelect** : composant dropdown réutilisable (`components/ui/CustomSelect.tsx`) avec props `searchable` (filtre texte), `loading`, `icon` (ReactNode). Utilisé pour bays, tasks, makes, models, years
+- **CustomSelect** : composant dropdown réutilisable (`components/ui/CustomSelect.tsx`) — remplace tous les `<select>` natifs. Props : `searchable` (filtre texte + auto-focus), `loading` (affiche "Loading..."), `icon` (ReactNode, ex: SVG task icon), `placeholder`, `sub` (texte secondaire par option). Dark glass design (bg-white/[0.04], border gold au focus, dropdown bg-dark, option active gold). Click-outside + Escape pour fermer, `aria-expanded`/`role="listbox"`/`role="option"`. Utilisé dans : vehicle/new (make, model, year, bay), CreateTaskModal (task type), UserFormModal (role). Zéro `<select>` natif dans la PWA
+- **Types de tâches** : 9 types dans `lib/task-constants.tsx` — `battery_start`, `tire_pressure`, `wash`, `fluid_check`, `inspection`, `detailing`, `cover`, `climate_check`, `custom` (migration 020). Chaque type a un composant SVG icon (`TaskIcon`). Utilisé dans CreateTaskModal, page tasks, vehicle/[id]/task, scan TasksSheet
+- **Création tâche depuis véhicule** : bouton `+` dans le header de vehicle/[id]/task + CTA "Create Task" dans l'état vide. CreateTaskModal avec véhicule pré-sélectionné, recherche par owner/plaque
+- **Page audit** : `pwa/app/audit/page.tsx` — journal admin-only. Actions brutes du backend (`vehicles.move`) parsées en verbes traduits (EN/FR/DE : Created/Créé/Erstellt, Moved/Déplacé/Verschoben, etc.). Pills colorées (vert=create, bleu=move, ambre=update, rouge=delete). Temps relatif (2m, 20h, 2d). Filtres par type de ressource, pagination, icones SVG
 
 ### Design System Dark Luxury (PWA)
 - **Background** : `bg-black` (#0e0d0b) sur AppShell et toutes les pages
@@ -334,6 +337,7 @@ Breakpoint mobile : `@media (max-width: 960px)` sur toutes les pages avec nav (i
 - Nav links, CTA, lang switch masqués — tout est dans le drawer
 - Burger visible (`.nav-burger { display: flex }`)
 - Mobile drawer : slide-in 280px depuis la droite, overlay sombre, fermeture par overlay/Escape/lien
+- **Lang switch dans le drawer** : même pattern dropdown que la PWA (bouton compact drapeau+label+chevron → popup avec drapeau+nom complet). JS `updateDrawerLangBtn()` clone le SVG drapeau depuis les options. `aria-expanded` sur le toggle. Popup s'ouvre vers le haut (`bottom: calc(100% + 6px)`)
 
 **Pattern JS toggle (référence = index.html) :**
 - `toggleDrawer(open)` : paramètre `open` explicite (boolean) ou toggle par détection de classe
@@ -432,7 +436,7 @@ Toute la documentation technique est dans [`docs/`](docs/) :
 | [`docs/README.md`](docs/README.md) | Vue d'ensemble projet, quick start, structure |
 | [`docs/architecture.md`](docs/architecture.md) | Layers, middleware pipeline, request flow, multi-tenant |
 | [`docs/api-reference.md`](docs/api-reference.md) | Endpoints REST complets avec exemples |
-| [`docs/database.md`](docs/database.md) | Schéma SQL, migrations 001-019, RLS, index |
+| [`docs/database.md`](docs/database.md) | Schéma SQL, migrations 001-020, RLS, index |
 | [`docs/security.md`](docs/security.md) | Auth, RBAC, token blacklist, rate limiting, headers |
 | [`docs/deployment.md`](docs/deployment.md) | Docker, Caddy, Cloudflare, variables d'env |
 | [`docs/pwa.md`](docs/pwa.md) | Frontend PWA complet |
