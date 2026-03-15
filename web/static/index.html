@@ -249,7 +249,8 @@ nav.nav-hidden { transform: translateY(-100%); }
 .pricing { padding: var(--section-pad) var(--h-pad); background: var(--dark-2); position: relative; }
 .pricing::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 60px; background: linear-gradient(to bottom, rgba(184,149,90,0.3), transparent); }
 .pricing-header { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: end; margin-bottom: 5rem; }
-.currency-toggle { display: inline-flex; align-items: center; border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; padding: 3px; margin-top: 1.5rem; background: rgba(255,255,255,0.02); }
+.currency-toggle-row { display: flex; justify-content: center; margin-bottom: 2.5rem; }
+.currency-toggle { display: inline-flex; align-items: center; border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; padding: 3px; background: rgba(255,255,255,0.02); }
 .currency-toggle button { font-family: var(--sans); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.4rem 1rem; border: none; border-radius: 100px; cursor: pointer; transition: all 0.3s var(--ease-lux); background: transparent; color: rgba(255,255,255,0.35); }
 .currency-toggle button.active { background: rgba(184,149,90,0.15); color: var(--gold); }
 .currency-toggle button:hover:not(.active) { color: rgba(255,255,255,0.6); }
@@ -849,10 +850,12 @@ footer { background: var(--black); padding: 3rem var(--h-pad); display: grid; gr
     </div>
     <div class="reveal reveal-d1">
       <p data-i18n="pricing.text">A flat monthly rate per site — no per-vehicle fees, no surprises. Setup and onboarding included for the first three months.</p>
-      <div class="currency-toggle" role="radiogroup" aria-label="Currency">
-        <button class="active" data-currency="eur" role="radio" aria-checked="true">EUR &euro;</button>
-        <button data-currency="usd" role="radio" aria-checked="false">USD $</button>
-      </div>
+    </div>
+  </div>
+  <div class="currency-toggle-row reveal">
+    <div class="currency-toggle" role="radiogroup" aria-label="Currency">
+      <button class="active" data-currency="eur" role="radio" aria-checked="true">EUR &euro;</button>
+      <button data-currency="usd" role="radio" aria-checked="false">USD $</button>
     </div>
   </div>
   <div class="pricing-grid reveal">
