@@ -5,6 +5,8 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { api, ApiError } from "@/lib/api";
 import { TASK_TYPES } from "@/lib/task-constants";
+import { useI18n } from "@/lib/i18n";
+import { createTaskModalI18n } from "@/lib/translations";
 
 export interface TaskToEdit {
   id: string;
@@ -29,6 +31,7 @@ export interface CreateTaskModalProps {
 }
 
 export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: CreateTaskModalProps) {
+  const { t } = useI18n(createTaskModalI18n);
   const [vehicleId, setVehicleId] = useState(editTask?.vehicle_id || "");
   const [vehicleSearch, setVehicleSearch] = useState(
     editTask ? vehicleMap.get(editTask.vehicle_id)?.name || "" : ""
@@ -86,7 +89,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
       onCreated();
     } catch (err: unknown) {
       setError(
-        err instanceof ApiError ? err.message : editTask ? "Failed to update task" : "Failed to create task"
+        err instanceof ApiError ? err.message : editTask ? t.failedUpdate : t.failedCreate
       );
     } finally {
       setLoading(false);
@@ -107,7 +110,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
       >
         <div className="flex items-center justify-between">
           <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">
-            {editTask ? "Edit Task" : "New Task"}
+            {editTask ? t.editTask : t.newTask}
           </h2>
           <button
             type="button"
@@ -124,7 +127,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
         {/* Vehicle selector */}
         <div className="relative">
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-            Vehicle
+            {t.vehicle}
           </label>
           <input
             type="text"
@@ -135,7 +138,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
               if (!e.target.value) setVehicleId("");
             }}
             onFocus={() => setShowDropdown(true)}
-            placeholder="Search vehicle..."
+            placeholder={t.searchVehicle}
             disabled={!!editTask}
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors disabled:opacity-50"
           />
@@ -167,15 +170,15 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
         {/* Task type */}
         <div>
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-            Task Type
+            {t.taskType}
           </label>
           <CustomSelect
             value={taskType}
             onChange={setTaskType}
-            options={TASK_TYPES.map((t) => ({
-              value: t.value,
-              label: t.label,
-              icon: <t.icon className="w-4 h-4" />,
+            options={TASK_TYPES.map((tt) => ({
+              value: tt.value,
+              label: tt.label,
+              icon: <tt.icon className="w-4 h-4" />,
             }))}
           />
         </div>
@@ -183,13 +186,13 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
         {/* Title */}
         <div>
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-            Title
+            {t.titleLabel}
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Task title..."
+            placeholder={t.titlePlaceholder}
             required
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
           />
@@ -198,12 +201,12 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
         {/* Description */}
         <div>
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-            Description
+            {t.description}
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Optional description..."
+            placeholder={t.descriptionPlaceholder}
             rows={3}
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors"
           />
@@ -212,7 +215,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
         {/* Due date */}
         <div>
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-            Due Date
+            {t.dueDate}
           </label>
           <input
             type="date"
@@ -225,7 +228,7 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
         {error && <p className="text-danger text-xs">{error}</p>}
 
         <ActionButton type="submit" loading={loading} disabled={!vehicleId || !title.trim()}>
-          {editTask ? "Save Changes" : "Create Task"}
+          {editTask ? t.saveChanges : t.createTask}
         </ActionButton>
       </form>
     </div>

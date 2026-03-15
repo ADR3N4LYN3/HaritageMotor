@@ -11,6 +11,8 @@ import { useVehicle } from "@/hooks/useVehicle";
 import { api, ApiError } from "@/lib/api";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { pushAction } from "@/lib/offline-queue";
+import { useI18n } from "@/lib/i18n";
+import { vehicleTaskI18n } from "@/lib/translations";
 import { CreateTaskModal } from "@/components/tasks/CreateTaskModal";
 import type { Task } from "@/lib/types";
 import useSWR from "swr";
@@ -21,6 +23,7 @@ export default function TaskPage() {
   const router = useRouter();
   const id = params.id as string;
 
+  const { t } = useI18n(vehicleTaskI18n);
   const { vehicle, isLoading: vehicleLoading } = useVehicle(id);
   const { data: tasksData, isLoading: tasksLoading, error: tasksError, mutate } = useSWR<{ data: Task[] }>(
     id ? `/tasks?vehicle_id=${id}&status=pending` : null
@@ -84,7 +87,7 @@ export default function TaskPage() {
   if (success && vehicle) {
     return (
       <SuccessScreen
-        title="Task Completed"
+        title={t.taskCompleted}
         subtitle={`${success.task.title} — ${vehicle.make} ${vehicle.model}`}
         onDone={() => {
           setStatus({ success: null });
@@ -105,7 +108,7 @@ export default function TaskPage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-white/50 py-12">Vehicle not found</p>
+        <p className="text-center text-white/50 py-12">{t.notFound}</p>
       </AppShell>
     );
   }
@@ -114,7 +117,7 @@ export default function TaskPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Maintenance Tasks"
+          title={t.title}
           subtitle={`${vehicle.make} ${vehicle.model}`}
           backHref={`/vehicle/${id}`}
           action={
@@ -122,7 +125,7 @@ export default function TaskPage() {
               onClick={() => setShowCreate(true)}
               className="w-11 h-11 rounded-full border border-gold/40 bg-transparent flex items-center justify-center text-gold text-xl font-light hover:bg-gold hover:text-black transition-all duration-500 active:scale-95"
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
-              aria-label="Create task"
+              aria-label={t.createTask}
             >+</button>
           }
         />
@@ -130,7 +133,7 @@ export default function TaskPage() {
         {/* Task List */}
         <div>
           <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Pending Tasks
+            {t.pendingTasks}
           </h3>
           {tasksLoading ? (
             <div className="space-y-2">
@@ -140,22 +143,22 @@ export default function TaskPage() {
             </div>
           ) : tasksError ? (
             <div className="text-center py-8 text-danger text-sm">
-              Failed to load tasks
+              {t.failedLoad}
             </div>
           ) : tasks.length === 0 ? (
             <div className="text-center py-8 space-y-3">
-              <p className="text-white/30 text-sm">No pending tasks</p>
+              <p className="text-white/30 text-sm">{t.noPending}</p>
               <ActionButton
                 onClick={() => setShowCreate(true)}
                 className="mt-2"
               >
-                Create Task
+                {t.createTask}
               </ActionButton>
               <ActionButton
                 variant="secondary"
                 onClick={() => router.push(`/vehicle/${id}`)}
               >
-                Back to Vehicle
+                {t.backToVehicle}
               </ActionButton>
             </div>
           ) : (
@@ -184,13 +187,13 @@ export default function TaskPage() {
                           </span>
                           {isOverdue && (
                             <span className="text-xs bg-danger/10 text-danger px-1.5 py-0.5 rounded-full font-medium">
-                              Overdue
+                              {t.overdue}
                             </span>
                           )}
                         </div>
                         {task.due_date && (
                           <p className="text-xs text-white/40 mt-0.5">
-                            Due: {new Date(task.due_date).toLocaleDateString()}
+                            {t.due} {new Date(task.due_date).toLocaleDateString()}
                           </p>
                         )}
                       </div>
@@ -211,7 +214,7 @@ export default function TaskPage() {
                         <textarea
                           value={taskNotes[task.id] || ""}
                           onChange={(e) => setTaskNotes((prev) => ({ ...prev, [task.id]: e.target.value }))}
-                          placeholder="Notes (optional)"
+                          placeholder={t.notesPlaceholder}
                           rows={2}
                           className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 resize-none transition-colors"
                         />
@@ -222,7 +225,7 @@ export default function TaskPage() {
                           onClick={() => handleComplete(task)}
                           loading={loading}
                         >
-                          Mark as Done
+                          {t.markDone}
                         </ActionButton>
                       </div>
                     )}

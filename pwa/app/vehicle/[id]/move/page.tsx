@@ -16,6 +16,8 @@ import { useCamera } from "@/hooks/useCamera";
 import { api, ApiError } from "@/lib/api";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { pushAction } from "@/lib/offline-queue";
+import { useI18n } from "@/lib/i18n";
+import { vehicleMoveI18n } from "@/lib/translations";
 import type { Bay } from "@/lib/types";
 
 const CameraCapture = dynamic(
@@ -31,6 +33,7 @@ export default function MoveVehiclePage() {
   const router = useRouter();
   const id = params.id as string;
 
+  const { t } = useI18n(vehicleMoveI18n);
   const { vehicle, isLoading: vehicleLoading } = useVehicle(id);
   const { bays, isLoading: baysLoading } = useBays();
   const { photos, addPhoto, removePhoto } = useCamera();
@@ -105,7 +108,7 @@ export default function MoveVehiclePage() {
     return (
       <SuccessScreen
         title={`${vehicle.make} ${vehicle.model}`}
-        subtitle={`Moved to ${selectedBay.code}`}
+        subtitle={t.movedTo.replace("{bay}", selectedBay.code)}
         onDone={() => router.push(`/vehicle/${id}`)}
       />
     );
@@ -122,7 +125,7 @@ export default function MoveVehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <p className="text-center text-white/50 py-12">Vehicle not found</p>
+        <p className="text-center text-white/50 py-12">{t.notFound}</p>
       </AppShell>
     );
   }
@@ -131,7 +134,7 @@ export default function MoveVehiclePage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Move Vehicle"
+          title={t.title}
           subtitle={`${vehicle.make} ${vehicle.model}`}
           backHref={`/vehicle/${id}`}
         />
@@ -139,7 +142,7 @@ export default function MoveVehiclePage() {
         {/* Bay Selection */}
         <div>
           <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Select Destination Bay
+            {t.selectBay}
           </h3>
           <BaySelector
             bays={bays}
@@ -152,12 +155,12 @@ export default function MoveVehiclePage() {
         {/* Photo (optional) */}
         <div>
           <h3 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Photo (optional)
+            {t.photoLabel}
           </h3>
           <CameraCapture
             onCapture={addPhoto}
             multiple
-            label="Take photo"
+            label={t.takePhoto}
           />
           {photos.length > 0 && (
             <div className="mt-3">
@@ -184,7 +187,7 @@ export default function MoveVehiclePage() {
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Notes (optional)"
+            placeholder={t.notesPlaceholder}
             rows={2}
             className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm resize-none transition-colors"
           />
@@ -202,8 +205,8 @@ export default function MoveVehiclePage() {
             disabled={!selectedBay}
           >
             {selectedBay
-              ? `Move to ${selectedBay.code}`
-              : "Select a bay first"}
+              ? t.moveTo.replace("{bay}", selectedBay.code)
+              : t.selectFirst}
           </ActionButton>
         </div>
       </div>

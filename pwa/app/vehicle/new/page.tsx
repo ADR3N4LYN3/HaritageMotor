@@ -10,6 +10,8 @@ import { TagInput } from "@/components/ui/TagInput";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { useBays } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
+import { vehicleFormI18n } from "@/lib/translations";
 import { useAppStore } from "@/store/app.store";
 import { MAKE_NAMES, getModelsForMake, getYearOptions } from "@/lib/vehicle-catalog";
 
@@ -53,6 +55,7 @@ export default function NewVehiclePage() {
   const user = useAppStore((s) => s.user);
   const role = user?.role || "viewer";
   const canCreate = role === "admin" || role === "operator";
+  const { t } = useI18n(vehicleFormI18n);
 
   const { bays, isLoading: baysLoading } = useBays();
   const freeBays = bays.filter((b) => b.status === "free");
@@ -70,18 +73,18 @@ export default function NewVehiclePage() {
 
   const makeOptions = useMemo(() => [
     ...MAKE_NAMES.map((m) => ({ value: m, label: m })),
-    { value: "__custom__", label: "Other..." },
-  ], []);
+    { value: "__custom__", label: t.other },
+  ], [t.other]);
 
   const modelOptions = useMemo(() => [
     ...models.map((m) => ({ value: m, label: m })),
-    { value: "__custom__", label: "Other..." },
-  ], [models]);
+    { value: "__custom__", label: t.other },
+  ], [models, t.other]);
 
   if (!canCreate) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Access denied</div>
+        <div className="text-center py-12 text-white/50">{t.accessDenied}</div>
       </AppShell>
     );
   }
@@ -145,12 +148,12 @@ export default function NewVehiclePage() {
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         if (err.status === 402) {
-          setStatus({ error: "Vehicle limit reached for your plan. Please upgrade." });
+          setStatus({ error: t.planLimit });
         } else {
           setStatus({ error: err.message });
         }
       } else {
-        setStatus({ error: "Network error. Please try again." });
+        setStatus({ error: t.networkError });
       }
     } finally {
       setStatus({ loading: false });
@@ -163,12 +166,12 @@ export default function NewVehiclePage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <PageHeader title="New Vehicle" backHref="/dashboard" />
+        <PageHeader title={t.newVehicle} backHref="/dashboard" />
 
         {/* Vehicle section */}
         <div>
           <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Vehicle
+            {t.vehicle}
           </h2>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
             {/* Make */}
@@ -176,7 +179,7 @@ export default function NewVehiclePage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Make *"
+                  placeholder={t.makePlaceholder}
                   value={form.make}
                   onChange={(e) => updateField("make", e.target.value)}
                   className={inputClass}
@@ -187,7 +190,7 @@ export default function NewVehiclePage() {
                   onClick={() => { setCustomMake(false); setCustomModel(false); setForm((p) => ({ ...p, make: "", model: "", year: "" })); }}
                   className="shrink-0 px-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/40 text-xs hover:text-gold hover:border-gold/30 transition-colors"
                 >
-                  List
+                  {t.list}
                 </button>
               </div>
             ) : (
@@ -195,9 +198,9 @@ export default function NewVehiclePage() {
                 value={form.make}
                 onChange={handleMakeChange}
                 options={makeOptions}
-                placeholder="Make *"
+                placeholder={t.makePlaceholder}
                 searchable
-                searchPlaceholder="Search make..."
+                searchPlaceholder={t.searchMake}
               />
             )}
 
@@ -206,7 +209,7 @@ export default function NewVehiclePage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Model *"
+                  placeholder={t.modelPlaceholder}
                   value={form.model}
                   onChange={(e) => updateField("model", e.target.value)}
                   className={inputClass}
@@ -217,7 +220,7 @@ export default function NewVehiclePage() {
                     onClick={() => { setCustomModel(false); setForm((p) => ({ ...p, model: "", year: "" })); }}
                     className="shrink-0 px-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/40 text-xs hover:text-gold hover:border-gold/30 transition-colors"
                   >
-                    List
+                    {t.list}
                   </button>
                 )}
               </div>
@@ -226,16 +229,16 @@ export default function NewVehiclePage() {
                 value={form.model}
                 onChange={handleModelChange}
                 options={modelOptions}
-                placeholder="Model *"
+                placeholder={t.modelPlaceholder}
                 searchable
-                searchPlaceholder="Search model..."
+                searchPlaceholder={t.searchModel}
               />
             ) : (
               <CustomSelect
                 value=""
                 onChange={() => {}}
                 options={[]}
-                placeholder="Model *"
+                placeholder={t.modelPlaceholder}
               />
             )}
 
@@ -245,13 +248,13 @@ export default function NewVehiclePage() {
                 value={form.year}
                 onChange={(v) => updateField("year", v)}
                 options={YEAR_OPTIONS}
-                placeholder="Year"
+                placeholder={t.yearPlaceholder}
                 searchable
-                searchPlaceholder="Search year..."
+                searchPlaceholder={t.searchYear}
               />
               <input
                 type="text"
-                placeholder="Color"
+                placeholder={t.colorPlaceholder}
                 value={form.color}
                 onChange={(e) => updateField("color", e.target.value)}
                 className={inputClass}
@@ -260,14 +263,14 @@ export default function NewVehiclePage() {
 
             <input
               type="text"
-              placeholder="License plate"
+              placeholder={t.licensePlate}
               value={form.license_plate}
               onChange={(e) => updateField("license_plate", e.target.value)}
               className={inputClass}
             />
             <input
               type="text"
-              placeholder="VIN"
+              placeholder={t.vinPlaceholder}
               value={form.vin}
               onChange={(e) => updateField("vin", e.target.value)}
               className={inputClass}
@@ -278,15 +281,15 @@ export default function NewVehiclePage() {
 
             {/* Bay assignment */}
             <div>
-              <p className="text-xs text-white/30 mb-2">Assign to bay (optional)</p>
+              <p className="text-xs text-white/30 mb-2">{t.assignBay}</p>
               <CustomSelect
                 value={form.bay_id}
                 onChange={(v) => updateField("bay_id", v)}
-                placeholder="No bay"
+                placeholder={t.noBay}
                 options={[
-                  { value: "", label: "No bay" },
+                  { value: "", label: t.noBay },
                   ...(baysLoading
-                    ? [{ value: "__loading", label: "Loading..." }]
+                    ? [{ value: "__loading", label: t.loading }]
                     : freeBays.map((bay) => ({
                         value: bay.id,
                         label: bay.code,
@@ -297,7 +300,7 @@ export default function NewVehiclePage() {
             </div>
 
             <textarea
-              placeholder="Notes"
+              placeholder={t.notes}
               value={form.notes}
               onChange={(e) => updateField("notes", e.target.value)}
               rows={2}
@@ -309,32 +312,32 @@ export default function NewVehiclePage() {
         {/* Owner section */}
         <div>
           <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Owner
+            {t.owner}
           </h2>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
             <input
               type="text"
-              placeholder="Owner name *"
+              placeholder={t.ownerName}
               value={form.owner_name}
               onChange={(e) => updateField("owner_name", e.target.value)}
               className={inputClass}
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder={t.email}
               value={form.owner_email}
               onChange={(e) => updateField("owner_email", e.target.value)}
               className={inputClass}
             />
             <input
               type="tel"
-              placeholder="Phone"
+              placeholder={t.phone}
               value={form.owner_phone}
               onChange={(e) => updateField("owner_phone", e.target.value)}
               className={inputClass}
             />
             <textarea
-              placeholder="Owner notes"
+              placeholder={t.ownerNotes}
               value={form.owner_notes}
               onChange={(e) => updateField("owner_notes", e.target.value)}
               rows={2}
@@ -349,7 +352,7 @@ export default function NewVehiclePage() {
 
         <div className="pb-4">
           <ActionButton onClick={handleSubmit} loading={loading} disabled={!isValid}>
-            Create Vehicle
+            {t.createVehicle}
           </ActionButton>
         </div>
       </div>

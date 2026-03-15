@@ -8,6 +8,8 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { VehicleCardSkeleton } from "@/components/ui/Skeleton";
 import { useVehicle } from "@/hooks/useVehicle";
 import { api, ApiError } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
+import { vehicleFormI18n } from "@/lib/translations";
 import { TagInput } from "@/components/ui/TagInput";
 import { useAppStore } from "@/store/app.store";
 
@@ -17,6 +19,7 @@ export default function EditVehiclePage() {
   const id = params.id as string;
   const user = useAppStore((s) => s.user);
   const canEdit = user?.role === "admin" || user?.role === "operator";
+  const { t } = useI18n(vehicleFormI18n);
 
   const { vehicle, isLoading } = useVehicle(id);
 
@@ -60,7 +63,7 @@ export default function EditVehiclePage() {
   if (!canEdit) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Access denied</div>
+        <div className="text-center py-12 text-white/50">{t.accessDenied}</div>
       </AppShell>
     );
   }
@@ -76,7 +79,7 @@ export default function EditVehiclePage() {
   if (!vehicle) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Vehicle not found</div>
+        <div className="text-center py-12 text-white/50">{t.vehicleNotFound}</div>
       </AppShell>
     );
   }
@@ -109,7 +112,7 @@ export default function EditVehiclePage() {
       router.push(`/vehicle/${id}`);
     } catch (err: unknown) {
       setStatus({
-        error: err instanceof ApiError ? err.message : "Network error. Please try again.",
+        error: err instanceof ApiError ? err.message : t.networkError,
       });
     } finally {
       setStatus({ loading: false });
@@ -125,7 +128,7 @@ export default function EditVehiclePage() {
     <AppShell>
       <div className="space-y-6 pb-6">
         <PageHeader
-          title="Edit Vehicle"
+          title={t.editVehicle}
           subtitle={vehicle ? `${vehicle.make} ${vehicle.model}` : undefined}
           backHref={`/vehicle/${id}`}
         />
@@ -134,7 +137,7 @@ export default function EditVehiclePage() {
         <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-white/30">Status:</span>
+              <span className="text-xs text-white/30">{t.status}</span>
               <span className="text-sm text-white">{vehicle.status}</span>
             </div>
             {vehicle.current_bay_id && (
@@ -142,7 +145,7 @@ export default function EditVehiclePage() {
                 onClick={() => router.push(`/vehicle/${id}/move`)}
                 className="text-xs text-gold hover:text-gold/80 transition-colors"
               >
-                Move vehicle &rarr;
+                {t.moveVehicle} &rarr;
               </button>
             )}
           </div>
@@ -151,19 +154,19 @@ export default function EditVehiclePage() {
         {/* Vehicle section */}
         <div>
           <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Vehicle
+            {t.vehicle}
           </h2>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
             <input
               type="text"
-              placeholder="Make *"
+              placeholder={t.makePlaceholder}
               value={make}
               onChange={(e) => setMake(e.target.value)}
               className={inputClass}
             />
             <input
               type="text"
-              placeholder="Model *"
+              placeholder={t.modelPlaceholder}
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className={inputClass}
@@ -171,7 +174,7 @@ export default function EditVehiclePage() {
             <div className="grid grid-cols-2 gap-3">
               <input
                 type="number"
-                placeholder="Year"
+                placeholder={t.yearPlaceholder}
                 min={1900}
                 max={2030}
                 value={year}
@@ -180,7 +183,7 @@ export default function EditVehiclePage() {
               />
               <input
                 type="text"
-                placeholder="Color"
+                placeholder={t.colorPlaceholder}
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 className={inputClass}
@@ -188,14 +191,14 @@ export default function EditVehiclePage() {
             </div>
             <input
               type="text"
-              placeholder="License plate"
+              placeholder={t.licensePlate}
               value={licensePlate}
               onChange={(e) => setLicensePlate(e.target.value)}
               className={inputClass}
             />
             <input
               type="text"
-              placeholder="VIN"
+              placeholder={t.vinPlaceholder}
               value={vin}
               onChange={(e) => setVin(e.target.value)}
               className={inputClass}
@@ -205,7 +208,7 @@ export default function EditVehiclePage() {
             <TagInput tags={tags} onChange={updateTags} />
 
             <textarea
-              placeholder="Notes"
+              placeholder={t.notes}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
@@ -217,32 +220,32 @@ export default function EditVehiclePage() {
         {/* Owner section */}
         <div>
           <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-            Owner
+            {t.owner}
           </h2>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
             <input
               type="text"
-              placeholder="Owner name *"
+              placeholder={t.ownerName}
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
               className={inputClass}
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder={t.email}
               value={ownerEmail}
               onChange={(e) => setOwnerEmail(e.target.value)}
               className={inputClass}
             />
             <input
               type="tel"
-              placeholder="Phone"
+              placeholder={t.phone}
               value={ownerPhone}
               onChange={(e) => setOwnerPhone(e.target.value)}
               className={inputClass}
             />
             <textarea
-              placeholder="Owner notes"
+              placeholder={t.ownerNotes}
               value={ownerNotes}
               onChange={(e) => setOwnerNotes(e.target.value)}
               rows={2}
@@ -255,7 +258,7 @@ export default function EditVehiclePage() {
 
         <div className="pb-4">
           <ActionButton onClick={handleSave} loading={loading} disabled={!isValid}>
-            Save Changes
+            {t.saveChanges}
           </ActionButton>
         </div>
       </div>
