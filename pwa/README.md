@@ -56,10 +56,10 @@ pwa/
     admin/
       page.tsx                    Panel superadmin (→ components/admin/)
       qr-codes/page.tsx           Generation et impression QR codes (legacy)
-    vehicle/new/page.tsx          Onboarding nouveau vehicule
+    vehicle/new/page.tsx          Onboarding nouveau vehicule (avec tags)
     vehicle/[id]/
-      page.tsx                    Detail vehicule + timeline + delete vehicule/document (admin) + add note/incident
-      edit/page.tsx               Edition vehicule
+      page.tsx                    Detail vehicule + timeline + tags + delete vehicule/document (admin) + add note/incident
+      edit/page.tsx               Edition vehicule (avec tags)
       move/page.tsx               Deplacement vers un bay
       exit/page.tsx               Sortie vehicule (photos + checklist)
       task/page.tsx               Completion de tache

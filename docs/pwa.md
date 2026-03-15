@@ -350,9 +350,9 @@ Fallback: manual code entry for devices without camera access.
 | `/users` | Yes (admin) | User management CRUD |
 | `/audit` | Yes (admin) | Audit log with resource type filters and pagination |
 | `/qr-codes` | Yes (admin) | QR code generation and printing |
-| `/vehicle/new` | Yes | New vehicle onboarding form |
-| `/vehicle/[id]` | Yes | Vehicle detail with timeline, document management, add note/incident, delete (admin) |
-| `/vehicle/[id]/edit` | Yes | Edit vehicle details |
+| `/vehicle/new` | Yes | New vehicle onboarding form (with tags) |
+| `/vehicle/[id]` | Yes | Vehicle detail with timeline, tags, documents, add note/incident, delete (admin) |
+| `/vehicle/[id]/edit` | Yes | Edit vehicle details (with tags) |
 | `/vehicle/[id]/move` | Yes | Bay selector for vehicle relocation |
 | `/vehicle/[id]/task` | Yes | Task completion form |
 | `/vehicle/[id]/photo` | Yes | Camera capture and photo upload |
