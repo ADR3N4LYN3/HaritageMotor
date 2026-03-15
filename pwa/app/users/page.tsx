@@ -9,6 +9,8 @@ import { useAppStore } from "@/store/app.store";
 import { api, ApiError } from "@/lib/api";
 import type { User } from "@/lib/types";
 import useSWR from "swr";
+import { useI18n } from "@/lib/i18n";
+import { usersI18n } from "@/lib/translations";
 
 const ROLE_FILTERS = ["", ...ROLES] as const;
 
@@ -29,6 +31,7 @@ const emptyForm: UserFormData = {
 
 export default function UsersPage() {
   const currentUser = useAppStore((s) => s.user);
+  const { t } = useI18n(usersI18n);
   const isAdmin = currentUser?.role === "admin";
 
   const { data, isLoading, error, mutate } = useSWR<{ data: User[] }>("/users");
@@ -91,17 +94,17 @@ export default function UsersPage() {
     setFormError("");
 
     if (!form.first_name.trim() || !form.last_name.trim()) {
-      setFormError("First name and last name are required");
+      setFormError(t.nameRequired);
       return;
     }
 
     if (!editingUser) {
       if (!form.email.trim()) {
-        setFormError("Email is required");
+        setFormError(t.emailRequired);
         return;
       }
       if (form.password.length < 8) {
-        setFormError("Password must be at least 8 characters");
+        setFormError(t.passwordMin);
         return;
       }
     }
@@ -129,7 +132,7 @@ export default function UsersPage() {
       if (err instanceof ApiError) {
         setFormError(err.message);
       } else {
-        setFormError("An unexpected error occurred");
+        setFormError(t.unexpectedError);
       }
     } finally {
       setSubmitting(false);
@@ -170,7 +173,7 @@ export default function UsersPage() {
     return (
       <AppShell>
         <div className="text-center py-20 text-white/30 text-sm font-light">
-          Access restricted to administrators
+          {t.restricted}
         </div>
       </AppShell>
     );
@@ -180,14 +183,14 @@ export default function UsersPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="Team"
+          title={t.title}
           backHref="/dashboard"
           action={
             <button
               onClick={openCreate}
               className="w-10 h-10 rounded-full border border-gold/40 bg-transparent flex items-center justify-center text-gold text-xl font-light hover:bg-gold hover:text-black transition-all duration-500 active:scale-95"
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
-              aria-label="Add user"
+              aria-label={t.addUser}
             >
               +
             </button>
@@ -198,7 +201,7 @@ export default function UsersPage() {
         <div>
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40 focus:ring-1 focus:ring-gold/20 outline-none text-sm transition-colors"
@@ -217,7 +220,7 @@ export default function UsersPage() {
                   : "bg-white/[0.03] text-white/50 border-white/[0.06]"
               }`}
             >
-              {r || "All"}
+              {r ? (t[r as keyof typeof t] || r) : t.all}
             </button>
           ))}
         </div>
@@ -231,11 +234,11 @@ export default function UsersPage() {
           </div>
         ) : error ? (
           <div className="text-center py-12 text-danger text-sm font-light">
-            Failed to load users
+            {t.failedLoad}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-white/30 text-sm font-light">
-            No users found
+            {t.noUsers}
           </div>
         ) : (
           <div className="space-y-3">
@@ -261,11 +264,11 @@ export default function UsersPage() {
                         {user.role}
                       </span>
                       {user.totp_enabled && (
-                        <span className="text-xs text-success/60">MFA</span>
+                        <span className="text-xs text-success/60">{t.mfa}</span>
                       )}
                       {user.password_change_required && (
                         <span className="text-xs text-warning/60">
-                          Pending
+                          {t.pending}
                         </span>
                       )}
                     </div>
@@ -310,7 +313,7 @@ export default function UsersPage() {
                 </div>
                 {user.last_login_at && (
                   <p className="text-xs text-white/20 mt-2">
-                    Last login:{" "}
+                    {t.lastLogin}{" "}
                     {new Date(user.last_login_at).toLocaleDateString()}
                   </p>
                 )}

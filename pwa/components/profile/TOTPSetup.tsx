@@ -5,6 +5,8 @@ import { QRCodeSVG } from "qrcode.react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { api, ApiError } from "@/lib/api";
 import type { User } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { totpI18n } from "@/lib/translations";
 
 export interface TOTPSetupProps {
   user: User;
@@ -12,6 +14,7 @@ export interface TOTPSetupProps {
 }
 
 export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
+  const { t } = useI18n(totpI18n);
   const [mfaStep, setMfaStep] = useState<"idle" | "setup">("idle");
   const [mfaSecret, setMfaSecret] = useState("");
   const [mfaUrl, setMfaUrl] = useState("");
@@ -31,7 +34,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       setMfaUrl(data.url);
       setMfaStep("setup");
     } catch (err) {
-      setMfaError(err instanceof ApiError ? err.message : "Failed to setup MFA");
+      setMfaError(err instanceof ApiError ? err.message : t.setupFailed);
     } finally {
       setMfaLoading(false);
     }
@@ -39,7 +42,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
 
   async function handleEnableMFA() {
     if (totpCode.length !== 6) {
-      setMfaError("Please enter a 6-digit code");
+      setMfaError(t.enterCode);
       return;
     }
     setMfaError(null);
@@ -52,7 +55,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       setMfaUrl("");
       setTotpCode("");
     } catch (err) {
-      setMfaError(err instanceof ApiError ? err.message : "Invalid code");
+      setMfaError(err instanceof ApiError ? err.message : t.invalidCode);
     } finally {
       setMfaLoading(false);
     }
@@ -66,7 +69,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       onUserUpdate({ ...user, totp_enabled: false });
       setShowDisableConfirm(false);
     } catch (err) {
-      setMfaError(err instanceof ApiError ? err.message : "Failed to disable MFA");
+      setMfaError(err instanceof ApiError ? err.message : t.disableFailed);
     } finally {
       setDisableLoading(false);
     }
@@ -75,7 +78,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
   return (
     <div className="mt-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
       <p className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-4">
-        Multi-Factor Authentication
+        {t.title}
       </p>
 
       {mfaError && (
@@ -88,14 +91,14 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       {!user.totp_enabled && mfaStep === "idle" && (
         <div>
           <p className="text-sm text-white/40 font-light mb-4">
-            Protect your account with a time-based one-time password (TOTP) using an authenticator app like Google Authenticator.
+            {t.protectAccount}
           </p>
           <ActionButton
             variant="secondary"
             loading={mfaLoading}
             onClick={handleSetupMFA}
           >
-            Setup MFA
+            {t.setupMFA}
           </ActionButton>
         </div>
       )}
@@ -104,7 +107,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       {!user.totp_enabled && mfaStep === "setup" && (
         <div>
           <p className="text-sm text-white/40 font-light mb-4">
-            Scan this QR code with your authenticator app, then enter the 6-digit code below to verify.
+            {t.scanQrCode}
           </p>
 
           <div className="flex justify-center mb-4">
@@ -114,14 +117,14 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
           </div>
 
           <p className="text-xs text-white/30 text-center mb-2">
-            Or enter this secret manually:
+            {t.manualEntry}
           </p>
           <code className="block bg-white/[0.04] border border-white/[0.08] rounded-lg p-3 text-sm text-gold font-mono tracking-widest text-center select-all mb-6">
             {mfaSecret}
           </code>
 
           <div className="mb-4">
-            <label className="block text-sm text-white/40 mb-2">Verification code</label>
+            <label className="block text-sm text-white/40 mb-2">{t.verificationCode}</label>
             <input
               type="text"
               inputMode="numeric"
@@ -147,7 +150,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
                 setMfaError(null);
               }}
             >
-              Cancel
+              {t.cancel}
             </ActionButton>
             <ActionButton
               variant="primary"
@@ -156,7 +159,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
               onClick={handleEnableMFA}
               disabled={totpCode.length !== 6}
             >
-              Verify &amp; Enable
+              {t.verifyEnable}
             </ActionButton>
           </div>
         </div>
@@ -166,13 +169,13 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       {user.totp_enabled && !showDisableConfirm && (
         <div>
           <p className="text-sm text-white/40 font-light mb-4">
-            MFA is currently active on your account. You can disable it below.
+            {t.mfaActive}
           </p>
           <ActionButton
             variant="danger"
             onClick={() => setShowDisableConfirm(true)}
           >
-            Disable MFA
+            {t.disableMFA}
           </ActionButton>
         </div>
       )}
@@ -181,9 +184,9 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
       {user.totp_enabled && showDisableConfirm && (
         <div>
           <div className="mb-4 p-4 rounded-xl bg-danger/10 border border-danger/20">
-            <p className="text-sm text-danger font-medium mb-1">Are you sure?</p>
+            <p className="text-sm text-danger font-medium mb-1">{t.areYouSure}</p>
             <p className="text-sm text-white/40 font-light">
-              Disabling MFA will make your account less secure. You will no longer need a code from your authenticator app to sign in.
+              {t.disableWarning}
             </p>
           </div>
           <div className="flex gap-3">
@@ -195,7 +198,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
                 setMfaError(null);
               }}
             >
-              Keep enabled
+              {t.keepEnabled}
             </ActionButton>
             <ActionButton
               variant="danger"
@@ -203,7 +206,7 @@ export function TOTPSetup({ user, onUserUpdate }: TOTPSetupProps) {
               loading={disableLoading}
               onClick={handleDisableMFA}
             >
-              Confirm disable
+              {t.confirmDisable}
             </ActionButton>
           </div>
         </div>

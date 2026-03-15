@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useI18n } from "@/lib/i18n";
+import { cookieI18n } from "@/lib/translations";
 
 interface ConsentPrefs {
   essential: boolean;
@@ -9,6 +11,7 @@ interface ConsentPrefs {
 }
 
 export function CookieBanner() {
+  const { t } = useI18n(cookieI18n);
   const [visible, setVisible] = useState(false);
   const [analytics, setAnalytics] = useState(true);
 
@@ -68,20 +71,19 @@ export function CookieBanner() {
 
         {/* Title */}
         <h2 className="font-light text-[1.3rem] text-white mb-2 tracking-[0.03em] leading-[1.2]">
-          Privacy preferences
+          {t.title}
         </h2>
 
         {/* Description */}
         <p className="text-sm font-light text-white/55 leading-relaxed mb-6">
-          We respect your privacy. Choose which data processing you allow. See
-          our{" "}
+          {t.description}{" "}
           <a
             href="https://heritagemotor.app/privacy"
             className="text-gold underline underline-offset-2 hover:text-[#d4b07a] transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Privacy Policy
+            {t.privacyPolicy}
           </a>
           .
         </p>
@@ -91,9 +93,9 @@ export function CookieBanner() {
           {/* Essential — always on */}
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium text-white">Essential</span>
+              <span className="text-sm font-medium text-white">{t.essential}</span>
               <span className="text-[0.72rem] font-light text-white/35">
-                Authentication cookies, session management
+                {t.essentialSub}
               </span>
             </div>
             <label className="relative w-10 h-[22px] shrink-0 ml-4 opacity-50 cursor-not-allowed">
@@ -111,10 +113,10 @@ export function CookieBanner() {
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex flex-col gap-0.5">
               <span className="text-sm font-medium text-white">
-                Anonymous analytics
+                {t.analytics}
               </span>
               <span className="text-[0.72rem] font-light text-white/35">
-                Privacy-friendly usage stats (no cookies, no personal data)
+                {t.analyticsSub}
               </span>
             </div>
             <button
@@ -143,13 +145,13 @@ export function CookieBanner() {
             onClick={() => saveConsent(analytics)}
             className="flex-1 py-3 px-4 rounded-[10px] bg-transparent border border-white/12 text-white/60 text-xs font-medium tracking-wider uppercase text-center hover:border-white/25 hover:text-white transition-all duration-300"
           >
-            Save choices
+            {t.saveChoices}
           </button>
           <button
             onClick={() => saveConsent(true)}
             className="flex-1 py-3 px-4 rounded-[10px] bg-gold border border-gold text-black text-xs font-medium tracking-wider uppercase text-center hover:bg-[#c4a265] hover:border-[#c4a265] transition-all duration-300"
           >
-            Accept all
+            {t.acceptAll}
           </button>
         </div>
       </div>

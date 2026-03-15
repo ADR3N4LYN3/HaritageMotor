@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useI18n } from "@/lib/i18n";
+import { tagInputI18n } from "@/lib/translations";
 
 const PRESETS = ["classique", "competition", "vip", "electrique"];
 
@@ -10,6 +12,7 @@ interface TagInputProps {
 }
 
 export function TagInput({ tags, onChange }: TagInputProps) {
+  const { t } = useI18n(tagInputI18n);
   const [input, setInput] = useState("");
 
   const toggle = useCallback(
@@ -53,7 +56,7 @@ export function TagInput({ tags, onChange }: TagInputProps) {
 
   return (
     <div>
-      <p className="text-xs text-white/30 mb-2">Tags</p>
+      <p className="text-xs text-white/30 mb-2">{t.tags}</p>
 
       {/* Preset pills */}
       <div className="flex flex-wrap gap-2">
@@ -104,7 +107,7 @@ export function TagInput({ tags, onChange }: TagInputProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Add custom tag..."
+          placeholder={t.addCustomTag}
           className="flex-1 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
         />
         <button

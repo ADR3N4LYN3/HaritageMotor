@@ -4,6 +4,8 @@ import { useCallback, useEffect } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import type { User } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { userFormI18n } from "@/lib/translations";
 
 export const ROLES = ["admin", "operator", "technician", "viewer"] as const;
 
@@ -34,6 +36,8 @@ export function UserFormModal({
   onSubmit,
   onClose,
 }: UserFormModalProps) {
+  const { t } = useI18n(userFormI18n);
+
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -57,13 +61,13 @@ export function UserFormModal({
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div className="relative w-full max-w-md bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
         <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">
-          {editingUser ? "Edit user" : "New user"}
+          {editingUser ? t.editUser : t.newUser}
         </h2>
 
         {!editingUser && (
           <div>
             <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-              Email
+              {t.email}
             </label>
             <input
               type="email"
@@ -79,7 +83,7 @@ export function UserFormModal({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-              First name
+              {t.firstName}
             </label>
             <input
               type="text"
@@ -91,7 +95,7 @@ export function UserFormModal({
           </div>
           <div>
             <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-              Last name
+              {t.lastName}
             </label>
             <input
               type="text"
@@ -105,14 +109,14 @@ export function UserFormModal({
 
         <div>
           <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-            Role
+            {t.role}
           </label>
           <CustomSelect
             value={form.role}
             onChange={(v) => onUpdateField("role", v)}
             options={ROLES.map((r) => ({
               value: r,
-              label: r.charAt(0).toUpperCase() + r.slice(1),
+              label: t[r as keyof typeof t] || r.charAt(0).toUpperCase() + r.slice(1),
             }))}
           />
         </div>
@@ -120,19 +124,19 @@ export function UserFormModal({
         {!editingUser && (
           <div>
             <label className="text-sm font-semibold text-white/30 uppercase tracking-wider block mb-1.5">
-              Password
+              {t.password}
             </label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => onUpdateField("password", e.target.value)}
-              placeholder="Min. 8 characters"
+              placeholder={t.passwordPlaceholder}
               className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:border-gold/40 focus:ring-1 focus:ring-gold/20 outline-none text-sm transition-colors"
               autoComplete="new-password"
             />
             {form.password.length > 0 && form.password.length < 8 && (
               <p className="text-danger text-xs mt-1">
-                Password must be at least 8 characters
+                {t.passwordError}
               </p>
             )}
           </div>
@@ -149,7 +153,7 @@ export function UserFormModal({
             onClick={onClose}
             type="button"
           >
-            Cancel
+            {t.cancel}
           </ActionButton>
           <ActionButton
             variant="primary"
@@ -158,7 +162,7 @@ export function UserFormModal({
             onClick={onSubmit}
             type="button"
           >
-            {editingUser ? "Save" : "Create"}
+            {editingUser ? t.save : t.create}
           </ActionButton>
         </div>
       </div>
