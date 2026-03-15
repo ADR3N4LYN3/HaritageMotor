@@ -170,10 +170,100 @@ export const baysI18n: Record<Lang, Record<string, string>> = {
   },
 };
 
+/* ── Audit Log page ── */
+export const auditI18n: Record<Lang, Record<string, string>> = {
+  en: {
+    title: "Audit Log",
+    all: "All",
+    vehicle: "Vehicle",
+    bay: "Bay",
+    task: "Task",
+    event: "Event",
+    user: "User",
+    document: "Document",
+    restricted: "Access restricted to administrators",
+    failedLoad: "Failed to load audit log",
+    noEntries: "No audit entries found",
+    previous: "Previous",
+    next: "Next",
+  },
+  fr: {
+    title: "Journal d'audit",
+    all: "Tous",
+    vehicle: "Véhicule",
+    bay: "Emplacement",
+    task: "Tâche",
+    event: "Événement",
+    user: "Utilisateur",
+    document: "Document",
+    restricted: "Accès réservé aux administrateurs",
+    failedLoad: "Échec du chargement du journal",
+    noEntries: "Aucune entrée trouvée",
+    previous: "Précédent",
+    next: "Suivant",
+  },
+  de: {
+    title: "Audit-Protokoll",
+    all: "Alle",
+    vehicle: "Fahrzeug",
+    bay: "Stellplatz",
+    task: "Aufgabe",
+    event: "Ereignis",
+    user: "Benutzer",
+    document: "Dokument",
+    restricted: "Zugang nur für Administratoren",
+    failedLoad: "Audit-Protokoll konnte nicht geladen werden",
+    noEntries: "Keine Einträge gefunden",
+    previous: "Zurück",
+    next: "Weiter",
+  },
+};
+
+/* ── Navigation (SideNav + BottomNav) ── */
+export const navI18n: Record<Lang, Record<string, string>> = {
+  en: {
+    navigation: "Navigation",
+    home: "Home",
+    vehicles: "Vehicles",
+    scanQr: "Scan QR",
+    bays: "Bays",
+    tasks: "Tasks",
+    qrCodes: "QR Codes",
+    team: "Team",
+    admin: "Admin",
+    profile: "Profile",
+  },
+  fr: {
+    navigation: "Navigation",
+    home: "Accueil",
+    vehicles: "Véhicules",
+    scanQr: "Scanner QR",
+    bays: "Emplacements",
+    tasks: "Tâches",
+    qrCodes: "Codes QR",
+    team: "Équipe",
+    admin: "Administration",
+    profile: "Profil",
+  },
+  de: {
+    navigation: "Navigation",
+    home: "Startseite",
+    vehicles: "Fahrzeuge",
+    scanQr: "QR scannen",
+    bays: "Stellplätze",
+    tasks: "Aufgaben",
+    qrCodes: "QR-Codes",
+    team: "Team",
+    admin: "Verwaltung",
+    profile: "Profil",
+  },
+};
+
 /* ── Desktop TopBar page labels ── */
 export const pageLabelsI18n: Record<Lang, Record<string, string>> = {
   en: {
     "/dashboard": "Dashboard",
+    "/vehicles": "Vehicles",
     "/scan": "Scan QR",
     "/bays": "Bays",
     "/bay": "Bay",
@@ -187,6 +277,7 @@ export const pageLabelsI18n: Record<Lang, Record<string, string>> = {
   },
   fr: {
     "/dashboard": "Tableau de bord",
+    "/vehicles": "Véhicules",
     "/scan": "Scanner QR",
     "/bays": "Emplacements",
     "/bay": "Emplacement",
@@ -200,6 +291,7 @@ export const pageLabelsI18n: Record<Lang, Record<string, string>> = {
   },
   de: {
     "/dashboard": "Dashboard",
+    "/vehicles": "Fahrzeuge",
     "/scan": "QR scannen",
     "/bays": "Stellplätze",
     "/bay": "Stellplatz",

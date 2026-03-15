@@ -2,16 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/lib/i18n";
+import { navI18n } from "@/lib/translations";
 
-const navItems = [
-  { href: "/dashboard", label: "Home", icon: HomeIcon },
-  { href: "/scan", label: "Scan QR", icon: ScanIcon },
-  { href: "/bays", label: "Bays", icon: BayIcon },
-  { href: "/profile", label: "Profile", icon: ProfileIcon },
+type NavItem = { href: string; labelKey: string; icon: React.ComponentType<{ className?: string }> };
+
+const navItems: NavItem[] = [
+  { href: "/dashboard", labelKey: "home", icon: HomeIcon },
+  { href: "/scan", labelKey: "scanQr", icon: ScanIcon },
+  { href: "/bays", labelKey: "bays", icon: BayIcon },
+  { href: "/profile", labelKey: "profile", icon: ProfileIcon },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n(navI18n);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-gold/10 safe-bottom">
@@ -27,7 +32,7 @@ export function BottomNav() {
               }`}
             >
               <item.icon className="w-5 h-5" />
-              <span className="text-[10px] tracking-[0.06em] font-medium">{item.label}</span>
+              <span className="text-[10px] tracking-[0.06em] font-medium">{t[item.labelKey]}</span>
             </Link>
           );
         })}

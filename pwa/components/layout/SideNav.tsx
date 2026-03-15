@@ -3,23 +3,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/store/app.store";
+import { useI18n } from "@/lib/i18n";
+import { navI18n } from "@/lib/translations";
 import logoCrest from "@/public/logo-crest-v2.png";
 
-const baseNav = [
-  { href: "/dashboard", label: "Home", icon: HomeIcon },
-  { href: "/scan", label: "Scan QR", icon: ScanIcon },
-  { href: "/bays", label: "Bays", icon: BayIcon },
-  { href: "/tasks", label: "Tasks", icon: TaskIcon },
+type NavItem = { href: string; labelKey: string; icon: React.ComponentType<{ className?: string }> };
+
+const baseNav: NavItem[] = [
+  { href: "/dashboard", labelKey: "home", icon: HomeIcon },
+  { href: "/vehicles", labelKey: "vehicles", icon: VehicleIcon },
+  { href: "/scan", labelKey: "scanQr", icon: ScanIcon },
+  { href: "/bays", labelKey: "bays", icon: BayIcon },
+  { href: "/tasks", labelKey: "tasks", icon: TaskIcon },
 ];
 
-const qrNav = { href: "/qr-codes", label: "QR Codes", icon: QrIcon };
-const teamNav = { href: "/users", label: "Team", icon: TeamIcon };
-const adminNav = { href: "/admin", label: "Admin", icon: AdminIcon };
+const qrNav: NavItem = { href: "/qr-codes", labelKey: "qrCodes", icon: QrIcon };
+const teamNav: NavItem = { href: "/users", labelKey: "team", icon: TeamIcon };
+const adminNav: NavItem = { href: "/admin", labelKey: "admin", icon: AdminIcon };
 
 export function SideNav() {
   const pathname = usePathname();
   const user = useAppStore((s) => s.user);
   const role = user?.role;
+  const { t } = useI18n(navI18n);
 
   const navItems = [...baseNav];
   if (role === "admin" || role === "operator") navItems.push(qrNav);
@@ -40,8 +46,8 @@ export function SideNav() {
 
       {/* Nav label */}
       <div className="px-4 pt-3 pb-1">
-        <span className="text-[9px] tracking-[0.16em] uppercase text-gold/30 font-medium">
-          Navigation
+        <span className="text-[11px] tracking-[0.16em] uppercase text-gold/30 font-medium">
+          {t.navigation}
         </span>
       </div>
 
@@ -55,7 +61,7 @@ export function SideNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[12.5px] transition-all duration-300 border-l-2 ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-300 border-l-2 ${
                 isActive
                   ? "text-gold bg-gold/[0.05] border-l-gold"
                   : "text-white/35 hover:text-white/55 hover:bg-white/[0.03] border-l-transparent"
@@ -63,7 +69,7 @@ export function SideNav() {
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
             >
               <item.icon className="w-4 h-4" />
-              <span>{item.label}</span>
+              <span>{t[item.labelKey]}</span>
             </Link>
           );
         })}
@@ -73,14 +79,14 @@ export function SideNav() {
       <div className="border-t border-white/[0.04] px-2 py-2">
         <Link
           href="/profile"
-          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[12.5px] transition-all duration-300 border-l-2 ${
+          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-300 border-l-2 ${
             pathname === "/profile"
               ? "text-gold bg-gold/[0.05] border-l-gold"
               : "text-white/35 hover:text-white/55 hover:bg-white/[0.03] border-l-transparent"
           }`}
         >
           <ProfileIcon className="w-4 h-4" />
-          <span>Profile</span>
+          <span>{t.profile}</span>
         </Link>
       </div>
     </aside>
@@ -93,6 +99,14 @@ function HomeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </svg>
+  );
+}
+
+function VehicleIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 17h14M5 17a2 2 0 0 1-2-2V9a1 1 0 0 1 .4-.8l3-2.4A2 2 0 0 1 7.6 5h8.8a2 2 0 0 1 1.2.4l3 2.4a1 1 0 0 1 .4.8v6a2 2 0 0 1-2 2M5 17a2 2 0 1 0 4 0M15 17a2 2 0 1 0 4 0M9 17h6" />
     </svg>
   );
 }
