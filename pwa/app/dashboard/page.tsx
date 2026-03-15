@@ -158,7 +158,7 @@ function TenantDashboard() {
         </div>
 
         {/* Desktop: 2-column layout (2/3 fleet + 1/3 activity) — Mobile: tabbed */}
-        <div className="lg:grid lg:grid-cols-3 lg:gap-8">
+        <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
           {/* Left column — Fleet (2/3) */}
           <div className={`lg:col-span-2 ${activeTab !== "fleet" ? "hidden lg:block" : ""}`}>
             <div className="space-y-6">
@@ -355,7 +355,7 @@ function TenantDashboard() {
           </div>
 
           {/* Right column — Activity feed (1/3) — desktop always visible, mobile tab */}
-          <div className={`lg:col-span-1 ${activeTab !== "activity" ? "hidden lg:block" : ""}`}>
+          <div className={`lg:col-span-1 lg:self-start ${activeTab !== "activity" ? "hidden lg:block" : ""}`}>
             <div className="lg:sticky lg:top-6">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-1.5 h-1.5 rounded-full bg-gold/60 shadow-[0_0_10px_rgba(184,149,90,0.4)]" />
