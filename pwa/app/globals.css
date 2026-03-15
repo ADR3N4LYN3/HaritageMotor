@@ -83,7 +83,8 @@ input::-ms-clear {
 .reveal-up {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity 0.9s var(--ease-lux), transform 0.9s var(--ease-lux);
+  transition: opacity 0.5s var(--ease-lux), transform 0.5s var(--ease-lux);
+  will-change: opacity, transform;
 }
 .reveal-up.visible {
   opacity: 1;

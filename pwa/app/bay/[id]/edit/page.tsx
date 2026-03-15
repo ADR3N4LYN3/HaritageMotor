@@ -8,6 +8,8 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { useBay } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
+import { useI18n } from "@/lib/i18n";
+import { bayFormI18n } from "@/lib/translations";
 
 const FEATURE_OPTIONS = [
   "climate_controlled",
@@ -24,6 +26,7 @@ export default function EditBayPage() {
   const router = useRouter();
   const id = params.id as string;
   const user = useAppStore((s) => s.user);
+  const { t } = useI18n(bayFormI18n);
   const canEdit = user?.role === "admin" || user?.role === "operator";
 
   const { bay, isLoading: bayLoading } = useBay(id);
@@ -54,7 +57,7 @@ export default function EditBayPage() {
   if (!canEdit) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Access denied</div>
+        <div className="text-center py-12 text-white/50">{t.accessDenied}</div>
       </AppShell>
     );
   }
@@ -73,7 +76,7 @@ export default function EditBayPage() {
   if (!bay) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Bay not found</div>
+        <div className="text-center py-12 text-white/50">{t.bayNotFound}</div>
       </AppShell>
     );
   }
@@ -102,12 +105,12 @@ export default function EditBayPage() {
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         if (err.status === 409) {
-          setFormStatus({ error: "This code already exists in your facility" });
+          setFormStatus({ error: t.codeExists });
         } else {
           setFormStatus({ error: err.message });
         }
       } else {
-        setFormStatus({ error: "Network error. Please try again." });
+        setFormStatus({ error: t.networkError });
       }
     } finally {
       setFormStatus({ loading: false });
@@ -116,14 +119,14 @@ export default function EditBayPage() {
 
   async function handleDelete() {
     if (!bay || bay.status !== "free") return;
-    if (!confirm("Delete this bay? This action cannot be undone.")) return;
+    if (!confirm(t.deleteConfirm)) return;
     setFormStatus({ loading: true, error: null });
     try {
       await api.delete(`/bays/${id}`);
       router.push("/bays");
     } catch (err: unknown) {
       setFormStatus({
-        error: err instanceof ApiError ? err.message : "Failed to delete bay",
+        error: err instanceof ApiError ? err.message : t.deleteFailed,
       });
     } finally {
       setFormStatus({ loading: false });
@@ -136,25 +139,25 @@ export default function EditBayPage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <PageHeader title="Edit Bay" subtitle={bay?.code} backHref={`/bay/${id}`} />
+        <PageHeader title={t.editBay} subtitle={bay?.code} backHref={`/bay/${id}`} />
 
         <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
           <input
             type="text"
-            placeholder="Code *"
+            placeholder={t.codePlaceholderShort}
             value={code}
             onChange={(e) => setCode(e.target.value)}
             className={inputClass}
           />
           <input
             type="text"
-            placeholder="Zone"
+            placeholder={t.zonePlaceholderShort}
             value={zone}
             onChange={(e) => setZone(e.target.value)}
             className={inputClass}
           />
           <textarea
-            placeholder="Description"
+            placeholder={t.description}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
@@ -163,7 +166,7 @@ export default function EditBayPage() {
 
           {/* Status */}
           <div>
-            <p className="text-xs text-white/30 mb-2">Status</p>
+            <p className="text-xs text-white/30 mb-2">{t.status}</p>
             <div className="flex gap-2">
               {STATUS_OPTIONS.map((s) => (
                 <button
@@ -183,7 +186,7 @@ export default function EditBayPage() {
               ))}
               {bay.status === "occupied" && (
                 <span className="px-3 py-1.5 text-xs text-white/30">
-                  (occupied — managed by vehicle move)
+                  {t.occupiedNote}
                 </span>
               )}
             </div>
@@ -191,7 +194,7 @@ export default function EditBayPage() {
 
           {/* Features */}
           <div>
-            <p className="text-xs text-white/30 mb-2">Features</p>
+            <p className="text-xs text-white/30 mb-2">{t.features}</p>
             <div className="flex flex-wrap gap-2">
               {FEATURE_OPTIONS.map((f) => (
                 <button
@@ -223,7 +226,7 @@ export default function EditBayPage() {
               fullWidth={false}
               className="flex-1"
             >
-              Delete
+              {t.delete}
             </ActionButton>
           )}
           <ActionButton
@@ -233,7 +236,7 @@ export default function EditBayPage() {
             fullWidth={false}
             className="flex-[2]"
           >
-            Save Changes
+            {t.saveChanges}
           </ActionButton>
         </div>
       </div>

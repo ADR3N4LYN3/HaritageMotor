@@ -7,12 +7,15 @@ import { useBay } from "@/hooks/useBay";
 import { useAppStore } from "@/store/app.store";
 import type { Vehicle } from "@/lib/types";
 import useSWR from "swr";
+import { useI18n } from "@/lib/i18n";
+import { bayDetailI18n } from "@/lib/translations";
 
 export default function BayPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
   const user = useAppStore((s) => s.user);
+  const { t } = useI18n(bayDetailI18n);
   const canEdit = user?.role === "admin" || user?.role === "operator";
 
   const { bay, isLoading } = useBay(id);
@@ -37,7 +40,7 @@ export default function BayPage() {
   if (!bay) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Bay not found</div>
+        <div className="text-center py-12 text-white/50">{t.bayNotFound}</div>
       </AppShell>
     );
   }
@@ -63,7 +66,7 @@ export default function BayPage() {
               className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/50 text-xs hover:text-gold hover:border-gold/30 transition-all duration-300"
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
             >
-              Edit
+              {t.edit}
             </button>
           ) : undefined}
         />
@@ -90,13 +93,13 @@ export default function BayPage() {
         {/* Vehicle in this bay */}
         {vehiclesError && (
           <div className="text-center py-8 text-danger text-sm">
-            Failed to load vehicles
+            {t.failedLoadVehicles}
           </div>
         )}
         {!vehiclesError && vehicles.length > 0 && (
           <div>
             <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-3">
-              Vehicle in Bay
+              {t.vehicleInBay}
             </h2>
             {vehicles.map((v) => (
               <button
@@ -117,7 +120,7 @@ export default function BayPage() {
 
         {bay.status === "free" && (
           <div className="text-center py-8 text-white/30 text-sm">
-            This bay is available
+            {t.bayAvailable}
           </div>
         )}
       </div>

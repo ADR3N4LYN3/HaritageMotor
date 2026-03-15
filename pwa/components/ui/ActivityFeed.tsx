@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo, useCallback } from "react";
 import useSWR from "swr";
 import { useI18n } from "@/lib/i18n";
 import { activityI18n } from "@/lib/translations";
@@ -16,7 +17,7 @@ function timeAgo(dateStr: string): string {
   return `${days}d`;
 }
 
-export function ActivityFeed({ active = true }: { active?: boolean }) {
+export const ActivityFeed = memo(function ActivityFeed({ active = true }: { active?: boolean }) {
   const { t } = useI18n(activityI18n);
   const { data, isLoading } = useSWR<PaginatedResponse<ActivityEntry>>(
     active ? "/activity?per_page=20" : null,
@@ -25,23 +26,24 @@ export function ActivityFeed({ active = true }: { active?: boolean }) {
 
   const entries = data?.data || [];
 
-  function formatAction(action: string): string {
+  const verbMap = useMemo<Record<string, string>>(() => ({
+    create: t.created,
+    update: t.updated,
+    delete: t.deleted,
+    move: t.moved,
+    exit: t.exited,
+    complete: t.completed,
+    upload: t.uploaded,
+  }), [t.created, t.updated, t.deleted, t.moved, t.exited, t.completed, t.uploaded]);
+
+  const formatAction = useCallback((action: string): string => {
     const parts = action.split(".");
     if (parts.length === 2) {
       const [resource, verb] = parts;
-      const verbMap: Record<string, string> = {
-        create: t.created,
-        update: t.updated,
-        delete: t.deleted,
-        move: t.moved,
-        exit: t.exited,
-        complete: t.completed,
-        upload: t.uploaded,
-      };
       return `${verbMap[verb] || verb} ${resource}`;
     }
     return action;
-  }
+  }, [verbMap]);
 
   if (isLoading) {
     return (
@@ -98,4 +100,4 @@ export function ActivityFeed({ active = true }: { active?: boolean }) {
       ))}
     </div>
   );
-}
+});

@@ -19,7 +19,7 @@ export function PhotoGrid({ photos, required, onRemove }: PhotoGridProps) {
       <div className="grid grid-cols-3 gap-2">
         {photos.map((photo, index) => (
           <div key={photo.preview} className="relative aspect-square rounded-lg overflow-hidden">
-            <Image src={photo.preview} alt={`Photo ${index + 1}`} fill unoptimized sizes="33vw" className="object-cover" />
+            <Image src={photo.preview} alt={`Photo ${index + 1}`} fill unoptimized sizes="(max-width: 640px) 50vw, 33vw" className="object-cover" />
             {onRemove && (
               <button
                 onClick={() => onRemove(index)}

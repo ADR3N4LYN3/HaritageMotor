@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
+import { useI18n } from "@/lib/i18n";
+import { bayFormI18n } from "@/lib/translations";
 
 const FEATURE_OPTIONS = [
   "climate_controlled",
@@ -19,6 +21,7 @@ const FEATURE_OPTIONS = [
 export default function NewBayPage() {
   const router = useRouter();
   const user = useAppStore((s) => s.user);
+  const { t } = useI18n(bayFormI18n);
   const canCreate = user?.role === "admin" || user?.role === "operator";
 
   const [code, setCode] = useState("");
@@ -33,7 +36,7 @@ export default function NewBayPage() {
   if (!canCreate) {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Access denied</div>
+        <div className="text-center py-12 text-white/50">{t.accessDenied}</div>
       </AppShell>
     );
   }
@@ -59,14 +62,14 @@ export default function NewBayPage() {
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         if (err.status === 409) {
-          setStatus({ error: "This code already exists in your facility" });
+          setStatus({ error: t.codeExists });
         } else if (err.status === 402) {
-          setStatus({ error: "Bay limit reached for your plan. Please upgrade." });
+          setStatus({ error: t.bayLimitReached });
         } else {
           setStatus({ error: err.message });
         }
       } else {
-        setStatus({ error: "Network error. Please try again." });
+        setStatus({ error: t.networkError });
       }
     } finally {
       setStatus({ loading: false });
@@ -79,25 +82,25 @@ export default function NewBayPage() {
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
-        <PageHeader title="New Bay" backHref="/bays" />
+        <PageHeader title={t.newBay} backHref="/bays" />
 
         <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
           <input
             type="text"
-            placeholder="Code * (e.g. A-01, VIP-03)"
+            placeholder={t.codePlaceholder}
             value={code}
             onChange={(e) => setCode(e.target.value)}
             className={inputClass}
           />
           <input
             type="text"
-            placeholder="Zone (e.g. Zone A, Indoor)"
+            placeholder={t.zonePlaceholder}
             value={zone}
             onChange={(e) => setZone(e.target.value)}
             className={inputClass}
           />
           <textarea
-            placeholder="Description"
+            placeholder={t.description}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
@@ -106,7 +109,7 @@ export default function NewBayPage() {
 
           {/* Features */}
           <div>
-            <p className="text-xs text-white/30 mb-2">Features</p>
+            <p className="text-xs text-white/30 mb-2">{t.features}</p>
             <div className="flex flex-wrap gap-2">
               {FEATURE_OPTIONS.map((f) => (
                 <button
@@ -134,7 +137,7 @@ export default function NewBayPage() {
             loading={loading}
             disabled={!code.trim()}
           >
-            Create Bay
+            {t.createBay}
           </ActionButton>
         </div>
       </div>

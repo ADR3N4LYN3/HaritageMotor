@@ -75,7 +75,7 @@ function TenantDashboard() {
   // Unfiltered stats — always fetch totals regardless of active filter
   const { data: statsAll } = useSWR<{ data: Vehicle[]; total_count: number }>(
     "/vehicles?page=1&per_page=200",
-    { refreshInterval: 30000 }
+    { refreshInterval: 30000, dedupingInterval: 60000 }
   );
 
   const vehicles = data?.data || [];
@@ -88,14 +88,20 @@ function TenantDashboard() {
   );
 
   const statuses = ["", "stored", "out", "maintenance", "transit"];
-  const statusLabels: Record<string, string> = {
+  const statusLabels: Record<string, string> = useMemo(() => ({
     "": t.all, stored: t.stored, out: t.out, maintenance: t.maint, transit: t.transit,
-  };
+  }), [t.all, t.stored, t.out, t.maint, t.transit]);
 
-  const statsVehicles = statsAll?.data || [];
   const fleetTotal = statsAll?.total_count ?? 0;
-  const storedCount = statsVehicles.filter((v) => v.status === "stored").length;
-  const outCount = statsVehicles.filter((v) => v.status === "out").length;
+  const { storedCount, outCount } = useMemo(() => {
+    const vehicles = statsAll?.data || [];
+    let stored = 0, out = 0;
+    for (const v of vehicles) {
+      if (v.status === "stored") stored++;
+      else if (v.status === "out") out++;
+    }
+    return { storedCount: stored, outCount: out };
+  }, [statsAll?.data]);
 
   return (
     <AppShell wide>

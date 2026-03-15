@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/store/app.store";
@@ -19,9 +20,12 @@ export function DesktopTopBar() {
   );
   const pendingTasks = taskData?.total_count ?? 0;
 
-  const pageLabel = Object.entries(t).find(
-    ([path]) => pathname === path || (path !== "/dashboard" && pathname.startsWith(path))
-  )?.[1] || "";
+  const pageLabel = useMemo(() =>
+    Object.entries(t).find(
+      ([path]) => pathname === path || (path !== "/dashboard" && pathname.startsWith(path))
+    )?.[1] || "",
+    [pathname, t]
+  );
 
   return (
     <header className="h-[52px] shrink-0 flex items-center justify-between px-7 border-b border-white/[0.04] bg-black">
