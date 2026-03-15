@@ -4,7 +4,7 @@
  * https://vpic.nhtsa.dot.gov/api/
  */
 
-import useSWRImmutable from "swr/immutable";
+import useSWR from "swr";
 
 const BASE = "https://vpic.nhtsa.dot.gov/api/vehicles";
 
@@ -22,21 +22,22 @@ interface NHTSAResponse<T> {
   Results: T[];
 }
 
-async function fetchJSON<T>(url: string): Promise<T> {
+// Explicit fetcher for external API (bypasses SWRConfig global fetcher which uses our backend api.get)
+const nhtsaFetcher = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`NHTSA API error: ${res.status}`);
   return res.json();
-}
+};
 
 /**
  * Hook: fetch all vehicle makes from NHTSA.
  * Cached immutably (data doesn't change often).
  */
 export function useVehicleMakes() {
-  const { data, isLoading, error } = useSWRImmutable<NHTSAResponse<NHTSAMake>>(
-    `${BASE}/GetAllMakes?format=json`,
-    fetchJSON,
-    { revalidateOnFocus: false }
+  const { data, isLoading, error } = useSWR<NHTSAResponse<NHTSAMake>>(
+    `nhtsa:makes`,
+    () => nhtsaFetcher(`${BASE}/GetAllMakes?format=json`),
+    { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
   const makes = data?.Results
@@ -51,10 +52,10 @@ export function useVehicleMakes() {
  * Hook: fetch models for a given make from NHTSA.
  */
 export function useVehicleModels(make: string | null) {
-  const { data, isLoading, error } = useSWRImmutable<NHTSAResponse<NHTSAModel>>(
-    make ? `${BASE}/GetModelsForMake/${encodeURIComponent(make)}?format=json` : null,
-    fetchJSON,
-    { revalidateOnFocus: false }
+  const { data, isLoading, error } = useSWR<NHTSAResponse<NHTSAModel>>(
+    make ? `nhtsa:models:${make}` : null,
+    () => nhtsaFetcher(`${BASE}/GetModelsForMake/${encodeURIComponent(make!)}?format=json`),
+    { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
   const models = data?.Results
