@@ -53,7 +53,7 @@ Located in `internal/service/`. Each service:
 
 Large services are split into focused files within the same package:
 - `contact/service.go` (logic) + `contact/templates.go` (i18n email HTML builders)
-- `report/service.go` (data loading) + `report/pdf_builder.go` (PDF rendering) + `report/logo.go` (go:embed logo for PDF header)
+- `report/service.go` (data loading, LIMIT 1000 events / 500 tasks) + `report/pdf_builder.go` (3-page PDF: summary cards, timeline, tasks+docs) + `report/logo.go` (go:embed logo for PDF header)
 
 ### Domain Layer
 

@@ -66,8 +66,8 @@ internal/
     mailer/                      — Envoi emails via Resend API
     plan/                        — Limites par plan (starter/pro/enterprise)
     report/
-      service.go                 — Génération PDF véhicule (orchestration)
-      pdf_builder.go             — Construction PDF pages (go-pdf/fpdf), design dark luxury
+      service.go                 — Génération PDF véhicule (orchestration, LIMIT 1000 events / 500 tasks)
+      pdf_builder.go             — Construction PDF 3 pages (header dark, cards, stats, tables), design dark luxury
       logo.go                    — go:embed du logo-crest-v2.png pour le PDF
       logo-crest-v2.png          — Logo embarqué (copie pour go:embed)
   turnstile/turnstile.go         — Cloudflare Turnstile token verification (shared auth + contact)
@@ -223,6 +223,27 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 
 7 templates (confirmation contact FR/EN/DE, notification admin, welcome FR/EN/DE) dans `contact/service.go` et `mailer/service.go`. Design dark luxury, i18n via champ `lang` (en|fr|de). Polices : `Cormorant Garamond` (serif, titres/brand) + `DM Sans` (sans, body/labels) avec fallbacks Georgia/Helvetica Neue pour les clients email qui ne supportent pas les web fonts.
 
+### Rapport PDF véhicule
+
+PDF 3 pages "Vehicle Chain of Custody Report" généré via `go-pdf/fpdf`. Design dark luxury aligné avec l'identité visuelle du projet.
+
+**Page 1 — Summary :**
+- Header dark (#0e0d0b) : logo crest 20mm centré, "HERITAGE MOTOR" Times Bold 14pt gold, sous-titre, nom du tenant, séparateur diamant or
+- Metadata : date de génération + Report ID
+- Card "Vehicle Information" : make/model, year, color, license plate, VIN, status (bordure arrondie, titre Times Italic 14pt gold)
+- Cards "Owner" + "Custody Period" **côte à côte** (deux colonnes)
+- Ligne de 4 stats cards : Events, Tasks Completed, Documents, Photos (valeur Helvetica 22pt, label uppercase 6.5pt)
+
+**Page 2 — Timeline :**
+- Titre "Complete Timeline" (Times Italic 16pt gold, underline)
+- Table : header dark (#1e1c12) texte gold uppercase, lignes alternées (#f8f7f4 / blanc), colonnes Date / Event Type / Notes
+
+**Page 3 — Tasks + Documents :**
+- Table "Completed Tasks" : Task / Type / Completed / Notes
+- Table "Documents" : Filename / Type / Uploaded / Notes
+
+**Footer (toutes pages) :** ligne or, "Heritage Motor | date | Report ID", heritagemotor.app, numéro de page (1/3)
+
 ## Architecture PWA (pwa/)
 
 → **Référence complète** : [`docs/pwa.md`](docs/pwa.md) et [`pwa/README.md`](pwa/README.md)
@@ -234,8 +255,8 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **AuthBootstrap + password_change_required** : AuthBootstrap redirige vers `/change-password` dans son `onSuccess` si `user.password_change_required === true` (enforcement post-F5)
 - **Offline queue** : `pushAction()` en IndexedDB sur erreur réseau (move/task/exit). Photos non sérialisables → upload uniquement en ligne. Max 2 retries, backoff cap 10s
 - **Zustand** : `accessToken`, `pendingCount`, `logout()` — **in-memory**, perdu au refresh
-- **Dashboard tabs (Fleet/Activity)** : toujours montés avec CSS `hidden` class (jamais conditional rendering) pour préserver les animations `useReveal` (IntersectionObserver one-shot)
-- **ActivityFeed `active` prop** : passer `active={false}` quand l'onglet Activity est masqué pour stopper le polling SWR
+- **Dashboard layout 2 colonnes** : desktop (`lg+`) = fleet 2/3 + activity feed 1/3 (sticky sidebar, toujours actif). Mobile = onglets Fleet/Activity avec CSS `hidden` class (jamais conditional rendering) pour préserver `useReveal`. `<AppShell wide>` retire la contrainte `max-w-[900px]`
+- **ActivityFeed `active` prop** : passer `active={false}` quand l'onglet Activity est masqué pour stopper le polling SWR. Sur desktop dashboard, toujours `active` car visible en sidebar
 - **Scan layout** : le scan a son propre layout (`scan/layout.tsx`) avec `<SideNav />` car il n'utilise pas AppShell. Le `lg:left-[220px]` sur les conteneurs fixed doit rester synchronisé avec la largeur du SideNav
 - **LangSwitcher partagé** : composant unique (`components/ui/LangSwitcher.tsx`) avec SVG flags inline (pas d'emoji), utilisé dans TopBar ET DesktopTopBar. Persiste dans `localStorage('hm-lang')` — partagé avec les pages statiques landing. Utilise `broadcastLang()` pour notifier tous les hooks `useI18n()` en temps réel
 - **i18n PWA** : hook `useI18n(dict)` dans `lib/i18n.ts` + dictionnaires EN/FR/DE dans `lib/translations.ts`. Pages traduites : dashboard, vehicles, bays, tasks, profile, scan (+ sheets), audit, DesktopTopBar, SideNav, BottomNav, ActivityFeed, login, change-password. Dicts : `dashboardI18n`, `baysI18n`, `tasksI18n`, `profileI18n`, `scanI18n`, `activityI18n`, `auditI18n`, `navI18n`, `pageLabelsI18n`, `commonI18n`. Login/change-password utilisent leurs propres dicts locaux

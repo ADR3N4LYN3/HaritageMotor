@@ -236,9 +236,14 @@ Returns QR data for all vehicles (for QR code generation/printing).
 ### GET /vehicles/:id/report
 **Operator+ required.**
 
-Generates a PDF report for a vehicle (timeline, tasks, metadata). Uses `go-pdf/fpdf` with a LIMIT of 1000 events and 500 tasks.
+Generates a branded PDF report for a vehicle ("Vehicle Chain of Custody Report"). Uses `go-pdf/fpdf` with a LIMIT of 1000 events and 500 tasks.
 
-**Response:** `application/pdf` binary.
+**PDF structure (3 pages):**
+- **Page 1 — Summary:** dark header with logo, vehicle info card, owner + custody side-by-side, 4 stats cards (events, tasks, docs, photos)
+- **Page 2 — Timeline:** complete event history table (date, type, notes)
+- **Page 3 — Tasks + Documents:** completed tasks table + documents table
+
+**Response:** `application/pdf` binary. Filename: `HeritageMotor_{Make}_{Model}_{Date}.pdf`.
 
 ---
 

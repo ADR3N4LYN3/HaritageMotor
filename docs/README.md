@@ -79,9 +79,9 @@ heritage-motor/
 │   │   ├── task/                 #   Task operations
 │   │   ├── document/             #   Document operations
 │   │   ├── user/                 #   User operations
-│   │   └── report/               #   PDF report generation (go-pdf/fpdf), dark luxury design
-│   │       ├── service.go        #     Data loading + orchestration
-│   │       ├── pdf_builder.go    #     PDF rendering (dark header, logo, gold accents, tables)
+│   │   └── report/               #   PDF report generation (go-pdf/fpdf), dark luxury 3-page design
+│   │       ├── service.go        #     Data loading + orchestration (LIMIT 1000 events, 500 tasks)
+│   │       ├── pdf_builder.go    #     3-page PDF: summary cards, timeline table, tasks+docs tables
 │   │       ├── logo.go           #     go:embed for logo-crest-v2.png
 │   │       └── logo-crest-v2.png #     Embedded logo for PDF header
 │   ├── storage/                  # S3 client
@@ -174,7 +174,7 @@ docker compose up -d --build
 - **PWA i18n**: Shared `useI18n` hook (`lib/i18n.ts`) + translation dictionaries (`lib/translations.ts`). LangSwitcher broadcasts changes to all hooks in real-time. Translated pages: dashboard, bays, DesktopTopBar, login, change-password
 - **Currency toggle**: Pricing section supports EUR/USD switch, persisted in localStorage (`hm-currency`). Amounts: Starter €800/$880, Pro €1,400/$1,540, Climate add-on +€350/+$385
 - **Typography**: DM Sans 300 (sans-serif) for headings, DM Sans 400/500 for UI. Cormorant Garamond reserved for brand/logo only ("HM", "Heritage Motor" on login/admin)
-- **Export theming**: All exports (emails + PDF) aligned with the dark luxury brand. Emails use `Cormorant Garamond` + `DM Sans` font stacks with Georgia/Helvetica fallbacks. PDF report has dark header with embedded logo, Times serif headings (fpdf built-in closest to Cormorant), gold accents, dark table headers, branded footer
+- **Export theming**: All exports (emails + PDF) aligned with the dark luxury brand. Emails use `Cormorant Garamond` + `DM Sans` font stacks with Georgia/Helvetica fallbacks. PDF report: 3-page layout — p1 dark header + vehicle card + owner/custody side-by-side + 4 stats cards, p2 timeline table, p3 tasks + docs tables. Times Italic 14-16pt gold titles, dark table headers (#1e1c12), alternating rows, page numbers in footer
 - **Email normalization**: TrimSpace + ToLower on both backend (Go) and frontend (TypeScript) before any auth/invite call
 
 ## Domains
