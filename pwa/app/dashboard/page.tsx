@@ -72,6 +72,12 @@ function TenantDashboard() {
     { refreshInterval: 30000 }
   );
 
+  // Unfiltered stats — always fetch totals regardless of active filter
+  const { data: statsAll } = useSWR<{ data: Vehicle[]; total_count: number }>(
+    "/vehicles?page=1&per_page=200",
+    { refreshInterval: 30000 }
+  );
+
   const vehicles = data?.data || [];
   const totalCount = data?.total_count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
@@ -86,8 +92,10 @@ function TenantDashboard() {
     "": t.all, stored: t.stored, out: t.out, maintenance: t.maint, transit: t.transit,
   };
 
-  const storedCount = vehicles.filter((v) => v.status === "stored").length;
-  const outCount = vehicles.filter((v) => v.status === "out").length;
+  const statsVehicles = statsAll?.data || [];
+  const fleetTotal = statsAll?.total_count ?? 0;
+  const storedCount = statsVehicles.filter((v) => v.status === "stored").length;
+  const outCount = statsVehicles.filter((v) => v.status === "out").length;
 
   return (
     <AppShell>
@@ -110,7 +118,7 @@ function TenantDashboard() {
         <div className="reveal-up reveal-d1">
           <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
             {[
-              { value: totalCount, label: t.total, sub: t.vehicles },
+              { value: fleetTotal, label: t.total, sub: t.vehicles },
               { value: storedCount, label: t.stored, sub: t.inCustody },
               { value: outCount, label: t.out, sub: t.withOwners },
             ].map((s) => (
