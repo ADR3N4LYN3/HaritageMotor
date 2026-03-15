@@ -171,7 +171,7 @@ docker compose up -d --build
 - **Superadmin**: Platform-level role with no tenant context, manages tenants and invitations
 - **Contact i18n**: Confirmation email translated in EN/FR/DE based on visitor's language preference
 - **Landing i18n**: All static pages (index, contact, privacy, legal, 404) support EN/FR/DE via lang switcher, persisted in localStorage
-- **PWA i18n**: Shared `useI18n` hook (`lib/i18n.ts`) + translation dictionaries (`lib/translations.ts`). LangSwitcher broadcasts changes to all hooks in real-time. Translated pages: dashboard, vehicles, bays, tasks, profile, scan, audit, nav, activity feed, login, change-password
+- **PWA i18n**: Shared `useI18n` hook (`lib/i18n.ts`) + 20 translation dictionaries in `lib/translations.ts`. LangSwitcher broadcasts changes in real-time. **All pages fully translated** EN/FR/DE: dashboard, vehicles, vehicle detail/new/edit/move/task/photo/exit, bays, bay new/edit/detail, tasks, profile, scan (+sheets), audit, qr-codes, users, nav, activity feed, CreateTaskModal, login, change-password
 - **Vehicle catalog**: Curated static catalog (`lib/vehicle-catalog.ts`) with 65 makes and 700+ models. Cascading Make → Model → Year selection via searchable CustomSelect. "Other..." for unlisted vehicles
 - **Task types**: 9 task types with SVG icons (`lib/task-constants.tsx`): battery_start, tire_pressure, wash, fluid_check, inspection, documentation, photography, cleaning, custom. TaskIcon component renders inline SVG per type
 - **Audit log**: Admin-only audit page (`/audit`) with resource type filters (vehicles, bays, tasks, users, documents), pagination, translated action verbs (auditI18n)
