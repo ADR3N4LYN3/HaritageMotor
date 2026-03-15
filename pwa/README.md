@@ -43,7 +43,8 @@ pwa/
     globals.css                   Animations, touch targets, safe areas
     login/page.tsx                Login (email/password + MFA, show/hide password)
     change-password/page.tsx      Changement mdp (PasswordInput, barre de force, checklist)
-    dashboard/page.tsx            Dashboard unifie : onglets Fleet/Activity (always-mounted, hidden class), registre vehicules + quick links par role
+    dashboard/page.tsx            Dashboard : 2 colonnes desktop (fleet 2/3 + activity 1/3), onglets mobile
+    vehicles/page.tsx             Liste complete vehicules (search, filtres statut, table/cards)
     scan/
       layout.tsx                  Layout scan (SideNav desktop, pas d'AppShell)
       page.tsx                    Scanner QR + bottom sheets + bouton retour mobile
@@ -77,7 +78,7 @@ pwa/
     AuthBootstrap.tsx             Restaure session au mount (cookie → Zustand)
     ErrorBoundary.tsx             Error boundary global (react-error-boundary, fallback plein ecran)
     layout/
-      AppShell.tsx                Wrapper responsive (SideNav lg+ / TopBar+BottomNav mobile)
+      AppShell.tsx                Wrapper responsive (SideNav lg+ / TopBar+BottomNav mobile), prop `wide` pour dashboard
       TopBar.tsx                  Header fixe mobile (logo, SyncBadge, LangSwitcher, bell, avatar)
       DesktopTopBar.tsx           Header desktop (page label, LangSwitcher, bell, avatar)
       SideNav.tsx                 Sidebar desktop 220px (role-based nav items)
@@ -132,7 +133,7 @@ pwa/
     api.ts                        Client HTTP (auto-refresh 401, FormData)
     auth.ts                       Login, MFA verify, logout
     i18n.ts                       Hook useI18n + broadcastLang (EN/FR/DE temps réel)
-    translations.ts               Dictionnaires i18n (dashboard, bays, page labels, audit)
+    translations.ts               Dictionnaires i18n (toutes pages + nav + audit + common)
     types.ts                      Interfaces TypeScript (Vehicle, Bay, Task, Event, User, AuditEntry, etc.)
     task-constants.ts             Constantes partagées tâches (TASK_ICONS)
     offline-queue.ts              CRUD IndexedDB (pushAction, getAll, remove)

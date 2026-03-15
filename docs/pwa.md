@@ -37,7 +37,9 @@ pwa/
 │   │   └── qr-codes/page.tsx  # QR code generation and printing (admin only)
 │   ├── dashboard/
 │   │   ├── layout.tsx         # Dashboard layout
-│   │   └── page.tsx           # Unified dashboard: Fleet/Activity tabs (always-mounted with hidden class), vehicle registry + role-based quick links
+│   │   └── page.tsx           # Dashboard: 2-col desktop (fleet 2/3 + activity 1/3), tabbed mobile
+│   ├── vehicles/
+│   │   └── page.tsx           # Full vehicle list with search, status filters, table/cards
 │   ├── vehicle/new/
 │   │   └── page.tsx           # New vehicle onboarding form
 │   ├── vehicle/[id]/
@@ -75,7 +77,7 @@ pwa/
 ├── components/
 │   ├── ErrorBoundary.tsx        # App error boundary (react-error-boundary, full-screen fallback with retry)
 │   ├── layout/
-│   │   ├── AppShell.tsx       # Responsive shell: SideNav (lg+) + TopBar (mobile) + BottomNav (mobile)
+│   │   ├── AppShell.tsx       # Responsive shell: SideNav (lg+) + TopBar (mobile) + BottomNav (mobile), `wide` prop for dashboard
 │   │   ├── TopBar.tsx         # Mobile/tablet header with notification bell + sync badge + lang switcher
 │   │   ├── DesktopTopBar.tsx  # Desktop topbar (page title + bell + lang switcher + avatar)
 │   │   ├── SideNav.tsx        # Desktop sidebar navigation (220px, role-based nav items)
@@ -129,7 +131,7 @@ pwa/
 │   ├── api.ts                 # API client with auto-refresh
 │   ├── auth.ts                # Login, MFA, logout functions
 │   ├── i18n.ts                # Shared i18n hook (useI18n) + broadcast mechanism
-│   ├── translations.ts        # Translation dictionaries EN/FR/DE (dashboard, bays, page labels)
+│   ├── translations.ts        # Translation dictionaries EN/FR/DE (all pages + nav + audit + common)
 │   ├── types.ts               # TypeScript interfaces
 │   ├── task-constants.ts      # Shared task icons (TASK_ICONS)
 │   └── offline-queue.ts       # IndexedDB persistence layer
@@ -340,7 +342,8 @@ Fallback: manual code entry for devices without camera access.
 | `/admin` | Yes (superadmin) | Legacy admin page |
 | `/admin/qr-codes` | Yes (admin) | QR code generation and printing |
 | `/scan` | Yes | QR scanner + bottom sheets (vehicles, bays, tasks) |
-| `/dashboard` | Yes | Unified dashboard: vehicle registry + role-based quick links (superadmin sees "Admin Panel" link) |
+| `/dashboard` | Yes | 2-column desktop (fleet 2/3 + activity 1/3), tabbed mobile, quick actions, stats |
+| `/vehicles` | Yes | Full vehicle list with search, status filters, table (desktop) / cards (mobile) |
 | `/profile` | Yes | User profile (MFA setup/disable, logout) |
 | `/tasks` | Yes | Task list with filters, edit (technician+), delete (admin) |
 | `/users` | Yes (admin) | User management CRUD |
@@ -410,6 +413,20 @@ Responsive layout that adapts to viewport:
 └────────┴─────────────────────────┘
 ```
 
+**Wide mode** (`<AppShell wide>`): removes the 900px max-width, content fills available width. Used by the dashboard for the 2-column layout (fleet 2/3 + activity sidebar 1/3).
+
+**Dashboard Desktop (lg+)**
+```
+┌────────┬──────────────────┬──────────┐
+│        │   DesktopTopBar               │
+│ Side   ├──────────────────┬──────────┤
+│ Nav    │                  │ Activity │
+│ 220px  │  Fleet (2/3)     │ Feed     │
+│        │  quick actions   │ (1/3)    │
+│        │  search + table  │ sticky   │
+└────────┴──────────────────┴──────────┘
+```
+
 ### Navigation
 
 **Mobile/Tablet:** Bottom navigation bar with four tabs:
@@ -419,7 +436,7 @@ Responsive layout that adapts to viewport:
 - **Profile** — User profile, MFA settings, logout
 
 **Desktop:** Sidebar navigation (SideNav, 220px) with role-based items:
-- All roles: Home, Scan, Bays, Tasks
+- All roles: Home, Vehicles, Scan, Bays, Tasks
 - Admin/Operator: + QR Codes
 - Admin: + Team, + Audit Log
 - Superadmin: + Admin
