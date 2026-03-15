@@ -83,12 +83,17 @@ nav { background: rgba(14,13,11,0.95); backdrop-filter: blur(24px) saturate(1.2)
 .mobile-drawer a:hover { color: var(--gold); }
 .mobile-drawer .drawer-cta { display: block; text-align: center; margin-top: 1.5rem; padding: 0.75rem 1.5rem; border: 1px solid rgba(184,149,90,0.4); color: var(--gold); font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 500; border-radius: 4px; transition: all 0.3s; }
 .mobile-drawer .drawer-cta:hover { background: var(--gold); color: var(--black); }
-.mobile-drawer .drawer-lang { display: flex; flex-direction: column; gap: 0; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
-.mobile-drawer .drawer-lang button { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.82rem; font-weight: 400; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); padding: 0.75rem 0; transition: all 0.2s; display: flex; align-items: center; gap: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
-.mobile-drawer .drawer-lang button:last-child { border-bottom: none; }
-.mobile-drawer .drawer-lang button:hover { color: var(--gold); }
-.mobile-drawer .drawer-lang button.active { color: var(--gold); font-weight: 500; }
-.mobile-drawer .drawer-lang .flag-icon { width: 20px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+.mobile-drawer .drawer-lang { position: relative; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
+.drawer-lang-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); cursor: pointer; font-family: var(--sans); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em; color: rgba(255,255,255,0.5); padding: 0.4rem 0.65rem; transition: all 0.3s; display: flex; align-items: center; gap: 5px; border-radius: 8px; }
+.drawer-lang-btn:hover { border-color: rgba(184,149,90,0.3); color: var(--gold); }
+.drawer-lang-btn svg.chevron { width: 10px; height: 10px; opacity: 0.6; transition: transform 0.3s; }
+.drawer-lang.open .drawer-lang-btn svg.chevron { transform: rotate(180deg); }
+.drawer-lang-drop { display: none; position: absolute; left: 0; bottom: calc(100% + 6px); background: var(--dark); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.5); min-width: 120px; z-index: 310; }
+.drawer-lang.open .drawer-lang-drop { display: flex; flex-direction: column; }
+.drawer-lang-drop button { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.78rem; font-weight: 400; color: rgba(255,255,255,0.6); padding: 0.65rem 0.9rem; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+.drawer-lang-drop button:hover { background: rgba(184,149,90,0.08); color: var(--gold); }
+.drawer-lang-drop button.active { color: var(--gold); font-weight: 500; }
+.drawer-lang .flag-icon { width: 18px; height: 13px; border-radius: 2px; flex-shrink: 0; }
 
 /* MAIN */
 main { flex: 1; padding: 5rem 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; max-width: 1280px; margin: 0 auto; width: 100%; align-items: start; }
@@ -404,10 +409,17 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
   <a href="/#platform" data-i18n="nav.platform">Platform</a>
   <a href="/#pricing" data-i18n="nav.pricing">Pricing</a>
   <a href="/" data-i18n="nav.home">Home</a>
-  <div class="drawer-lang">
-    <button class="active" data-lang="en"><svg class="flag-icon" viewBox="0 0 60 30"><clipPath id="ds"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="dt"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#ds)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#dt)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg> English</button>
-    <button data-lang="fr"><svg class="flag-icon" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg> Fran&ccedil;ais</button>
-    <button data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
+  <div class="drawer-lang" id="drawerLang">
+    <button class="drawer-lang-btn" id="drawerLangBtn" aria-label="Change language" aria-expanded="false">
+      <span class="drawer-lang-flag" id="drawerLangFlag"></span>
+      <span id="drawerLangLabel">EN</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="drawer-lang-drop" id="drawerLangDrop">
+      <button class="active" data-lang="en"><svg class="flag-icon" viewBox="0 0 60 30"><clipPath id="ds"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="dt"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#ds)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#dt)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg> English</button>
+      <button data-lang="fr"><svg class="flag-icon" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg> Fran&ccedil;ais</button>
+      <button data-lang="de"><svg class="flag-icon" viewBox="0 0 5 3"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg> Deutsch</button>
+    </div>
   </div>
 </div>
 
@@ -696,10 +708,29 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
     document.getElementById('langSwitch').classList.remove('open');
-    document.querySelectorAll('.drawer-lang button').forEach(function(b) {
+    document.querySelectorAll('#drawerLangDrop button').forEach(function(b) {
       b.classList.toggle('active', b.getAttribute('data-lang') === lang);
     });
+    updateDrawerLangBtn(lang);
+    var dl = document.getElementById('drawerLang');
+    if (dl) { dl.classList.remove('open'); }
     try { localStorage.setItem('hm-lang', lang); } catch(e) {}
+  }
+
+  /* Update drawer lang button flag + label — safe: hardcoded SVG from data-lang values only */
+  function updateDrawerLangBtn(l) {
+    var dlFlag = document.getElementById('drawerLangFlag');
+    var dlLabel = document.getElementById('drawerLangLabel');
+    if (!dlFlag || !dlLabel) return;
+    dlLabel.textContent = l.toUpperCase();
+    // Replace flag SVG by cloning from the matching dropdown option
+    var src = document.querySelector('#drawerLangDrop button[data-lang="' + l + '"] .flag-icon');
+    if (src) {
+      var clone = src.cloneNode(true);
+      clone.setAttribute('width', '16');
+      clone.setAttribute('height', '12');
+      dlFlag.replaceChildren(clone);
+    }
   }
 
   /* --- Language switcher ------------------------------------------------ */
@@ -837,9 +868,25 @@ footer { background: var(--black); padding: 2.5rem 4rem; display: grid; grid-tem
     link.addEventListener('click', function() { toggleDrawer(false); });
   });
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') toggleDrawer(false); });
-  drawer.querySelectorAll('.drawer-lang button').forEach(function(btn) {
-    btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); });
+  /* Drawer lang dropdown — PWA-style toggle */
+  var drawerLangEl = document.getElementById('drawerLang');
+  var drawerLangBtnEl = document.getElementById('drawerLangBtn');
+  if (drawerLangBtnEl) {
+    drawerLangBtnEl.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = drawerLangEl.classList.toggle('open');
+      drawerLangBtnEl.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+  document.querySelectorAll('#drawerLangDrop button').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setLang(this.getAttribute('data-lang'));
+      drawerLangEl.classList.remove('open');
+      drawerLangBtnEl.setAttribute('aria-expanded', 'false');
+    });
   });
+  /* Init drawer flag on load */
+  updateDrawerLangBtn(document.documentElement.lang || 'en');
 </script>
 <script>
 (function() {
