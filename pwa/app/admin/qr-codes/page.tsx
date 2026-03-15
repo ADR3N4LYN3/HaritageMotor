@@ -6,6 +6,8 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useAppStore } from "@/store/app.store";
 import useSWR from "swr";
+import { useI18n } from "@/lib/i18n";
+import { qrCodesI18n } from "@/lib/translations";
 
 interface BayQR {
   id: string;
@@ -28,6 +30,7 @@ interface VehicleQR {
 
 export default function QRCodesPage() {
   const user = useAppStore((s) => s.user);
+  const { t: qrT } = useI18n(qrCodesI18n);
   const [tab, setTab] = useState<"bays" | "vehicles">("bays");
 
   const { data: baysData, isLoading: baysLoading } = useSWR<{ bays: BayQR[] }>("/bays/qr-sheet");
@@ -37,7 +40,7 @@ export default function QRCodesPage() {
   if (user?.role !== "admin") {
     return (
       <AppShell>
-        <div className="text-center py-12 text-white/50">Access denied</div>
+        <div className="text-center py-12 text-white/50">{qrT.accessDenied}</div>
       </AppShell>
     );
   }
@@ -50,7 +53,7 @@ export default function QRCodesPage() {
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          title="QR Codes"
+          title={qrT.title}
           backHref="/admin"
           action={
             <button
@@ -58,7 +61,7 @@ export default function QRCodesPage() {
               className="px-4 py-2 rounded-lg border border-gold/30 text-gold text-xs tracking-wider uppercase hover:bg-gold hover:text-black transition-all duration-500 print:hidden"
               style={{ transitionTimingFunction: "var(--ease-lux)" }}
             >
-              Print
+              {qrT.print}
             </button>
           }
         />
@@ -75,7 +78,7 @@ export default function QRCodesPage() {
                   : "bg-white/[0.04] text-white/50 border-white/[0.06]"
               }`}
             >
-              {t === "bays" ? "Bays" : "Vehicles"}
+              {t === "bays" ? qrT.bays : qrT.vehicles}
             </button>
           ))}
         </div>
@@ -102,7 +105,7 @@ export default function QRCodesPage() {
                         </div>
                       ) : (
                         <div className="w-[136px] h-[136px] bg-white/[0.04] rounded-xl flex items-center justify-center text-white/30 text-xs">
-                          No QR token
+                          {qrT.noQrToken}
                         </div>
                       )}
                       <div className="text-center">
@@ -122,7 +125,7 @@ export default function QRCodesPage() {
                         </div>
                       ) : (
                         <div className="w-[136px] h-[136px] bg-white/[0.04] rounded-xl flex items-center justify-center text-white/30 text-xs">
-                          No QR token
+                          {qrT.noQrToken}
                         </div>
                       )}
                       <div className="text-center">
@@ -138,7 +141,7 @@ export default function QRCodesPage() {
             {/* Print view */}
             <div className="hidden print:block">
               <h2 className="text-xl font-bold mb-4 text-black">
-                Heritage Motor - {tab === "bays" ? "Bay" : "Vehicle"} QR Codes
+                Heritage Motor - {tab === "bays" ? qrT.bayQrCodes : qrT.vehicleQrCodes}
               </h2>
               <div className="qr-print-grid">
                 {(tab === "bays" ? bays : []).map((bay) => (
