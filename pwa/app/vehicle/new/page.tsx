@@ -11,7 +11,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { useBays } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
-import { MAKE_NAMES, getModelsForMake, getYearsForModel } from "@/lib/vehicle-catalog";
+import { useVehicleMakes, useVehicleModels, getYearOptions } from "@/lib/vehicle-catalog";
 
 interface FormState {
   make: string;
@@ -45,6 +45,8 @@ const initialForm: FormState = {
   bay_id: "",
 };
 
+const YEAR_OPTIONS = getYearOptions();
+
 export default function NewVehiclePage() {
   const router = useRouter();
   const { mutate } = useSWRConfig();
@@ -63,23 +65,21 @@ export default function NewVehiclePage() {
     { loading: false, error: null as string | null }
   );
 
-  // Cascading data
-  const modelOptions = useMemo(() => {
-    const models = getModelsForMake(form.make);
-    const opts = models.map((m) => ({
-      value: m.name,
-      label: m.name,
-      sub: `${m.years[0]}–${m.years[1]}`,
-    }));
-    opts.push({ value: "__custom__", label: "Other...", sub: "" });
-    return opts;
-  }, [form.make]);
+  // NHTSA API data
+  const { makes, isLoading: makesLoading } = useVehicleMakes();
+  const { models, isLoading: modelsLoading } = useVehicleModels(
+    !customMake && form.make ? form.make : null
+  );
 
-  const yearOptions = useMemo(() => {
-    const years = getYearsForModel(form.make, form.model);
-    if (!years) return null;
-    return years.map((y) => ({ value: String(y), label: String(y) }));
-  }, [form.make, form.model]);
+  const makeOptions = useMemo(() => [
+    ...makes.map((m) => ({ value: m, label: m })),
+    { value: "__custom__", label: "Other..." },
+  ], [makes]);
+
+  const modelOptions = useMemo(() => [
+    ...models.map((m) => ({ value: m, label: m })),
+    { value: "__custom__", label: "Other..." },
+  ], [models]);
 
   if (!canCreate) {
     return (
@@ -163,11 +163,6 @@ export default function NewVehiclePage() {
   const inputClass =
     "w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-colors";
 
-  const makeOptions = [
-    ...MAKE_NAMES.map((m) => ({ value: m, label: m })),
-    { value: "__custom__", label: "Other..." },
-  ];
-
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
@@ -204,6 +199,9 @@ export default function NewVehiclePage() {
                 onChange={handleMakeChange}
                 options={makeOptions}
                 placeholder="Make *"
+                searchable
+                searchPlaceholder="Search make..."
+                loading={makesLoading}
               />
             )}
 
@@ -217,7 +215,7 @@ export default function NewVehiclePage() {
                   onChange={(e) => updateField("model", e.target.value)}
                   className={inputClass}
                 />
-                {!customMake && modelOptions.length > 1 && (
+                {!customMake && form.make && (
                   <button
                     type="button"
                     onClick={() => { setCustomModel(false); setForm((p) => ({ ...p, model: "", year: "" })); }}
@@ -233,6 +231,9 @@ export default function NewVehiclePage() {
                 onChange={handleModelChange}
                 options={modelOptions}
                 placeholder="Model *"
+                searchable
+                searchPlaceholder="Search model..."
+                loading={modelsLoading}
               />
             ) : (
               <CustomSelect
@@ -245,24 +246,14 @@ export default function NewVehiclePage() {
 
             {/* Year + Color */}
             <div className="grid grid-cols-2 gap-3">
-              {yearOptions && !customMake && !customModel ? (
-                <CustomSelect
-                  value={form.year}
-                  onChange={(v) => updateField("year", v)}
-                  options={yearOptions}
-                  placeholder="Year"
-                />
-              ) : (
-                <input
-                  type="number"
-                  placeholder="Year"
-                  min={1900}
-                  max={2030}
-                  value={form.year}
-                  onChange={(e) => updateField("year", e.target.value)}
-                  className={inputClass}
-                />
-              )}
+              <CustomSelect
+                value={form.year}
+                onChange={(v) => updateField("year", v)}
+                options={YEAR_OPTIONS}
+                placeholder="Year"
+                searchable
+                searchPlaceholder="Search year..."
+              />
               <input
                 type="text"
                 placeholder="Color"
