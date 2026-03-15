@@ -238,7 +238,7 @@ BodyParser → Validate → Service call → HandleServiceError → JSON respons
 - **ActivityFeed `active` prop** : passer `active={false}` quand l'onglet Activity est masqué pour stopper le polling SWR
 - **Scan layout** : le scan a son propre layout (`scan/layout.tsx`) avec `<SideNav />` car il n'utilise pas AppShell. Le `lg:left-[220px]` sur les conteneurs fixed doit rester synchronisé avec la largeur du SideNav
 - **LangSwitcher partagé** : composant unique (`components/ui/LangSwitcher.tsx`) avec SVG flags inline (pas d'emoji), utilisé dans TopBar ET DesktopTopBar. Persiste dans `localStorage('hm-lang')` — partagé avec les pages statiques landing. Utilise `broadcastLang()` pour notifier tous les hooks `useI18n()` en temps réel
-- **i18n PWA** : hook `useI18n(dict)` dans `lib/i18n.ts` + dictionnaires EN/FR/DE dans `lib/translations.ts`. Pages traduites : dashboard, bays, DesktopTopBar, login, change-password. Login/change-password utilisent leurs propres dicts locaux
+- **i18n PWA** : hook `useI18n(dict)` dans `lib/i18n.ts` + dictionnaires EN/FR/DE dans `lib/translations.ts`. Pages traduites : dashboard, vehicles, bays, tasks, profile, scan (+ sheets), audit, DesktopTopBar, SideNav, BottomNav, ActivityFeed, login, change-password. Dicts : `dashboardI18n`, `baysI18n`, `tasksI18n`, `profileI18n`, `scanI18n`, `activityI18n`, `auditI18n`, `navI18n`, `pageLabelsI18n`, `commonI18n`. Login/change-password utilisent leurs propres dicts locaux
 - **Accessibilité toggle pills** : tous les boutons toggle/filtre doivent avoir `aria-pressed`, les dropdowns `aria-expanded`
 
 ### Design System Dark Luxury (PWA)

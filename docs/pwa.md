@@ -439,9 +439,9 @@ Shared `LangSwitcher` component (`components/ui/LangSwitcher.tsx`) used in both 
 **PWA i18n architecture** (`lib/i18n.ts` + `lib/translations.ts`):
 - `useI18n(dict)` hook: reads `localStorage('hm-lang')`, subscribes to broadcast updates, returns `{ lang, t }`
 - `broadcastLang(l)` : called by LangSwitcher, updates all subscribed hooks via in-memory listener set
-- Translation dictionaries in `lib/translations.ts`: `dashboardI18n`, `baysI18n`, `pageLabelsI18n`
+- Translation dictionaries in `lib/translations.ts`: `dashboardI18n`, `baysI18n`, `tasksI18n`, `profileI18n`, `scanI18n`, `activityI18n`, `auditI18n`, `navI18n`, `pageLabelsI18n`, `commonI18n`
 - Login and change-password pages use their own local `loginI18n` / `cpI18n` dicts (pre-existing pattern)
-- Translated pages: dashboard, bays, DesktopTopBar page labels, login, change-password
+- Translated pages: dashboard, vehicles, bays, tasks, profile, scan (+ all sheets), audit, SideNav, BottomNav, DesktopTopBar, ActivityFeed, login, change-password
 
 ## Design System (Dark Luxury)
 
