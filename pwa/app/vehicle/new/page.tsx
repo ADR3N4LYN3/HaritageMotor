@@ -11,7 +11,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { useBays } from "@/hooks/useBay";
 import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
-import { useVehicleMakes, useVehicleModels, getYearOptions } from "@/lib/vehicle-catalog";
+import { MAKE_NAMES, getModelsForMake, getYearOptions } from "@/lib/vehicle-catalog";
 
 interface FormState {
   make: string;
@@ -65,16 +65,13 @@ export default function NewVehiclePage() {
     { loading: false, error: null as string | null }
   );
 
-  // NHTSA API data
-  const { makes, isLoading: makesLoading } = useVehicleMakes();
-  const { models, isLoading: modelsLoading } = useVehicleModels(
-    !customMake && form.make ? form.make : null
-  );
+  // Static catalog data
+  const models = useMemo(() => getModelsForMake(form.make), [form.make]);
 
   const makeOptions = useMemo(() => [
-    ...makes.map((m) => ({ value: m, label: m })),
+    ...MAKE_NAMES.map((m) => ({ value: m, label: m })),
     { value: "__custom__", label: "Other..." },
-  ], [makes]);
+  ], []);
 
   const modelOptions = useMemo(() => [
     ...models.map((m) => ({ value: m, label: m })),
@@ -201,7 +198,6 @@ export default function NewVehiclePage() {
                 placeholder="Make *"
                 searchable
                 searchPlaceholder="Search make..."
-                loading={makesLoading}
               />
             )}
 
@@ -233,7 +229,6 @@ export default function NewVehiclePage() {
                 placeholder="Model *"
                 searchable
                 searchPlaceholder="Search model..."
-                loading={modelsLoading}
               />
             ) : (
               <CustomSelect
