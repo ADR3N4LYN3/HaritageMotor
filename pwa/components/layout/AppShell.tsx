@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <main className="relative z-10 pt-16 lg:pt-0 pb-20 lg:pb-6 px-4 lg:px-0 flex-1">
-          <div className="max-w-2xl lg:max-w-[900px] mx-auto lg:px-9 lg:py-7">
+          <div className="max-w-2xl lg:max-w-[900px] mx-auto lg:mx-0 lg:px-9 lg:py-7">
             {children}
           </div>
         </main>
