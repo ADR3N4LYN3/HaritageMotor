@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useReducer } from "react";
+import { useState, useReducer, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { useBays } from "@/hooks/useBay";
-import { api, ApiError } from "@/lib/api";
 import { TagInput } from "@/components/ui/TagInput";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { useBays } from "@/hooks/useBay";
+import { api, ApiError } from "@/lib/api";
 import { useAppStore } from "@/store/app.store";
+import { MAKE_NAMES, getModelsForMake, getYearsForModel } from "@/lib/vehicle-catalog";
 
 interface FormState {
   make: string;
@@ -55,10 +56,30 @@ export default function NewVehiclePage() {
   const freeBays = bays.filter((b) => b.status === "free");
 
   const [form, setForm] = useState<FormState>(initialForm);
+  const [customMake, setCustomMake] = useState(false);
+  const [customModel, setCustomModel] = useState(false);
   const [{ loading, error }, setStatus] = useReducer(
     (s: { loading: boolean; error: string | null }, a: Partial<{ loading: boolean; error: string | null }>) => ({ ...s, ...a }),
     { loading: false, error: null as string | null }
   );
+
+  // Cascading data
+  const modelOptions = useMemo(() => {
+    const models = getModelsForMake(form.make);
+    const opts = models.map((m) => ({
+      value: m.name,
+      label: m.name,
+      sub: `${m.years[0]}–${m.years[1]}`,
+    }));
+    opts.push({ value: "__custom__", label: "Other...", sub: "" });
+    return opts;
+  }, [form.make]);
+
+  const yearOptions = useMemo(() => {
+    const years = getYearsForModel(form.make, form.model);
+    if (!years) return null;
+    return years.map((y) => ({ value: String(y), label: String(y) }));
+  }, [form.make, form.model]);
 
   if (!canCreate) {
     return (
@@ -70,6 +91,28 @@ export default function NewVehiclePage() {
 
   function updateField(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleMakeChange(value: string) {
+    if (value === "__custom__") {
+      setCustomMake(true);
+      setCustomModel(true);
+      setForm((prev) => ({ ...prev, make: "", model: "", year: "" }));
+    } else {
+      setCustomMake(false);
+      setCustomModel(false);
+      setForm((prev) => ({ ...prev, make: value, model: "", year: "" }));
+    }
+  }
+
+  function handleModelChange(value: string) {
+    if (value === "__custom__") {
+      setCustomModel(true);
+      setForm((prev) => ({ ...prev, model: "", year: "" }));
+    } else {
+      setCustomModel(false);
+      setForm((prev) => ({ ...prev, model: value, year: "" }));
+    }
   }
 
   function setTags(tags: string[]) {
@@ -100,15 +143,12 @@ export default function NewVehiclePage() {
 
     try {
       const vehicle = await api.post<{ id: string }>("/vehicles", body);
-      // Invalidate vehicles cache so dashboard shows the new vehicle immediately
       mutate((key: unknown) => typeof key === "string" && key.startsWith("/vehicles"));
       router.push(`/vehicle/${vehicle.id}`);
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         if (err.status === 402) {
           setStatus({ error: "Vehicle limit reached for your plan. Please upgrade." });
-        } else if (err.status === 422) {
-          setStatus({ error: err.message });
         } else {
           setStatus({ error: err.message });
         }
@@ -123,6 +163,11 @@ export default function NewVehiclePage() {
   const inputClass =
     "w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 text-sm font-light tracking-wide transition-colors";
 
+  const makeOptions = [
+    ...MAKE_NAMES.map((m) => ({ value: m, label: m })),
+    { value: "__custom__", label: "Other..." },
+  ];
+
   return (
     <AppShell>
       <div className="space-y-6 pb-6">
@@ -134,30 +179,90 @@ export default function NewVehiclePage() {
             Vehicle
           </h2>
           <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06] space-y-3">
-            <input
-              type="text"
-              placeholder="Make *"
-              value={form.make}
-              onChange={(e) => updateField("make", e.target.value)}
-              className={inputClass}
-            />
-            <input
-              type="text"
-              placeholder="Model *"
-              value={form.model}
-              onChange={(e) => updateField("model", e.target.value)}
-              className={inputClass}
-            />
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                type="number"
-                placeholder="Year"
-                min={1900}
-                max={2030}
-                value={form.year}
-                onChange={(e) => updateField("year", e.target.value)}
-                className={inputClass}
+            {/* Make */}
+            {customMake ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Make *"
+                  value={form.make}
+                  onChange={(e) => updateField("make", e.target.value)}
+                  className={inputClass}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => { setCustomMake(false); setCustomModel(false); setForm((p) => ({ ...p, make: "", model: "", year: "" })); }}
+                  className="shrink-0 px-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/40 text-xs hover:text-gold hover:border-gold/30 transition-colors"
+                >
+                  List
+                </button>
+              </div>
+            ) : (
+              <CustomSelect
+                value={form.make}
+                onChange={handleMakeChange}
+                options={makeOptions}
+                placeholder="Make *"
               />
+            )}
+
+            {/* Model */}
+            {customMake || customModel ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Model *"
+                  value={form.model}
+                  onChange={(e) => updateField("model", e.target.value)}
+                  className={inputClass}
+                />
+                {!customMake && modelOptions.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => { setCustomModel(false); setForm((p) => ({ ...p, model: "", year: "" })); }}
+                    className="shrink-0 px-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/40 text-xs hover:text-gold hover:border-gold/30 transition-colors"
+                  >
+                    List
+                  </button>
+                )}
+              </div>
+            ) : form.make ? (
+              <CustomSelect
+                value={form.model}
+                onChange={handleModelChange}
+                options={modelOptions}
+                placeholder="Model *"
+              />
+            ) : (
+              <CustomSelect
+                value=""
+                onChange={() => {}}
+                options={[]}
+                placeholder="Model *"
+              />
+            )}
+
+            {/* Year + Color */}
+            <div className="grid grid-cols-2 gap-3">
+              {yearOptions && !customMake && !customModel ? (
+                <CustomSelect
+                  value={form.year}
+                  onChange={(v) => updateField("year", v)}
+                  options={yearOptions}
+                  placeholder="Year"
+                />
+              ) : (
+                <input
+                  type="number"
+                  placeholder="Year"
+                  min={1900}
+                  max={2030}
+                  value={form.year}
+                  onChange={(e) => updateField("year", e.target.value)}
+                  className={inputClass}
+                />
+              )}
               <input
                 type="text"
                 placeholder="Color"
@@ -166,6 +271,7 @@ export default function NewVehiclePage() {
                 className={inputClass}
               />
             </div>
+
             <input
               type="text"
               placeholder="License plate"
