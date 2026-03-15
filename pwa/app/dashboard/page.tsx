@@ -355,8 +355,8 @@ function TenantDashboard() {
           </div>
 
           {/* Right column — Activity feed (1/3) — desktop always visible, mobile tab */}
-          <div className={`lg:col-span-1 lg:self-start ${activeTab !== "activity" ? "hidden lg:block" : ""}`}>
-            <div className="lg:sticky lg:top-6 lg:pl-6 lg:border-l lg:border-white/[0.06]">
+          <div className={`lg:col-span-1 lg:self-start lg:pl-6 lg:border-l lg:border-white/[0.06] ${activeTab !== "activity" ? "hidden lg:block" : ""}`}>
+            <div className="lg:sticky lg:top-6">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-1.5 h-1.5 rounded-full bg-gold/60 shadow-[0_0_10px_rgba(184,149,90,0.4)]" />
                 <p className="text-[11px] tracking-[0.18em] uppercase text-gold/60 font-semibold">
