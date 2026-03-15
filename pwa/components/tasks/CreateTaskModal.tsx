@@ -4,17 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { api, ApiError } from "@/lib/api";
-import { TASK_ICONS } from "@/lib/task-constants";
-
-const TASK_TYPES = ["battery_start", "tire_pressure", "wash", "fluid_check", "custom"];
-
-const TASK_TYPE_LABELS: Record<string, string> = {
-  battery_start: "Battery Start",
-  tire_pressure: "Tire Pressure",
-  wash: "Wash",
-  fluid_check: "Fluid Check",
-  custom: "Custom",
-};
+import { TASK_TYPES } from "@/lib/task-constants";
 
 export interface TaskToEdit {
   id: string;
@@ -172,9 +162,9 @@ export function CreateTaskModal({ vehicleMap, onClose, onCreated, editTask }: Cr
             value={taskType}
             onChange={setTaskType}
             options={TASK_TYPES.map((t) => ({
-              value: t,
-              label: TASK_TYPE_LABELS[t],
-              icon: TASK_ICONS[t],
+              value: t.value,
+              label: t.label,
+              icon: <t.icon className="w-4 h-4" />,
             }))}
           />
         </div>

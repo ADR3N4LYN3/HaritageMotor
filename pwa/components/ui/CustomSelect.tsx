@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import type { ReactNode } from "react";
 
 export interface SelectOption {
   value: string;
   label: string;
-  icon?: string;
+  icon?: ReactNode;
   sub?: string;
 }
 
@@ -66,9 +67,6 @@ export function CustomSelect({
   }, [options, query, searchable]);
 
   const selected = options.find((o) => o.value === value);
-  const displayLabel = selected
-    ? `${selected.icon ? selected.icon + " " : ""}${selected.label}`
-    : placeholder ?? "Select...";
 
   return (
     <div ref={ref} className={`relative ${className}`}>
@@ -83,8 +81,10 @@ export function CustomSelect({
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <span className="truncate">
-          {loading ? "Loading..." : displayLabel}
+        <span className="truncate flex items-center gap-2">
+          {loading ? "Loading..." : selected ? (
+            <>{selected.icon && <span className="shrink-0 w-4 h-4">{selected.icon}</span>}{selected.label}</>
+          ) : (placeholder ?? "Select...")}
         </span>
         <svg
           className={`w-4 h-4 text-white/40 shrink-0 ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -137,8 +137,8 @@ export function CustomSelect({
                       : "text-white/70 hover:bg-white/[0.04]"
                   }`}
                 >
-                  <span className="truncate">
-                    {opt.icon ? `${opt.icon} ` : ""}
+                  <span className="truncate flex items-center gap-2">
+                    {opt.icon && <span className="shrink-0 w-4 h-4">{opt.icon}</span>}
                     {opt.label}
                   </span>
                   {opt.sub && <span className="text-xs text-white/30 ml-2 shrink-0">{opt.sub}</span>}

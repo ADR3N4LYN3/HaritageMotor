@@ -12,7 +12,7 @@ import { tasksI18n } from "@/lib/translations";
 import { api } from "@/lib/api";
 import type { Task, Vehicle, PaginatedResponse } from "@/lib/types";
 import useSWR from "swr";
-import { TASK_ICONS } from "@/lib/task-constants";
+import { TaskIcon } from "@/lib/task-constants";
 
 const STATUS_FILTERS = ["", "pending", "completed", "overdue"] as const;
 
@@ -205,9 +205,9 @@ export default function TasksPage() {
                     aria-expanded={isExpanded}
                     className="w-full text-left p-4 flex items-center gap-3 touch-target"
                   >
-                    <span className="text-xl">
-                      {TASK_ICONS[task.task_type] || "\uD83D\uDCCB"}
-                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0 text-gold/70">
+                      <TaskIcon type={task.task_type} className="w-4 h-4" />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-white text-sm truncate">
                         {task.title}

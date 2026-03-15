@@ -11,9 +11,10 @@ import { useVehicle } from "@/hooks/useVehicle";
 import { api, ApiError } from "@/lib/api";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { pushAction } from "@/lib/offline-queue";
+import { CreateTaskModal } from "@/components/tasks/CreateTaskModal";
 import type { Task } from "@/lib/types";
 import useSWR from "swr";
-import { TASK_ICONS } from "@/lib/task-constants";
+import { TaskIcon } from "@/lib/task-constants";
 
 export default function TaskPage() {
   const params = useParams();
@@ -29,6 +30,7 @@ export default function TaskPage() {
 
   const [completing, setCompleting] = useState<string | null>(null);
   const [taskNotes, setTaskNotes] = useState<Record<string, string>>({});
+  const [showCreate, setShowCreate] = useState(false);
   const [{ loading, success, error }, setStatus] = useReducer(
     (s: { loading: boolean; success: { task: Task } | null; error: string | null }, a: Partial<{ loading: boolean; success: { task: Task } | null; error: string | null }>) => ({ ...s, ...a }),
     { loading: false, success: null as { task: Task } | null, error: null as string | null }
@@ -115,6 +117,14 @@ export default function TaskPage() {
           title="Maintenance Tasks"
           subtitle={`${vehicle.make} ${vehicle.model}`}
           backHref={`/vehicle/${id}`}
+          action={
+            <button
+              onClick={() => setShowCreate(true)}
+              className="w-11 h-11 rounded-full border border-gold/40 bg-transparent flex items-center justify-center text-gold text-xl font-light hover:bg-gold hover:text-black transition-all duration-500 active:scale-95"
+              style={{ transitionTimingFunction: "var(--ease-lux)" }}
+              aria-label="Create task"
+            >+</button>
+          }
         />
 
         {/* Task List */}
@@ -133,12 +143,17 @@ export default function TaskPage() {
               Failed to load tasks
             </div>
           ) : tasks.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 space-y-3">
               <p className="text-white/30 text-sm">No pending tasks</p>
+              <ActionButton
+                onClick={() => setShowCreate(true)}
+                className="mt-2"
+              >
+                Create Task
+              </ActionButton>
               <ActionButton
                 variant="secondary"
                 onClick={() => router.push(`/vehicle/${id}`)}
-                className="mt-4"
               >
                 Back to Vehicle
               </ActionButton>
@@ -159,9 +174,9 @@ export default function TaskPage() {
                       aria-expanded={isExpanded}
                       className="w-full text-left p-4 flex items-center gap-3 touch-target"
                     >
-                      <span className="text-xl">
-                        {TASK_ICONS[task.task_type] || "📋"}
-                      </span>
+                      <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0 text-gold/70">
+                        <TaskIcon type={task.task_type} className="w-4 h-4" />
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-white text-sm truncate">
@@ -218,6 +233,14 @@ export default function TaskPage() {
           )}
         </div>
       </div>
+
+      {showCreate && vehicle && (
+        <CreateTaskModal
+          vehicleMap={new Map([[id, `${vehicle.make} ${vehicle.model}`]])}
+          onClose={() => setShowCreate(false)}
+          onCreated={() => { setShowCreate(false); mutate(); }}
+        />
+      )}
     </AppShell>
   );
 }

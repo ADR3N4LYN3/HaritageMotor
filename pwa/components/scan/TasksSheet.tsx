@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { useI18n } from "@/lib/i18n";
 import { tasksI18n } from "@/lib/translations";
 import type { Task } from "@/lib/types";
-import { TASK_ICONS } from "@/lib/task-constants";
+import { TaskIcon } from "@/lib/task-constants";
 
 export function TasksSheet({ onNavigate }: { onNavigate: (vehicleId: string) => void }) {
   const { t } = useI18n(tasksI18n);
@@ -38,7 +38,9 @@ export function TasksSheet({ onNavigate }: { onNavigate: (vehicleId: string) => 
                 className="w-full text-left bg-white/[0.03] rounded-xl p-3 border border-white/[0.06] active:scale-[0.98] transition-transform"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">{TASK_ICONS[task.task_type] || "\uD83D\uDCCB"}</span>
+                  <div className="w-7 h-7 rounded-lg bg-gold/10 border border-gold/15 flex items-center justify-center shrink-0 text-gold/70">
+                    <TaskIcon type={task.task_type} className="w-3.5 h-3.5" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{task.title}</p>
                     {task.due_date && (

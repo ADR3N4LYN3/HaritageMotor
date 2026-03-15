@@ -58,6 +58,10 @@ const (
 	TaskTypeTirePressure = "tire_pressure"
 	TaskTypeWash         = "wash"
 	TaskTypeFluidCheck   = "fluid_check"
+	TaskTypeInspection   = "inspection"
+	TaskTypeDetailing    = "detailing"
+	TaskTypeCover        = "cover"
+	TaskTypeClimateCheck = "climate_check"
 	TaskTypeCustom       = "custom"
 )
 
