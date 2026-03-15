@@ -1,23 +1,26 @@
 "use client";
 
 import useSWR from "swr";
+import { useI18n } from "@/lib/i18n";
+import { commonI18n } from "@/lib/translations";
 import type { Vehicle } from "@/lib/types";
 import { StatusBadge } from "./StatusBadge";
 
 export function VehiclesSheet({ search, setSearch, onNavigate }: { search: string; setSearch: (s: string) => void; onNavigate: (id: string) => void }) {
+  const { t } = useI18n(commonI18n);
   const query = search ? `?search=${encodeURIComponent(search)}&per_page=20` : "?per_page=20";
   const { data, isLoading } = useSWR<{ data: Vehicle[]; total_count: number }>(`/vehicles${query}`, { refreshInterval: 30000 });
   const vehicles = data?.data || [];
 
   return (
     <div className="space-y-4">
-      <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">Vehicles</h2>
+      <h2 className="text-[1.3rem] font-light tracking-[0.03em] text-white leading-[1.2]">{t.search === "Search" ? "Vehicles" : t.search === "Rechercher" ? "Véhicules" : "Fahrzeuge"}</h2>
       <input
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search make, model, owner..."
-        aria-label="Search vehicles"
+        placeholder={t.searchPlaceholder}
+        aria-label={t.search}
         className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/20 transition-colors"
       />
       {isLoading ? (
@@ -25,7 +28,7 @@ export function VehiclesSheet({ search, setSearch, onNavigate }: { search: strin
           {[1, 2, 3].map((n) => <div key={n} className="skeleton h-16 rounded-xl" />)}
         </div>
       ) : vehicles.length === 0 ? (
-        <p className="text-white/30 text-sm text-center py-6">No vehicles found</p>
+        <p className="text-white/30 text-sm text-center py-6">{t.noResults}</p>
       ) : (
         <div className="space-y-2">
           {vehicles.map((v) => (
@@ -45,7 +48,7 @@ export function VehiclesSheet({ search, setSearch, onNavigate }: { search: strin
           ))}
           {data && data.total_count > 20 && (
             <p className="text-center text-[10px] text-white/20 uppercase tracking-widest pt-2">
-              {data.total_count} total — showing first 20
+              {data.total_count} {t.total}
             </p>
           )}
         </div>

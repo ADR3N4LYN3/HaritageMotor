@@ -7,6 +7,8 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { CreateTaskModal } from "@/components/tasks/CreateTaskModal";
 import type { TaskToEdit } from "@/components/tasks/CreateTaskModal";
 import { useAppStore } from "@/store/app.store";
+import { useI18n } from "@/lib/i18n";
+import { tasksI18n } from "@/lib/translations";
 import { api } from "@/lib/api";
 import type { Task, Vehicle, PaginatedResponse } from "@/lib/types";
 import useSWR from "swr";
@@ -26,6 +28,7 @@ export default function TasksPage() {
   const isAdmin = user?.role === "admin";
   const canCreate =
     isAdmin || user?.role === "operator" || user?.role === "technician";
+  const { t } = useI18n(tasksI18n);
 
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
@@ -66,6 +69,10 @@ export default function TasksPage() {
     }
     return map;
   }, [vehiclesData]);
+
+  const statusLabels: Record<string, string> = {
+    "": t.all, pending: t.pending, completed: t.completed, overdue: t.overdue,
+  };
 
   const handleComplete = useCallback(
     async (taskId: string) => {
@@ -129,14 +136,14 @@ export default function TasksPage() {
     <AppShell>
       <div className="space-y-4">
         <PageHeader
-          title="Tasks"
+          title={t.title}
           action={
             canCreate ? (
               <button
                 onClick={() => setShowCreate(true)}
                 className="w-10 h-10 rounded-full border border-gold/40 bg-transparent flex items-center justify-center text-gold text-xl font-light hover:bg-gold hover:text-black transition-all duration-500 active:scale-95"
                 style={{ transitionTimingFunction: "var(--ease-lux)" }}
-                aria-label="Create task"
+                aria-label={t.createTask}
               >
                 +
               </button>
@@ -156,7 +163,7 @@ export default function TasksPage() {
                   : "bg-white/[0.04] text-white/50 border-white/[0.06]"
               }`}
             >
-              {s ? s.charAt(0).toUpperCase() + s.slice(1) : "All"}
+              {statusLabels[s] || s}
             </button>
           ))}
         </div>
@@ -170,11 +177,11 @@ export default function TasksPage() {
           </div>
         ) : error ? (
           <div className="text-center py-12 text-danger text-sm font-light">
-            Failed to load tasks
+            {t.failedLoad}
           </div>
         ) : tasks.length === 0 ? (
           <div className="text-center py-12 text-white/30 text-sm font-light">
-            No tasks found
+            {t.noTasks}
           </div>
         ) : (
           <div className="space-y-3">
@@ -184,7 +191,7 @@ export default function TasksPage() {
                 task.due_date &&
                 new Date(task.due_date) < new Date();
               const isExpanded = completing === task.id;
-              const vehicleName = vehicleMap.get(task.vehicle_id) || "Unknown vehicle";
+              const vehicleName = vehicleMap.get(task.vehicle_id) || t.unknownVehicle;
 
               return (
                 <div
@@ -210,7 +217,7 @@ export default function TasksPage() {
                       </p>
                       {task.due_date && (
                         <p className="text-xs text-white/30 mt-0.5">
-                          Due: {new Date(task.due_date).toLocaleDateString()}
+                          {t.due} {new Date(task.due_date).toLocaleDateString()}
                         </p>
                       )}
                     </div>
@@ -222,7 +229,7 @@ export default function TasksPage() {
                             : statusColors[task.status] || statusColors.pending
                         }`}
                       >
-                        {isOverdue ? "overdue" : task.status}
+                        {isOverdue ? t.overdue : statusLabels[task.status] || task.status}
                       </span>
                     </div>
                   </button>
@@ -243,7 +250,7 @@ export default function TasksPage() {
                             onClick={() => handleComplete(task.id)}
                             loading={completeLoading}
                           >
-                            Mark as Done
+                            {t.markDone}
                           </ActionButton>
                         </div>
                       )}
@@ -253,7 +260,7 @@ export default function TasksPage() {
                             onClick={() => handleEditTask(task)}
                             className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white/50 text-xs hover:text-gold hover:border-gold/30 transition-colors"
                           >
-                            Edit
+                            {t.edit}
                           </button>
                         )}
                         {isAdmin && (
@@ -266,7 +273,7 @@ export default function TasksPage() {
                                 : "border-white/[0.08] bg-white/[0.04] text-white/40 hover:text-danger hover:border-danger/30"
                             }`}
                           >
-                            {deleteConfirm === task.id ? "Confirm delete" : "Delete"}
+                            {deleteConfirm === task.id ? t.confirmDelete : t.delete}
                           </button>
                         )}
                       </div>
@@ -282,7 +289,7 @@ export default function TasksPage() {
                       )}
                       {task.completed_at && (
                         <p className="text-xs text-white/30 mt-2">
-                          Completed:{" "}
+                          {t.completedAt}{" "}
                           {new Date(task.completed_at).toLocaleDateString()}
                         </p>
                       )}
@@ -296,7 +303,7 @@ export default function TasksPage() {
                               : "border-white/[0.08] bg-white/[0.04] text-white/40 hover:text-danger hover:border-danger/30"
                           }`}
                         >
-                          {deleteConfirm === task.id ? "Confirm delete" : "Delete"}
+                          {deleteConfirm === task.id ? t.confirmDelete : t.delete}
                         </button>
                       )}
                     </div>
@@ -315,7 +322,7 @@ export default function TasksPage() {
               disabled={page <= 1}
               className="px-3 py-1.5 rounded-lg text-sm border border-white/[0.08] bg-white/[0.04] text-white/50 disabled:opacity-30 transition-colors hover:text-gold hover:border-gold/30"
             >
-              Previous
+              {t.previous}
             </button>
             <span className="text-xs text-white/40">
               {page} / {totalPages}
@@ -325,7 +332,7 @@ export default function TasksPage() {
               disabled={page >= totalPages}
               className="px-3 py-1.5 rounded-lg text-sm border border-white/[0.08] bg-white/[0.04] text-white/50 disabled:opacity-30 transition-colors hover:text-gold hover:border-gold/30"
             >
-              Next
+              {t.next}
             </button>
           </div>
         )}

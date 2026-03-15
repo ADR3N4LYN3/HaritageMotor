@@ -1,25 +1,9 @@
 "use client";
 
 import useSWR from "swr";
+import { useI18n } from "@/lib/i18n";
+import { activityI18n } from "@/lib/translations";
 import type { ActivityEntry, PaginatedResponse } from "@/lib/types";
-
-function formatAction(action: string): string {
-  const parts = action.split(".");
-  if (parts.length === 2) {
-    const [resource, verb] = parts;
-    const verbMap: Record<string, string> = {
-      create: "created",
-      update: "updated",
-      delete: "deleted",
-      move: "moved",
-      exit: "exited",
-      complete: "completed",
-      upload: "uploaded",
-    };
-    return `${verbMap[verb] || verb} ${resource}`;
-  }
-  return action;
-}
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -33,12 +17,31 @@ function timeAgo(dateStr: string): string {
 }
 
 export function ActivityFeed({ active = true }: { active?: boolean }) {
+  const { t } = useI18n(activityI18n);
   const { data, isLoading } = useSWR<PaginatedResponse<ActivityEntry>>(
     active ? "/activity?per_page=20" : null,
     { refreshInterval: 30000 }
   );
 
   const entries = data?.data || [];
+
+  function formatAction(action: string): string {
+    const parts = action.split(".");
+    if (parts.length === 2) {
+      const [resource, verb] = parts;
+      const verbMap: Record<string, string> = {
+        create: t.created,
+        update: t.updated,
+        delete: t.deleted,
+        move: t.moved,
+        exit: t.exited,
+        complete: t.completed,
+        upload: t.uploaded,
+      };
+      return `${verbMap[verb] || verb} ${resource}`;
+    }
+    return action;
+  }
 
   if (isLoading) {
     return (
@@ -59,7 +62,7 @@ export function ActivityFeed({ active = true }: { active?: boolean }) {
   if (entries.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-white/20 text-xs tracking-wider uppercase">No recent activity</p>
+        <p className="text-white/20 text-xs tracking-wider uppercase">{t.noActivity}</p>
       </div>
     );
   }
@@ -79,7 +82,7 @@ export function ActivityFeed({ active = true }: { active?: boolean }) {
           <p className={`text-[12.5px] leading-relaxed break-words ${
             i === 0 ? "text-white/80 font-normal" : "text-white/55 font-light"
           }`}>
-            <span className="text-white/70 font-medium">{entry.user_name.trim() || "System"}</span>
+            <span className="text-white/70 font-medium">{entry.user_name.trim() || t.system}</span>
             {" "}
             {formatAction(entry.action)}
           </p>

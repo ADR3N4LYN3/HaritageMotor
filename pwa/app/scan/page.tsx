@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { api, ApiError } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
+import { scanI18n } from "@/lib/translations";
 import type { ScanResult } from "@/lib/types";
 import { VehiclesSheet } from "@/components/scan/VehiclesSheet";
 import { BaysSheet } from "@/components/scan/BaysSheet";
@@ -32,6 +34,7 @@ export default function ScanPage() {
   const [manualCode, setManualCode] = useState("");
   const [sheet, setSheet] = useState<SheetType>(null);
   const [search, setSearch] = useState("");
+  const { t } = useI18n(scanI18n);
 
   async function resolveToken(token: string) {
     setResolving(true);
@@ -43,14 +46,14 @@ export default function ScanPage() {
       } else if (result.entity_type === "bay") {
         router.push(`/bay/${result.entity_id}`);
       } else {
-        setError("Unknown QR code type");
+        setError(t.unknownQr);
         setResolving(false);
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.status === 404 ? "QR code not recognized" : err.message);
+        setError(err.status === 404 ? t.notRecognized : err.message);
       } else {
-        setError("Network error — check connection");
+        setError(t.networkError);
       }
       setResolving(false);
     }
@@ -66,7 +69,7 @@ export default function ScanPage() {
     return (
       <div className="fixed inset-0 lg:left-[220px] bg-black flex flex-col items-center justify-center gap-4">
         <div className="w-12 h-12 border-4 border-gold/30 border-t-gold rounded-full animate-spin" />
-        <p className="text-white/60 text-sm">Resolving...</p>
+        <p className="text-white/60 text-sm">{t.resolving}</p>
       </div>
     );
   }
@@ -84,7 +87,7 @@ export default function ScanPage() {
         <button
           onClick={() => router.push("/dashboard")}
           className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/[0.1] flex items-center justify-center text-white/70 hover:text-white transition-colors safe-top"
-          aria-label="Back to dashboard"
+          aria-label={t.backDashboard}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -104,10 +107,10 @@ export default function ScanPage() {
         <div className="absolute bottom-0 left-0 right-0 z-50 safe-bottom">
           <div className="bg-gradient-to-t from-black via-black/90 to-transparent pt-12 pb-6 px-4">
             <div className="grid grid-cols-4 gap-2">
-              <ActionPill icon="car" label="Vehicles" onClick={() => openSheet("vehicles")} />
-              <ActionPill icon="bay" label="Bays" onClick={() => openSheet("bays")} />
-              <ActionPill icon="task" label="Tasks" onClick={() => openSheet("tasks")} />
-              <ActionPill icon="keyboard" label="Manual" onClick={() => openSheet("manual")} />
+              <ActionPill icon="car" label={t.vehicles} onClick={() => openSheet("vehicles")} />
+              <ActionPill icon="bay" label={t.bays} onClick={() => openSheet("bays")} />
+              <ActionPill icon="task" label={t.tasks} onClick={() => openSheet("tasks")} />
+              <ActionPill icon="keyboard" label={t.manual} onClick={() => openSheet("manual")} />
             </div>
           </div>
         </div>
